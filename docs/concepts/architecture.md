@@ -1,90 +1,132 @@
----
-sidebar_position: 1
----
+# STOA Platform Architecture
 
-# Architecture Overview
-
-Understanding STOA's cloud-native architecture.
+This document provides an overview of the STOA Platform architecture.
 
 ## High-Level Architecture
 
-STOA Platform is built on Kubernetes with a multi-tenant, GitOps-first approach.
+```mermaid
+flowchart TB
+    subgraph Users["👥 Users"]
+        Dev["🧑‍💻 Developers"]
+        Admin["👨‍💼 Platform Admins"]
+        AI["🤖 AI Agents"]
+    end
 
+    subgraph STOA["🏛️ STOA Platform"]
+        Portal["📱 Developer Portal"]
+        Console["🖥️ Admin Console"]
+        API["⚙️ Control Plane API"]
+        Gateway["🚀 MCP Gateway"]
+    end
+
+    subgraph Security["🔐 Security"]
+        KC["Keycloak"]
+        Vault["HashiCorp Vault"]
+    end
+
+    subgraph Data["💾 Data"]
+        PG["PostgreSQL"]
+        Redis["Redis"]
+    end
+
+    subgraph MCP["🔧 MCP Servers"]
+        Tools["Enterprise Tools"]
+    end
+
+    Users --> Portal & Console
+    Portal & Console --> API
+    API --> Gateway
+    Gateway --> Tools
+    API --> PG & Redis
+    API & Gateway --> KC
+    API --> Vault
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    STOA Platform                         │
-├─────────────────────────────────────────────────────────┤
-│  Control Plane API                                       │
-│  ├── Tenant Management                                   │
-│  ├── API/Tool Registration                               │
-│  └── Subscription Management                             │
-├─────────────────────────────────────────────────────────┤
-│  Data Plane (Per Tenant)                                 │
-│  ├── Kong Gateway                                        │
-│  ├── Route Configuration                                 │
-│  └── Policy Enforcement                                  │
-├─────────────────────────────────────────────────────────┤
-│  Authentication Layer                                    │
-│  └── Keycloak (OIDC/OAuth2)                             │
-├─────────────────────────────────────────────────────────┤
-│  GitOps Engine                                           │
-│  ├── ArgoCD (Declarative Sync)                          │
-│  └── AWX (Ansible Automation)                           │
-└─────────────────────────────────────────────────────────┘
+
+## Components
+
+### Core Services
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Control Plane API** | Python, FastAPI | Central management API for subscriptions, tools, tenants |
+| **MCP Gateway** | Rust, Tokio, Hyper | High-performance proxy for MCP tool invocations |
+| **Portal UI** | React, TypeScript | Developer self-service portal |
+| **Console UI** | React, TypeScript | Admin management console |
+
+### Security Layer
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Keycloak** | Java | OIDC/OAuth2 identity provider, RBAC |
+| **HashiCorp Vault** | Go | Secrets management, API key storage |
+
+### Data Layer
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **PostgreSQL** | SQL | Primary database for subscriptions, tenants |
+| **Redis** | In-memory | Caching, sessions, rate limiting |
+
+### Observability
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Prometheus** | Go | Metrics collection |
+| **Grafana** | Go | Dashboards and visualization |
+| **Loki** | Go | Log aggregation |
+| **Alertmanager** | Go | Alert routing and notifications |
+
+## Request Flow
+
+```mermaid
+sequenceDiagram
+    participant AI as AI Agent
+    participant GW as MCP Gateway
+    participant API as Control Plane
+    participant MCP as MCP Server
+
+    AI->>GW: Tool Invocation (API Key)
+    GW->>GW: Validate API Key
+    GW->>API: Check Subscription
+    API-->>GW: ✅ Authorized
+    GW->>MCP: Forward Request
+    MCP-->>GW: Response
+    GW-->>AI: Tool Response
 ```
 
-## Core Components
+## Deployment
 
-### Control Plane
+STOA Platform is designed to run on Kubernetes. See the [Helm chart documentation](https://github.com/stoa-platform/stoa-helm) for deployment instructions.
 
-The Control Plane provides the API for:
-- Tenant provisioning and isolation
-- API/Tool registration
-- Subscription management
-- Configuration management
+### Kubernetes Namespace
 
-### Data Plane
+All components run in the `stoa-system` namespace:
 
-Each tenant gets an isolated data plane:
-- Dedicated Kong Gateway instance
-- Namespace isolation
-- Network policies
-- Resource quotas
+```bash
+kubectl get pods -n stoa-system
+```
 
-### Authentication Layer
+### Ingress
 
-Keycloak provides:
-- OIDC/OAuth2 authentication
-- Multi-realm support (one per tenant)
-- Role-based access control (RBAC)
-- Token validation
+| Service | URL | Purpose |
+|---------|-----|---------|
+| Portal | `portal.stoa.example.com` | Developer portal |
+| Console | `console.stoa.example.com` | Admin console |
+| API | `api.stoa.example.com` | Control Plane API |
+| Gateway | `gateway.stoa.example.com` | MCP Gateway |
+| Auth | `auth.stoa.example.com` | Keycloak |
+| Grafana | `grafana.stoa.example.com` | Dashboards |
 
-### GitOps Engine
+## Diagrams
 
-ArgoCD + AWX handle:
-- Declarative configuration sync
-- Infrastructure as Code
-- Automated deployment
-- Configuration drift detection
+Architecture diagrams are available in multiple formats:
 
-## Multi-Tenancy
+- **Mermaid**: `architecture-high-level.mermaid` - For embedding in Markdown
+- **SVG**: `architecture-diagram.svg` - For web and presentations
+- **Kubernetes**: `architecture-kubernetes.mermaid` - Deployment view
 
-STOA enforces strict tenant isolation:
+## Related Documentation
 
-- **Namespace Isolation** - Each tenant in separate Kubernetes namespace
-- **Network Policies** - Prevent cross-tenant communication
-- **Resource Quotas** - CPU/Memory limits per tenant
-- **Authentication Realms** - Isolated Keycloak realms
-
-## Scalability
-
-STOA scales horizontally:
-
-- Control Plane API can be replicated
-- Each tenant's data plane scales independently
-- Stateless architecture for easy scaling
-- Kubernetes-native autoscaling support
-
----
-
-🚧 **Coming Soon**: Detailed architecture diagrams, component specifications, and deployment topologies.
+- [Getting Started](/getting-started)
+- [Deployment Guide](/deployment/helm)
+- [API Reference](/api)
