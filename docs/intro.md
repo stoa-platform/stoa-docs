@@ -1,0 +1,49 @@
+---
+sidebar_position: 1
+---
+
+# Getting Started with STOA
+
+Welcome to **STOA Platform** - The Cilium of API Management.
+
+STOA is a modern, cloud-native API management platform built on Kubernetes, designed for multi-tenant environments with GitOps-first architecture.
+
+## What is STOA?
+
+STOA provides:
+
+- **Multi-tenant API Gateway** - Isolated namespaces per tenant with Kong-based routing
+- **GitOps-Driven Configuration** - All configuration managed through ArgoCD + AWX
+- **Authentication & Authorization** - Integrated Keycloak for OIDC/OAuth2
+- **MCP Gateway Support** - Native support for Model Context Protocol
+- **Developer Portal** - Self-service API discovery and subscription management
+
+## Quick Start
+
+Get up and running with STOA in 5 minutes:
+
+```bash
+# Coming soon - Quick installation script
+curl -sfL https://get.gostoa.dev | sh
+```
+
+## Architecture Overview
+
+STOA consists of several key components:
+
+- **Control Plane** - API management and orchestration
+- **Data Plane** - Kong-based API gateway per tenant
+- **Auth Layer** - Keycloak for identity management
+- **GitOps Engine** - ArgoCD + AWX for declarative configuration
+- **MCP Gateway** - Model Context Protocol support
+
+## Next Steps
+
+- [Architecture Overview](/docs/concepts/architecture) - Understand STOA's architecture
+- [Quick Start Guide](/docs/guides/quick-start) - Deploy your first tenant
+- [Authentication Setup](/docs/guides/authentication) - Configure Keycloak OIDC
+- [API Reference](/docs/api/control-plane) - Explore the Control Plane API
+
+---
+
+🚧 **Documentation in Progress** - We're actively building out comprehensive documentation. Check back soon for updates!
