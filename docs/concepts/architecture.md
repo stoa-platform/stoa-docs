@@ -1,6 +1,12 @@
-# STOA Platform Architecture
+---
+sidebar_position: 1
+title: Architecture Overview
+description: High-level architecture of the STOA Platform
+---
 
-This document provides an overview of the STOA Platform architecture.
+# Architecture Overview
+
+STOA Platform is designed as a cloud-native, multi-tenant gateway platform built for both traditional APIs and AI agents.
 
 ## High-Level Architecture
 
@@ -42,39 +48,113 @@ flowchart TB
     API --> Vault
 ```
 
-## Components
+## Core Components
 
-### Core Services
+### Control Plane API
 
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| **Control Plane API** | Python, FastAPI | Central management API for subscriptions, tools, tenants |
-| **MCP Gateway** | Rust, Tokio, Hyper | High-performance proxy for MCP tool invocations |
-| **Portal UI** | React, TypeScript | Developer self-service portal |
-| **Console UI** | React, TypeScript | Admin management console |
+The central management API built with **Python** and **FastAPI**.
 
-### Security Layer
+| Aspect | Details |
+|--------|---------|
+| Language | Python 3.12+ |
+| Framework | FastAPI (async) |
+| Database | PostgreSQL + SQLAlchemy |
+| Cache | Redis |
+| Auth | Keycloak (OIDC) |
 
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| **Keycloak** | Java | OIDC/OAuth2 identity provider, RBAC |
-| **HashiCorp Vault** | Go | Secrets management, API key storage |
+**Responsibilities:**
+- Subscription management
+- Tenant provisioning
+- Tool catalog
+- Usage tracking
+- Policy enforcement
 
-### Data Layer
+### MCP Gateway
 
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| **PostgreSQL** | SQL | Primary database for subscriptions, tenants |
-| **Redis** | In-memory | Caching, sessions, rate limiting |
+High-performance proxy for MCP tool invocations built with **Rust**.
 
-### Observability
+| Aspect | Details |
+|--------|---------|
+| Language | Rust |
+| Runtime | Tokio (async) |
+| HTTP | Hyper |
+| Protocol | MCP (Model Context Protocol) |
 
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| **Prometheus** | Go | Metrics collection |
-| **Grafana** | Go | Dashboards and visualization |
-| **Loki** | Go | Log aggregation |
-| **Alertmanager** | Go | Alert routing and notifications |
+**Responsibilities:**
+- Request routing
+- Authentication validation
+- Rate limiting
+- Metrics collection
+- MCP protocol handling
+
+### Portal UI
+
+Self-service developer portal built with **React** and **TypeScript**.
+
+**Features:**
+- API/Tool catalog browsing
+- Subscription management
+- API key generation
+- Usage dashboards
+- Documentation access
+
+### Console UI
+
+Admin management console built with **React** and **TypeScript**.
+
+**Features:**
+- Tenant management
+- User administration
+- Policy configuration
+- System monitoring
+- Audit logs
+
+## Security Layer
+
+### Keycloak
+
+Identity and access management providing:
+- OIDC/OAuth2 authentication
+- SSO (Single Sign-On)
+- RBAC (Role-Based Access Control)
+- Multi-factor authentication
+- User federation
+
+### HashiCorp Vault
+
+Secrets management for:
+- API key encryption
+- Database credentials
+- TLS certificates
+- Service tokens
+
+## Data Layer
+
+### PostgreSQL
+
+Primary database storing:
+- Subscriptions
+- Tenants
+- Users
+- Tool definitions
+- Audit logs
+
+### Redis
+
+In-memory data store for:
+- Session management
+- Rate limiting counters
+- Response caching
+- Real-time metrics
+
+## Observability Stack
+
+| Component | Purpose |
+|-----------|---------|
+| **Prometheus** | Metrics collection |
+| **Grafana** | Dashboards & visualization |
+| **Loki** | Log aggregation |
+| **Alertmanager** | Alert routing |
 
 ## Request Flow
 
@@ -94,9 +174,21 @@ sequenceDiagram
     GW-->>AI: Tool Response
 ```
 
+1. **AI Agent** sends a tool invocation request with an API key
+2. **MCP Gateway** validates the API key against Keycloak
+3. **Gateway** checks subscription status with Control Plane API
+4. **Control Plane** verifies the subscription is active
+5. **Gateway** forwards the request to the appropriate MCP Server
+6. **MCP Server** executes the tool and returns the response
+7. **Gateway** returns the response to the AI Agent
+
 ## Deployment
 
-STOA Platform is designed to run on Kubernetes. See the [Helm chart documentation](https://github.com/stoa-platform/stoa-helm) for deployment instructions.
+STOA Platform runs on **Kubernetes** and can be deployed using:
+
+- **Helm Charts**: [stoa-platform/stoa-helm](https://github.com/stoa-platform/stoa-helm)
+- **GitOps**: ArgoCD compatible
+- **IaC**: Terraform modules available
 
 ### Kubernetes Namespace
 
@@ -106,27 +198,32 @@ All components run in the `stoa-system` namespace:
 kubectl get pods -n stoa-system
 ```
 
-### Ingress
+### Ingress Endpoints
 
-| Service | URL | Purpose |
-|---------|-----|---------|
-| Portal | `portal.stoa.example.com` | Developer portal |
-| Console | `console.stoa.example.com` | Admin console |
-| API | `api.stoa.example.com` | Control Plane API |
-| Gateway | `gateway.stoa.example.com` | MCP Gateway |
-| Auth | `auth.stoa.example.com` | Keycloak |
-| Grafana | `grafana.stoa.example.com` | Dashboards |
+| Service | URL Pattern |
+|---------|-------------|
+| Portal | `portal.<domain>` |
+| Console | `console.<domain>` |
+| API | `api.<domain>` |
+| Gateway | `gateway.<domain>` |
+| Auth | `auth.<domain>` |
 
-## Diagrams
+## Technology Stack Summary
 
-Architecture diagrams are available in multiple formats:
+| Layer | Technology |
+|-------|------------|
+| Gateway | Rust, Tokio, Hyper |
+| API | Python, FastAPI |
+| Frontend | React, TypeScript, Tailwind |
+| Database | PostgreSQL |
+| Cache | Redis |
+| Auth | Keycloak |
+| Secrets | HashiCorp Vault |
+| Observability | Prometheus, Grafana, Loki |
+| Infrastructure | Kubernetes, Helm, Terraform |
 
-- **Mermaid**: `architecture-high-level.mermaid` - For embedding in Markdown
-- **SVG**: `architecture-diagram.svg` - For web and presentations
-- **Kubernetes**: `architecture-kubernetes.mermaid` - Deployment view
+## Next Steps
 
-## Related Documentation
-
-- [Getting Started](/getting-started)
-- [Deployment Guide](/deployment/helm)
-- [API Reference](/api)
+- [Quick Start Guide](/docs/guides/quick-start) - Get STOA running locally
+- [API Reference](/docs/api/control-plane) - Explore the Control Plane API
+- [Deployment Guide](/docs/deployment/helm) - Deploy to Kubernetes
