@@ -226,4 +226,3 @@ kubectl get pods -n stoa-system
 
 - [Quick Start Guide](/docs/guides/quick-start) - Get STOA running locally
 - [API Reference](/docs/api/control-plane) - Explore the Control Plane API
-- [Deployment Guide](/docs/deployment/helm) - Deploy to Kubernetes
