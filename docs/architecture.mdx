@@ -38,16 +38,16 @@ STOA Platform suit une architecture **cloud-native** déployée sur Kubernetes a
 - **PostgreSQL** — Contrats, tenants, subscriptions
 - **OpenSearch** — Logs API, analytics
 - **Redis** — Cache, sessions, rate limiting
-- **Kafka/Redpanda** — Events, audit (🔒 Internal Only - voir [ADR-017](/docs/adr/adr-017-kafka-internal))
+- **Kafka/Redpanda** — Events, audit (🔒 Internal Only)
 - **Vault** — Secrets, certificats
 
 ## Architecture Decision Records (ADRs)
 
 Les décisions architecturales importantes sont documentées via des ADRs :
 
-- [ADR-017: Kafka Internal-Only](/docs/adr/adr-017-kafka-internal) — Zero External Exposure
-- [ADR-016: Multi-tenant RBAC](/docs/adr/adr-016-rbac) — Isolation par JWT Context
-- [ADR-015: GitOps with Argo CD](/docs/adr/adr-015-gitops) — Continuous Deployment
+- **ADR-017: Kafka Internal-Only** — Zero External Exposure
+- **ADR-016: Multi-tenant RBAC** — Isolation par JWT Context
+- **ADR-015: GitOps with Argo CD** — Continuous Deployment
 
 ## Pipeline CI/CD
 
@@ -89,4 +89,3 @@ Chaque tenant ne voit que ses propres outils :
 
 - [Quick Start Guide](/docs/guides/quick-start)
 - [API Reference](/docs/api/control-plane)
-- [Security Best Practices](/docs/guides/security)
