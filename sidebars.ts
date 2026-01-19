@@ -8,6 +8,7 @@ const sidebars: SidebarsConfig = {
       label: 'Concepts',
       items: [
         'concepts/architecture',
+        'concepts/mcp-gateway',
         'concepts/gitops',
         'concepts/multi-tenant',
         'concepts/mcp-gateway-positioning',
@@ -35,6 +36,7 @@ const sidebars: SidebarsConfig = {
       label: 'Reference',
       items: [
         'reference/configuration',
+        'reference/mcp-tools',
         'reference/cli',
       ],
     },
