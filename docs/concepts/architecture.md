@@ -10,6 +10,8 @@ STOA Platform is designed as a cloud-native, multi-tenant gateway platform built
 
 ## High-Level Architecture
 
+STOA follows a **Control Plane / Data Plane** separation pattern, similar to Kubernetes and Istio.
+
 ```mermaid
 flowchart TB
     subgraph Users["👥 Users"]
@@ -18,35 +20,49 @@ flowchart TB
         AI["🤖 AI Agents"]
     end
 
-    subgraph STOA["🏛️ STOA Platform"]
+    subgraph ControlPlane["⚙️ Control Plane"]
         Portal["📱 Developer Portal"]
         Console["🖥️ Admin Console"]
-        API["⚙️ Control Plane API"]
-        Gateway["🚀 MCP Gateway"]
+        CoreAPI["🔧 Core API"]
     end
 
-    subgraph Security["🔐 Security"]
+    subgraph DataPlane["🚀 Data Plane"]
+        MCPGateway["MCP Gateway"]
+        WMGateway["webMethods Gateway"]
+    end
+
+    subgraph Backend["💾 Backend Services"]
         KC["Keycloak"]
-        Vault["HashiCorp Vault"]
-    end
-
-    subgraph Data["💾 Data"]
         PG["PostgreSQL"]
         Redis["Redis"]
+        Vault["HashiCorp Vault"]
     end
 
     subgraph MCP["🔧 MCP Servers"]
         Tools["Enterprise Tools"]
     end
 
-    Users --> Portal & Console
-    Portal & Console --> API
-    API --> Gateway
-    Gateway --> Tools
-    API --> PG & Redis
-    API & Gateway --> KC
-    API --> Vault
+    Dev & Admin --> Portal & Console
+    AI --> MCPGateway
+    Portal & Console --> CoreAPI
+    CoreAPI -->|"config sync"| MCPGateway & WMGateway
+    MCPGateway --> Tools
+    CoreAPI --> PG & Redis & KC & Vault
+    MCPGateway & WMGateway --> KC
 ```
+
+### Control Plane vs Data Plane
+
+| Aspect | Control Plane | Data Plane |
+|--------|---------------|------------|
+| **Role** | Configuration & Management | Traffic Execution |
+| **Components** | Core API, Portal, Console | MCP Gateway, webMethods |
+| **Latency** | Human-scale (ms OK) | Machine-scale (sub-ms) |
+| **Scaling** | Moderate | High (per-request) |
+
+:::tip Architecture Decision
+This separation is documented in [ADR-001: API Exposure Strategy](/docs/architecture/adr/adr-001-api-exposure-strategy).
+:::
 
 ## Core Components
 
