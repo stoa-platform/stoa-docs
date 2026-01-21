@@ -10,7 +10,7 @@ description: Frequently Asked Questions about STOA Platform
 
 ### What is STOA?
 
-STOA is an enterprise API Management platform that unifies REST APIs and MCP Tools under a single governance layer. Think of it as **"The Cilium of API Management"** — eBPF-native, CLI-first, and AI-ready.
+STOA is an enterprise API Management platform that unifies REST APIs and MCP Tools under a single governance layer. Think of it as **"The Cilium of API Management"** — designed for cloud-native environments, CLI-first, and AI-ready.
 
 ### Why the name "STOA"?
 
@@ -69,25 +69,32 @@ Some AI providers charge extra for function/tool calling. That's between you and
 
 ### What's the difference between Control Plane and Data Plane?
 
-| Component | Language | Purpose |
-|-----------|----------|---------|
-| **Control Plane** | Go | Configuration, API, UI |
-| **Data Plane** | Rust + eBPF | Request processing, high performance |
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Control Plane** | Python + FastAPI | Configuration, API, Management |
+| **MCP Gateway** | Python + FastAPI | MCP protocol handling, tool routing |
+| **API Gateway** | webMethods (current) | Request processing, rate limiting |
 
-The Control Plane handles administrative tasks. The Data Plane handles actual traffic with minimal latency.
+The Control Plane handles administrative tasks. The Data Plane (gateways) handles actual traffic.
 
-### Why eBPF?
+:::info Roadmap Note
+Future versions (Q4 2026+) will introduce a high-performance **Rust + eBPF** data plane for kernel-level performance optimization. See our [Roadmap](/docs/roadmap) for details.
+:::
 
-eBPF allows us to implement rate limiting, observability, and security at the **kernel level**, resulting in:
-- 10x better performance than user-space solutions
-- Sub-millisecond latency overhead
-- Memory footprint < 80MB (vs Kong ~500MB)
+### What about eBPF?
+
+eBPF acceleration is **planned for Q4 2026**. When implemented, it will provide:
+- Kernel-level rate limiting and observability
+- Significantly improved performance over user-space solutions
+- Reduced memory footprint
+
+**Current implementation** uses user-space processing via webMethods Gateway and Python-based MCP Gateway, which provides excellent performance for most use cases.
 
 ### Can I run STOA without Kubernetes?
 
 Yes. While STOA is Kubernetes-native, you can run it:
 - **Docker Compose**: For development/testing
-- **Standalone binaries**: For edge deployments
+- **Standalone containers**: For edge deployments
 - **Kubernetes**: Recommended for production
 
 ---
@@ -153,7 +160,7 @@ See our [Quick Start Guide](/docs/guides/quick-start) for a 5-minute setup.
 
 - **Documentation**: You're here! 📚
 - **GitHub Issues**: [stoa-platform/stoa](https://github.com/stoa-platform/stoa)
-- **Discord**: Coming soon
+- **Discord**: [Join the community](https://discord.gg/j8tHSSes)
 - **Enterprise Support**: contact@gostoa.dev
 
 ### How do I report a security vulnerability?

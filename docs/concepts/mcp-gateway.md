@@ -15,7 +15,7 @@ The MCP Gateway acts as the bridge between AI agents and your API ecosystem. It 
 ```
 ┌─────────────┐      MCP Protocol       ┌──────────────┐      REST/gRPC      ┌─────────────┐
 │  AI Agent   │ ◄─────────────────────► │ MCP Gateway  │ ◄─────────────────► │  Your APIs  │
-│  (Claude)   │    tools/call, etc.     │    (Rust)    │                     │             │
+│  (Claude)   │    tools/call, etc.     │  (FastAPI)   │                     │             │
 └─────────────┘                         └──────────────┘                     └─────────────┘
                                                │
                                                ▼
@@ -24,6 +24,26 @@ The MCP Gateway acts as the bridge between AI agents and your API ecosystem. It 
                                         │  (FastAPI)   │
                                         └──────────────┘
 ```
+
+## Current Implementation
+
+The MCP Gateway is built with **Python** and **FastAPI** for rapid development and flexibility.
+
+| Aspect | Details |
+|--------|---------|
+| Language | Python 3.12+ |
+| Framework | FastAPI (async) |
+| Policy Engine | OPA (Open Policy Agent) |
+| Protocol | MCP 2024-11-05 |
+
+:::info Future Roadmap
+A high-performance **Rust + Tokio + Hyper** implementation is planned for **Q4 2026**, bringing:
+- Kernel-level eBPF acceleration
+- Sub-millisecond latency overhead
+- Significantly reduced memory footprint
+
+See our [Roadmap](/docs/roadmap) for details.
+:::
 
 ## Key Features
 
@@ -42,248 +62,154 @@ The MCP Gateway acts as the bridge between AI agents and your API ecosystem. It 
 - Request tracing with correlation IDs
 - Usage analytics per subscription
 
-### ⚡ High Performance
-- Written in **Rust + Tokio** for maximum throughput
-- Redis-based rate limiting with sub-millisecond latency
+### ⚡ Production Ready
+- Async request handling with FastAPI
+- Redis-based rate limiting
 - Connection pooling and request batching
+- OPA-based policy enforcement
 
 ## MCP Protocol Support
 
 STOA implements the full [MCP specification](https://modelcontextprotocol.io/) (version `2024-11-05`) with enterprise extensions.
 
-### Supported Transports
+### Supported Methods
 
-| Transport | Endpoint | Use Case |
-|-----------|----------|----------|
-| HTTP | `POST /mcp/*` | Stateless tool invocations |
-| WebSocket | `GET /ws` | Bidirectional, long-running sessions |
+| Method | Description |
+|--------|-------------|
+| `tools/list` | Discover available tools |
+| `tools/call` | Invoke a tool |
+| `resources/list` | List available resources |
+| `resources/read` | Read resource content |
+| `prompts/list` | List available prompts |
+| `prompts/get` | Get prompt template |
 
-### Core Methods
+### Transport Options
 
-#### Tools
+- **HTTP/SSE**: Server-Sent Events for streaming responses
+- **WebSocket**: Bidirectional communication (planned)
 
-```bash
-# List available tools for your subscription
-POST /mcp/tools/list
-Content-Type: application/json
-
-{
-  "cursor": null
-}
-```
-
-```bash
-# Invoke a tool
-POST /mcp/tools/call
-Content-Type: application/json
-
-{
-  "name": "stoa_catalog",
-  "arguments": {
-    "action": "list",
-    "status": "active"
-  }
-}
-```
-
-#### Resources
-
-```bash
-# List available resources
-POST /mcp/resources/list
-
-# Read a specific resource
-POST /mcp/resources/read
-{
-  "uri": "stoa://apis/billing-api/openapi.json"
-}
-
-# Subscribe to changes (WebSocket only)
-POST /mcp/resources/subscribe
-{
-  "uri": "stoa://metrics/billing-api"
-}
-```
-
-#### Prompts
-
-```bash
-# List available prompts
-POST /mcp/prompts/list
-
-# Get a prompt with arguments
-POST /mcp/prompts/get
-{
-  "name": "api-integration-guide",
-  "arguments": {
-    "api_id": "billing-api",
-    "language": "python"
-  }
-}
-```
-
-## STOA Extensions
-
-Beyond the standard MCP protocol, STOA provides enterprise-grade extensions.
-
-### Batch Operations
-
-Execute multiple tool calls in a single request to reduce latency:
-
-```bash
-POST /mcp/tools/batch
-Content-Type: application/json
-
-{
-  "calls": [
-    {"name": "stoa_catalog", "arguments": {"action": "get", "api_id": "billing-api"}},
-    {"name": "stoa_metrics", "arguments": {"action": "usage", "api_id": "billing-api"}},
-    {"name": "stoa_subscription", "arguments": {"action": "credentials", "subscription_id": "sub-123"}}
-  ]
-}
-```
-
-### Response Caching
-
-Use the `X-MCP-Cache` header to enable response caching:
-
-```bash
-POST /mcp/tools/call
-X-MCP-Cache: max-age=300
-
-{
-  "name": "stoa_catalog",
-  "arguments": {"action": "list"}
-}
-```
-
-### LLM Sampling Proxy
-
-Route LLM completion requests through STOA for cost tracking and audit:
-
-```bash
-POST /mcp/sampling/createMessage
-
-{
-  "messages": [
-    {"role": "user", "content": "Summarize the billing API documentation"}
-  ],
-  "maxTokens": 1000,
-  "systemPrompt": "You are a helpful API documentation assistant."
-}
-```
-
-## Request Flow
-
-Understanding how requests flow through the gateway:
+## Authentication Flow
 
 ```mermaid
 sequenceDiagram
-    participant Agent as AI Agent
-    participant GW as MCP Gateway
-    participant Redis
+    participant Claude as Claude.ai
+    participant MCP as MCP Gateway
     participant KC as Keycloak
     participant CP as Control Plane
-    participant API as Backend API
 
-    Agent->>GW: POST /mcp/tools/call
-    GW->>Redis: Check rate limit
-    Redis-->>GW: OK
-    GW->>KC: Validate JWT/API Key
-    KC-->>GW: Token valid (tenant: acme)
-    GW->>CP: GET /v1/subscriptions/validate
-    CP-->>GW: Subscription active
-    GW->>API: Forward request
-    API-->>GW: Response
-    GW->>Redis: Increment usage counter
-    GW-->>Agent: Tool response + metadata
+    Claude->>MCP: tools/call + JWT
+    MCP->>KC: Validate Token
+    KC-->>MCP: Token Valid + Claims
+    MCP->>CP: Check Subscription
+    CP-->>MCP: Authorized
+    MCP->>MCP: Execute Tool
+    MCP-->>Claude: Response
 ```
 
-## Authentication
+## Multi-Tenant Tool Visibility
 
-### JWT Tokens (Recommended)
+Each tenant only sees tools they're authorized to access:
 
-Obtain a token from your tenant's Keycloak realm:
-
-```bash
-# Get token
-TOKEN=$(curl -X POST "https://auth.gostoa.dev/realms/{tenant}/protocol/openid-connect/token" \
-  -d "client_id=mcp-client" \
-  -d "client_secret=${CLIENT_SECRET}" \
-  -d "grant_type=client_credentials" | jq -r .access_token)
-
-# Use with MCP Gateway
-curl -X POST "https://mcp.gostoa.dev/v1/{tenant}/tools/list" \
-  -H "Authorization: Bearer ${TOKEN}" \
-  -H "Content-Type: application/json"
-```
-
-### API Keys
-
-For simpler integrations, use API keys:
-
-```bash
-curl -X POST "https://mcp.gostoa.dev/v1/{tenant}/tools/call" \
-  -H "X-API-Key: stoa_key_xxxxx" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "stoa_catalog", "arguments": {"action": "list"}}'
-```
-
-## Connecting Claude.ai
-
-To connect Claude.ai to your STOA instance:
-
-1. **Get your MCP endpoint URL:**
-   ```
-   https://mcp.gostoa.dev/v1/{your-tenant}/sse
-   ```
-
-2. **Configure in Claude.ai Settings:**
-   - Go to Settings → Integrations → MCP Servers
-   - Add new server with your endpoint URL
-   - Enter your API key or OAuth credentials
-
-3. **Verify connection:**
-   Ask Claude: *"What STOA tools are available?"*
-
-## Health Endpoints
-
-| Endpoint | Port | Purpose |
-|----------|------|---------|
-| `/health` | 8080 | Liveness probe |
-| `/ready` | 8080 | Readiness probe |
-| `/metrics` | 9090 | Prometheus metrics |
+| Tenant | Visible Tools |
+|--------|---------------|
+| **Parzival** (High Five) | `stoa_*`, `highfive:*` |
+| **Sorrento** (IOI) | `stoa_*`, `ioi:*` |
+| **Halliday** (Admin) | All tools (cross-tenant) |
 
 ## Configuration
 
-The MCP Gateway is configured via Helm values:
+### Environment Variables
+
+```bash
+# Server
+MCP_GATEWAY_HOST=0.0.0.0
+MCP_GATEWAY_PORT=3001
+
+# Control Plane
+CONTROL_PLANE_URL=http://control-plane:8080
+
+# Keycloak
+KEYCLOAK_URL=https://auth.gostoa.dev
+KEYCLOAK_REALM=stoa
+
+# Redis (for rate limiting)
+REDIS_URL=redis://redis:6379
+
+# OPA (for policies)
+OPA_URL=http://opa:8181
+```
+
+### Kubernetes Deployment
 
 ```yaml
-# values.yaml
-mcpGateway:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-gateway
+  namespace: stoa-system
+spec:
   replicas: 3
-  image: ghcr.io/stoa-platform/mcp-gateway:latest
-
-  config:
-    logLevel: info
-    mcpProtocolVersion: "2024-11-05"
-
-  rateLimiting:
-    requestsPerSecond: 100
-    requestsPerMinute: 1000
-
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "250m"
-    limits:
-      memory: "512Mi"
-      cpu: "500m"
+  template:
+    spec:
+      containers:
+        - name: mcp-gateway
+          image: stoaplatform/mcp-gateway:latest
+          ports:
+            - containerPort: 3001
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
 ```
+
+## Integration with Claude.ai
+
+STOA MCP Gateway integrates directly with Claude.ai through the MCP connector:
+
+1. **Configure MCP Server** in Claude.ai settings
+2. **Authenticate** with your STOA API key
+3. **Discover tools** automatically via `tools/list`
+4. **Invoke tools** through natural conversation
+
+### Example Tool Invocation
+
+```json
+{
+  "method": "tools/call",
+  "params": {
+    "name": "stoa_catalog",
+    "arguments": {
+      "action": "list",
+      "status": "active"
+    }
+  }
+}
+```
+
+## Metrics & Monitoring
+
+### Prometheus Metrics
+
+| Metric | Type | Description |
+|--------|------|-------------|
+| `mcp_requests_total` | Counter | Total MCP requests |
+| `mcp_request_duration_seconds` | Histogram | Request latency |
+| `mcp_tool_invocations_total` | Counter | Tool invocations by name |
+| `mcp_errors_total` | Counter | Errors by type |
+
+### Grafana Dashboard
+
+Pre-built dashboards available for:
+- Request throughput and latency
+- Tool invocation patterns
+- Error rates by tenant
+- Rate limiting events
 
 ## Next Steps
 
-- [Quick Start Guide](/docs/guides/quick-start) — Get up and running in 5 minutes
-- [MCP Tools Reference](/docs/reference/mcp-tools) — Complete tool documentation
-- [Multi-Tenancy Guide](/docs/concepts/multi-tenant) — Configure tenant isolation
-- [Authentication Setup](/docs/guides/authentication) — Secure your deployment
+- [Quick Start Guide](/docs/guides/quick-start) - Get started with STOA
+- [API Reference](/docs/api/mcp-gateway) - MCP Gateway endpoints
+- [Authentication Guide](/docs/guides/authentication) - Configure auth

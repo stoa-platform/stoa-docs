@@ -71,21 +71,39 @@ The central management API built with **Python** and **FastAPI**.
 
 ### MCP Gateway
 
-High-performance proxy for MCP tool invocations built with **Rust**.
+The MCP Gateway handles Model Context Protocol interactions, enabling AI agents to securely consume enterprise tools.
 
-| Aspect | Details |
-|--------|---------|
-| Language | Rust |
-| Runtime | Tokio (async) |
-| HTTP | Hyper |
+| Aspect | Current Implementation |
+|--------|------------------------|
+| Language | Python 3.12+ |
+| Framework | FastAPI (async) |
+| Policy Engine | OPA (Open Policy Agent) |
 | Protocol | MCP (Model Context Protocol) |
 
 **Responsibilities:**
+- MCP protocol handling
 - Request routing
 - Authentication validation
 - Rate limiting
 - Metrics collection
-- MCP protocol handling
+
+:::info Future Roadmap
+A high-performance **Rust + Tokio** implementation is planned for Q4 2026, bringing kernel-level eBPF acceleration. See our [Roadmap](/docs/roadmap) for details.
+:::
+
+### API Gateway
+
+Traditional API traffic is handled by **webMethods Gateway** (current implementation).
+
+| Aspect | Details |
+|--------|---------|
+| Product | Software AG webMethods |
+| Features | Rate limiting, transformations, policies |
+| Protocol | REST, SOAP, GraphQL |
+
+:::info Future Roadmap
+Migration to a native Rust/eBPF gateway is planned for Phase 16+, providing improved performance and reduced operational overhead.
+:::
 
 ### Portal UI
 
@@ -147,6 +165,17 @@ In-memory data store for:
 - Response caching
 - Real-time metrics
 
+### Kafka/Redpanda
+
+Event streaming for:
+- Audit events
+- Usage metrics
+- Cross-service communication
+
+:::warning Internal Only
+Kafka is strictly internal with zero external exposure (ADR-017). All external integrations use REST APIs.
+:::
+
 ## Observability Stack
 
 | Component | Purpose |
@@ -186,7 +215,7 @@ sequenceDiagram
 
 STOA Platform runs on **Kubernetes** and can be deployed using:
 
-- **Helm Charts**: [stoa-platform/stoa-helm](https://github.com/stoa-platform/stoa-helm)
+- **Helm Charts**: Available in `stoa-infra/charts/`
 - **GitOps**: ArgoCD compatible
 - **IaC**: Terraform modules available
 
@@ -210,19 +239,22 @@ kubectl get pods -n stoa-system
 
 ## Technology Stack Summary
 
-| Layer | Technology |
-|-------|------------|
-| Gateway | Rust, Tokio, Hyper |
-| API | Python, FastAPI |
-| Frontend | React, TypeScript, Tailwind |
-| Database | PostgreSQL |
-| Cache | Redis |
-| Auth | Keycloak |
-| Secrets | HashiCorp Vault |
-| Observability | Prometheus, Grafana, Loki |
-| Infrastructure | Kubernetes, Helm, Terraform |
+| Layer | Technology | Notes |
+|-------|------------|-------|
+| Control Plane | Python, FastAPI | Management API |
+| MCP Gateway | Python, FastAPI, OPA | MCP protocol handling |
+| API Gateway | webMethods | Traditional API traffic |
+| Frontend | React, TypeScript, Tailwind | Portal & Console |
+| Database | PostgreSQL | Primary data store |
+| Cache | Redis | Sessions, rate limiting |
+| Streaming | Kafka/Redpanda | Internal events |
+| Auth | Keycloak | OIDC/OAuth2 |
+| Secrets | HashiCorp Vault | Encryption, credentials |
+| Observability | Prometheus, Grafana, Loki | Metrics, logs |
+| Infrastructure | Kubernetes, Helm, ArgoCD | Deployment |
 
 ## Next Steps
 
 - [Quick Start Guide](/docs/guides/quick-start) - Get STOA running locally
 - [API Reference](/docs/api/control-plane) - Explore the Control Plane API
+- [MCP Gateway](/docs/concepts/mcp-gateway) - Deep dive into MCP integration
