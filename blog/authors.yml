@@ -1,5 +1,4 @@
 # STOA Blog Authors
-# Add team members as they contribute
 
 stoa-team:
   name: STOA Team
@@ -8,7 +7,6 @@ stoa-team:
   image_url: https://gostoa.dev/img/logo.svg
   socials:
     github: stoa-platform
-    x: stikiconstructr
 
 christophe:
   name: Christophe Aboulicam
