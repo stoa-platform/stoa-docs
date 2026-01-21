@@ -114,4 +114,4 @@ Implémenter un Decision Tree automatisé pour recommander le mode de sécurité
 
 - [CAB-410: Decision Tree Implementation](https://linear.app/hlfh-workspace/issue/CAB-410)
 - [CAB-361: OAuth2/OIDC Enterprise](https://linear.app/hlfh-workspace/issue/CAB-361)
-- [ADR-015: Sender-Constrained Tokens](./adr-015-sender-constrained-tokens.md)
+- ADR-015: Sender-Constrained Tokens (planned)

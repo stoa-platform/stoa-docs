@@ -54,7 +54,7 @@ Ce répertoire contient les décisions architecturales importantes de STOA Platf
 
 ## ADR Template
 
-Utiliser [adr-template.md](./adr-template.md) pour créer de nouveaux ADRs.
+Utiliser le template ci-dessous pour créer de nouveaux ADRs.
 
 ```markdown
 # ADR-XXX: [Title]
