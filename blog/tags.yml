@@ -1,19 +1,41 @@
-facebook:
-  label: Facebook
-  permalink: /facebook
-  description: Facebook tag description
+# STOA Blog Tags
 
-hello:
-  label: Hello
-  permalink: /hello
-  description: Hello tag description
+release:
+  label: Release
+  permalink: /release
+  description: New version releases and updates
 
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
+announcement:
+  label: Announcement
+  permalink: /announcement
+  description: Important announcements about STOA Platform
 
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
+feature:
+  label: Feature
+  permalink: /feature
+  description: New features and capabilities
+
+security:
+  label: Security
+  permalink: /security
+  description: Security updates and advisories
+
+breaking-change:
+  label: Breaking Change
+  permalink: /breaking-change
+  description: Changes that may require migration
+
+mcp:
+  label: MCP
+  permalink: /mcp
+  description: Model Context Protocol related updates
+
+community:
+  label: Community
+  permalink: /community
+  description: Community news and contributions
+
+roadmap:
+  label: Roadmap
+  permalink: /roadmap
+  description: Future plans and direction

@@ -101,7 +101,7 @@ const config: Config = {
           position: 'left',
           label: 'Docs',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
+        {to: '/blog', label: 'Changelog', position: 'left'},
         {
           href: 'https://github.com/stoa-platform',
           label: 'GitHub',
