@@ -9,6 +9,12 @@ const config: Config = {
   tagline: 'The Cilium of API Management',
   favicon: 'img/favicon.ico',
 
+  // Enable Mermaid diagrams
+  markdown: {
+    mermaid: true,
+  },
+  themes: ['@docusaurus/theme-mermaid'],
+
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
     v4: true, // Improve compatibility with the upcoming Docusaurus v4
