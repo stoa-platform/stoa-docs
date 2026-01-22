@@ -98,7 +98,7 @@ const config: Config = {
         },
         // Google Analytics
         gtag: {
-          trackingID: 'G-8PL054C7RH',
+          trackingID: 'G-V2RKQ9ES0S',
           anonymizeIP: true,
         },
         sitemap: {
