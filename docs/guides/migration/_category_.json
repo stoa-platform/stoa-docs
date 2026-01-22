@@ -1,0 +1,8 @@
+{
+  "label": "Migration Guides",
+  "position": 4,
+  "link": {
+    "type": "doc",
+    "id": "guides/migration/index"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "mcpServers": {
+    "stoa-platform": {
+      "url": "https://mcp.stoa.cab-i.com/mcp/sse",
+      "transport": "sse",
+      "description": "STOA Platform - API Catalog, Subscriptions, Metrics, MCP Tools"
+    },
+    "linear": {
+      "url": "https://mcp.linear.app/mcp",
+      "transport": "sse",
+      "description": "Linear - Issue tracking"
+    },
+    "notion": {
+      "url": "https://mcp.notion.com/mcp",
+      "transport": "sse",
+      "description": "Notion - Documentation"
+    },
+    "vercel": {
+      "url": "https://mcp.vercel.com",
+      "transport": "sse",
+      "description": "Vercel - Deployments"
+    },
+    "n8n": {
+      "url": "https://hlfh.app.n8n.cloud/mcp-server/http",
+      "transport": "http",
+      "description": "n8n - Workflow automation"
+    },
+    "cloudflare": {
+      "url": "https://bindings.mcp.cloudflare.com/mcp",
+      "transport": "sse",
+      "description": "Cloudflare - D1, R2, Workers"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "label": "Deployment",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Deployment options for STOA Platform - Hybrid, On-Premise, and Cloud"
+  }
+}
