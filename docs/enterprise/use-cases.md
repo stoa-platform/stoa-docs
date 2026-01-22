@@ -14,18 +14,23 @@ STOA Platform addresses critical API management challenges across regulated indu
 
 ### The Challenge
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    TODAY'S REALITY                              │
-│                                                                 │
-│  ┌──────────┐     ┌──────────┐     ┌──────────┐               │
-│  │ Legacy   │     │ Multiple │     │ Siloed   │               │
-│  │ Gateway  │────▶│ Identity │────▶│ Logging  │               │
-│  │(DataPower)│    │ Systems  │     │ Systems  │               │
-│  └──────────┘     └──────────┘     └──────────┘               │
-│       │                │                │                      │
-│  No visibility    Token chaos     DORA compliance?            │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph Today["🔴 TODAY'S REALITY"]
+        LG["Legacy Gateway<br/>(DataPower)"]
+        MIS["Multiple Identity<br/>Systems"]
+        SL["Siloed<br/>Logging"]
+        LG --> MIS --> SL
+    end
+
+    LG -.- NV["❌ No visibility"]
+    MIS -.- TC["❌ Token chaos"]
+    SL -.- DC["❌ DORA compliance?"]
+
+    style Today fill:#fee2e2,stroke:#ef4444
+    style NV fill:#fef2f2,stroke:#ef4444,stroke-dasharray: 5 5
+    style TC fill:#fef2f2,stroke:#ef4444,stroke-dasharray: 5 5
+    style DC fill:#fef2f2,stroke:#ef4444,stroke-dasharray: 5 5
 ```
 
 **Pain points:**
@@ -36,26 +41,31 @@ STOA Platform addresses critical API management challenges across regulated indu
 
 ### STOA Solution
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    WITH STOA                                    │
-│                                                                 │
-│  ┌──────────────────────────────────────────┐                  │
-│  │         STOA Control Plane               │                  │
-│  │  ┌────────┐ ┌────────┐ ┌────────┐       │                  │
-│  │  │Catalog │ │ Audit  │ │Metrics │       │                  │
-│  │  └────────┘ └────────┘ └────────┘       │                  │
-│  └──────────────────────────────────────────┘                  │
-│            │              │              │                      │
-│            ▼              ▼              ▼                      │
-│  ┌──────────┐     ┌──────────┐     ┌──────────┐               │
-│  │ Existing │     │ Keycloak │     │ Grafana  │               │
-│  │ Gateway  │     │ + OAM    │     │ + Loki   │               │
-│  └──────────┘     └──────────┘     └──────────┘               │
-│       │                │                │                      │
-│  Orchestrated      Federated      Unified                      │
-│  not replaced      identity       observability                │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph STOA["🟢 WITH STOA"]
+        subgraph CP["STOA Control Plane"]
+            CAT["📋 Catalog"]
+            AUD["📊 Audit"]
+            MET["📈 Metrics"]
+        end
+
+        EG["Existing<br/>Gateway"]
+        KC["Keycloak<br/>+ OAM"]
+        GF["Grafana<br/>+ Loki"]
+
+        CP --> EG & KC & GF
+    end
+
+    EG -.- OR["✅ Orchestrated<br/>not replaced"]
+    KC -.- FI["✅ Federated<br/>identity"]
+    GF -.- UO["✅ Unified<br/>observability"]
+
+    style STOA fill:#d1fae5,stroke:#10b981
+    style CP fill:#a7f3d0,stroke:#10b981
+    style OR fill:#f0fdf4,stroke:#10b981,stroke-dasharray: 5 5
+    style FI fill:#f0fdf4,stroke:#10b981,stroke-dasharray: 5 5
+    style UO fill:#f0fdf4,stroke:#10b981,stroke-dasharray: 5 5
 ```
 
 **Key benefits:**
@@ -84,20 +94,19 @@ STOA Platform addresses critical API management challenges across regulated indu
 
 Insurance APIs must handle diverse protocols (SOAP legacy, REST modern, emerging GraphQL) while maintaining strict audit trails for regulatory compliance.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    MULTI-PROTOCOL CHAOS                         │
-│                                                                 │
-│   SOAP          REST          GraphQL        MQ/JMS            │
-│     │             │              │              │               │
-│     ▼             ▼              ▼              ▼               │
-│  ┌──────┐     ┌──────┐      ┌──────┐      ┌──────┐            │
-│  │ ESB  │     │ API  │      │ ???  │      │ MOM  │            │
-│  │      │     │ GW   │      │      │      │      │            │
-│  └──────┘     └──────┘      └──────┘      └──────┘            │
-│                                                                 │
-│  4 systems, 4 teams, 4 monitoring stacks, 0 unified view       │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Chaos["🔴 MULTI-PROTOCOL CHAOS"]
+        SOAP["SOAP"] --> ESB["ESB"]
+        REST["REST"] --> APIGW["API GW"]
+        GQL["GraphQL"] --> Q["???"]
+        MQ["MQ/JMS"] --> MOM["MOM"]
+    end
+
+    Chaos -.- Problem["❌ 4 systems, 4 teams, 4 monitoring stacks, 0 unified view"]
+
+    style Chaos fill:#fee2e2,stroke:#ef4444
+    style Problem fill:#fef2f2,stroke:#ef4444,stroke-dasharray: 5 5
 ```
 
 **Pain points:**
@@ -108,26 +117,41 @@ Insurance APIs must handle diverse protocols (SOAP legacy, REST modern, emerging
 
 ### STOA Solution
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    UNIFIED API LAYER                            │
-│                                                                 │
-│                  ┌──────────────────┐                          │
-│                  │  STOA Gateway    │                          │
-│                  │  ┌────┬────┬────┐│                          │
-│                  │  │SOAP│REST│GQL ││                          │
-│                  │  └────┴────┴────┘│                          │
-│                  └────────┬─────────┘                          │
-│                           │                                     │
-│              ┌────────────┼────────────┐                       │
-│              ▼            ▼            ▼                        │
-│         ┌──────┐     ┌──────┐     ┌──────┐                     │
-│         │Policy│     │Claims│     │Partner│                    │
-│         │System│     │Engine│     │  APIs │                    │
-│         └──────┘     └──────┘     └──────┘                     │
-│                                                                 │
-│  Single pane of glass: catalog, metrics, audit                 │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Protocols["📡 PROTOCOLS"]
+        SOAP["SOAP"]
+        REST["REST"]
+        GQL["GraphQL"]
+        MQ["MQ/JMS"]
+    end
+
+    subgraph Gateway["🟢 STOA GATEWAY"]
+        PA["Protocol Adapters"]
+        TR["Translation Layer"]
+        PA --> TR
+    end
+
+    subgraph Backend["💾 BACKEND SYSTEMS"]
+        POL["Policy<br/>System"]
+        CLM["Claims<br/>Engine"]
+        PTR["Partner<br/>APIs"]
+    end
+
+    subgraph Observability["📊 UNIFIED VIEW"]
+        CAT["Catalog"]
+        METR["Metrics"]
+        AUDIT["Audit"]
+    end
+
+    SOAP & REST & GQL & MQ --> Gateway
+    Gateway --> POL & CLM & PTR
+    Gateway -.-> Observability
+
+    style Protocols fill:#fef3c7,stroke:#f59e0b
+    style Gateway fill:#d1fae5,stroke:#10b981
+    style Backend fill:#f3e8ff,stroke:#8b5cf6
+    style Observability fill:#dbeafe,stroke:#3b82f6
 ```
 
 **Key benefits:**
@@ -146,21 +170,26 @@ Insurance APIs must handle diverse protocols (SOAP legacy, REST modern, emerging
 
 Logistics APIs require real-time data exchange with hundreds of partners, each with different technical capabilities and security requirements.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    PARTNER INTEGRATION NIGHTMARE                │
-│                                                                 │
-│   Carrier A      Carrier B      Customs        Warehouse       │
-│   (REST+OAuth)   (SFTP+CSV)    (SOAP+Cert)    (EDI+AS2)       │
-│        │             │              │              │            │
-│        ▼             ▼              ▼              ▼            │
-│      ┌───────────────────────────────────────────────┐         │
-│      │           Custom Point-to-Point              │         │
-│      │         Integrations (spaghetti)             │         │
-│      └───────────────────────────────────────────────┘         │
-│                                                                 │
-│  Onboarding time: 3-6 months per partner                       │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Partners["🤝 PARTNER DIVERSITY"]
+        CA["Carrier A<br/>(REST+OAuth)"]
+        CB["Carrier B<br/>(SFTP+CSV)"]
+        CU["Customs<br/>(SOAP+Cert)"]
+        WH["Warehouse<br/>(EDI+AS2)"]
+    end
+
+    subgraph Spaghetti["🔴 CUSTOM INTEGRATIONS"]
+        P2P["Point-to-Point<br/>Spaghetti"]
+    end
+
+    CA & CB & CU & WH --> Spaghetti
+
+    Spaghetti -.- Problem["❌ Onboarding: 3-6 months per partner"]
+
+    style Partners fill:#fef3c7,stroke:#f59e0b
+    style Spaghetti fill:#fee2e2,stroke:#ef4444
+    style Problem fill:#fef2f2,stroke:#ef4444,stroke-dasharray: 5 5
 ```
 
 **Pain points:**
@@ -171,30 +200,41 @@ Logistics APIs require real-time data exchange with hundreds of partners, each w
 
 ### STOA Solution
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    PARTNER API MESH                             │
-│                                                                 │
-│              ┌────────────────────────────┐                    │
-│              │     STOA Control Plane     │                    │
-│              │  ┌──────────────────────┐  │                    │
-│              │  │  Partner Catalog     │  │                    │
-│              │  │  • Carrier APIs      │  │                    │
-│              │  │  • Customs APIs      │  │                    │
-│              │  │  • Warehouse APIs    │  │                    │
-│              │  └──────────────────────┘  │                    │
-│              └────────────┬───────────────┘                    │
-│                           │                                     │
-│   ┌───────────────────────┼───────────────────────┐            │
-│   │                       │                       │            │
-│   ▼                       ▼                       ▼            │
-│ ┌─────┐              ┌─────────┐              ┌─────┐          │
-│ │REST │              │Protocol │              │Event│          │
-│ │APIs │              │Adapter  │              │Bus  │          │
-│ └─────┘              └─────────┘              └─────┘          │
-│                                                                 │
-│  Onboarding time: days, not months                             │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Partners["🤝 PARTNERS"]
+        CA["Carrier A"]
+        CB["Carrier B"]
+        CU["Customs"]
+        WH["Warehouse"]
+    end
+
+    subgraph STOA["🟢 STOA CONTROL PLANE"]
+        subgraph PC["Partner Catalog"]
+            C1["Carrier APIs"]
+            C2["Customs APIs"]
+            C3["Warehouse APIs"]
+        end
+        PA["Protocol Adapters"]
+        EB["Event Bus"]
+        PC --> PA --> EB
+    end
+
+    subgraph Core["🏢 LOGISTICS CORE"]
+        TMS["TMS"]
+        WMS["WMS"]
+        BI["Analytics"]
+    end
+
+    CA & CB & CU & WH --> STOA
+    STOA --> TMS & WMS & BI
+
+    STOA -.- Benefit["✅ Onboarding: days, not months"]
+
+    style Partners fill:#fef3c7,stroke:#f59e0b
+    style STOA fill:#d1fae5,stroke:#10b981
+    style Core fill:#dbeafe,stroke:#3b82f6
+    style Benefit fill:#f0fdf4,stroke:#10b981,stroke-dasharray: 5 5
 ```
 
 **Key benefits:**
@@ -213,22 +253,30 @@ Logistics APIs require real-time data exchange with hundreds of partners, each w
 
 Luxury retail requires seamless omnichannel experiences with extreme scalability during product launches and fashion events.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    OMNICHANNEL COMPLEXITY                       │
-│                                                                 │
-│   E-commerce       Boutique        Mobile App     Clienteling  │
-│       │               │                │              │         │
-│       ▼               ▼                ▼              ▼         │
-│   ┌───────────────────────────────────────────────────────┐    │
-│   │         Fragmented Backend Systems                    │    │
-│   │  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐            │    │
-│   │  │ PIM │ │ OMS │ │ CRM │ │ WMS │ │Stock│            │    │
-│   │  └─────┘ └─────┘ └─────┘ └─────┘ └─────┘            │    │
-│   └───────────────────────────────────────────────────────┘    │
-│                                                                 │
-│  Product launch: 100x traffic in 30 seconds                    │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Channels["🛍️ CHANNELS"]
+        EC["E-commerce"]
+        BT["Boutique"]
+        MB["Mobile App"]
+        CL["Clienteling"]
+    end
+
+    subgraph Fragmented["🔴 FRAGMENTED BACKENDS"]
+        PIM["PIM"]
+        OMS["OMS"]
+        CRM["CRM"]
+        WMS["WMS"]
+        STK["Stock"]
+    end
+
+    EC & BT & MB & CL --> Fragmented
+
+    Fragmented -.- Problem["❌ Product launch: 100x traffic in 30 seconds"]
+
+    style Channels fill:#fce7f3,stroke:#ec4899
+    style Fragmented fill:#fee2e2,stroke:#ef4444
+    style Problem fill:#fef2f2,stroke:#ef4444,stroke-dasharray: 5 5
 ```
 
 **Pain points:**
@@ -239,32 +287,43 @@ Luxury retail requires seamless omnichannel experiences with extreme scalability
 
 ### STOA Solution
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    UNIFIED COMMERCE API                         │
-│                                                                 │
-│   E-commerce      Boutique       Mobile       Clienteling      │
-│       │              │              │              │            │
-│       └──────────────┼──────────────┼──────────────┘            │
-│                      ▼              ▼                           │
-│              ┌───────────────────────────┐                     │
-│              │      STOA Gateway         │                     │
-│              │  ┌─────────────────────┐  │                     │
-│              │  │ Traffic Management  │  │                     │
-│              │  │ • Rate limiting     │  │                     │
-│              │  │ • Priority queues   │  │                     │
-│              │  │ • Circuit breakers  │  │                     │
-│              │  └─────────────────────┘  │                     │
-│              └───────────────────────────┘                     │
-│                           │                                     │
-│              ┌────────────┼────────────┐                       │
-│              ▼            ▼            ▼                        │
-│           ┌─────┐     ┌─────┐     ┌─────┐                      │
-│           │ PIM │     │ OMS │     │ CRM │                      │
-│           └─────┘     └─────┘     └─────┘                      │
-│                                                                 │
-│  100K RPS capacity, sub-100ms latency                          │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Channels["🛍️ CHANNELS"]
+        EC["E-commerce"]
+        BT["Boutique"]
+        MB["Mobile"]
+        CL["Clienteling"]
+    end
+
+    subgraph Gateway["🟢 STOA GATEWAY"]
+        subgraph TM["Traffic Management"]
+            RL["Rate Limiting"]
+            PQ["Priority Queues"]
+            CB["Circuit Breakers"]
+        end
+    end
+
+    subgraph Backend["💾 BACKEND"]
+        PIM["PIM"]
+        OMS["OMS"]
+        CRM["CRM"]
+    end
+
+    subgraph Scale["⚡ SCALING"]
+        S1["100K RPS"]
+        S2["<100ms latency"]
+        S3["VIP Priority"]
+    end
+
+    EC & BT & MB & CL --> Gateway
+    Gateway --> PIM & OMS & CRM
+    Gateway -.-> Scale
+
+    style Channels fill:#fce7f3,stroke:#ec4899
+    style Gateway fill:#d1fae5,stroke:#10b981
+    style Backend fill:#f3e8ff,stroke:#8b5cf6
+    style Scale fill:#dbeafe,stroke:#3b82f6
 ```
 
 **Key benefits:**

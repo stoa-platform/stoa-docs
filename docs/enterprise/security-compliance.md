@@ -21,6 +21,29 @@ The Digital Operational Resilience Act requires financial entities to strengthen
 | **Operational Resilience Testing** | Built-in health checks, circuit breakers, and chaos engineering support |
 | **Third-Party Risk** | API subscription governance with approval workflows and usage monitoring |
 
+**DORA Compliance Flow:**
+
+```mermaid
+sequenceDiagram
+    participant C as 👤 Consumer
+    participant GW as ⚡ Gateway
+    participant KC as 🔐 Keycloak
+    participant CP as ⚙️ Control Plane
+    participant LOG as 📋 Audit Log
+
+    C->>GW: API Request (JWT)
+    GW->>KC: Validate Token
+    KC-->>GW: ✓ Valid + RBAC
+    GW->>LOG: Log: WHO, WHAT, WHEN
+    GW->>CP: Process Request
+    CP->>LOG: Log: Business Event
+    CP-->>GW: Response
+    GW->>LOG: Log: Result + Trace ID
+    GW-->>C: Response
+
+    Note over LOG: 📋 DORA Compliance<br/>• Complete audit trail<br/>• 24h incident reporting<br/>• Microsecond precision
+```
+
 ### NIS2 (Network and Information Security Directive)
 
 NIS2 expands cybersecurity requirements across essential sectors. STOA supports compliance through:
@@ -45,30 +68,30 @@ STOA implements privacy-by-design principles:
 
 Understanding what data flows where is critical for compliance. STOA's hybrid architecture provides clear boundaries:
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    CLOUD (EU Region)                            │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
-│  │   Portal    │  │   Control   │  │  Keycloak   │             │
-│  │ (Catalogue) │  │    Plane    │  │  (federated)│             │
-│  └─────────────┘  └─────────────┘  └─────────────┘             │
-│        │                │                │                      │
-│  Data: API metadata,    │    Data: Auth tokens,                │
-│  subscription info,     │    federation config                  │
-│  usage metrics          │                                       │
-└────────────────────────────────────────────────────────────────┘
-                          │ HTTPS/mTLS
-                          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      ON-PREMISE                                 │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
-│  │   Oracle    │  │  webMethods │  │    APIs     │             │
-│  │   OAM/OIM   │  │   Gateway   │  │   Backend   │             │
-│  └─────────────┘  └─────────────┘  └─────────────┘             │
-│        │                │                │                      │
-│  Data: User identities, │    Data: Business payloads,          │
-│  credentials            │    sensitive data                     │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Cloud["☁️ CLOUD (EU Region)"]
+        Portal["📱 Portal<br/>(Catalogue)"]
+        CP["⚙️ Control<br/>Plane"]
+        KC["🔐 Keycloak<br/>(federated)"]
+
+        CD["📄 Data: API metadata,<br/>subscriptions, metrics"]
+    end
+
+    subgraph OnPrem["🏢 ON-PREMISE"]
+        OAM["Oracle<br/>OAM/OIM"]
+        WM["webMethods<br/>Gateway"]
+        API["Backend<br/>APIs"]
+
+        OD["🔒 Data: User identities,<br/>payloads, credentials"]
+    end
+
+    Cloud <-->|"HTTPS/mTLS<br/>(outbound only)"| OnPrem
+
+    style Cloud fill:#dbeafe,stroke:#3b82f6
+    style OnPrem fill:#d1fae5,stroke:#10b981
+    style CD fill:#eff6ff,stroke:#3b82f6,stroke-dasharray: 5 5
+    style OD fill:#f0fdf4,stroke:#10b981,stroke-dasharray: 5 5
 ```
 
 ### What Stays On-Premise
@@ -89,19 +112,22 @@ Understanding what data flows where is critical for compliance. STOA's hybrid ar
 
 ### Authentication & Authorization
 
-```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   Consumer   │────▶│   Keycloak   │────▶│  Oracle OAM  │
-│              │     │  (Federated) │     │   (Master)   │
-└──────────────┘     └──────────────┘     └──────────────┘
-       │                    │
-       │              Token Exchange
-       │              (RFC 8693)
-       ▼                    │
-┌──────────────┐           │
-│  webMethods  │◀──────────┘
-│   Gateway    │
-└──────────────┘
+```mermaid
+sequenceDiagram
+    participant C as 👤 Consumer
+    participant KC as 🔐 Keycloak<br/>(Federated)
+    participant OAM as 🏢 Oracle OAM<br/>(Master)
+    participant GW as ⚡ webMethods<br/>Gateway
+
+    C->>KC: 1. Authenticate
+    KC->>OAM: 2. Federate identity
+    OAM-->>KC: 3. User validated
+    KC-->>C: 4. JWT Token
+    C->>GW: 5. API Request + JWT
+    KC->>GW: 6. Token Exchange (RFC 8693)
+    GW-->>C: 7. API Response
+
+    Note over KC,OAM: OIDC Federation<br/>No migration required
 ```
 
 - **OIDC Federation** — Keycloak federates with existing Oracle OAM, no migration required
@@ -126,6 +152,46 @@ STOA integrates with **HashiCorp Vault** for secrets management:
 | **Transport** | TLS 1.3, mTLS for internal communication |
 | **Application** | Input validation, rate limiting, circuit breakers |
 | **Data** | Encryption at rest (AES-256), field-level encryption for PII |
+
+### Trust Boundary Architecture
+
+STOA implements a Zero Trust architecture with clearly defined security zones:
+
+```mermaid
+flowchart LR
+    subgraph External["🔴 EXTERNAL<br/>(Untrusted)"]
+        CL["Clients"]
+        ATK["Attackers"]
+    end
+
+    subgraph DMZ["🟡 DMZ"]
+        ING["Nginx<br/>Ingress"]
+        GW["API<br/>Gateway"]
+        MCP["MCP<br/>Gateway"]
+    end
+
+    subgraph Internal["🟢 INTERNAL<br/>(Trusted)"]
+        CP["Control<br/>Plane"]
+        KC["Keycloak"]
+        DB["PostgreSQL"]
+        KF["Kafka<br/>🔒 Internal Only"]
+    end
+
+    CL --> ING
+    ATK -.->|"❌ BLOCKED"| KF
+    ING --> GW & MCP
+    GW & MCP --> CP
+    CP --> KC & DB & KF
+
+    style External fill:#fee2e2,stroke:#ef4444
+    style DMZ fill:#fef3c7,stroke:#f59e0b
+    style Internal fill:#d1fae5,stroke:#10b981
+```
+
+**Zone Definitions:**
+- **External (Red)** — Untrusted internet traffic, potential attackers
+- **DMZ (Amber)** — Semi-trusted zone with ingress controllers and gateways
+- **Internal (Green)** — Trusted zone with core services, databases, and message queues
 
 ## Audit & Observability
 

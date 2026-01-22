@@ -16,11 +16,36 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Enterprise',
+      items: [
+        'enterprise/use-cases',
+        'enterprise/security-compliance',
+        'enterprise/support',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Deployment',
+      items: [
+        'deployment/hybrid',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Guides',
       items: [
         'guides/quick-start',
         'guides/authentication',
         'guides/subscriptions',
+        {
+          type: 'category',
+          label: 'Migration',
+          items: [
+            'guides/migration/index',
+            'guides/migration/ibm-webmethods',
+            'guides/migration/oracle-oam',
+          ],
+        },
       ],
     },
     {

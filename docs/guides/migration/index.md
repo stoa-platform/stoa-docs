@@ -10,24 +10,28 @@ STOA Platform is designed to **augment, not replace** your existing API infrastr
 
 ## Migration Philosophy
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    TRADITIONAL MIGRATION                        │
-│                                                                 │
-│   Legacy ─────── Big Bang ─────── New Platform                  │
-│                    ↑                                            │
-│              High risk,                                         │
-│              long timeline                                      │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Traditional["🔴 TRADITIONAL MIGRATION"]
+        direction LR
+        T1["Legacy"] --> T2["Big Bang"] --> T3["New Platform"]
+        T2 -.- TR["❌ High risk<br/>❌ Long timeline"]
+    end
 
-┌─────────────────────────────────────────────────────────────────┐
-│                    STOA APPROACH                                │
-│                                                                 │
-│   Legacy ─────── Augment ─────── Coexist ─────── Migrate        │
-│                    ↑                ↑               ↑           │
-│              Add Control       Run parallel    When ready       │
-│              Plane             Zero downtime                    │
-└─────────────────────────────────────────────────────────────────┘
+    subgraph STOA["🟢 STOA APPROACH"]
+        direction LR
+        S1["Legacy"] --> S2["Augment"] --> S3["Coexist"] --> S4["Migrate"]
+        S2 -.- SR1["✅ Add Control<br/>Plane"]
+        S3 -.- SR2["✅ Run parallel<br/>Zero downtime"]
+        S4 -.- SR3["✅ When ready"]
+    end
+
+    style Traditional fill:#fee2e2,stroke:#ef4444
+    style STOA fill:#d1fae5,stroke:#10b981
+    style TR fill:#fef2f2,stroke:#ef4444,stroke-dasharray: 5 5
+    style SR1 fill:#f0fdf4,stroke:#10b981,stroke-dasharray: 5 5
+    style SR2 fill:#f0fdf4,stroke:#10b981,stroke-dasharray: 5 5
+    style SR3 fill:#f0fdf4,stroke:#10b981,stroke-dasharray: 5 5
 ```
 
 **Key principle:** Keep your existing gateway running. Add STOA as a control layer. Migrate traffic gradually.
@@ -40,10 +44,10 @@ STOA Platform is designed to **augment, not replace** your existing API infrastr
 |----------|-----------------|------------|----------|
 | [IBM webMethods / DataPower](./ibm-webmethods) | Available | Medium | 4-8 weeks |
 | [Oracle OAM / API Platform](./oracle-oam) | Available | Medium | 4-8 weeks |
-| [Kong OSS / Enterprise](./kong) | Coming Soon | Low | 2-4 weeks |
-| [Google Apigee](./apigee) | Coming Soon | Medium | 4-6 weeks |
-| [AWS API Gateway](./aws-api-gateway) | Planned | Low | 2-4 weeks |
-| [Azure API Management](./azure-apim) | Planned | Medium | 4-6 weeks |
+| Kong OSS / Enterprise | Coming Soon | Low | 2-4 weeks |
+| Google Apigee | Coming Soon | Medium | 4-6 weeks |
+| AWS API Gateway | Planned | Low | 2-4 weeks |
+| Azure API Management | Planned | Medium | 4-6 weeks |
 
 ---
 

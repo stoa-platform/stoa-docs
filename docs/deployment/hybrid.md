@@ -24,46 +24,39 @@ STOA Platform supports multiple deployment models to match your security, sovere
 
 The default deployment model balances ease of management with data sovereignty.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    STOA CLOUD (EU Region)                       │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │                 Control Plane                            │   │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐              │   │
-│  │  │ Portal   │  │ API      │  │ Keycloak │              │   │
-│  │  │(Catalog) │  │(Config)  │  │(Federated)│             │   │
-│  │  └──────────┘  └──────────┘  └──────────┘              │   │
-│  │                                                          │   │
-│  │  ┌──────────┐  ┌──────────┐                             │   │
-│  │  │ Grafana  │  │ Alerting │                             │   │
-│  │  │(Metrics) │  │          │                             │   │
-│  │  └──────────┘  └──────────┘                             │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│                                                                 │
-│  Data: API metadata, aggregated metrics, configuration         │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                        HTTPS/mTLS
-                         (outbound)
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                       ON-PREMISES                               │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │                      Gateway                             │   │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐              │   │
-│  │  │webMethods│  │  Vault   │  │  Loki    │              │   │
-│  │  │ Gateway  │  │(Secrets) │  │ (Logs)   │              │   │
-│  │  └──────────┘  └──────────┘  └──────────┘              │   │
-│  │                                                          │   │
-│  │  ┌──────────┐  ┌──────────┐                             │   │
-│  │  │  Oracle  │  │ Backend  │                             │   │
-│  │  │ OAM/OIM  │  │  APIs    │                             │   │
-│  │  └──────────┘  └──────────┘                             │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│                                                                 │
-│  Data: Payloads, credentials, user identities, raw logs        │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Cloud["☁️ STOA CLOUD (EU Region)"]
+        subgraph CPL["Control Plane"]
+            Portal["📱 Portal<br/>(Catalog)"]
+            Config["⚙️ API<br/>(Config)"]
+            KCF["🔐 Keycloak<br/>(Federated)"]
+            Grafana["📊 Grafana"]
+            Alert["🔔 Alerting"]
+        end
+        CD["📄 Data: API metadata, metrics, config"]
+    end
+
+    subgraph OnPrem["🏢 ON-PREMISES"]
+        subgraph GWL["Gateway Layer"]
+            WM["webMethods<br/>Gateway"]
+            Vault["🔐 Vault<br/>(Secrets)"]
+            Loki["📋 Loki<br/>(Logs)"]
+        end
+        subgraph IDL["Identity & Backend"]
+            OAM["Oracle<br/>OAM/OIM"]
+            APIs["Backend<br/>APIs"]
+        end
+        OD["🔒 Data: Payloads, credentials, identities, raw logs"]
+    end
+
+    Cloud <-->|"HTTPS/mTLS<br/>(outbound only)"| OnPrem
+
+    style Cloud fill:#dbeafe,stroke:#3b82f6
+    style OnPrem fill:#d1fae5,stroke:#10b981
+    style CPL fill:#bfdbfe,stroke:#3b82f6
+    style GWL fill:#a7f3d0,stroke:#10b981
+    style IDL fill:#a7f3d0,stroke:#10b981
 ```
 
 ### What Stays On-Premises
@@ -109,38 +102,35 @@ The default deployment model balances ease of management with data sovereignty.
 
 For organizations requiring complete control over all components.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    YOUR INFRASTRUCTURE                          │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │                 Control Plane                            │   │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐              │   │
-│  │  │ Portal   │  │ API      │  │ Keycloak │              │   │
-│  │  │(Catalog) │  │(Config)  │  │          │              │   │
-│  │  └──────────┘  └──────────┘  └──────────┘              │   │
-│  │                                                          │   │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐              │   │
-│  │  │ Grafana  │  │PostgreSQL│  │OpenSearch│              │   │
-│  │  │          │  │          │  │          │              │   │
-│  │  └──────────┘  └──────────┘  └──────────┘              │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│                              │                                  │
-│                              ▼                                  │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │                      Gateway                             │   │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐              │   │
-│  │  │ Gateway  │  │  Vault   │  │  Loki    │              │   │
-│  │  │          │  │          │  │          │              │   │
-│  │  └──────────┘  └──────────┘  └──────────┘              │   │
-│  │                                                          │   │
-│  │  ┌──────────┐  ┌──────────┐                             │   │
-│  │  │   IdP    │  │ Backend  │                             │   │
-│  │  │          │  │  APIs    │                             │   │
-│  │  └──────────┘  └──────────┘                             │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│                                                                 │
-│  100% data residency — nothing leaves your perimeter           │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Infra["🏢 YOUR INFRASTRUCTURE"]
+        subgraph CPL["Control Plane"]
+            Portal["📱 Portal"]
+            Config["⚙️ Config"]
+            KC["🔐 Keycloak"]
+            Grafana["📊 Grafana"]
+            PG["🗄️ PostgreSQL"]
+            OS["🔍 OpenSearch"]
+        end
+
+        subgraph GWL["Gateway Layer"]
+            GW["Gateway"]
+            Vault["🔐 Vault"]
+            Loki["📋 Loki"]
+            IdP["IdP"]
+            APIs["Backend APIs"]
+        end
+
+        CPL --> GWL
+    end
+
+    Note["🔒 100% Data Residency<br/>Nothing leaves your perimeter"]
+
+    style Infra fill:#d1fae5,stroke:#10b981
+    style CPL fill:#a7f3d0,stroke:#10b981
+    style GWL fill:#bbf7d0,stroke:#10b981
+    style Note fill:#f0fdf4,stroke:#10b981,stroke-dasharray: 5 5
 ```
 
 ### When to Choose Full On-Premises
@@ -178,26 +168,36 @@ For organizations requiring complete control over all components.
 
 For organizations requiring presence in multiple regions or clouds.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    STOA CLOUD (Global)                          │
-│                                                                 │
-│         ┌──────────────────────────────────┐                   │
-│         │        Global Control Plane       │                   │
-│         │    (Configuration, Orchestration) │                   │
-│         └──────────────────────────────────┘                   │
-│                          │                                      │
-│         ┌────────────────┼────────────────┐                    │
-│         ▼                ▼                ▼                     │
-│   ┌──────────┐    ┌──────────┐    ┌──────────┐                │
-│   │   EU     │    │   US     │    │  APAC    │                │
-│   │ Gateway  │    │ Gateway  │    │ Gateway  │                │
-│   │(Frankfurt)│   │(Virginia)│    │(Singapore)│               │
-│   └──────────┘    └──────────┘    └──────────┘                │
-│         │                │                │                     │
-│         ▼                ▼                ▼                     │
-│   EU Backends      US Backends     APAC Backends               │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Global["🌐 STOA CLOUD (Global)"]
+        GCP["Global Control Plane<br/>Configuration & Orchestration"]
+    end
+
+    subgraph EU["🇪🇺 EU (Frankfurt)"]
+        EUG["EU Gateway"]
+        EUB["EU Backends"]
+        EUG --> EUB
+    end
+
+    subgraph US["🇺🇸 US (Virginia)"]
+        USG["US Gateway"]
+        USB["US Backends"]
+        USG --> USB
+    end
+
+    subgraph APAC["🌏 APAC (Singapore)"]
+        APG["APAC Gateway"]
+        APB["APAC Backends"]
+        APG --> APB
+    end
+
+    GCP --> EU & US & APAC
+
+    style Global fill:#dbeafe,stroke:#3b82f6
+    style EU fill:#fef3c7,stroke:#f59e0b
+    style US fill:#fce7f3,stroke:#ec4899
+    style APAC fill:#d1fae5,stroke:#10b981
 ```
 
 ### Planned Capabilities
@@ -226,20 +226,26 @@ For organizations requiring presence in multiple regions or clouds.
 
 ### Network Diagram
 
-```
-                     Internet
-                         │
-                    ┌────┴────┐
-                    │   WAF   │
-                    └────┬────┘
-                         │
-          ┌──────────────┴──────────────┐
-          │                             │
-     ┌────▼────┐                  ┌────▼────┐
-     │ STOA    │                  │  Your   │
-     │ Cloud   │◀────mTLS────────▶│ Cluster │
-     │  (EU)   │    outbound      │         │
-     └─────────┘                  └─────────┘
+```mermaid
+flowchart TB
+    Internet["🌐 Internet"]
+    WAF["🛡️ WAF"]
+
+    subgraph Cloud["☁️ STOA Cloud (EU)"]
+        CP["Control Plane"]
+    end
+
+    subgraph OnPrem["🏢 Your Cluster"]
+        GW["Gateway"]
+    end
+
+    Internet --> WAF
+    WAF --> Cloud
+    WAF --> OnPrem
+    Cloud <-->|"mTLS<br/>(outbound)"| OnPrem
+
+    style Cloud fill:#dbeafe,stroke:#3b82f6
+    style OnPrem fill:#d1fae5,stroke:#10b981
 ```
 
 ---
