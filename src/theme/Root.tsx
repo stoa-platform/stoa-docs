@@ -1,5 +1,6 @@
 import React from 'react';
 import Head from '@docusaurus/Head';
+import { Analytics } from '@vercel/analytics/react';
 
 // JSON-LD Structured Data for SEO
 const structuredData = {
@@ -62,6 +63,7 @@ export default function Root({children}: {children: React.ReactNode}) {
         </script>
       </Head>
       {children}
+      <Analytics />
     </>
   );
 }
