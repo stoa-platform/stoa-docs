@@ -96,11 +96,11 @@ const config: Config = {
         theme: {
           customCss: './src/css/custom.css',
         },
-        // Google Analytics - uncomment and add your tracking ID
-        // gtag: {
-        //   trackingID: 'G-XXXXXXXXXX',
-        //   anonymizeIP: true,
-        // },
+        // Google Analytics
+        gtag: {
+          trackingID: 'G-8PL054C7RH',
+          anonymizeIP: true,
+        },
         sitemap: {
           lastmod: 'date',
           changefreq: 'weekly',
