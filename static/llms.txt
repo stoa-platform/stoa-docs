@@ -1,0 +1,46 @@
+# STOA Platform Documentation
+
+> STOA is a cloud-native API management platform built on Kubernetes with GitOps-first architecture.
+
+## What is STOA?
+
+STOA (derived from the Greek word for "porch" or "colonnade" - a gathering place for ideas) is an open-source API management platform that provides:
+
+- Multi-tenant API Gateway powered by Kong
+- GitOps-first configuration management with ArgoCD
+- Centralized authentication via Keycloak OIDC
+- MCP (Model Context Protocol) Gateway for AI agent integration
+- Developer portal and API catalog
+
+## Documentation Structure
+
+- /docs/intro - Introduction to STOA Platform
+- /docs/guides/quick-start - Quick Start Guide
+- /docs/guides/authentication - Authentication Setup with Keycloak
+- /docs/guides/subscriptions - API Subscription Management
+- /docs/concepts/architecture - Platform Architecture
+- /docs/concepts/gitops - GitOps Principles
+- /docs/concepts/multi-tenant - Multi-Tenancy Model
+- /docs/api/control-plane - Control Plane API Reference
+- /docs/api/mcp-gateway - MCP Gateway API Reference
+- /docs/reference/configuration - Configuration Reference
+- /docs/reference/cli - CLI Reference
+
+## Key Features
+
+1. **Multi-Tenant Architecture**: Isolated environments per tenant with shared infrastructure
+2. **GitOps Native**: All configuration stored in Git, reconciled by ArgoCD
+3. **Kong Gateway**: Enterprise-grade API gateway with plugins
+4. **Keycloak Integration**: OIDC/OAuth2 authentication and authorization
+5. **MCP Gateway**: Connect AI agents to enterprise APIs securely
+
+## Contact
+
+- Website: https://gostoa.dev
+- Documentation: https://docs.gostoa.dev
+- GitHub: https://github.com/stoa-platform
+- Discord: https://discord.gg/stoa-platform
+
+## License
+
+STOA Platform is open source software.

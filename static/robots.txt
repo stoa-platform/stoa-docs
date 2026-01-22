@@ -1,0 +1,51 @@
+# STOA Documentation - robots.txt
+# https://docs.gostoa.dev
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://docs.gostoa.dev/sitemap.xml
+
+# Google AI Training Crawler
+User-agent: Google-Extended
+Allow: /
+
+# OpenAI Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic Crawlers
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+
+# Cohere AI
+User-agent: cohere-ai
+Allow: /
+
+# Meta AI
+User-agent: Meta-ExternalAgent
+Allow: /
+
+# Block aggressive/unwanted bots
+User-agent: Bytespider
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /

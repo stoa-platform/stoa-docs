@@ -9,6 +9,32 @@ const config: Config = {
   tagline: 'The Cilium of API Management',
   favicon: 'img/favicon.ico',
 
+  // SEO & Head Tags
+  headTags: [
+    // Google Search Console verification (replace with your code)
+    // {
+    //   tagName: 'meta',
+    //   attributes: {
+    //     name: 'google-site-verification',
+    //     content: 'YOUR_VERIFICATION_CODE',
+    //   },
+    // },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'robots',
+        content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'canonical',
+        href: 'https://docs.gostoa.dev',
+      },
+    },
+  ],
+
   // Enable Mermaid diagrams
   markdown: {
     mermaid: true,
@@ -69,6 +95,35 @@ const config: Config = {
         },
         theme: {
           customCss: './src/css/custom.css',
+        },
+        // Google Analytics - uncomment and add your tracking ID
+        // gtag: {
+        //   trackingID: 'G-XXXXXXXXXX',
+        //   anonymizeIP: true,
+        // },
+        sitemap: {
+          lastmod: 'date',
+          changefreq: 'weekly',
+          priority: 0.5,
+          ignorePatterns: ['/tags/**'],
+          filename: 'sitemap.xml',
+          createSitemapItems: async (params) => {
+            const {defaultCreateSitemapItems, ...rest} = params;
+            const items = await defaultCreateSitemapItems(rest);
+            return items.map((item) => {
+              // Set higher priority for important pages
+              if (item.url === 'https://docs.gostoa.dev/') {
+                return {...item, priority: 1.0, changefreq: 'daily'};
+              }
+              if (item.url.includes('/docs/')) {
+                return {...item, priority: 0.8};
+              }
+              if (item.url.includes('/blog/')) {
+                return {...item, priority: 0.6};
+              }
+              return item;
+            });
+          },
         },
       } satisfies Preset.Options,
     ],
