@@ -40,6 +40,17 @@ const sidebars: SidebarsConfig = {
         'reference/cli',
       ],
     },
+    {
+      type: 'category',
+      label: 'Community',
+      collapsed: false,
+      items: [
+        'community/index',
+        'community/philosophy',
+        'community/rewards',
+        'community/faq',
+      ],
+    },
     'faq/index',
     'roadmap',
   ],

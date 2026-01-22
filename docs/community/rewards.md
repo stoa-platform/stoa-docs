@@ -1,14 +1,18 @@
+---
+sidebar_position: 3
+title: Contributor Rewards
+description: How STOA values and compensates open source contributions
+---
+
 # Contributor Rewards Program
 
-> **Our commitment**: 45% of STOA Enterprise revenue is redistributed to the community — Foundation, Maintainers, and Contributors.
+STOA redistributes **45% of enterprise revenue** to the community. This page explains how contributions are valued and rewarded.
 
-## Why We Do This
+:::tip Why This Matters
+**"The code becomes commodity. The vision remains rare. Pay for what's rare."**
 
-STOA is Apache 2.0 licensed. We believe the best protection isn't a restrictive license — it's **aligned incentives**.
-
-When contributors are rewarded fairly, they stay. When they stay, the ecosystem thrives. When the ecosystem thrives, everyone wins.
-
-**This isn't charity. This is strategy.**
+In the age of AI, raw code output is increasingly commoditized. We pay for human judgment, community building, and lasting impact.
+:::
 
 ---
 
@@ -27,6 +31,7 @@ When contributors are rewarded fairly, they stay. When they stay, the ecosystem 
 │   ┌─────────────────────────────────────────────────┐      │
 │   │              HLFH Operations                     │      │
 │   │                    55%                           │      │
+│   │  (Dev, Sales, Support, Infra, Reinvestment)     │      │
 │   └─────────────────────────────────────────────────┘      │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
@@ -36,118 +41,192 @@ When contributors are rewarded fairly, they stay. When they stay, the ecosystem 
 
 | Pool | % | Usage |
 |------|---|-------|
-| **Foundation** | 10% | CI/CD Infrastructure (30%), Events/STOACon (25%), Legal/Trademark (20%), Grants (15%), Reserve (10%) |
+| **Foundation** | 10% | CI/CD infra (30%), Events/STOACon (25%), Legal/Trademark (20%), Grants (15%), Reserve (10%) |
 | **Maintainers** | 20% | Lead Maintainer (8%), Core Maintainers ×3 (4% each), Security Lead (4%) |
-| **Contributors** | 15% | Quarterly distribution based on contribution points |
-| **HLFH Ops** | 55% | Development, Sales, Support, Infrastructure |
+| **Contributors** | 15% | Quarterly distribution based on points |
+| **HLFH Ops** | 55% | Dev (40%), Sales (20%), Support (15%), Infra (10%), Admin (5%), Margin (10%) |
 
 ---
 
-## Contribution Points System
+## The Four-Dimension Value Framework
 
-Every contribution earns points. Points convert to cash quarterly.
+We don't just count lines of code. We measure **impact** across four dimensions:
 
-### Points Table
+| Dimension | Weight | What It Measures |
+|-----------|--------|------------------|
+| **Technical** | 30% | Quality, performance, security |
+| **Community** | 30% | Adoption, satisfaction, engagement |
+| **Durability** | 25% | Maintainability, technical debt avoided |
+| **Ecosystem** | 15% | Integrations, plugins, standards |
+
+### Formula
+
+```
+Points = (Technical × 0.30) + (Community × 0.30) + 
+         (Durability × 0.25) + (Ecosystem × 0.15)
+```
+
+---
+
+## Point System
+
+### Code Contributions
 
 | Contribution | Points | Notes |
-|-------------|--------|-------|
-| **Code** | | |
+|--------------|--------|-------|
 | PR merged (major feature) | 50 | New capability |
-| PR merged (minor feature) | 20 | Enhancement |
-| PR merged (bugfix) | 10 | Fix |
+| PR merged (minor feature) | 20 | Existing improvement |
+| PR merged (bugfix) | 10 | Correction |
 | PR merged (refactor) | 15 | Code quality |
-| **Documentation** | | |
+
+### Documentation
+
+| Contribution | Points | Notes |
+|--------------|--------|-------|
 | PR merged (docs) | 10 | Guide, tutorial |
 | Translation | 15 | i18n |
-| **Community** | | |
+
+### Community
+
+| Contribution | Points | Notes |
+|--------------|--------|-------|
 | Issue triage + reproduction | 5 | Bug validation |
 | RFC accepted | 100 | Major design |
-| Community help (Discord) | 2 | Per helpful answer |
+| Community help (Discord/Forum) | 2 | Per helpful response |
 | Talk/Meetup | 30 | External presentation |
 | Blog post | 30 | Technical content |
-| **Security** | | |
+
+### Security
+
+| Contribution | Points | Notes |
+|--------------|--------|-------|
 | Security fix (critical) | 200 | CVE critical |
 | Security fix (high) | 100 | CVE high |
 | Security fix (medium) | 50 | CVE medium |
 | Responsible disclosure | 50 | Private report |
 
-### How Rewards Are Calculated
+---
+
+## Contribution Tiers (Anti-AI-Gaming)
+
+Not all contributions are equal in the AI age:
+
+| Tier | Type | Points | Examples |
+|------|------|--------|----------|
+| **1** | AI-Proof | HIGH | RFC, mentoring, ADR, community building |
+| **2** | AI-Assisted | MEDIUM | Complex features, critical bugs |
+| **3** | AI-Easy | LOW | Refactoring, basic tests, typos |
+
+
+---
+
+## Distribution Formula
 
 ```
-Quarterly Pool = 15% × Enterprise Revenue (Quarter)
+Pool_Q = 15% × Enterprise_Revenue_Q
 
-Your Reward = (Your Points / Total Points) × Quarterly Pool
+Reward(contributor) = (Points_contributor / Total_points_all) × Pool_Q
 ```
 
 ### Example
 
 ```
-Q1 2027 Enterprise Revenue: €150,000
-Contributor Pool Q1: €22,500
-Total Points Q1: 2,000 points
+Q1 2027 Revenue = €150,000
+Contributors Pool = €22,500
+Total points Q1 = 2,000
 
-Contributor A: 500 points (25%) → €5,625
-Contributor B: 200 points (10%) → €2,250
-Contributor C: 100 points (5%)  → €1,125
+Contributor A: 500 points (25%)
+→ Reward = €5,625
+
+Contributor B: 200 points (10%)
+→ Reward = €2,250
+
+Contributor C: 100 points (5%)
+→ Reward = €1,125
 ```
 
 ---
 
-## Transparency Commitment
+## Point Lifecycle
 
-Every quarter, we publish:
-
-- ✅ Total Enterprise revenue (relevant portion)
-- ✅ Pool amount available
-- ✅ Points per contributor
-- ✅ Payments made
-
-**No black box. No "trust us". Receipts.**
+```
+T+0          T+1-3d        T+7d          T+30d
+│            │             │             │
+▼            ▼             ▼             ▼
+PR Created → Merge Review → Staging →   Prod Impact
+│            │             │             │
+Points      Points        Points        Points
+ESTIMATED   ADJUSTED      VALIDATED     FINAL
+(auto)      (review)      (metrics)     (verified)
+```
 
 ---
 
-## FAQ
+## Transparency
 
-### "Is this legally binding?"
+Everything is public:
 
-This document represents HLFH's public commitment. While not a legal contract, breaking this promise would destroy the trust that makes open-source work. Our reputation is our bond.
+- **Dashboard**: Real-time point tracking per contributor
+- **Quarterly Reports**: Pool size, distributions, recipients
+- **Appeal Process**: 7-day window to contest any decision
 
-### "What if revenue is zero?"
+---
 
-No revenue = no pool. We're honest about that. But as soon as Enterprise revenue exists, the 15% kicks in.
+## Financial Projections
 
-### "Can I contribute anonymously?"
+```
+Year 1 (2026) — 5 Enterprise clients — €150K revenue
+├── Foundation: €15K
+├── Maintainers: €30K  
+├── Contributors: €22.5K (to share)
+└── HLFH: €82.5K
 
-Yes, but you'll need to provide payment details to receive rewards. We can keep your identity private in public reports.
+Year 3 (2028) — 50 clients — €1.5M revenue
+├── Foundation: €150K
+├── Maintainers: €300K
+├── Contributors: €225K (serious pool)
+└── HLFH: €825K
 
-### "When do payments happen?"
+Year 5 (2030) — 200 clients — €6M revenue
+├── Foundation: €600K
+├── Maintainers: €1.2M
+├── Contributors: €900K (real salary possible)
+└── HLFH: €3.3M
+```
 
-Quarterly, within 30 days of quarter end. Minimum payout threshold: €50 (smaller amounts roll over).
+---
 
-### "What about taxes?"
+## Roadmap
 
-You're responsible for your own taxes. We provide documentation for your records.
+### Phase 1 — MVP (Q1 2026)
+
+- [x] Document point system on docs.gostoa.dev
+- [ ] Create tracking spreadsheet
+- [ ] Define contribution validation process
+- [ ] First "dry run" (simulation without payment)
+
+### Phase 2 — Launch (Q2 2026)
+
+- [ ] First real payment to contributors
+- [ ] Publish Q1 transparency report
+- [ ] Public program announcement
+
+### Phase 3 — Scale (Q3-Q4 2026)
+
+- [ ] Automate tracking (GitHub Actions → DB)
+- [ ] Public contribution dashboard
+- [ ] Certification program operational
 
 ---
 
 ## Get Started
 
-1. **Check our [good first issues](https://github.com/stoa-platform/stoa/labels/good%20first%20issue)**
-2. **Read [CONTRIBUTING.md](https://github.com/stoa-platform/stoa/blob/main/CONTRIBUTING.md)**
-3. **Join [Discord](https://discord.gg/stoa)** and say hi
-4. **Ship code, earn points, get paid**
+1. **Join Discord** — [discord.gg/stoa-platform](https://discord.gg/stoa-platform)
+2. **Pick an issue** — Look for `good-first-issue` labels
+3. **Submit a PR** — Follow contribution guidelines
+4. **Earn points** — Your contributions are tracked automatically
+5. **Get rewarded** — Quarterly distributions
 
 ---
 
-## The Bottom Line
-
-> **"45% redistribution, documented publicly. Show me another open-core project that does this."**
-
-We're not asking you to trust us blindly. We're showing you the math, the commitment, and the receipts.
-
-**Apache 2.0 + Fair Rewards = Sustainable Open Source**
-
----
-
-*Last updated: January 2026*  
-*Questions? [community@gostoa.dev](mailto:community@gostoa.dev)*
+*Questions? Ask in `#contributors` on Discord or email [contributors@gostoa.dev](mailto:contributors@gostoa.dev)*
