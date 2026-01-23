@@ -1,4 +1,4 @@
-# ADR-007: GitOps avec Argo CD pour le déploiement continu STOA
+# ADR-007: GitOps with Argo CD for STOA Continuous Deployment
 
 ## Metadata
 
@@ -10,38 +10,38 @@
 
 ## Context
 
-STOA Platform nécessite une stratégie de déploiement continu (CD) adaptée à son architecture cloud-native Kubernetes. Le pipeline CI actuel (GitLab CI) gère efficacement le build, les tests, la génération SBOM et la signature des images (Cosign).
+STOA Platform requires a continuous deployment (CD) strategy suited to its cloud-native Kubernetes architecture. The current CI pipeline (GitLab CI) effectively handles build, tests, SBOM generation and image signing (Cosign).
 
-### Contraintes identifiées
+### Identified Constraints
 
-| Contrainte | Impact |
+| Constraint | Impact |
 |------------|--------|
-| **Compliance entreprise** | Clients cibles (banque, assurance, logistique) exigent audit trail complet |
-| **Éligibilité CIR** | Besoin de traçabilité fine des activités R&D (qui/quoi/quand) |
-| **Multi-environnements** | Dev → Staging → Prod avec configurations différenciées |
-| **Sécurité supply chain** | SBOM, SLSA attestations, images signées |
-| **Équipe réduite** | Minimiser la charge opérationnelle |
+| **Enterprise compliance** | Target clients (banking, insurance, logistics) require complete audit trail |
+| **R&D tax credit eligibility** | Need for fine-grained R&D activity traceability (who/what/when) |
+| **Multi-environment** | Dev → Staging → Prod with differentiated configurations |
+| **Supply chain security** | SBOM, SLSA attestations, signed images |
+| **Small team** | Minimize operational overhead |
 
 ## Decision
 
-**Option retenue : GitOps avec Argo CD (pull-based)**
+**Selected option: GitOps with Argo CD (pull-based)**
 
-Séparation CI (GitLab) / CD (Argo CD). Le cluster "tire" l'état désiré depuis un repo Git dédié.
+CI (GitLab) / CD (Argo CD) separation. The cluster "pulls" the desired state from a dedicated Git repo.
 
-### Options considérées
+### Options Considered
 
 | Option | Description | Verdict |
 |--------|-------------|---------|
-| **GitLab CI end-to-end** | Push-based, runners CI avec accès clusters | ❌ Surface d'attaque élevée |
-| **GitOps avec Argo CD** | Pull-based, cluster tire depuis Git | ✅ **Retenu** |
-| **GitOps avec Flux CD** | Pull-based, plus léger mais pas d'UI | ❌ Moins de visibilité démos |
+| **GitLab CI end-to-end** | Push-based, CI runners with cluster access | ❌ High attack surface |
+| **GitOps with Argo CD** | Pull-based, cluster pulls from Git | ✅ **Selected** |
+| **GitOps with Flux CD** | Pull-based, lighter but no UI | ❌ Less visibility for demos |
 
 ### Justification
 
-1. **Alignement sécurité STOA** : Le modèle pull-based renforce le message "security-first"
-2. **CIR** : Chaque déploiement génère automatiquement une preuve horodatée dans Git
-3. **Démos MVP** : L'UI Argo CD permet de montrer visuellement l'état des déploiements
-4. **Écosystème** : Standard de facto dans l'écosystème CNCF/Kubernetes
+1. **STOA security alignment**: Pull-based model reinforces "security-first" messaging
+2. **R&D tax credit**: Each deployment automatically generates a timestamped proof in Git
+3. **MVP demos**: Argo CD UI allows visual demonstration of deployment state
+4. **Ecosystem**: De facto standard in the CNCF/Kubernetes ecosystem
 
 ## Architecture
 
@@ -49,7 +49,7 @@ Séparation CI (GitLab) / CD (Argo CD). Le cluster "tire" l'état désiré depui
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │   GitLab CI     │     │  Container      │     │   Git Repo      │
 │   (CI only)     │────▶│  Registry       │     │  stoa-envs      │
-│                 │     │  (GitLab/OCI)   │     │  (état désiré)  │
+│                 │     │  (GitLab/OCI)   │     │  (desired state)│
 └─────────────────┘     └─────────────────┘     └────────┬────────┘
                                                          │
                               ┌───────────────────────────┘
@@ -68,89 +68,89 @@ Séparation CI (GitLab) / CD (Argo CD). Le cluster "tire" l'état désiré depui
     └───────────┘          └───────────┘          └───────────┘
 ```
 
-### Workflow de promotion
+### Promotion Workflow
 
-1. **Merge sur `main`** (stoa-platform) → GitLab CI build → Image taggée + signée → Registry
-2. **PR automatique** sur `stoa-envs` : bump version image dans `envs/dev/`
-3. **Argo CD sync** : déploiement dev automatique
-4. **Promotion staging** : PR merge `dev` → `staging` (review requise)
-5. **Promotion prod** : PR merge `staging` → `prod` (approbation + tests smoke)
+1. **Merge to `main`** (stoa-platform) → GitLab CI build → Tagged + signed image → Registry
+2. **Automatic PR** on `stoa-envs`: bump image version in `envs/dev/`
+3. **Argo CD sync**: automatic dev deployment
+4. **Staging promotion**: PR merge `dev` → `staging` (review required)
+5. **Prod promotion**: PR merge `staging` → `prod` (approval + smoke tests)
 
-### Structure du repo `stoa-envs`
+### `stoa-envs` Repo Structure
 
 ```
 stoa-envs/
-├── base/                    # Ressources communes
+├── base/                    # Common resources
 │   ├── kustomization.yaml
 │   ├── stoa-gateway/
 │   ├── stoa-control-plane/
 │   └── observability/
-├── components/              # Composants optionnels
+├── components/              # Optional components
 │   ├── vault-injection/
 │   ├── istio-sidecar/
 │   └── debug-mode/
-├── envs/                    # Overlays par environnement
+├── envs/                    # Per-environment overlays
 │   ├── dev/
 │   ├── staging/
 │   └── prod/
-└── argocd/                  # Configuration Argo CD
+└── argocd/                  # Argo CD configuration
     ├── projects/
     ├── applications/
     └── applicationsets/
 ```
 
-## Roadmap GitOps
+## GitOps Roadmap
 
-### Phase 1 : GitOps Foundation ✅
+### Phase 1: GitOps Foundation ✅
 
-| Livrable | Description |
-|----------|-------------|
-| Argo CD | Installation + SSO Keycloak |
-| Repo `stoa-envs` | Structure Kustomize base/overlays |
-| Applications | Dev (auto-sync), Staging (auto-sync), Prod (manuel) |
-| External Secrets | Intégration Vault |
+| Deliverable | Description |
+|-------------|-------------|
+| Argo CD | Installation + Keycloak SSO |
+| `stoa-envs` repo | Kustomize base/overlays structure |
+| Applications | Dev (auto-sync), Staging (auto-sync), Prod (manual) |
+| External Secrets | Vault integration |
 
-### Phase 2 : Progressive Delivery
+### Phase 2: Progressive Delivery
 
-| Livrable | Description |
-|----------|-------------|
+| Deliverable | Description |
+|-------------|-------------|
 | **Argo Rollouts** | Canary deployments (20% → 50% → 100%) |
-| **AnalysisTemplate** | Auto-rollback basé sur métriques Prometheus |
-| **ApplicationSet** | Génération dynamique d'apps par tenant |
+| **AnalysisTemplate** | Auto-rollback based on Prometheus metrics |
+| **ApplicationSet** | Dynamic app generation per tenant |
 
-### Phase 3 : Enterprise Hardening
+### Phase 3: Enterprise Hardening
 
-| Livrable | Description |
-|----------|-------------|
-| **Gatekeeper/OPA** | Policies de sécurité |
-| **Drift Detection** | Alerting automatique |
-| **KPIs Dashboard** | Grafana avec métriques GitOps |
+| Deliverable | Description |
+|-------------|-------------|
+| **Gatekeeper/OPA** | Security policies |
+| **Drift Detection** | Automatic alerting |
+| **KPIs Dashboard** | Grafana with GitOps metrics |
 
-## KPIs GitOps
+## GitOps KPIs
 
-| KPI | Description | Cible |
-|-----|-------------|-------|
-| **Lead time tenant** | Commit → Prod | < 15 min |
-| **Taux rollback réussi** | Rollbacks auto sans intervention | > 95% |
+| KPI | Description | Target |
+|-----|-------------|--------|
+| **Tenant lead time** | Commit → Prod | < 15 min |
+| **Successful rollback rate** | Auto rollbacks without intervention | > 95% |
 | **MTTR** | Mean Time To Recovery | < 5 min |
-| **Drift resolution** | Détection et correction drift | < 1 min |
-| **Déploiements traçables** | Commits Git avec auteur/date | 100% |
+| **Drift resolution** | Drift detection and correction | < 1 min |
+| **Traceable deployments** | Git commits with author/date | 100% |
 
 ## Consequences
 
 ### Positive
 
-- ✅ Audit trail complet et automatique (valeur CIR)
-- ✅ Rollback instantané via Git
-- ✅ Détection et correction automatique des drifts
-- ✅ Réduction surface d'attaque (CI sans accès prod)
-- ✅ Visualisation état déploiements pour démos
+- ✅ Complete and automatic audit trail (R&D tax credit value)
+- ✅ Instant rollback via Git
+- ✅ Automatic drift detection and correction
+- ✅ Reduced attack surface (CI without prod access)
+- ✅ Deployment state visualization for demos
 
 ### Negative (mitigations)
 
-- ⚠️ **Secrets** : External Secrets Operator intégré dès le départ
-- ⚠️ **Formation** : Documentation workflow Kustomize
-- ⚠️ **Complexité** : Structure repo bien conçue
+- ⚠️ **Secrets**: External Secrets Operator integrated from the start
+- ⚠️ **Training**: Kustomize workflow documentation
+- ⚠️ **Complexity**: Well-designed repo structure
 
 ## References
 

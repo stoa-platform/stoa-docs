@@ -10,32 +10,32 @@
 
 ## Context
 
-STOA Platform évolue avec plusieurs composants en parallèle : Control-Plane API (FastAPI), MCP Gateway, Developer Portal (React), Console (React), et webMethods Gateway.
+STOA Platform evolves with several components in parallel: Control-Plane API (FastAPI), MCP Gateway, Developer Portal (React), Console (React), and webMethods Gateway.
 
-### Problèmes identifiés
+### Identified Problems
 
-| Problème | Impact | Gravité |
-|----------|--------|---------|
-| **Dépendances croisées** | Chaque composant accède directement à PostgreSQL, GitLab, Keycloak | 🔴 Élevé |
-| **Rôle flou de webMethods** | Utilisé pour admin ET runtime, difficile à scaler | 🔴 Élevé |
-| **Duplication de logique** | Validation, auth, tenant isolation répétée partout | 🟡 Moyen |
-| **Déploiement couplé** | Impossible de déployer Portal sans MCP Gateway | 🟡 Moyen |
+| Problem | Impact | Severity |
+|---------|--------|----------|
+| **Cross dependencies** | Each component directly accesses PostgreSQL, GitLab, Keycloak | 🔴 High |
+| **Unclear webMethods role** | Used for admin AND runtime, difficult to scale | 🔴 High |
+| **Logic duplication** | Validation, auth, tenant isolation repeated everywhere | 🟡 Medium |
+| **Coupled deployment** | Impossible to deploy Portal without MCP Gateway | 🟡 Medium |
 
-### Question architecturale
+### Architectural Question
 
-> **Comment structurer les composants STOA pour qu'ils soient déployables indépendamment, tout en maintenant GitLab comme source de vérité et en clarifiant le rôle de chaque élément ?**
+> **How to structure STOA components so they are independently deployable, while maintaining GitLab as source of truth and clarifying each element's role?**
 
 ## Decision
 
-Adopter une architecture **Control Plane / Data Plane** avec Core API comme hub central.
+Adopt a **Control Plane / Data Plane** architecture with Core API as central hub.
 
-### Options considérées
+### Options Considered
 
 | Option | Description | Verdict |
 |--------|-------------|---------|
-| **A. Monolithe modulaire** | Tout dans un artifact | ❌ Contre open-core, scaling tout-ou-rien |
-| **B. Microservices purs** | Un service par domaine | ❌ Overkill pour la taille de l'équipe |
-| **C. Control Plane / Data Plane** | Séparation claire des responsabilités | ✅ **Retenu** |
+| **A. Modular monolith** | Everything in one artifact | ❌ Against open-core, all-or-nothing scaling |
+| **B. Pure microservices** | One service per domain | ❌ Overkill for team size |
+| **C. Control Plane / Data Plane** | Clear separation of responsibilities | ✅ **Selected** |
 
 ### Architecture
 
@@ -44,14 +44,14 @@ Adopter une architecture **Control Plane / Data Plane** avec Core API comme hub 
 │                       CONTROL PLANE                                  │
 ├─────────────────────────────────────────────────────────────────────┤
 │  ┌────────┐ ┌────────┐ ┌────────┐                                   │
-│  │ Portal │ │Console │ │  MCP   │   ← UI Layer (optionnels)        │
+│  │ Portal │ │Console │ │  MCP   │   ← UI Layer (optional)           │
 │  │  (SPA) │ │  (SPA) │ │ Server │                                   │
 │  └───┬────┘ └───┬────┘ └───┬────┘                                   │
 │      │          │          │                                         │
 │      └──────────┼──────────┘                                         │
 │                 │                                                    │
 │          ┌──────▼──────┐                                             │
-│          │  STOA Core  │   ← Hub central (obligatoire)              │
+│          │  STOA Core  │   ← Central hub (required)                  │
 │          │     API     │                                             │
 │          └──────┬──────┘                                             │
 │                 │                                                    │
@@ -72,19 +72,19 @@ Adopter une architecture **Control Plane / Data Plane** avec Core API comme hub 
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### Composants
+### Components
 
-| Composant | Type | Rôle | Dépendances |
-|-----------|------|------|-------------|
-| **STOA Core API** | Backend (FastAPI) | Hub central, toute la logique métier | PostgreSQL, GitLab, Keycloak |
-| **STOA Portal** | Frontend (React) | Self-service développeurs | Core API uniquement |
-| **STOA Console** | Frontend (React) | Administration plateforme | Core API uniquement |
-| **STOA MCP Server** | Backend (Python) | Interface AI/LLM | Core API uniquement |
-| **webMethods Gateway** | Data Plane | Exécution trafic API runtime | Config sync depuis Core API |
+| Component | Type | Role | Dependencies |
+|-----------|------|------|--------------|
+| **STOA Core API** | Backend (FastAPI) | Central hub, all business logic | PostgreSQL, GitLab, Keycloak |
+| **STOA Portal** | Frontend (React) | Developer self-service | Core API only |
+| **STOA Console** | Frontend (React) | Platform administration | Core API only |
+| **STOA MCP Server** | Backend (Python) | AI/LLM interface | Core API only |
+| **webMethods Gateway** | Data Plane | API runtime traffic execution | Config sync from Core API |
 
-### Règles d'architecture
+### Architecture Rules
 
-#### Règle 1 : Dépendances unidirectionnelles
+#### Rule 1: Unidirectional Dependencies
 
 ```
 Portal ──────┐
@@ -93,26 +93,26 @@ MCP Server ──┘              ──► GitLab
                             ──► Keycloak
 ```
 
-**Interdit :** Portal → PostgreSQL (direct), MCP Server → GitLab (direct)
+**Forbidden:** Portal → PostgreSQL (direct), MCP Server → GitLab (direct)
 
-#### Règle 2 : GitLab = Source de vérité pour les définitions
+#### Rule 2: GitLab = Source of Truth for Definitions
 
 ```yaml
-# Ce qui vit dans GitLab (stoa-catalog)
+# What lives in GitLab (stoa-catalog)
 stoa-catalog/
   tenants/{tenant}/
     apis/{api}/
-      api.yaml       # Définition API
-      openapi.yaml   # Spec OpenAPI
-      
-# Ce qui vit dans PostgreSQL
+      api.yaml       # API definition
+      openapi.yaml   # OpenAPI spec
+
+# What lives in PostgreSQL
 - subscriptions, api_keys, audit_logs, rate_limit_usage, mcp_sessions
 ```
 
-#### Règle 3 : webMethods = Data Plane uniquement
+#### Rule 3: webMethods = Data Plane Only
 
-✅ **DO:** Routing, Rate limiting, JWT validation, Transformation, Caching  
-❌ **DON'T:** Servir les UI, Gérer les souscriptions, Stocker des données
+✅ **DO:** Routing, Rate limiting, JWT validation, Transformation, Caching
+❌ **DON'T:** Serve UIs, Manage subscriptions, Store data
 
 ## Public API Façade
 
@@ -130,39 +130,39 @@ stoa-catalog/
 │  └──────────────────────┼─────────────────────────────────────────┘ │
 │                         │                                            │
 │  ┌──────────────────────┼─────────────────────────────────────────┐ │
-│  │                 EXTERNAL (tiers)                                │ │
-│  │  Tiers ──► webMethods ──► Public API ──┘                       │ │
-│  │            (rate limit)   (façade)                              │ │
+│  │                 EXTERNAL (third-party)                          │ │
+│  │  Third-party ──► webMethods ──► Public API ──┘                 │ │
+│  │                  (rate limit)   (façade)                        │ │
 │  └─────────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### Endpoints exposés aux tiers
+### Endpoints Exposed to Third Parties
 
 ```yaml
 /public/v1/:
-  catalog:           # Public ou API key
+  catalog:           # Public or API key
     GET /apis, GET /apis/{id}, GET /apis/{id}/spec
-  subscriptions:     # OAuth2 requis
+  subscriptions:     # OAuth2 required
     GET/POST/DELETE /subscriptions
-  me:                # OAuth2 requis
+  me:                # OAuth2 required
     GET /me, GET /me/usage
 ```
 
-**JAMAIS exposé :** `/v1/admin/*`, `/v1/tenants/*/members`, `/v1/gateway/*`
+**NEVER exposed:** `/v1/admin/*`, `/v1/tenants/*/members`, `/v1/gateway/*`
 
 ## Consequences
 
 ### Positive
 
-- ✅ Déploiement indépendant des composants
-- ✅ GitLab reste source de vérité
-- ✅ Séparation claire Control Plane / Data Plane
-- ✅ Exposition sécurisée aux tiers
+- ✅ Independent component deployment
+- ✅ GitLab remains source of truth
+- ✅ Clear Control Plane / Data Plane separation
+- ✅ Secure third-party exposure
 
 ### Negative
 
-- ⚠️ Latence additionnelle (MCP → Core API vs direct DB)
+- ⚠️ Additional latency (MCP → Core API vs direct DB)
 - ⚠️ Migration effort
 
 ## References

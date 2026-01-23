@@ -10,84 +10,84 @@
 
 ## Context
 
-STOA Gateway doit supporter plusieurs modes de sécurité API selon les contextes d'usage. Plutôt que de laisser les équipes deviner, nous formalisons un **Decision Tree** qui recommande automatiquement le bon mode.
+STOA Gateway must support multiple API security modes depending on usage contexts. Rather than letting teams guess, we formalize a **Decision Tree** that automatically recommends the right mode.
 
-## Options considérées
+## Options Considered
 
 | Option | Description | Verdict |
 |--------|-------------|---------|
-| **mTLS seul** | Authentification par certificat client | ✅ Pour CORE APIs internes |
-| **OAuth2 seul** | Tokens JWT avec scopes | ✅ Pour SELF-SERVICE APIs |
-| **mTLS + OAuth2** | Double authentification | ✅ Pour APIs critiques exposées |
-| **API Key seul** | Secret statique | ⚠️ Community tier uniquement |
+| **mTLS only** | Client certificate authentication | ✅ For CORE internal APIs |
+| **OAuth2 only** | JWT tokens with scopes | ✅ For SELF-SERVICE APIs |
+| **mTLS + OAuth2** | Dual authentication | ✅ For critical exposed APIs |
+| **API Key only** | Static secret | ⚠️ Community tier only |
 
 ## Decision
 
-Implémenter un Decision Tree automatisé pour recommander le mode de sécurité API optimal.
+Implement an automated Decision Tree to recommend the optimal API security mode.
 
 ### Decision Tree
 
 ```
                     ┌─────────────────────┐
-                    │  Type consommateur? │
+                    │  Consumer type?     │
                     └──────────┬──────────┘
                                │
               ┌────────────────┴────────────────┐
               │                                 │
-         [Interne]                         [Externe]
+         [Internal]                        [External]
               │                                 │
               ▼                                 ▼
     ┌─────────────────┐               ┌─────────────────┐
-    │  Nature flux?   │               │  OAuth2 requis  │
+    │  Flow type?     │               │  OAuth2 required│
     └────────┬────────┘               └────────┬────────┘
              │                                  │
     ┌────────┴────────┐                        │
     │                 │                        ▼
   [A2A]           [User]              ┌─────────────────┐
-    │                 │               │ Domaine critique?│
+    │                 │               │ Critical domain?│
     │                 ▼               └────────┬────────┘
-    │         OAuth2 requis                    │
+    │         OAuth2 required                  │
     ▼                                 ┌────────┴────────┐
 ┌─────────────────┐                   │                 │
-│Domaine critique?│                 [Oui]            [Non]
+│Critical domain? │                 [Yes]            [No]
 └────────┬────────┘                   │                 │
          │                            ▼                 ▼
     ┌────┴────┐              ┌──────────────┐  ┌──────────────┐
-    │         │              │ mTLS + OAuth2│  │  OAuth2 seul │
-  [Oui]    [Non]             │   (HYBRID)   │  │(SELF-SERVICE)│
+    │         │              │ mTLS + OAuth2│  │  OAuth2 only │
+  [Yes]    [No]              │   (HYBRID)   │  │(SELF-SERVICE)│
     │         │              └──────────────┘  └──────────────┘
     ▼         ▼
 ┌────────┐ ┌────────────┐
-│ mTLS   │ │ OAuth2 ou  │
-│ (CORE) │ │ mTLS selon │
-└────────┘ │ gouvernance│
+│ mTLS   │ │ OAuth2 or  │
+│ (CORE) │ │ mTLS per   │
+└────────┘ │ governance │
            └────────────┘
 ```
 
-### Règles de décision
+### Decision Rules
 
-| Cas | Conditions | Mode recommandé |
-|-----|------------|-----------------|
-| **🟢 CORE** | Interne + A2A + Critique + Droits stables | `mTLS` |
-| **🔵 SELF-SERVICE** | Externe + User/BFF + DX prioritaire | `OAuth2` |
-| **🟣 HYBRID** | Critique + Externe + Gouvernance forte | `mTLS + OAuth2` |
+| Case | Conditions | Recommended Mode |
+|------|------------|------------------|
+| **🟢 CORE** | Internal + A2A + Critical + Stable rights | `mTLS` |
+| **🔵 SELF-SERVICE** | External + User/BFF + DX priority | `OAuth2` |
+| **🟣 HYBRID** | Critical + External + Strong governance | `mTLS + OAuth2` |
 
 ## Consequences
 
 ### Positive
 
-- Recommandation automatique et cohérente
-- Réduction des erreurs de configuration sécurité
-- Documentation des décisions pour audit
+- Automatic and consistent recommendation
+- Reduced security configuration errors
+- Documented decisions for audit
 
 ### Negative
 
-- Complexité supplémentaire dans le tooling
-- Courbe d'apprentissage pour les équipes
+- Additional tooling complexity
+- Learning curve for teams
 
 ### Neutral
 
-- Les équipes peuvent dévier avec justification documentée
+- Teams can deviate with documented justification
 
 ## MCP Tool: `security-advisor`
 
@@ -104,9 +104,9 @@ Implémenter un Decision Tree automatisé pour recommander le mode de sécurité
 // Output
 {
   "recommended_security_mode": "mTLS | OAuth2 | mTLS+OAuth2",
-  "justification": ["Domaine critique", "Flux A2A interne"],
+  "justification": ["Critical domain", "Internal A2A flow"],
   "risk_level": "low | medium | high",
-  "implementation_notes": ["Client cert short-lived", "ABAC policy"]
+  "implementation_notes": ["Short-lived client cert", "ABAC policy"]
 }
 ```
 

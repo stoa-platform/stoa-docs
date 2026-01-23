@@ -1,91 +1,91 @@
 ---
 sidebar_position: 5
 title: Architecture
-description: Diagrammes d'architecture STOA Platform - Vue globale, sécurité, CI/CD et MCP Gateway
+description: STOA Platform architecture diagrams - Global overview, security, CI/CD and MCP Gateway
 ---
 
 import ArchitectureDiagrams from '@site/src/components/ArchitectureDiagrams';
 
 # Architecture
 
-Cette section présente les diagrammes d'architecture de STOA Platform, illustrant les différents composants, flux de données et décisions de sécurité.
+This section presents the architecture diagrams of STOA Platform, illustrating the different components, data flows and security decisions.
 
-## Diagrammes Interactifs
+## Interactive Diagrams
 
 <ArchitectureDiagrams />
 
-## Vue d'ensemble
+## Overview
 
-STOA Platform suit une architecture **cloud-native** déployée sur Kubernetes avec les principes suivants :
+STOA Platform follows a **cloud-native** architecture deployed on Kubernetes with the following principles:
 
-### Zones de Sécurité
+### Security Zones
 
-| Zone | Trust Level | Composants |
+| Zone | Trust Level | Components |
 |------|-------------|------------|
-| **External** | Untrusted | Clients API, Claude.ai, Web Console |
+| **External** | Untrusted | API Clients, Claude.ai, Web Console |
 | **DMZ** | Semi-trusted | Nginx Ingress, API Gateway, MCP Gateway |
 | **Internal** | Trusted | Control Plane, Keycloak, Data Layer |
 
-### Composants Principaux
+### Main Components
 
-- **STOA Control Plane** — FastAPI, gestion des contrats UAC, APIs multi-protocoles
-- **MCP Gateway** — Intégration Claude.ai, découverte d'outils, injection de contexte JWT
-- **webMethods Gateway** — Proxy API, enforcement des policies
-- **Keycloak** — OAuth2/OIDC, RBAC multi-tenant
+- **STOA Control Plane** — FastAPI, UAC contract management, multi-protocol APIs
+- **MCP Gateway** — Claude.ai integration, tool discovery, JWT context injection
+- **webMethods Gateway** — API proxy, policy enforcement
+- **Keycloak** — OAuth2/OIDC, multi-tenant RBAC
 
 ### Data Layer
 
-- **PostgreSQL** — Contrats, tenants, subscriptions
-- **OpenSearch** — Logs API, analytics
+- **PostgreSQL** — Contracts, tenants, subscriptions
+- **OpenSearch** — API logs, analytics
 - **Redis** — Cache, sessions, rate limiting
 - **Kafka/Redpanda** — Events, audit (🔒 Internal Only)
-- **Vault** — Secrets, certificats
+- **Vault** — Secrets, certificates
 
 ## Architecture Decision Records (ADRs)
 
-Les décisions architecturales importantes sont documentées via des ADRs :
+Important architectural decisions are documented via ADRs:
 
 - **ADR-017: Kafka Internal-Only** — Zero External Exposure
-- **ADR-016: Multi-tenant RBAC** — Isolation par JWT Context
+- **ADR-016: Multi-tenant RBAC** — Isolation via JWT Context
 - **ADR-015: GitOps with Argo CD** — Continuous Deployment
 
-## Pipeline CI/CD
+## CI/CD Pipeline
 
-Le pipeline suit une approche **GitOps** avec :
+The pipeline follows a **GitOps** approach with:
 
-1. **Code** — GitLab avec Helm Charts
+1. **Code** — GitLab with Helm Charts
 2. **Build & Test** — Lint, Tests, Security Scan, Build Image
 3. **Package** — Container Registry (signed), Helm Repository
-4. **Deploy** — Argo CD avec sync continu
+4. **Deploy** — Argo CD with continuous sync
 
 ### Supply Chain Security
 
-- **SBOM** — Software Bill of Materials généré automatiquement
-- **Cosign** — Signature des images container
-- **SLSA** — Attestations de provenance
+- **SBOM** — Software Bill of Materials generated automatically
+- **Cosign** — Container image signing
+- **SLSA** — Provenance attestations
 
 ## MCP Gateway
 
-Le MCP (Model Context Protocol) Gateway permet l'intégration avec Claude.ai :
+The MCP (Model Context Protocol) Gateway enables integration with Claude.ai:
 
-### Flux d'Exécution
+### Execution Flow
 
-1. Claude.ai envoie un `tools/call` avec JWT
-2. MCP Gateway décode le JWT et extrait le tenant
-3. Keycloak valide le token et vérifie les permissions RBAC
-4. Control Plane exécute la logique métier et valide le contrat UAC
-5. Backend API traite la requête
-6. Response retournée avec Trace ID
+1. Claude.ai sends a `tools/call` with JWT
+2. MCP Gateway decodes the JWT and extracts the tenant
+3. Keycloak validates the token and verifies RBAC permissions
+4. Control Plane executes business logic and validates UAC contract
+5. Backend API processes the request
+6. Response returned with Trace ID
 
 ### Multi-Tenant Isolation
 
-Chaque tenant ne voit que ses propres outils :
+Each tenant only sees their own tools:
 
 - **Parzival (IOI)** — `stoa_*`, `ioi:billing:*`, `ioi:inventory:*`
 - **Sorrento (Gregarious)** — `stoa_*`, `greg:oasis:*`, `greg:sixers:*`
-- **Halliday (Admin)** — Visibilité cross-tenant complète
+- **Halliday (Admin)** — Full cross-tenant visibility
 
-## Ressources Additionnelles
+## Additional Resources
 
 - [Quick Start Guide](/docs/guides/quick-start)
 - [API Reference](/docs/api/control-plane)

@@ -1,23 +1,23 @@
 # Architecture Decision Records (ADRs)
 
-> **"Each tool to its purpose"** — Pas de one-size-fits-all
+> **"Each tool to its purpose"** — No one-size-fits-all
 
-Ce répertoire contient les décisions architecturales importantes de STOA Platform.
+This directory contains important architectural decisions for STOA Platform.
 
-## Index des ADRs
+## ADR Index
 
-| ADR | Titre | Status | Date |
+| ADR | Title | Status | Date |
 |-----|-------|--------|------|
 | [ADR-001](./adr-001-api-exposure-strategy.md) | Third-Party API Exposure Strategy — Public API Façade | ✅ Accepted | Jan 2026 |
-| [ADR-007](./adr-007-gitops-argocd.md) | GitOps avec Argo CD | ✅ Accepted | Jan 2026 |
+| [ADR-007](./adr-007-gitops-argocd.md) | GitOps with Argo CD | ✅ Accepted | Jan 2026 |
 | [ADR-011](./adr-011-api-security-modes.md) | API Security Mode Selection — mTLS / OAuth2 / Hybrid | ✅ Accepted | Jan 2026 |
 | [ADR-012](./adr-012-mcp-rbac-architecture.md) | MCP Tools Architecture — RBAC & Multi-Tenant Governance | ✅ Accepted | Jan 2026 |
 
 ## Planned ADRs
 
-| ADR | Titre | Status |
+| ADR | Title | Status |
 |-----|-------|--------|
-| ADR-010 | Blockchain Decision — Euro Numérique 2027+ | 📋 Draft |
+| ADR-010 | Blockchain Decision — Digital Euro 2027+ | 📋 Draft |
 | ADR-013 | Idempotency & Saga Patterns — Exactly-Once for B2B | 📋 Draft |
 | ADR-014 | Delivery Guardrails — Canary & SLO Auto-Freeze | 📋 Draft |
 | ADR-015 | Sender-Constrained Tokens — mTLS Binding, DPoP & DCR | 📋 Draft |
@@ -29,32 +29,32 @@ Ce répertoire contient les décisions architecturales importantes de STOA Platf
 
 ## Technology Choices Overview
 
-| Catégorie | Choix STOA | Alternatives | Raison |
-|-----------|------------|--------------|--------|
+| Category | STOA Choice | Alternatives | Rationale |
+|----------|-------------|--------------|-----------|
 | **Messaging** | Kafka (Redpanda) | RabbitMQ, NATS | Event sourcing, replay, scale |
 | **Database** | PostgreSQL | MySQL, MongoDB | ACID, JSON, extensions |
-| **Auth** | Keycloak | Auth0, Okta | Self-hosted, OIDC complet |
-| **Observabilité** | Prometheus + Grafana + Loki | Datadog, ELK | Open source, K8s-native |
+| **Auth** | Keycloak | Auth0, Okta | Self-hosted, full OIDC |
+| **Observability** | Prometheus + Grafana + Loki | Datadog, ELK | Open source, K8s-native |
 | **GitOps** | ArgoCD | Flux, Jenkins | UI, multi-cluster |
 | **Automation** | AWX (Ansible) | Terraform | Idempotent, auditable |
-| **Gateway v1** | webMethods | Kong, APISIX | Expertise legacy |
+| **Gateway v1** | webMethods | Kong, APISIX | Legacy expertise |
 | **Gateway v2** | Rust + eBPF | Go, C++ | Performance, safety |
 | **Search** | OpenSearch | Elasticsearch | Apache 2.0, AWS-free |
 
-## Principes directeurs
+## Guiding Principles
 
-| Principe | Application |
-|----------|-------------|
-| **Open Source first** | Éviter lock-in, contribuer upstream |
+| Principle | Application |
+|-----------|-------------|
+| **Open Source first** | Avoid lock-in, contribute upstream |
 | **K8s-native** | Operators, CRDs, GitOps |
-| **Right tool for the job** | Kafka pour events, PostgreSQL pour ACID |
-| **Self-hosted possible** | Pas de dépendance SaaS obligatoire |
-| **Licence permissive** | Apache 2.0, MIT — éviter GPL, SSPL |
-| **Cloud-agnostic** | Pas de service managed obligatoire |
+| **Right tool for the job** | Kafka for events, PostgreSQL for ACID |
+| **Self-hosted possible** | No mandatory SaaS dependency |
+| **Permissive license** | Apache 2.0, MIT — avoid GPL, SSPL |
+| **Cloud-agnostic** | No mandatory managed service |
 
 ## ADR Template
 
-Utiliser le template ci-dessous pour créer de nouveaux ADRs.
+Use the template below to create new ADRs.
 
 ```markdown
 # ADR-XXX: [Title]
