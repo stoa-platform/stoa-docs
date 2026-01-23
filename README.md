@@ -162,6 +162,12 @@ By participating, you agree to uphold this code.
 
 ---
 
+## Governance
+
+See [GOVERNANCE.md](GOVERNANCE.md) for our decision-making process and how to become a maintainer.
+
+---
+
 <div align="center">
   <p>Part of the <a href="https://github.com/stoa-platform">STOA Platform</a> project</p>
 </div>
