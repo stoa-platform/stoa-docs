@@ -94,9 +94,12 @@ CREATE TABLE api_metadata_audit (
 ```
 
 ### API Endpoints
+
+```
 GET    /v1/apis/{api_id}/metadata       — Read metadata
 PATCH  /v1/apis/{api_id}/metadata       — Update metadata (RBAC enforced)
 GET    /v1/apis/{api_id}/metadata/audit — View change history
+```
 
 ### Bootstrap Sync (Git → DB)
 ```python
