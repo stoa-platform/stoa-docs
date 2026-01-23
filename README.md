@@ -155,6 +155,13 @@ Documentation content is licensed under [CC BY 4.0](https://creativecommons.org/
 
 ---
 
+## Code of Conduct
+
+This project follows the [Contributor Covenant 2.1](CODE_OF_CONDUCT.md).
+By participating, you agree to uphold this code.
+
+---
+
 <div align="center">
   <p>Part of the <a href="https://github.com/stoa-platform">STOA Platform</a> project</p>
 </div>
