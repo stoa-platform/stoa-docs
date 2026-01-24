@@ -40,7 +40,7 @@ STOA consists of several key components:
 ## Next Steps
 
 - [Architecture Overview](/docs/concepts/architecture) - Understand STOA's architecture
-- [Quick Start Guide](/docs/guides/quick-start) - Deploy your first tenant
+- [Quick Start Guide](/docs/guides/quickstart) - Deploy your first tenant
 - [Authentication Setup](/docs/guides/authentication) - Configure Keycloak OIDC
 - [API Reference](/docs/api/control-plane) - Explore the Control Plane API
 

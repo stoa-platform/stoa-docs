@@ -271,6 +271,6 @@ kubectl get pods -n stoa-system
 
 ## Next Steps
 
-- [Quick Start Guide](/docs/guides/quick-start) - Get STOA running locally
+- [Quick Start Guide](/docs/guides/quickstart) - Get STOA running locally
 - [API Reference](/docs/api/control-plane) - Explore the Control Plane API
 - [MCP Gateway](/docs/concepts/mcp-gateway) - Deep dive into MCP integration

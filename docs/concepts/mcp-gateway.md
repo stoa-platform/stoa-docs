@@ -210,6 +210,6 @@ Pre-built dashboards available for:
 
 ## Next Steps
 
-- [Quick Start Guide](/docs/guides/quick-start) - Get started with STOA
+- [Quick Start Guide](/docs/guides/quickstart) - Get started with STOA
 - [API Reference](/docs/api/mcp-gateway) - MCP Gateway endpoints
 - [Authentication Guide](/docs/guides/authentication) - Configure auth

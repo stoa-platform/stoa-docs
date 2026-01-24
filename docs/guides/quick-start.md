@@ -213,10 +213,10 @@ Now that you've made your first call, explore further:
 
 | Goal | Guide |
 |------|-------|
-| Add your own API to the catalog | [Publishing APIs](/docs/guides/publishing-apis) |
-| Set up rate limits and quotas | [API Policies](/docs/guides/policies) |
+| Add your own API to the catalog | [Control Plane API](/docs/api/control-plane) |
+| Understand the architecture | [Architecture Overview](/docs/concepts/architecture) |
 | Connect more AI agents | [MCP Integration](/docs/concepts/mcp-gateway) |
-| Deploy STOA on your infrastructure | [Self-Hosted Deployment](/docs/deployment/kubernetes) |
+| Deploy STOA on your infrastructure | [Hybrid Deployment](/docs/deployment/hybrid) |
 
 ---
 

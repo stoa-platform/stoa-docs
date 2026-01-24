@@ -150,7 +150,7 @@ STOA runs on any cloud or on-premises:
 
 ### How do I get started?
 
-See our [Quick Start Guide](/docs/guides/quick-start) for a 5-minute setup.
+See our [Quick Start Guide](/docs/guides/quickstart) for a 5-minute setup.
 
 ---
 

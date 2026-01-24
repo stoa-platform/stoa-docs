@@ -15,7 +15,7 @@ STOA (derived from the Greek word for "porch" or "colonnade" - a gathering place
 ## Documentation Structure
 
 - /docs/intro - Introduction to STOA Platform
-- /docs/guides/quick-start - Quick Start Guide
+- /docs/guides/quickstart - Quick Start Guide
 - /docs/guides/authentication - Authentication Setup with Keycloak
 - /docs/guides/subscriptions - API Subscription Management
 - /docs/concepts/architecture - Platform Architecture

@@ -132,6 +132,10 @@ const config: Config = {
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
+    // Mermaid diagram theming
+    mermaid: {
+      theme: { light: 'neutral', dark: 'dark' },
+    },
     colorMode: {
       defaultMode: 'light',
       disableSwitch: false,
@@ -176,7 +180,7 @@ const config: Config = {
             },
             {
               label: 'Guides',
-              to: '/docs/guides/quick-start',
+              to: '/docs/guides/quickstart',
             },
             {
               label: 'API Reference',

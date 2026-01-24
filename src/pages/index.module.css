@@ -1,8 +1,3 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
-
 .heroBanner {
   padding: 4rem 0;
   text-align: center;
@@ -10,14 +5,227 @@
   overflow: hidden;
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
-  }
+.heroDescription {
+  font-size: 1.25rem;
+  max-width: 700px;
+  margin: 1rem auto 2rem;
+  opacity: 0.9;
 }
 
 .buttons {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.buttons .button {
+  margin: 0.25rem;
+}
+
+/* Section Headers */
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sectionHeader h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.sectionHeader p {
+  font-size: 1.1rem;
+  color: var(--ifm-color-emphasis-600);
+  margin: 0;
+}
+
+/* Quick Start Section */
+.quickstart {
+  padding: 4rem 0;
+  background: var(--ifm-background-surface-color);
+}
+
+/* Features Section */
+.features {
+  padding: 4rem 0;
+  background: var(--ifm-color-emphasis-100);
+}
+
+.featureCard {
+  padding: 1.5rem;
+  height: 100%;
+  border-radius: 12px;
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  transition: all 0.2s ease;
+  margin-bottom: 1.5rem;
+}
+
+.featureCard:hover {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.featureIcon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.featureCard h3 {
+  margin-bottom: 0.5rem;
+}
+
+.featureCard p {
+  color: var(--ifm-color-emphasis-700);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Comparison Section */
+.comparison {
+  padding: 4rem 0;
+  background: var(--ifm-background-surface-color);
+}
+
+.comparisonTable {
+  overflow-x: auto;
+  margin: 2rem 0;
+}
+
+.comparisonTable table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+.comparisonTable th,
+.comparisonTable td {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.comparisonTable th {
+  background: var(--ifm-color-emphasis-100);
+  font-weight: 600;
+}
+
+.comparisonTable th:first-child {
+  width: 30%;
+}
+
+.comparisonTable tr:hover td {
+  background: var(--ifm-color-emphasis-100);
+}
+
+.comparisonTable td:nth-child(2) {
+  color: var(--ifm-color-emphasis-600);
+}
+
+.comparisonTable td:nth-child(3) {
+  color: var(--ifm-color-success);
+  font-weight: 500;
+}
+
+.comparisonCta {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* CTA Section */
+.cta {
+  padding: 4rem 0;
+  background: linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-dark) 100%);
+  color: white;
+  text-align: center;
+}
+
+.cta h2 {
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.cta p {
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.ctaButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ctaButtons .button--primary {
+  background: white;
+  color: var(--ifm-color-primary);
+}
+
+.ctaButtons .button--primary:hover {
+  background: var(--ifm-color-emphasis-100);
+}
+
+.ctaButtons .button--secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: white;
+  color: white;
+}
+
+.ctaButtons .button--secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.ctaButtons .button--outline {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+}
+
+.ctaButtons .button--outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: white;
+}
+
+/* Responsive */
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+
+  .heroDescription {
+    font-size: 1.1rem;
+  }
+
+  .sectionHeader h2 {
+    font-size: 1.5rem;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  .buttons .button {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .ctaButtons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ctaButtons .button {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .comparisonTable th,
+  .comparisonTable td {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
 }

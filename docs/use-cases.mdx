@@ -1,0 +1,275 @@
+---
+sidebar_position: 6
+title: Use Cases
+description: Real-world scenarios where STOA Platform delivers value
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Use Cases
+
+Discover how STOA Platform solves real challenges for enterprises adopting AI and managing APIs at scale.
+
+---
+
+## 🤖 Use Case 1: AI Agent API Gateway
+
+**Challenge:** Your AI agents (Claude, GPT, custom LLMs) need to call internal APIs, but you lack governance, audit trails, and access control.
+
+**Solution:** STOA's MCP Gateway provides a unified entry point for all AI-to-API interactions.
+
+```mermaid
+flowchart LR
+    subgraph Agents["AI Agents"]
+        Claude["Claude.ai"]
+        GPT["GPT-4"]
+        Custom["Custom Agent"]
+    end
+    
+    subgraph STOA["STOA Platform"]
+        MCP["MCP Gateway"]
+        UAC["UAC Contract"]
+        Audit["Audit Log"]
+    end
+    
+    subgraph Backend["Your APIs"]
+        Billing["Billing API"]
+        Inventory["Inventory API"]
+        CRM["CRM API"]
+    end
+    
+    Claude -->|"tools/call"| MCP
+    GPT -->|"function_call"| MCP
+    Custom -->|"HTTP"| MCP
+    
+    MCP --> UAC
+    UAC --> Audit
+    MCP --> Billing
+    MCP --> Inventory
+    MCP --> CRM
+    
+    style MCP fill:#10b981,color:#fff
+    style UAC fill:#6366f1,color:#fff
+```
+
+### Benefits
+
+| Without STOA | With STOA |
+|--------------|-----------|
+| Direct API access, no governance | Centralized policy enforcement |
+| No visibility on AI calls | Full audit trail per agent |
+| Manual API key management | Auto-discovery via MCP |
+| Scattered rate limiting | Unified quotas per tenant |
+
+### Quick Implementation
+
+```bash
+# 1. Register your API in STOA
+stoa api register --name billing-api --upstream https://billing.internal
+
+# 2. Claude.ai automatically discovers it
+# In Claude: "What billing APIs are available?"
+# Claude calls: stoa_catalog(action="search", query="billing")
+
+# 3. Agent subscribes and calls
+# stoa_subscription(action="create", api_id="billing-api")
+# Direct API call through MCP Gateway with full audit
+```
+
+---
+
+## 📊 Use Case 2: AI Cost Management & Token Metering
+
+**Challenge:** Multiple teams use LLMs, but you have no visibility on token consumption, costs spiral, and there's no chargeback mechanism.
+
+**Solution:** STOA's AI Gateway tracks every token, provides real-time dashboards, and enables per-team quotas.
+
+```mermaid
+flowchart TB
+    subgraph Teams["Your Teams"]
+        Team1["Engineering"]
+        Team2["Marketing"]
+        Team3["Support"]
+    end
+    
+    subgraph STOA["STOA AI Gateway"]
+        Router["Smart Router"]
+        Meter["Token Meter"]
+        Cache["Semantic Cache"]
+        Quota["Quota Engine"]
+    end
+    
+    subgraph Providers["LLM Providers"]
+        Anthropic["Anthropic"]
+        OpenAI["OpenAI"]
+        Azure["Azure OpenAI"]
+    end
+    
+    subgraph Output["Observability"]
+        Dashboard["Grafana Dashboard"]
+        Alerts["Cost Alerts"]
+        Reports["Chargeback Reports"]
+    end
+    
+    Team1 --> Router
+    Team2 --> Router
+    Team3 --> Router
+    
+    Router --> Cache
+    Cache -->|"cache miss"| Meter
+    Meter --> Quota
+    Quota --> Anthropic
+    Quota --> OpenAI
+    Quota --> Azure
+    
+    Meter --> Dashboard
+    Quota --> Alerts
+    Meter --> Reports
+    
+    style Router fill:#f59e0b,color:#fff
+    style Meter fill:#10b981,color:#fff
+    style Cache fill:#6366f1,color:#fff
+```
+
+### Benefits
+
+| Metric | Before STOA | After STOA |
+|--------|-------------|------------|
+| Cost visibility | None | Real-time per team |
+| Token waste | ~30% duplicate calls | -40% with semantic cache |
+| Budget control | Monthly surprise bills | Automatic quota enforcement |
+| Provider lock-in | Single provider | Multi-provider failover |
+
+### Dashboard Preview
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Token Usage by Team (January 2026)                     │
+├─────────────────────────────────────────────────────────┤
+│  Engineering  ████████████████████░░░░  2.4M tokens     │
+│  Marketing    ████████░░░░░░░░░░░░░░░░  800K tokens     │
+│  Support      ████████████░░░░░░░░░░░░  1.2M tokens     │
+├─────────────────────────────────────────────────────────┤
+│  Total Cost: €1,240  |  Cache Savings: €520 (30%)       │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🏢 Use Case 3: Multi-Tenant API Platform
+
+**Challenge:** You're an ESN/ISV exposing APIs to multiple clients. You need isolation, per-client quotas, billing, and compliance (NIS2/DORA).
+
+**Solution:** STOA provides native multi-tenancy with complete isolation and European sovereignty.
+
+```mermaid
+flowchart TB
+    subgraph Clients["Your Clients"]
+        ClientA["Client A<br/>(Finance)"]
+        ClientB["Client B<br/>(Retail)"]
+        ClientC["Client C<br/>(Healthcare)"]
+    end
+    
+    subgraph STOA["STOA Multi-Tenant Platform"]
+        Portal["Developer Portal"]
+        
+        subgraph TenantA["Tenant A Namespace"]
+            GWA["Gateway"]
+            KeyA["API Keys"]
+        end
+        
+        subgraph TenantB["Tenant B Namespace"]
+            GWB["Gateway"]
+            KeyB["API Keys"]
+        end
+        
+        subgraph TenantC["Tenant C Namespace"]
+            GWC["Gateway"]
+            KeyC["API Keys"]
+        end
+        
+        Control["Control Plane"]
+        Keycloak["Keycloak SSO"]
+    end
+    
+    subgraph Backend["Shared Backend"]
+        API1["Billing API"]
+        API2["Analytics API"]
+    end
+    
+    ClientA --> Portal
+    ClientB --> Portal
+    ClientC --> Portal
+    
+    Portal --> TenantA
+    Portal --> TenantB
+    Portal --> TenantC
+    
+    TenantA --> Control
+    TenantB --> Control
+    TenantC --> Control
+    
+    Control --> API1
+    Control --> API2
+    
+    Keycloak -.-> TenantA
+    Keycloak -.-> TenantB
+    Keycloak -.-> TenantC
+    
+    style Portal fill:#d946ef,color:#fff
+    style Control fill:#6366f1,color:#fff
+    style Keycloak fill:#f43f5e,color:#fff
+```
+
+### Tenant Isolation Guarantees
+
+| Aspect | Implementation |
+|--------|----------------|
+| **Network** | Kubernetes NetworkPolicy per namespace |
+| **Data** | Schema-per-tenant in PostgreSQL |
+| **Auth** | Separate Keycloak realm per tenant |
+| **Secrets** | Isolated Vault paths |
+| **Quotas** | Independent rate limits |
+
+### Compliance Ready
+
+- **NIS2** — Security incident reporting, access controls
+- **DORA** — ICT risk management, resilience testing
+- **GDPR** — Data residency in EU, audit trails
+- **No CLOUD Act** — European hosting, no US jurisdiction
+
+---
+
+## Getting Started
+
+Ready to implement these use cases?
+
+<Tabs>
+  <TabItem value="saas" label="☁️ SaaS" default>
+    ```bash
+    # Sign up for STOA Cloud
+    # Visit https://console.gostoa.dev/signup
+    
+    # Create your first tenant
+    stoa tenant create --name my-company --tier starter
+    ```
+  </TabItem>
+  <TabItem value="self-hosted" label="🏠 Self-Hosted">
+    ```bash
+    # Install via Helm
+    helm repo add stoa https://charts.gostoa.dev
+    helm install stoa stoa/stoa-platform \
+      --namespace stoa-system \
+      --create-namespace
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Need Help?
+
+- 📚 [Quick Start Guide](/docs/guides/quick-start)
+- 💬 [Discord Community](https://discord.gg/stoa-platform)
+- 📧 [Contact Sales](mailto:sales@gostoa.dev) for enterprise use cases
