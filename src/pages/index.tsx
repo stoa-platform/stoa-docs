@@ -28,7 +28,7 @@ function HomepageHeader() {
           </Link>
           <Link
             className="button button--outline button--lg"
-            to="/docs/guides/quick-start">
+            to="/docs/guides/quickstart">
             🚀 Get Started
           </Link>
           <Link
@@ -222,7 +222,7 @@ function CTASection() {
         <div className={styles.ctaButtons}>
           <Link
             className="button button--primary button--lg"
-            to="/docs/guides/quick-start">
+            to="/docs/guides/quickstart">
             🚀 Quick Start Guide
           </Link>
           <Link

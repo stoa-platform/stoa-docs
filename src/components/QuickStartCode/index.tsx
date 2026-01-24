@@ -223,7 +223,7 @@ export default function QuickStartCode(): JSX.Element {
 
       {/* CTA */}
       <div className="quickstart-cta">
-        <a href="/docs/guides/quick-start" className="cta-button primary">
+        <a href="/docs/guides/quickstart" className="cta-button primary">
           📚 Full Quick Start Guide
         </a>
         <a href="https://console.gostoa.dev/signup" className="cta-button secondary">
