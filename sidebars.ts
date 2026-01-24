@@ -67,7 +67,7 @@ const sidebars: SidebarsConfig = {
           type: 'category',
           label: 'ADRs',
           items: [
-            'reference/adr/001-stoactl-cli',
+            'reference/adr/stoactl-cli',
           ],
         },
       ],
