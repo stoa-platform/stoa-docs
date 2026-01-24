@@ -63,6 +63,13 @@ const sidebars: SidebarsConfig = {
         'reference/configuration',
         'reference/mcp-tools',
         'reference/cli',
+        {
+          type: 'category',
+          label: 'ADRs',
+          items: [
+            'reference/adr/001-stoactl-cli',
+          ],
+        },
       ],
     },
     {
