@@ -10,7 +10,7 @@ STOA Platform addresses critical API management challenges across regulated indu
 
 ## Banking & Central Banks
 
-**Target clients:** Commercial banks, central banks (BdF, BCE), payment processors
+**Target clients:** Commercial banks, European central banks, payment processors
 
 ### The Challenge
 
@@ -164,7 +164,7 @@ flowchart TB
 
 ## Logistics & Supply Chain
 
-**Target clients:** CEVA Logistics, freight forwarders, 3PLs, shipping lines
+**Target clients:** Global logistics providers, freight forwarders, 3PLs, shipping lines
 
 ### The Challenge
 
@@ -247,7 +247,7 @@ flowchart TB
 
 ## Luxury & Retail
 
-**Target clients:** LVMH, luxury brands, omnichannel retailers
+**Target clients:** Luxury conglomerates, premium brands, omnichannel retailers
 
 ### The Challenge
 
