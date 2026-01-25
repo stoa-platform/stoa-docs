@@ -137,9 +137,11 @@ flowchart TB
 | Metric | Before STOA | After STOA |
 |--------|-------------|------------|
 | Cost visibility | None | Real-time per team |
-| Token waste | ~30% duplicate calls | -40% with semantic cache |
+| Token waste | Redundant LLM calls | Reduced with semantic cache* |
 | Budget control | Monthly surprise bills | Automatic quota enforcement |
 | Provider lock-in | Single provider | Multi-provider failover |
+
+*Semantic caching can significantly reduce redundant LLM calls. Actual savings vary based on query patterns and use case.*
 
 ### Dashboard Preview
 
@@ -237,7 +239,9 @@ flowchart TB
 - **NIS2** — Security incident reporting, access controls
 - **DORA** — ICT risk management, resilience testing
 - **GDPR** — Data residency in EU, audit trails
-- **No CLOUD Act** — European hosting, no US jurisdiction
+- **European Hosting** — EU data residency option available*
+
+*Legal jurisdiction depends on multiple factors. Consult your legal counsel for compliance advice.*
 
 ---
 
@@ -273,3 +277,7 @@ Ready to implement these use cases?
 - 📚 [Quick Start Guide](/docs/guides/quickstart)
 - 💬 [Discord Community](https://discord.gg/stoa-platform)
 - 📧 [Contact Sales](mailto:sales@gostoa.dev) for enterprise use cases
+
+---
+
+*Claude is a trademark of Anthropic, PBC. GPT-4 and Azure OpenAI are trademarks of OpenAI/Microsoft. All other product names are trademarks of their respective owners.*

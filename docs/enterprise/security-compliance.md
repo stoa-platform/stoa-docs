@@ -44,6 +44,10 @@ sequenceDiagram
     Note over LOG: 📋 DORA Compliance<br/>• Complete audit trail<br/>• 24h incident reporting<br/>• Microsecond precision
 ```
 
+:::info Compliance Disclaimer
+STOA provides tools and features to support your compliance efforts. Certification, audit, and ultimate compliance responsibility remains with the implementing organization. Consult qualified advisors for your specific regulatory requirements.
+:::
+
 ### NIS2 (Network and Information Security Directive)
 
 NIS2 expands cybersecurity requirements across essential sectors. STOA supports compliance through:
@@ -52,6 +56,10 @@ NIS2 expands cybersecurity requirements across essential sectors. STOA supports 
 - **Sovereignty** — European-hosted Control Plane option with data residency guarantees
 - **Incident Handling** — Automated alerting and audit logs meeting 24-hour reporting requirements
 - **Access Control** — Role-based access with Keycloak integration and multi-tenant isolation
+
+:::info Compliance Disclaimer
+STOA provides tools and features to support your NIS2 compliance efforts. Certification and audit responsibility remains with the implementing organization.
+:::
 
 ### RGPD (General Data Protection Regulation)
 
@@ -63,6 +71,10 @@ STOA implements privacy-by-design principles:
 | **Data Residency** | Control Plane Cloud EU or Full On-Premise deployment options |
 | **Right to Access** | API usage logs per consumer with export capabilities |
 | **Data Portability** | Standard OpenAPI contracts, no vendor lock-in |
+
+:::info Compliance Disclaimer
+STOA provides privacy-by-design features to support GDPR compliance. Data protection responsibility remains with the data controller.
+:::
 
 ## Data Residency Architecture
 

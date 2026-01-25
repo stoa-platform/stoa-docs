@@ -36,7 +36,7 @@ Typical IBM/Software AG stack:
 │                                                                 │
 │  Pain points:                                                   │
 │  • Limited visibility into API traffic                         │
-│  • Expensive licenses, declining expertise                     │
+│  • Specialized expertise availability challenges               │
 │  • Manual API onboarding (weeks, not minutes)                  │
 │  • Configuration sprawl across environments                    │
 └─────────────────────────────────────────────────────────────────┘

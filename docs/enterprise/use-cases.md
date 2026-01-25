@@ -327,7 +327,7 @@ flowchart TB
 ```
 
 **Key benefits:**
-- ✅ **Event scalability** — Auto-scale to 100K+ RPS for launches
+- ✅ **Event scalability** — Designed to scale to high request volumes during peak events
 - ✅ **VIP priority** — Tiered rate limiting, priority queues
 - ✅ **Global edge** — CDN integration, multi-region deployment
 - ✅ **Real-time inventory** — Consistent stock across channels
@@ -342,7 +342,7 @@ Regardless of vertical, STOA provides:
 |------------|-------------|
 | **Self-Service Portal** | Developers find and subscribe to APIs without IT tickets |
 | **Unified Observability** | Single dashboard for all APIs, all protocols |
-| **Compliance Ready** | Built-in audit trails for DORA, NIS2, RGPD |
+| **Compliance-Supporting Features** | Built-in audit trails to support DORA, NIS2, RGPD compliance efforts |
 | **Hybrid Deployment** | Control Plane cloud + Gateway on-premises |
 | **No Rip & Replace** | Augment existing gateways, don't replace them |
 

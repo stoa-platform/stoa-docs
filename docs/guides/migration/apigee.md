@@ -26,8 +26,8 @@ Apigee is Google Cloud's API management platform. STOA provides a hybrid alterna
 
 ## Migration Complexity
 
-**Estimated complexity:** Medium  
-**Estimated timeline:** 4-6 weeks
+**Estimated complexity:** Medium (varies based on implementation)
+**Estimated timeline:** 4-6 weeks typical (depends on API count and customizations)
 
 Apigee's policy model requires translation to STOA's format.
 

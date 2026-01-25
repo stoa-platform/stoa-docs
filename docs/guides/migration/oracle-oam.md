@@ -43,7 +43,7 @@ Typical Oracle stack:
 │  Pain points:                                                   │
 │  • Rigid claims structure — hard to customize tokens           │
 │  • Limited modern auth support (no native OIDC federation)     │
-│  • Expensive licenses with declining roadmap                   │
+│  • Organizations often seek alternatives for cost optimization │
 │  • Complex administration requiring specialized expertise       │
 └─────────────────────────────────────────────────────────────────┘
 ```

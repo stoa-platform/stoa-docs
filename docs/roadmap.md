@@ -83,11 +83,11 @@ This roadmap reflects our current priorities and may evolve based on community f
 | Geographic Load Balancing | 📋 Planned | |
 
 :::info Performance Vision
-The Rust + eBPF implementation will provide:
-- Kernel-level rate limiting and observability
-- Sub-millisecond latency overhead
-- Memory footprint < 80MB (vs typical ~500MB)
-- 10x better performance than user-space solutions
+**Targeted Performance Goals** (benchmarks in progress):
+- Kernel-level rate limiting and observability via eBPF
+- Latency target: Sub-millisecond overhead
+- Memory footprint target: < 80MB
+- Efficient kernel-level processing for improved performance
 :::
 
 ---
