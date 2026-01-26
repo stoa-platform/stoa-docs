@@ -62,9 +62,10 @@ jobs:
           # Set outputs for next steps
           echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
 
-          # Extract counts for summary
-          CRITICAL=$(echo "$OUTPUT" | grep "CRITICAL findings:" | grep -oE '[0-9]+' || echo "0")
-          WARNING=$(echo "$OUTPUT" | grep "WARNING findings:" | grep -oE '[0-9]+' || echo "0")
+          # Extract counts for summary (strip ANSI color codes first)
+          CLEAN_OUTPUT=$(echo "$OUTPUT" | sed 's/\x1b\[[0-9;]*m//g')
+          CRITICAL=$(echo "$CLEAN_OUTPUT" | grep "CRITICAL findings:" | grep -oE '[0-9]+' || echo "0")
+          WARNING=$(echo "$CLEAN_OUTPUT" | grep "WARNING findings:" | grep -oE '[0-9]+' || echo "0")
           echo "critical_count=$CRITICAL" >> $GITHUB_OUTPUT
           echo "warning_count=$WARNING" >> $GITHUB_OUTPUT
 
