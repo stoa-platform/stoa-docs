@@ -212,4 +212,4 @@ apis:
 
 ---
 
-*Document generated from production incident analysis — Proxy Cisco blind spot case (BDF, January 2026)*
+*Document generated from production incident analysis — Proxy blind spot case (January 2026)*

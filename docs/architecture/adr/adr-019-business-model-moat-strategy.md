@@ -73,13 +73,13 @@ STOA + CAB partnership:
 | Security patches | Wait for public disclosure | 24h private notification |
 | Roadmap influence | None | Design partner input |
 | Production troubleshooting | Stack Overflow | Expert who built it |
-| Enterprise integration patterns | Figure it out | 7 years APIM @ Banque de France |
+| Enterprise integration patterns | Figure it out | 7 years APIM @ major central bank |
 | MCP/AI Gateway expertise | Emerging, few experts | Day-1 MCP-native design |
 
 **The expertise stack:**
 ```
 Christophe ABOULICAM
-├── 7 years API Management @ Banque de France
+├── 7 years API Management @ major central bank
 ├── Built APIM offering from scratch (0 → production)
 ├── Enterprise patterns: F5, webMethods, Keycloak, Vault
 ├── MCP protocol: Early adopter, contributor
@@ -138,7 +138,7 @@ For the **ESN partner**:
 When a prospect asks "Why not just fork?", respond:
 
 > **30-second version:**
-> "You can fork — it's Apache 2.0. But you lose: security patches in 24h instead of public disclosure, roadmap influence, official certification for your auditors, and an expert who built the Banque de France APIM. Your devs will spend 6 months understanding what I can explain in 2 days. The fork will cost you more than the partnership."
+> "You can fork — it's Apache 2.0. But you lose: security patches in 24h instead of public disclosure, roadmap influence, official certification for your auditors, and an expert who built the major central bank APIM. Your devs will spend 6 months understanding what I can explain in 2 days. The fork will cost you more than the partnership."
 
 > **Technical version:**
 > "The code is 20% of the value. The other 80% is: knowing WHY each ADR decision was made, the gotchas in MCP SSE connection handling, the Keycloak token exchange edge cases, the F5 mTLS termination patterns. You can read the code, but you can't read the 7 years of production incidents that shaped it."
