@@ -11,14 +11,17 @@ on:
       - 'docs/**'
       - 'blog/**'
       - '*.md'
-      - 'scripts/.audit-blocklist.txt'
+      - 'scripts/**'
+      - '.github/workflows/docs-audit.yml'
   pull_request:
     branches: [main]
     paths:
       - 'docs/**'
       - 'blog/**'
       - '*.md'
-      - 'scripts/.audit-blocklist.txt'
+      - 'scripts/**'
+      - '.github/workflows/docs-audit.yml'
+  workflow_dispatch:  # Allow manual trigger
 
 permissions:
   contents: read
