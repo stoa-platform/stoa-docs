@@ -36,7 +36,7 @@ Apigee's policy model requires translation to STOA's format.
 - **Data Sovereignty** — Keep data in EU with hybrid deployment
 - **Cost Control** — Open-source core, no per-call pricing
 - **Multi-Cloud** — Avoid Google Cloud lock-in
-- **Compliance** — DORA/NIS2 ready architecture
+- **Compliance** — DORA/NIS2 supportive features architecture
 
 ---
 

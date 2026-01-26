@@ -108,7 +108,7 @@ const FeatureList: FeatureItem[] = [
     icon: '🇪🇺',
     description: (
       <>
-        No CLOUD Act exposure. NIS2 and DORA compliant. 
+        European hosting available. NIS2 and DORA supportive features. 
         Host in EU with full data residency control.
       </>
     ),

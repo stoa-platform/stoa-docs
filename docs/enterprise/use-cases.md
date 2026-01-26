@@ -69,7 +69,7 @@ flowchart TB
 ```
 
 **Key benefits:**
-- ✅ **DORA-ready audit trail** — Complete request lifecycle logging
+- ✅ **DORA-supportive audit trail** — Complete request lifecycle logging
 - ✅ **Legacy protection** — Keep existing gateway investment, add control layer
 - ✅ **Unified identity** — Keycloak federates with existing OAM/OIM
 - ✅ **Cost control** — Open-source core, pay only for enterprise support

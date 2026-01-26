@@ -89,7 +89,7 @@ Open [portal.stoa.cab-i.com](https://portal.stoa.cab-i.com) and sign in.
 ### Step 3: Subscribe
 
 1. Click **Subscribe** on any API
-2. Select a plan (Free, Standard, Premium)
+2. Select a plan (Community, Enterprise, Sovereign)
 3. Name your application (e.g., "My First App")
 4. Click **Request Access**
 
