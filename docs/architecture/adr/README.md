@@ -15,6 +15,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [001](./adr-001-api-exposure-strategy.md) | Third-Party API Exposure Strategy — Public API Façade | ✅ |
 | [002](./adr-002-stoactl-cli.md) | stoactl CLI Design | 📋 |
 | [007](./adr-007-gitops-argocd.md) | GitOps with Argo CD | ✅ |
+| [025](./adr-025-gateway-resilience-zombie.md) | Gateway Resilience — Anti-Zombie Node Pattern | 📋 |
 
 ### 🔐 Security & Compliance
 
