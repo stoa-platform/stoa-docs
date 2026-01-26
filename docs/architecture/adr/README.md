@@ -32,6 +32,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [021](./adr-021-uac-driven-observability.md) | UAC-Driven Observability | 📋 |
 | [022](./adr-022-uac-tenant-architecture.md) | UAC Tenant Architecture | ✅ |
 | [023](./adr-023-zero-blind-spot-observability.md) | Zero Blind Spot Observability | ✅ |
+| [024](./adr-024-gateway-unified-modes.md) | Unified Gateway Architecture — 4 Deployment Modes | ✅ |
 
 ### 💼 Business & Strategy
 
