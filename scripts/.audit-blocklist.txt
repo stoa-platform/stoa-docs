@@ -1,0 +1,27 @@
+# CAB-953 - Client/Prospect Names Blocklist
+# One pattern per line (case-insensitive matching)
+# Lines starting with # are comments
+#
+# To add a new client: simply add a new line
+# This file can be overridden in CI via secrets for private lists
+
+# French Banking
+Banque de France
+BdF
+BNP Paribas
+Société Générale
+Crédit Agricole
+
+# Energy
+Engie
+TotalEnergies
+
+# Retail & Luxury
+LVMH
+Carrefour
+
+# Logistics
+CEVA
+
+# Add new clients/prospects below this line
+# -------------------------------------------

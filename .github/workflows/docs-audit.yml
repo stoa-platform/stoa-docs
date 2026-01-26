@@ -1,0 +1,160 @@
+# =============================================================================
+# CAB-953 - Documentation Audit Workflow
+# Blocks PRs containing client/prospect names
+# =============================================================================
+name: Docs Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'blog/**'
+      - '*.md'
+      - 'scripts/.audit-blocklist.txt'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'blog/**'
+      - '*.md'
+      - 'scripts/.audit-blocklist.txt'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  audit-client-names:
+    name: Audit Client Names
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Optional: Override blocklist from secrets (for private client lists)
+      - name: Override blocklist from secrets
+        if: ${{ vars.PRIVATE_BLOCKLIST != '' }}
+        run: |
+          echo "${{ vars.PRIVATE_BLOCKLIST }}" >> scripts/.audit-blocklist.txt
+          echo "Added private blocklist patterns"
+
+      - name: Make script executable
+        run: chmod +x scripts/audit-client-names.sh
+
+      - name: Run audit
+        id: audit
+        run: |
+          # Capture output for annotation
+          set +e
+          OUTPUT=$(scripts/audit-client-names.sh --verbose 2>&1)
+          EXIT_CODE=$?
+          set -e
+
+          # Save output
+          echo "$OUTPUT"
+          echo "$OUTPUT" > audit-report.txt
+
+          # Set outputs for next steps
+          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+
+          # Extract counts for summary
+          CRITICAL=$(echo "$OUTPUT" | grep "CRITICAL findings:" | grep -oE '[0-9]+' || echo "0")
+          WARNING=$(echo "$OUTPUT" | grep "WARNING findings:" | grep -oE '[0-9]+' || echo "0")
+          echo "critical_count=$CRITICAL" >> $GITHUB_OUTPUT
+          echo "warning_count=$WARNING" >> $GITHUB_OUTPUT
+
+          exit $EXIT_CODE
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-report
+          path: audit-report.txt
+          retention-days: 30
+
+      - name: Add PR comment on failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('audit-report.txt', 'utf8');
+
+            // Extract findings table
+            const lines = report.split('\n');
+            const tableStart = lines.findIndex(l => l.includes('| File'));
+            const tableEnd = lines.findIndex((l, i) => i > tableStart && l.includes('Summary'));
+            const table = lines.slice(tableStart, tableEnd).join('\n');
+
+            const body = `## :rotating_light: Client Names Audit Failed
+
+            This PR contains references to client/prospect names that must be anonymized before merge.
+
+            ### Findings
+
+            \`\`\`
+            ${table}
+            \`\`\`
+
+            ### How to fix
+
+            1. Replace client names with generic terms like \`[Enterprise Client]\` or \`[Financial Institution]\`
+            2. Use sector descriptors: \`a major European bank\`, \`a Fortune 500 retailer\`
+            3. Run locally: \`./scripts/audit-client-names.sh\` to verify fixes
+
+            ---
+            *CAB-953 - Automated by docs-audit workflow*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Add PR comment on warnings
+        if: success() && github.event_name == 'pull_request' && steps.audit.outputs.warning_count > 0
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const warningCount = '${{ steps.audit.outputs.warning_count }}';
+
+            const body = `## :warning: Client Names Audit Passed with Warnings
+
+            The audit found **${warningCount} warning(s)** that should be reviewed:
+
+            - \`[Client]\` or \`[Prospect]\` placeholders found
+            - Potential real email addresses detected
+
+            These don't block merge but please review before approving.
+
+            Run locally for details: \`./scripts/audit-client-names.sh --verbose\`
+
+            ---
+            *CAB-953 - Automated by docs-audit workflow*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## Docs Audit Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Critical | ${{ steps.audit.outputs.critical_count }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Warnings | ${{ steps.audit.outputs.warning_count }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.audit.outputs.exit_code }}" == "0" ]; then
+            echo ":white_check_mark: **Audit Passed**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo ":x: **Audit Failed** - Fix critical findings before merge" >> $GITHUB_STEP_SUMMARY
+          fi
