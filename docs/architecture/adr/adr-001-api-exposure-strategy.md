@@ -1,3 +1,8 @@
+---
+sidebar_position: 1
+title: "ADR-001: Third-Party API Exposure Strategy"
+---
+
 # ADR-001: Third-Party API Exposure Strategy — Public API Façade
 
 ## Metadata

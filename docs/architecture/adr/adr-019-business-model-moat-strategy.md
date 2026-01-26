@@ -1,3 +1,8 @@
+---
+sidebar_position: 19
+title: "ADR-019: Business Model & Moat Strategy"
+---
+
 # ADR-019: Business Model & Moat Strategy
 
 | | |

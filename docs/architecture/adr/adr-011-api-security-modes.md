@@ -1,3 +1,8 @@
+---
+sidebar_position: 11
+title: "ADR-011: API Security Modes"
+---
+
 # ADR-011: API Security Mode Selection — mTLS / OAuth2 / Hybrid
 
 ## Metadata

@@ -1,6 +1,6 @@
 ---
-sidebar_position: 1
-title: "ADR-001: stoactl CLI Design"
+sidebar_position: 2
+title: "ADR-002: stoactl CLI Design"
 description: Architecture Decision Record for the GitOps-native STOA CLI
 ---
 

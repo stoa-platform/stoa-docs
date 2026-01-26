@@ -1,3 +1,8 @@
+---
+sidebar_position: 12
+title: "ADR-012: MCP RBAC Architecture"
+---
+
 # ADR-012: MCP Tools Architecture — RBAC & Multi-Tenant Governance
 
 ## Metadata

@@ -1,3 +1,8 @@
+---
+sidebar_position: 7
+title: "ADR-007: GitOps with Argo CD"
+---
+
 # ADR-007: GitOps with Argo CD for STOA Continuous Deployment
 
 ## Metadata

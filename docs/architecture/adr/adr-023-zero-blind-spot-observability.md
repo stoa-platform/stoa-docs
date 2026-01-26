@@ -1,3 +1,8 @@
+---
+sidebar_position: 23
+title: "ADR-023: Zero Blind Spot Observability"
+---
+
 # ADR-023: Zero Blind Spot Observability
 
 **Status:** Accepted
