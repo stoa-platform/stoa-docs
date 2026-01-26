@@ -4,28 +4,54 @@
 
 This directory contains important architectural decisions for STOA Platform.
 
-## ADR Index
+---
 
-| ADR | Title | Status | Date |
-|-----|-------|--------|------|
-| [ADR-001](./adr-001-api-exposure-strategy.md) | Third-Party API Exposure Strategy — Public API Façade | ✅ Accepted | Jan 2026 |
-| [ADR-007](./adr-007-gitops-argocd.md) | GitOps with Argo CD | ✅ Accepted | Jan 2026 |
-| [ADR-011](./adr-011-api-security-modes.md) | API Security Mode Selection — mTLS / OAuth2 / Hybrid | ✅ Accepted | Jan 2026 |
-| [ADR-012](./adr-012-mcp-rbac-architecture.md) | MCP Tools Architecture — RBAC & Multi-Tenant Governance | ✅ Accepted | Jan 2026 |
+## 📚 ADR Index
 
-## Planned ADRs
+### 🏗️ Platform & Infrastructure
 
-| ADR | Title | Status |
-|-----|-------|--------|
-| ADR-010 | Blockchain Decision — Digital Euro 2027+ | 📋 Draft |
-| ADR-013 | Idempotency & Saga Patterns — Exactly-Once for B2B | 📋 Draft |
-| ADR-014 | Delivery Guardrails — Canary & SLO Auto-Freeze | 📋 Draft |
-| ADR-015 | Sender-Constrained Tokens — mTLS Binding, DPoP & DCR | 📋 Draft |
-| ADR-016 | Release Engineering — Git Workflow & Versioning | 📋 Draft |
-| ADR-017 | Kafka/Redpanda Internal-Only — Zero External Exposure | 📋 Draft |
-| ADR-018 | MCP Streaming Response Architecture | 📋 Draft |
-| ADR-019 | Error Snapshots — Flight Recorder for Debugging | 📋 Draft |
-| ADR-020 | AI Gateway — LLM Cost Optimization | 📋 Draft |
+| # | Title | Status |
+|:---:|-------|:------:|
+| [001](./adr-001-api-exposure-strategy.md) | Third-Party API Exposure Strategy — Public API Façade | ✅ |
+| [002](./adr-002-stoactl-cli.md) | stoactl CLI Design | 📋 |
+| [007](./adr-007-gitops-argocd.md) | GitOps with Argo CD | ✅ |
+
+### 🔐 Security & Compliance
+
+| # | Title | Status |
+|:---:|-------|:------:|
+| [011](./adr-011-api-security-modes.md) | API Security Mode Selection — mTLS / OAuth2 / Hybrid | ✅ |
+| [018](./adr-018-security-hardening-p0.md) | Security Hardening P0 — Team Coca Pentest | ✅ |
+
+### 🤖 MCP & AI Gateway
+
+| # | Title | Status |
+|:---:|-------|:------:|
+| [012](./adr-012-mcp-rbac-architecture.md) | MCP Tools Architecture — RBAC & Multi-Tenant Governance | ✅ |
+| [020](./adr-020-runtime-data-governance.md) | Runtime Data Governance | ✅ |
+| [021](./adr-021-uac-driven-observability.md) | UAC-Driven Observability | 📋 |
+| [022](./adr-022-uac-tenant-architecture.md) | UAC Tenant Architecture | ✅ |
+
+### 💼 Business & Strategy
+
+| # | Title | Status |
+|:---:|-------|:------:|
+| [019](./adr-019-business-model-moat-strategy.md) | Business Model & Moat Strategy | ✅ |
+
+---
+
+## 🔮 Planned ADRs
+
+| # | Title | Priority |
+|:---:|-------|:--------:|
+| 010 | Blockchain Decision — Digital Euro 2027+ | 🔵 |
+| 013 | Idempotency & Saga Patterns — Exactly-Once for B2B | 🟡 |
+| 014 | Delivery Guardrails — Canary & SLO Auto-Freeze | 🟡 |
+| 015 | Sender-Constrained Tokens — mTLS Binding, DPoP & DCR | 🟡 |
+| 016 | Release Engineering — Git Workflow & Versioning | 🟢 |
+| 017 | Kafka/Redpanda Internal-Only — Zero External Exposure | 🟡 |
+
+**Legend:** ✅ Accepted · 📋 Draft · 🟢 High · 🟡 Medium · 🔵 Low
 
 ## Technology Choices Overview
 
