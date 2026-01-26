@@ -15,7 +15,7 @@
 
 ---
 
-## 🛡️ Objections & Réponses (<30 sec chacune)
+## 🛡️ Objections & Réponses (`<30 sec` chacune)
 
 ### "Pourquoi pas Kong/Apigee ?"
 
