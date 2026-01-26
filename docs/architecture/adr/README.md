@@ -31,6 +31,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [020](./adr-020-runtime-data-governance.md) | Runtime Data Governance | ✅ |
 | [021](./adr-021-uac-driven-observability.md) | UAC-Driven Observability | 📋 |
 | [022](./adr-022-uac-tenant-architecture.md) | UAC Tenant Architecture | ✅ |
+| [023](./adr-023-zero-blind-spot-observability.md) | Zero Blind Spot Observability | ✅ |
 
 ### 💼 Business & Strategy
 
