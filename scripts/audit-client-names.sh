@@ -173,7 +173,7 @@ scan_file() {
     local file="$1"
     local relative_path="${file#$REPO_ROOT/}"
 
-    ((SCANNED_COUNT++))
+    SCANNED_COUNT=$((SCANNED_COUNT + 1))
     [[ "$VERBOSE" == true ]] && echo "  Scanning: $relative_path"
 
     # Check CRITICAL patterns (from blocklist)
@@ -184,7 +184,7 @@ scan_file() {
                 continue
             fi
 
-            ((CRITICAL_COUNT++))
+            CRITICAL_COUNT=$((CRITICAL_COUNT + 1))
             printf "| %-50s | %5s | %-25s | ${RED}CRITICAL${NC} |\n" \
                 "$relative_path" "$line_num" "$pattern"
 
@@ -197,7 +197,7 @@ scan_file() {
     # Check WARNING patterns
     for pattern in "${WARNING_PATTERNS[@]}"; do
         while IFS=: read -r line_num content; do
-            ((WARNING_COUNT++))
+            WARNING_COUNT=$((WARNING_COUNT + 1))
             printf "| %-50s | %5s | %-25s | ${YELLOW}WARNING${NC}  |\n" \
                 "$relative_path" "$line_num" "${pattern//\\/}"
         done < <(grep -inE "$pattern" "$file" 2>/dev/null || true)
@@ -226,7 +226,7 @@ scan_file() {
             continue
         fi
 
-        ((WARNING_COUNT++))
+        WARNING_COUNT=$((WARNING_COUNT + 1))
         printf "| %-50s | %5s | %-25s | ${YELLOW}WARNING${NC}  |\n" \
             "$relative_path" "$line_num" "Real email: $email"
     done < <(grep -inE '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' "$file" 2>/dev/null || true)
