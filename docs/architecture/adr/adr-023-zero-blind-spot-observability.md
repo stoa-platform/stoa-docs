@@ -156,7 +156,7 @@ apis:
    - Mitigated by retention policies and compression
 
 2. **Performance overhead**
-   - Minimal: <1ms per request for instrumentation
+   - Minimal: `<1ms` per request for instrumentation
    - Tracing is sampled in high-volume scenarios
 
 3. **Complexity**
@@ -180,7 +180,7 @@ apis:
 
 ### Success Metrics
 
-1. **Any error can be diagnosed in <5 minutes** with native STOA data
+1. **Any error can be diagnosed in `<5 minutes`** with native STOA data
 2. **Zero requests** without trace ID in production
 3. **100% of 5xx errors** captured in Error Snapshots
 4. **Network anomalies detected** within 30 seconds
