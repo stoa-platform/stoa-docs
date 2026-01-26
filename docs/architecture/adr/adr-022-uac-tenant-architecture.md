@@ -48,8 +48,8 @@ stoa-catalog/
 │   ├── starter.yaml      # Template tier Starter
 │   └── enterprise.yaml   # Template tier Enterprise
 └── tenants/
-    ├── engie/
-    │   └── uac.yaml      # Config COMPLÈTE Engie
+    ├── energy-corp/
+    │   └── uac.yaml      # Config COMPLÈTE EnergyCorpEU
     ├── demo-tenant/
     │   └── uac.yaml      # Config COMPLÈTE demo
     └── acme-corp/
@@ -66,7 +66,7 @@ flowchart TB
     end
 
     subgraph Tenants["tenants/"]
-        subgraph E["engie/"]
+        subgraph E["energy-corp/"]
             E1[uac.yaml<br/>COMPLET]
         end
         subgraph D["demo-tenant/"]
@@ -145,7 +145,7 @@ Système d'inheritance multi-couches inspiré d'Ansible.
 defaults/base.yaml        # Valeurs par défaut globales
 ├── tiers/starter.yaml    # Override par tier
 │   └── verticals/energy.yaml    # Override par vertical
-│       └── tenants/engie/uac.yaml   # Override final tenant
+│       └── tenants/energy-corp/uac.yaml   # Override final tenant
 ```
 
 | Aspect | Évaluation |
