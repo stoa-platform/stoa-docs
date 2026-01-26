@@ -3,7 +3,8 @@
 # CAB-953 - Client Names Audit Script
 # Scans documentation for leaked client/prospect names
 # =============================================================================
-set -euo pipefail
+# Note: Don't use -u (nounset) as it breaks on CI with empty arrays
+set -eo pipefail
 
 # Colors for output
 RED='\033[0;31m'
