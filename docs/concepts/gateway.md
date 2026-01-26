@@ -11,7 +11,7 @@ STOA Gateway is the unified API gateway component of the STOA Platform. It provi
 **Current Implementation**: Python/FastAPI (`mcp-gateway/`)
 **Target Implementation**: Rust/Tokio (`stoa-gateway/`) — Q4 2026
 
-See [ADR-024](/architecture/adr/adr-024-gateway-unified-modes) for the architecture decision.
+See [ADR-024](../architecture/adr/adr-024-gateway-unified-modes) for the architecture decision.
 
 ## Architecture Vision
 
@@ -194,7 +194,7 @@ spec:
   method: POST
 ```
 
-See [Tool CRD Reference](/reference/crds/tool) for full schema.
+See [MCP Tools Reference](../reference/mcp-tools) for full schema.
 
 ## Current vs Target
 
@@ -208,7 +208,7 @@ See [Tool CRD Reference](/reference/crds/tool) for full schema.
 
 ## Related Documentation
 
-- [ADR-024: Unified Gateway Architecture](/architecture/adr/adr-024-gateway-unified-modes)
+- [ADR-024: Unified Gateway Architecture](../architecture/adr/adr-024-gateway-unified-modes)
 - [MCP Protocol Specification](https://modelcontextprotocol.io/)
-- [MCP Gateway API Reference](/api/mcp-gateway)
-- [Universal API Contract (UAC)](/concepts/uac)
+- [MCP Gateway API Reference](../api/mcp-gateway)
+- [ADR-021: UAC-Driven Observability](../architecture/adr/adr-021-uac-driven-observability)
