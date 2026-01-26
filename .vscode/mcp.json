@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "stoa-platform": {
-      "url": "https://mcp.stoa.cab-i.com/mcp/sse",
+      "url": "https://mcp.gostoa.dev/mcp/sse",
       "transport": "sse",
       "description": "STOA Platform - API Catalog, Subscriptions, Metrics, MCP Tools"
     },
