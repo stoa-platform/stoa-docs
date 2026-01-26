@@ -58,7 +58,7 @@ Each API includes:
 stoa subscription create \
   --tenant acme \
   --api payment-api \
-  --plan standard \
+  --plan community \
   --app my-mobile-app
 
 # Response includes:
@@ -115,12 +115,16 @@ stoa subscription usage \
 
 ### Plan Tiers
 
-| Plan | Rate Limit | Features | Price |
-|------|------------|----------|-------|
-| **Free** | 100/hour | Basic access | $0 |
-| **Standard** | 1000/hour | Priority support | $49/mo |
-| **Professional** | 10000/hour | SLA, dedicated support | $199/mo |
-| **Enterprise** | Custom | White-label, custom SLA | Contact |
+| Plan | Self-Hosted | Managed SaaS | Price |
+|------|-------------|--------------|-------|
+| **Community** | Unlimited, forever | 1M requests/month | Free |
+| **Enterprise** | N/A | Unlimited + SLA 99.9% | €500/month |
+| **Sovereign** | On-premise option | Dedicated EU infra | Custom |
+
+:::info Self-Hosted Licensing
+STOA is Apache 2.0 licensed. Self-hosted deployments are **free, forever, unlimited**.
+We monetize managed services and enterprise support.
+:::
 
 ### Configure Plan
 
@@ -128,11 +132,10 @@ stoa subscription usage \
 # API owner defines subscription plans
 stoa api plan create \
   --api payment-api \
-  --name standard \
-  --rate-limit 1000/hour \
-  --quota 50000/month \
-  --price 49.00 \
-  --features "Priority support,Webhook notifications"
+  --name enterprise \
+  --rate-limit unlimited \
+  --quota unlimited \
+  --features "SLA 99.9%,Priority support,Webhook notifications"
 ```
 
 ## Developer Portal
