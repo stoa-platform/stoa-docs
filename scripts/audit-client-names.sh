@@ -275,13 +275,14 @@ load_blocklist
 # Print table header
 echo ""
 printf "| %-50s | %5s | %-25s | %-8s |\n" "File" "Line" "Pattern" "Severity"
-printf "|%-52s|%7s|%-27s|%-10s|\n" "$(printf '%0.s-' {1..52})" "$(printf '%0.s-' {1..7})" "$(printf '%0.s-' {1..27})" "$(printf '%0.s-' {1..10})"
+echo "|----------------------------------------------------|-------|---------------------------|----------|"
 
 # Find and scan files
 cd "$REPO_ROOT"
-while IFS= read -r -d '' file; do
-    scan_file "$file"
-done < <(find . -type f \( \
+
+# Use a temp file to avoid process substitution issues on CI
+TMPFILE=$(mktemp)
+find . -type f \( \
     -name "*.md" -o \
     -name "*.mdx" -o \
     -name "*.yml" -o \
@@ -298,7 +299,12 @@ done < <(find . -type f \( \
     ! -name "package-lock.json" \
     ! -name "pnpm-lock.yaml" \
     ! -name "yarn.lock" \
-    -print0 2>/dev/null)
+    2>/dev/null > "$TMPFILE" || true
+
+while IFS= read -r file; do
+    [[ -n "$file" ]] && scan_file "$file"
+done < "$TMPFILE"
+rm -f "$TMPFILE"
 
 # Summary
 echo ""
