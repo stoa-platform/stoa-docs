@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Accepted |
+| **Status** | Proposed |
 | **Date** | 2026-01-27 |
 | **Authors** | Christophe ABOULICAM |
 | **Reviewers** | OSS Killer, Archi Vétéran |
@@ -28,8 +28,8 @@ We adopt a **"Kubernetes/CNCF-inspired" model** with three layers of protection:
 
 | Asset | Status | Protection |
 |-------|--------|------------|
-| "STOA Platform" | ✅ INPI registered | Cannot use without license |
-| "STOA" | ✅ INPI registered | Cannot use without license |
+| "STOA Platform" | ✅ INPI registered (Jan 2026, 420€) | Cannot use without license |
+| "STOA" | ✅ INPI registered (Jan 2026) | Cannot use without license |
 | Logo & Visual Identity | ✅ Protected | Derivative works prohibited |
 
 **What this means:**
@@ -115,16 +115,27 @@ For the **ESN partner**:
 | Monthly newsletter | 🟡 Setup pending | Mindshare, announcements |
 | MCP Tool Registry | 🟡 Planned | Lock-in via ecosystem |
 | Migration adapters (Kong, webMethods) | 🟡 Planned | Reduce switching cost TO STOA |
-| Contribution recognition | 🟡 Planned | 45% revenue share model |
+| Contribution recognition | 🟡 Planned Q3 2026 | **45% revenue redistribution** to contributors |
 
-### Pricing Strategy (Draft)
+### Pricing Strategy
 
-| Tier | Price | Includes |
-|------|-------|----------|
-| **Community** | Free | Apache 2.0 code, public docs, community Discord |
-| **Pro** | €500/month | Priority support (48h SLA), private security advisories, quarterly roadmap calls |
-| **Enterprise** | €2,000/month | 24h SLA, dedicated Slack channel, on-site architecture review, certification included |
-| **Design Partner** | Custom | Roadmap influence, early access, co-development, case study rights |
+| Tier | Prix | Cible | Statut |
+|------|------|-------|--------|
+| **Community** | Free | Self-hosted, DIY | ✅ Dispo |
+| **Cloud Solo** | ~50-100€/mois | Indépendants, petites équipes | 📅 Q4 2026 |
+| **Pro** | 500€/mois | PME, support prioritaire | 📅 Q2 2026 |
+| **Enterprise** | 2000€/mois | Grands comptes, SLA, custom | 📅 Q3 2026 |
+| **Design Partner** | Custom | Early adopters, co-construction | 🟢 Active |
+
+**Tier details:**
+
+| Tier | Includes |
+|------|----------|
+| **Community** | Apache 2.0 code, public docs, community Discord |
+| **Cloud Solo** | Managed hosting, basic support, single-tenant |
+| **Pro** | Priority support (48h SLA), private security advisories, quarterly roadmap calls |
+| **Enterprise** | 24h SLA, dedicated Slack channel, on-site architecture review, certification included |
+| **Design Partner** | Roadmap influence, early access, co-development, case study rights |
 
 **What's NOT open source (commercial features, post-MVP):**
 - Advanced multi-tenant billing & chargeback
@@ -163,6 +174,12 @@ When a prospect asks "Why not just fork?", respond:
 - If community doesn't grow, network moat is weak
 - If competitor forks and builds better community, we lose
 - Certification value depends on market recognition
+
+### Mitigations
+- Certification program investment secured via bootstrap revenue (Design Partner tier)
+- Community growth tied to public roadmap transparency
+- Early partner program (Q2 2026) to validate pricing before public launch
+- 45% revenue redistribution creates aligned incentives with contributors
 
 ## Compliance
 
