@@ -32,7 +32,7 @@ The [Implementation Review Loop](./review-loop) (Standard Marchemalo) ensures ev
 
 ### Architecture Decision Records (ADRs)
 
-All significant architectural decisions are documented in [ADRs](/adr). These provide:
+All significant architectural decisions are documented in [ADRs](/architecture/adr). These provide:
 
 - Context and problem statement
 - Considered options
@@ -41,7 +41,7 @@ All significant architectural decisions are documented in [ADRs](/adr). These pr
 
 ### Patterns Library
 
-Validated implementation patterns are collected in the [Patterns Library](/patterns) for reuse across the codebase.
+Validated implementation patterns are collected in the Patterns Library *(coming soon)* for reuse across the codebase.
 
 ## The Council
 
@@ -86,6 +86,6 @@ As the community grows, governance will evolve toward a distributed model with:
 ## Related Documents
 
 - [Implementation Review Loop](./review-loop) — Quality validation process
-- [ADRs](/adr) — Architecture Decision Records
-- [Contributing Guide](/contributing) — How to contribute
-- [Code of Conduct](/code-of-conduct) — Community standards
+- [ADRs](/architecture/adr) — Architecture Decision Records
+- Contributing Guide *(coming soon)*
+- Code of Conduct *(coming soon)*
