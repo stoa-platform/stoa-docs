@@ -1,0 +1,11 @@
+{
+  "label": "Governance",
+  "position": 10,
+  "link": {
+    "type": "doc",
+    "id": "governance/index"
+  },
+  "customProps": {
+    "description": "Quality standards and decision-making processes"
+  }
+}
