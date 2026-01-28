@@ -149,7 +149,7 @@ Example:
 | 9/10 | Excellent — minor risks identified | ✅ Implement | Prod + feature flag |
 | 8/10 | Good — issues to monitor | ❌ Corrections | (Staging if fast-track) |
 | 7/10 | Acceptable — significant issues | ❌ Corrections | — |
-| <7/10 | Insufficient | ❌ Major rework | — |
+| \<7/10 | Insufficient | ❌ Major rework | — |
 
 ## The Council
 
@@ -176,7 +176,7 @@ Example:
 
 ### Archi 50x50 (40 years XP)
 
-| Criterion | 10/10 | 9/10 | <9/10 |
+| Criterion | 10/10 | 9/10 | \<9/10 |
 |-----------|-------|------|-------|
 | Patterns | 100% follows existing | 1 justified deviation | Inconsistent |
 | Lifecycle | status + soft delete + audit | 1 minor missing | Major gaps |
@@ -190,7 +190,7 @@ Score = minimum of all 4 sub-reviewers.
 
 #### Chucky (Crypto)
 
-| Criterion | 10/10 | 9/10 | <9/10 |
+| Criterion | 10/10 | 9/10 | \<9/10 |
 |-----------|-------|------|-------|
 | Private key | Never stored/logged | — | Any violation |
 | Entropy | Crypto secure | — | random() |
@@ -198,21 +198,21 @@ Score = minimum of all 4 sub-reviewers.
 
 #### N3m0 (Injection)
 
-| Criterion | 10/10 | 9/10 | <9/10 |
+| Criterion | 10/10 | 9/10 | \<9/10 |
 |-----------|-------|------|-------|
 | Input validation | Regex + sanitize | Sanitize only | None |
 | Injection tests | Complete parametrized | Basic | None |
 
 #### Gh0st (Secrets)
 
-| Criterion | 10/10 | 9/10 | <9/10 |
+| Criterion | 10/10 | 9/10 | \<9/10 |
 |-----------|-------|------|-------|
 | Logs | No secrets | Warning if debug | Secret in logs |
 | Errors | Generic messages | — | Stack traces |
 
 #### Pr1nc3ss (Access Control)
 
-| Criterion | 10/10 | 9/10 | <9/10 |
+| Criterion | 10/10 | 9/10 | \<9/10 |
 |-----------|-------|------|-------|
 | RBAC | Complete + tested | Complete | Missing |
 | Isolation | 404 (not 403) + tested | 404 | Info disclosure |
@@ -220,7 +220,7 @@ Score = minimum of all 4 sub-reviewers.
 
 ### OSS Killer (Skeptical VC)
 
-| Criterion | 10/10 | 9/10 | <9/10 |
+| Criterion | 10/10 | 9/10 | \<9/10 |
 |-----------|-------|------|-------|
 | Scope | Exactly the ticket | +1 nice-to-have | Scope creep |
 | YAGNI | No "just in case" code | 1 future abstraction | Over-engineering |
@@ -272,11 +272,11 @@ Score = minimum of all 4 sub-reviewers.
 
 | Metric | Target | Alert if... |
 |--------|--------|-------------|
-| Avg review time | <1h | >2h |
-| Avg iterations | <2 | >2.5 |
-| 1st iteration approval rate | >30% | <20% |
-| BDFL escalation rate | <5% | >10% |
-| Review/code overhead | <30% | >50% |
+| Avg review time | \<1h | \>2h |
+| Avg iterations | \<2 | \>2.5 |
+| 1st iteration approval rate | \>30% | \<20% |
+| BDFL escalation rate | \<5% | \>10% |
+| Review/code overhead | \<30% | \>50% |
 
 ## Anti-Patterns
 
@@ -295,7 +295,7 @@ Score = minimum of all 4 sub-reviewers.
 |------|--------------|-----------|
 | Feature ≥3pts + criterion | ✅ YES | Per tags |
 | Feature ≥3pts simple | ⚠️ Light Archi | Archi only |
-| Feature <3pts | ❌ Standard PR review | — |
+| Feature \<3pts | ❌ Standard PR review | — |
 | Security fix | ✅ Fast-track | Team Coca |
 | Critical hotfix | ✅ Fast-track | Team Coca |
 | Major refactor | ✅ YES | Archi + OSS |
