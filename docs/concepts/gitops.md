@@ -29,7 +29,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/stoa-platform/tenants
+    repoURL: https://gitlab.com/stoa-platform/stoa-gitops
     targetRevision: main
     path: tenants/acme
   destination:
@@ -72,8 +72,8 @@ AWX (Ansible Tower) handles:
 stoa-tenants/
 ├── tenants/
 │   ├── acme/
-│   │   ├── kong-deployment.yaml
-│   │   ├── kong-service.yaml
+│   │   ├── mcp-gateway-deployment.yaml
+│   │   ├── mcp-gateway-service.yaml
 │   │   ├── ingress.yaml
 │   │   └── network-policy.yaml
 │   └── globex/

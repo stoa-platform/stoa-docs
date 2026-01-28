@@ -73,7 +73,7 @@ Every contribution matters. We track impact across four dimensions:
 - 📜 [Philosophy & Principles](/docs/community/philosophy) — Why we do what we do
 - 💰 [Contributor Rewards](/docs/community/rewards) — How contributions are valued
 - ❓ [FAQ](/docs/community/faq) — Common questions from OSS skeptics
-- 💬 [Discord](https://discord.gg/stoa-platform) — Join the conversation
+- 💬 [Discord](https://discord.gg/j8tHSSes) — Join the conversation
 - 🐙 [GitHub](https://github.com/stoa-platform) — Contribute code
 
 ---

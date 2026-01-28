@@ -80,7 +80,7 @@ spec:
       - type: apikey
         header: X-API-Key
       - type: jwt
-        issuer: https://auth.stoa.cab-i.com/realms/acme
+        issuer: https://auth.gostoa.dev/realms/acme
   policies:
     rateLimit:
       requestsPerHour: 10000
@@ -123,12 +123,12 @@ current-context: production
 contexts:
   - name: production
     context:
-      server: https://api.stoa.cab-i.com
+      server: https://api.gostoa.dev
       tenant: acme
 
   - name: staging
     context:
-      server: https://api.staging.stoa.cab-i.com
+      server: https://api.staging.gostoa.dev
       tenant: acme-staging
 
   - name: local
@@ -140,7 +140,7 @@ contexts:
 ### Command Examples
 ```bash
 # Context management
-stoactl config set-context prod --server=https://api.stoa.cab-i.com --tenant=acme
+stoactl config set-context prod --server=https://api.gostoa.dev --tenant=acme
 stoactl config use-context prod
 stoactl auth login
 

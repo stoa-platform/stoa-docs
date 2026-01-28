@@ -38,7 +38,7 @@ Choose your path:
 1. Open [Claude.ai](https://claude.ai) → Settings → Integrations
 2. Add MCP Server:
    ```
-   URL: https://mcp.stoa.cab-i.com/mcp/sse
+   URL: https://mcp.gostoa.dev/mcp/sse
    Name: STOA Platform
    ```
 3. Authenticate with your STOA credentials
@@ -78,7 +78,7 @@ Ask Claude:
 
 ### Step 1: Access the Portal
 
-Open [portal.stoa.cab-i.com](https://portal.stoa.cab-i.com) and sign in.
+Open [portal.gostoa.dev](https://portal.gostoa.dev) and sign in.
 
 ### Step 2: Browse the API Catalog
 
@@ -118,12 +118,12 @@ Use the built-in **API Playground**:
 
 ```bash
 # Set your credentials
-export STOA_URL="https://api.stoa.cab-i.com"
+export STOA_URL="https://api.gostoa.dev"
 export CLIENT_ID="your-client-id"
 export CLIENT_SECRET="your-client-secret"
 
 # Get OAuth token from Keycloak
-TOKEN=$(curl -s -X POST "https://auth.stoa.cab-i.com/realms/stoa/protocol/openid-connect/token" \
+TOKEN=$(curl -s -X POST "https://auth.gostoa.dev/realms/stoa/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=${CLIENT_ID}" \
   -d "client_secret=${CLIENT_SECRET}" \
@@ -245,4 +245,4 @@ Now that you've made your first call, explore further:
 
 - 📚 [Full Documentation](https://docs.gostoa.dev)
 - 🐛 [GitHub Issues](https://github.com/stoa-platform/stoa/issues)
-- 💬 [Discord Community](https://discord.gg/stoa-platform)
+- 💬 [Discord Community](https://discord.gg/j8tHSSes)
