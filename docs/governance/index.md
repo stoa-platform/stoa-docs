@@ -32,7 +32,7 @@ The [Implementation Review Loop](./review-loop) (Standard Marchemalo) ensures ev
 
 ### Architecture Decision Records (ADRs)
 
-All significant architectural decisions are documented in [ADRs](/architecture/adr). These provide:
+All significant architectural decisions are documented in [ADRs](../architecture/adr/adr-001-api-exposure-strategy). These provide:
 
 - Context and problem statement
 - Considered options
@@ -86,6 +86,6 @@ As the community grows, governance will evolve toward a distributed model with:
 ## Related Documents
 
 - [Implementation Review Loop](./review-loop) — Quality validation process
-- [ADRs](/architecture/adr) — Architecture Decision Records
+- [ADRs](../architecture/adr/adr-001-api-exposure-strategy) — Architecture Decision Records
 - Contributing Guide *(coming soon)*
 - Code of Conduct *(coming soon)*
