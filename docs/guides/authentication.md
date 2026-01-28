@@ -55,9 +55,9 @@ This creates:
 - Valid Redirect URIs configured
 - Service account enabled
 
-### Step 2: Configure Kong OIDC Plugin
+### Step 2: Configure STOA Gateway OIDC
 
-STOA configures Kong automatically, but you can customize:
+STOA Gateway automatically configures OIDC, but you can customize:
 
 ```bash
 stoa api auth configure \
@@ -76,7 +76,7 @@ stoa api auth configure \
 TOKEN=$(curl -X POST \
   https://auth.gostoa.dev/realms/acme/protocol/openid-connect/token \
   -d "client_id=api-my-api" \
-  -d "client_secret=YOUR_SECRET" \
+  -d "client_secret=${STOA_CLIENT_SECRET}" \
   -d "grant_type=client_credentials" \
   | jq -r '.access_token')
 
@@ -97,7 +97,7 @@ POST /realms/{tenant}/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
 client_id=api-my-api&
-client_secret=SECRET&
+client_secret=${STOA_CLIENT_SECRET}&
 grant_type=client_credentials&
 scope=api:read api:write
 ```
@@ -131,7 +131,7 @@ POST /realms/{tenant}/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
 client_id=trusted-app&
-client_secret=SECRET&
+client_secret=${STOA_CLIENT_SECRET}&
 grant_type=password&
 username=user@example.com&
 password=userpass
@@ -139,7 +139,7 @@ password=userpass
 
 ## Token Validation
 
-Kong validates JWT tokens automatically:
+STOA Gateway validates JWT tokens automatically:
 
 1. **Signature Validation** - Verifies token signature using Keycloak's public keys
 2. **Expiration Check** - Ensures token hasn't expired
@@ -164,7 +164,7 @@ stoa auth role assign \
   --role api-admin
 ```
 
-### Enforce Roles in Kong
+### Enforce Roles in STOA Gateway
 
 ```bash
 # Require specific role for route
@@ -233,4 +233,15 @@ stoa auth test-connection --tenant acme
 
 ---
 
-🚧 **Coming Soon**: Multi-factor authentication, passwordless auth, and social login integration guides.
+## Next Steps
+
+Now that authentication is configured:
+
+- [API Subscriptions](/docs/guides/subscriptions) — Manage access to your APIs
+- [API Reference](/docs/api/control-plane) — Explore the Control Plane API
+- [MCP Gateway](/docs/api/mcp-gateway) — Connect AI agents to your tools
+- [FAQ](/docs/faq) — Common questions answered
+
+---
+
+**Need Help?** [GitHub Issues](https://github.com/stoa-platform/stoa/issues) · [Discord](https://discord.gg/j8tHSSes)

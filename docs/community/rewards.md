@@ -221,7 +221,7 @@ Year 5 (2030) — 200 clients — €6M revenue
 
 ## Get Started
 
-1. **Join Discord** — [discord.gg/stoa-platform](https://discord.gg/stoa-platform)
+1. **Join Discord** — [discord.gg/j8tHSSes](https://discord.gg/j8tHSSes)
 2. **Pick an issue** — Look for `good-first-issue` labels
 3. **Submit a PR** — Follow contribution guidelines
 4. **Earn points** — Your contributions are tracked automatically

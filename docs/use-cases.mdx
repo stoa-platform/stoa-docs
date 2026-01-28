@@ -261,9 +261,9 @@ Ready to implement these use cases?
   </TabItem>
   <TabItem value="self-hosted" label="🏠 Self-Hosted">
     ```bash
-    # Install via Helm
-    helm repo add stoa https://charts.gostoa.dev
-    helm install stoa stoa/stoa-platform \
+    # Install via Helm (from source)
+    git clone https://github.com/stoa-platform/stoa.git && cd stoa
+    helm install stoa ./charts/stoa-platform \
       --namespace stoa-system \
       --create-namespace
     ```
@@ -275,7 +275,7 @@ Ready to implement these use cases?
 ## Need Help?
 
 - 📚 [Quick Start Guide](/docs/guides/quickstart)
-- 💬 [Discord Community](https://discord.gg/stoa-platform)
+- 💬 [Discord Community](https://discord.gg/j8tHSSes)
 - 📧 [Contact Sales](mailto:sales@gostoa.dev) for enterprise use cases
 
 ---

@@ -142,7 +142,7 @@ Deployment is automatic via Vercel on push to `main`.
 | Repository | Description |
 |------------|-------------|
 | [stoa](https://github.com/stoa-platform/stoa) | Main platform monorepo |
-| [stoa-web](https://github.com/stoa-platform/stoa-web) | Marketing website |
+| [stoa-web](https://github.com/stoa-platform/stoa-web) | Marketing website (coming soon) |
 | [stoa-helm](https://github.com/stoa-platform/stoa-helm) | Helm charts |
 
 ---

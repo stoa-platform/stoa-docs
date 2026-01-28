@@ -186,4 +186,4 @@ We'd rather earn your trust than demand it.
 
 ---
 
-*Have a question not answered here? Ask in `#questions` on [Discord](https://discord.gg/stoa-platform) or email [hello@gostoa.dev](mailto:hello@gostoa.dev)*
+*Have a question not answered here? Ask in `#questions` on [Discord](https://discord.gg/j8tHSSes) or email [hello@gostoa.dev](mailto:hello@gostoa.dev)*

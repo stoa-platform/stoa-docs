@@ -258,12 +258,12 @@ flowchart TB
 # 1. Create namespace
 kubectl create namespace stoa-system
 
-# 2. Add Helm repository
-helm repo add stoa https://charts.gostoa.dev
-helm repo update
+# 2. Clone and install from source
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
 
 # 3. Install with hybrid configuration
-helm install stoa stoa/stoa-gateway \
+helm install stoa ./charts/stoa-platform \
   --namespace stoa-system \
   --set mode=hybrid \
   --set controlPlane.endpoint=https://api.gostoa.dev \

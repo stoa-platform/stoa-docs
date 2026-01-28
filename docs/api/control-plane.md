@@ -23,9 +23,9 @@ Authorization: Bearer <access_token>
 Get access token from Keycloak:
 
 ```bash
-curl -X POST https://auth.gostoa.dev/realms/master/protocol/openid-connect/token \
-  -d "client_id=stoa-api" \
-  -d "client_secret=YOUR_SECRET" \
+curl -X POST https://auth.gostoa.dev/realms/stoa/protocol/openid-connect/token \
+  -d "client_id=control-plane-api" \
+  -d "client_secret=${STOA_CLIENT_SECRET}" \
   -d "grant_type=client_credentials"
 ```
 

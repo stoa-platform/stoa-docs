@@ -434,14 +434,15 @@ X-MCP-Cache: max-age=300
 ### Python Client
 
 ```python
+import os
 import requests
 
 # Authenticate
 auth_response = requests.post(
-    'https://auth.gostoa.dev/realms/acme/protocol/openid-connect/token',
+    'https://auth.gostoa.dev/realms/stoa/protocol/openid-connect/token',
     data={
         'client_id': 'my-app',
-        'client_secret': 'secret',
+        'client_secret': os.environ.get('STOA_CLIENT_SECRET'),
         'grant_type': 'client_credentials'
     }
 )

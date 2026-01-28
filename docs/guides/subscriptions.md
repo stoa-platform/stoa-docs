@@ -268,4 +268,9 @@ stoa subscription scope set \
 
 ---
 
-🚧 **Coming Soon**: Usage-based billing, marketplace integration, and advanced analytics.
+## Next Steps
+
+- [Authentication Setup](/docs/guides/authentication) — Configure SSO and OIDC
+- [API Reference](/docs/api/control-plane) — Full API documentation
+- [CLI Reference](/docs/reference/cli) — Manage subscriptions via CLI
+- [FAQ](/docs/faq) — Common questions answered
