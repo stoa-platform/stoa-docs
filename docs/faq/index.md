@@ -10,7 +10,7 @@ description: Frequently Asked Questions about STOA Platform
 
 ### What is STOA?
 
-STOA is an enterprise API Management platform that unifies REST APIs and MCP Tools under a single governance layer. Think of it as **"The Cilium of API Management"** — designed for cloud-native environments, CLI-first, and AI-ready.
+STOA is an enterprise API Management platform that unifies REST APIs and MCP Tools under a single governance layer. Think of it as **"The Cilium of API Management"** — designed for cloud-native environments, GitOps-first, and AI-ready.
 
 ### Why the name "STOA"?
 

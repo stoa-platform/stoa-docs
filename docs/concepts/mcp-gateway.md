@@ -64,7 +64,7 @@ See our [Roadmap](/docs/roadmap) for details.
 
 ### ⚡ Production Ready
 - Async request handling with FastAPI
-- Redis-based rate limiting
+- Kafka/Redpanda-based metering pipeline
 - Connection pooling and request batching
 - OPA-based policy enforcement
 
@@ -131,9 +131,6 @@ CONTROL_PLANE_URL=http://control-plane:8080
 # Keycloak
 KEYCLOAK_URL=https://auth.gostoa.dev
 KEYCLOAK_REALM=stoa
-
-# Redis (for rate limiting)
-REDIS_URL=redis://redis:6379
 
 # OPA (for policies)
 OPA_URL=http://opa:8181

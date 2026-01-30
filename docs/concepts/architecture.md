@@ -34,7 +34,7 @@ flowchart TB
     subgraph Backend["💾 Backend Services"]
         KC["Keycloak"]
         PG["PostgreSQL"]
-        Redis["Redis"]
+        Kafka["Kafka/Redpanda"]
         Vault["HashiCorp Vault"]
     end
 
@@ -47,7 +47,7 @@ flowchart TB
     Portal & Console --> CoreAPI
     CoreAPI -->|"config sync"| MCPGateway & WMGateway
     MCPGateway --> Tools
-    CoreAPI --> PG & Redis & KC & Vault
+    CoreAPI --> PG & Kafka & KC & Vault
     MCPGateway & WMGateway --> KC
 ```
 
@@ -75,7 +75,7 @@ The central management API built with **Python** and **FastAPI**.
 | Language | Python 3.12+ |
 | Framework | FastAPI (async) |
 | Database | PostgreSQL + SQLAlchemy |
-| Cache | Redis |
+| Event Streaming | Kafka/Redpanda |
 | Auth | Keycloak (OIDC) |
 
 **Responsibilities:**
@@ -173,14 +173,6 @@ Primary database storing:
 - Tool definitions
 - Audit logs
 
-### Redis
-
-In-memory data store for:
-- Session management
-- Rate limiting counters
-- Response caching
-- Real-time metrics
-
 ### Kafka/Redpanda
 
 Event streaming for:
@@ -262,7 +254,7 @@ kubectl get pods -n stoa-system
 | API Gateway | webMethods | Traditional API traffic |
 | Frontend | React, TypeScript, Tailwind | Portal & Console |
 | Database | PostgreSQL | Primary data store |
-| Cache | Redis | Sessions, rate limiting |
+| Event Streaming | Kafka/Redpanda | Internal events |
 | Streaming | Kafka/Redpanda | Internal events |
 | Auth | Keycloak | OIDC/OAuth2 |
 | Secrets | HashiCorp Vault | Encryption, credentials |
