@@ -97,4 +97,4 @@ This governance document will be updated to reflect any changes.
 
 ---
 
-*Last updated: January 2026*
+*Last updated: January 2025*
