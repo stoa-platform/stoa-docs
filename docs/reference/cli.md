@@ -4,6 +4,10 @@ sidebar_position: 2
 
 # CLI Reference
 
+:::caution Coming Soon — Q3 2026
+The `stoa` CLI is not yet available. This page documents the **planned** interface. Use the [REST API](/docs/api/control-plane) for now.
+:::
+
 Command-line interface reference for STOA Platform.
 
 ## Installation

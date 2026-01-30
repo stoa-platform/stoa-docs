@@ -1,64 +1,147 @@
-# Contributing to STOA Platform
+# Contributing to STOA
 
-Thank you for your interest in contributing to STOA!
+First off, thank you for considering contributing to STOA! 🏛️
 
-## Our Standards
+## Code of Conduct
 
-All contributors must follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+This project and everyone participating in it is governed by our [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to conduct@gostoa.dev.
 
-## Governance
+## How Can I Contribute?
 
-For information about project roles, decision-making, and how to become a maintainer,
-see our [Governance document](GOVERNANCE.md).
+### Reporting Bugs
 
-## Creating Issues
+Before creating bug reports, please check existing issues to avoid duplicates. When you create a bug report, include as many details as possible:
 
-We follow the **Marchemalo Standard** for issue quality.
+- **Use a clear and descriptive title**
+- **Describe the exact steps to reproduce the problem**
+- **Provide specific examples** (config snippets, logs, etc.)
+- **Describe the behavior you observed and what you expected**
+- **Include your environment** (OS, Docker version, K8s version, etc.)
 
-### The 30-Second Test
+### Suggesting Enhancements
 
-> *"Would a senior architect with 40 years of experience understand this issue in 30 seconds and know exactly what to deliver?"*
+Enhancement suggestions are tracked as GitHub issues. When creating an enhancement suggestion:
 
-If not, rewrite it.
+- **Use a clear and descriptive title**
+- **Provide a detailed description of the suggested enhancement**
+- **Explain why this enhancement would be useful**
+- **List any alternatives you've considered**
 
-### Required Elements
+### Creating Issues
 
-Every issue MUST have:
+We follow the **Marchemalo Standard** for issue quality. Every ticket should pass this test:
 
-| Element | Question | Example |
-|---------|----------|---------|
-| **Objective** | What are we delivering? | "Add CODE_OF_CONDUCT.md with Contributor Covenant 2.1" |
-| **Why Now** | Why is this important? | "Community launch requires clear behavioral guidelines" |
-| **Deliverables** | What files/changes? | "CODE_OF_CONDUCT.md, README.md update, CONTRIBUTING.md update" |
-| **Definition of Done** | How do we know it's complete? | "File exists, email configured, links added, CI passes" |
-| **Estimate** | How long? | "~30min" or "2 points" |
+> *"Would an architect with 40 years of experience understand this issue in 30 seconds and know exactly what to deliver?"*
 
-### Anti-Patterns
+#### Required Elements
+
+Each issue MUST include:
+
+| Element | Description |
+|---------|-------------|
+| **🎯 Objective** | One clear sentence stating what will be delivered |
+| **💡 Why Now** | Context, urgency, and impact if not done |
+| **📋 Deliverables** | Explicit list of what will be produced |
+| **✅ Definition of Done** | Objective, verifiable criteria |
+| **⏱️ Estimation** | Story points or time estimate |
+
+#### Issue Template
+
+```markdown
+## 🎯 Objective
+[One clear sentence]
+
+## 💡 Why Now
+[Context and urgency]
+
+## 📋 Deliverables
+- [ ] Deliverable 1
+- [ ] Deliverable 2
+
+## ✅ Definition of Done
+- [ ] Verifiable criterion 1
+- [ ] Verifiable criterion 2
+- [ ] Tests pass
+- [ ] Documentation updated (if applicable)
+
+## ⏱️ Estimation
+[X points] or [~Xh]
+
+## 🔗 References
+- Link 1
+- Link 2
+```
+
+#### Anti-patterns to Avoid
 
 | ❌ Bad | ✅ Good |
 |--------|---------|
-| "Improve the docs" | "Add 3 architecture diagrams to /docs/architecture/" |
-| "Fix the bug" | "POST /v1/users returns 500 when email=null → return 400 with validation message" |
+| "Improve the site" | "Add 3 concrete use cases to /use-cases with diagrams" |
+| "Fix the bug" | "Endpoint /v1/users returns 500 when email=null → return 400 with message" |
 | "Documentation" | "Create ADR-005 for multi-tenant isolation decision" |
 | No DoD | "Done when: tests pass + docs updated + review approved" |
 
-### Real Examples
+#### Splitting Large Issues
 
-**CAB-851 — CODE_OF_CONDUCT** (Good ✅)
-- Objective: Add Contributor Covenant 2.1
-- Why: First step for open-source community readiness
-- DoD: File exists, email=conduct@gostoa.dev, links in README+CONTRIBUTING
-- Estimate: ~30min
+If an issue is estimated at **> 5 story points**, it MUST be split into smaller issues.
 
-**CAB-852 — GOVERNANCE** (Good ✅)
-- Objective: Document BDFL governance model
-- Why: Contributors need to know who decides what
-- DoD: GOVERNANCE.md with roles, decision process, maintainer path
-- Estimate: ~1h
+#### Non-Conforming Issues
 
-## Submitting Pull Requests
+Issues that don't meet the Marchemalo Standard will be labeled `needs-triage` and require revision before being worked on.
 
-### Commit Message Convention
+### Pull Requests
+
+1. Fork the repo and create your branch from `main`
+2. Follow our coding standards and conventions
+3. Add tests if applicable
+4. Ensure the test suite passes
+5. Update documentation as needed
+6. Submit your pull request!
+
+## Development Setup
+
+### Prerequisites
+
+- Python 3.11+
+- Node.js 20+
+- Docker & Docker Compose
+- kubectl (for K8s development)
+
+### Local Development
+
+```bash
+# Clone your fork
+git clone https://github.com/YOUR_USERNAME/stoa.git
+cd stoa
+
+# Install dependencies
+make install
+
+# Start local environment
+make dev
+
+# Run tests
+make test
+```
+
+## Coding Standards
+
+### Branch Naming
+
+Use prefixes to categorize your branches:
+
+| Prefix | Purpose |
+|--------|---------|
+| `feat/` | New feature |
+| `fix/` | Bug fix |
+| `docs/` | Documentation only |
+| `refactor/` | Code refactoring |
+| `test/` | Adding or updating tests |
+| `chore/` | Maintenance tasks |
+
+**Example:** `feat/add-rate-limiting`
+
+### Commit Messages
 
 We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
@@ -67,36 +150,71 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 [optional body]
 
-[optional footer]
+[optional footer(s)]
 ```
 
-**Types:**
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation only
-- `style`: Formatting, no code change
-- `refactor`: Code change that neither fixes a bug nor adds a feature
-- `test`: Adding or updating tests
-- `chore`: Maintenance tasks
+**Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`, `build`, `revert`
+
+**Scopes (optional):** `api`, `ui`, `portal`, `mcp`, `gateway`, `helm`, `ci`, `docs`, `deps`, `security`, `demo`
 
 **Examples:**
 ```
-docs: add Contributor Covenant 2.1 Code of Conduct (CAB-851)
-docs: add BDFL governance model (CAB-852)
 feat(gateway): add rate limiting per tenant
-fix(auth): handle null email in JWT validation
+fix(api): handle null subscription gracefully
+docs: update API reference for v0.2
 ```
 
-### PR Checklist
+> Commits are validated automatically by [commitlint](https://commitlint.js.org/) via a Husky git hook. Invalid commit messages will be rejected locally.
 
-Before submitting:
+### Developer Certificate of Origin (DCO)
 
-- [ ] Issue linked (closes #XXX or refs CAB-XXX)
-- [ ] Commit messages follow convention
-- [ ] Tests pass locally
-- [ ] Documentation updated (if applicable)
-- [ ] Self-review completed
+All contributions must be signed off to certify you have the right to submit the code under the project's open source license.
 
-## How to Contribute
+**Sign your commits:**
+```bash
+git commit -s -m "feat(api): add new endpoint"
+```
 
-See the [Contributing Documentation](README.md#-contributing-documentation) section in our README.
+This adds a `Signed-off-by: Your Name <email>` line to your commit. See [CLA.md](CLA.md) for detailed instructions on signing commits, configuring automatic sign-off, and fixing unsigned commits.
+
+### Code Style
+
+- **Python:** Follow PEP 8, use `ruff` for linting and `black` for formatting
+- **TypeScript:** Use ESLint + Prettier with project config
+- **All:** Keep functions small and focused, write meaningful comments
+
+## Testing
+
+```bash
+# Run all tests
+make test
+
+# Run specific test suite
+make test-unit
+make test-integration
+make test-e2e
+
+# Run with coverage
+make test-coverage
+```
+
+## Documentation
+
+- Update relevant docs when changing functionality
+- Use clear, concise language
+- Include code examples where helpful
+- Keep the README up to date
+
+## Community
+
+- 💬 [Discord](https://discord.gg/stoa) — Chat with the community
+- 🐦 [Twitter/X](https://x.com/gostoa) — Follow for updates
+- 📧 [Email](mailto:hello@gostoa.dev) — Reach out directly
+
+## Recognition
+
+Contributors are recognized in our [CONTRIBUTORS.md](CONTRIBUTORS.md) file and release notes. We appreciate every contribution, no matter how small!
+
+---
+
+Thank you for contributing to STOA! 🚀

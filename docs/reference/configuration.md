@@ -44,11 +44,6 @@ STOA_KONG_ADMIN_URL=http://kong-admin:8001
 STOA_KONG_ADMIN_TOKEN=secret
 STOA_KONG_GATEWAY_URL=https://gateway.gostoa.dev
 
-# Redis
-STOA_REDIS_HOST=redis
-STOA_REDIS_PORT=6379
-STOA_REDIS_PASSWORD=secret
-
 # Logging
 STOA_LOG_LEVEL=info
 STOA_LOG_FORMAT=json
@@ -137,16 +132,11 @@ awx:
     enabled: true
     hostname: awx.gostoa.dev
 
-redis:
+kafka:
   enabled: true
-  auth:
-    enabled: true
-    password: changeme
-
-  master:
-    persistence:
-      enabled: true
-      size: 10Gi
+  replicas: 3
+  storage:
+    size: 20Gi
 ```
 
 ## Tenant Configuration

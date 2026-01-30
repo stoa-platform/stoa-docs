@@ -41,6 +41,16 @@ const sidebars: SidebarsConfig = {
         'guides/subscriptions',
         {
           type: 'category',
+          label: 'Technical Fiches',
+          items: [
+            'guides/fiches/oauth2-token-exchange',
+            'guides/fiches/mcp-protocol',
+            'guides/fiches/api-gateway-patterns',
+            'guides/fiches/data-sovereignty-gdpr',
+          ],
+        },
+        {
+          type: 'category',
           label: 'Migration',
           items: [
             'guides/migration/index',
