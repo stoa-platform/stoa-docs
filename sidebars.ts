@@ -39,6 +39,7 @@ const sidebars: SidebarsConfig = {
         'guides/quick-start',
         'guides/authentication',
         'guides/subscriptions',
+        'guides/hybrid-gateway-adapter',
         {
           type: 'category',
           label: 'Technical Fiches',
