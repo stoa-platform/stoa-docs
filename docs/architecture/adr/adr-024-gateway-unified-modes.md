@@ -200,7 +200,7 @@ gateway:
 
 ### Shadow Mode (💎 Killer Feature)
 
-**Status**: ⏸️ Deferred pending security review
+**Status**: 🔬 Experimental — Python shadow middleware exists in `mcp-gateway/src/middleware/shadow.py` (passive capture only, no modification). Rust implementation deferred to Q4 2026.
 
 Passive traffic observation for legacy API discovery:
 
@@ -370,7 +370,7 @@ gateway:
     opaEndpoint: ""
 
   shadow:
-    enabled: false  # DEFERRED until security review
+    enabled: false  # Experimental — Python middleware exists, Rust deferred Q4 2026
 ```
 
 ## Consequences

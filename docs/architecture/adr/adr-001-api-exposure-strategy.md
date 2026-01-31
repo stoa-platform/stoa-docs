@@ -145,7 +145,7 @@ stoa-catalog/
 ### Endpoints Exposed to Third Parties
 
 ```yaml
-/public/v1/:
+/v1/portal/:
   catalog:           # Public or API key
     GET /apis, GET /apis/{id}, GET /apis/{id}/spec
   subscriptions:     # OAuth2 required
