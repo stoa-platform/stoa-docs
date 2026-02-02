@@ -147,7 +147,7 @@ sequenceDiagram
 The deployment flow is **NOT** Kafka-driven. The actual pipeline is:
 `GitLab → ArgoCD → AWX webhook → webMethods`
 
-Kafka is used exclusively for internal event streaming (error snapshots, metering), never for deployment orchestration. See [ADR-017: Kafka Internal-Only](/docs/concepts/adrs/adr-017).
+Kafka is used exclusively for internal event streaming (error snapshots, metering), never for deployment orchestration. See ADR-017: Kafka Internal-Only.
 :::
 
 ### Kubernetes Namespace
@@ -321,9 +321,9 @@ Jan 2026       Feb 2026       Mar 2026       Q2 2026        Q3 2026
 | **Internal** | Trusted | Control Plane, Keycloak, Data Layer |
 
 Key security principles:
-- Kafka/Redpanda: **zero external exposure** ([ADR-017](/docs/concepts/adrs/adr-017))
-- Multi-tenant isolation via JWT context ([ADR-016](/docs/concepts/adrs/adr-016))
-- GitOps with Argo CD for declarative config ([ADR-015](/docs/concepts/adrs/adr-015))
+- Kafka/Redpanda: **zero external exposure** (ADR-017)
+- Multi-tenant isolation via JWT context (ADR-016)
+- GitOps with Argo CD for declarative config ([ADR-015](/docs/architecture/adr/adr-015-token-optimization-architecture))
 - All secrets managed through HashiCorp Vault
 
 ---
@@ -362,9 +362,8 @@ Each tenant only sees their own tools:
 
 ## Related Documents
 
-- [Data Stack Architecture](/docs/concepts/data-stack) — Detailed data components
-- [Gateway v2 Vision](/docs/concepts/gateway-v2) — Cycle 15 Linux Native Vision
-- [Technology Choices (ADRs)](/docs/concepts/adrs) — Architecture decisions
+- [Gateway Overview](/docs/concepts/gateway) — Gateway concepts
+- [Technology Choices (ADRs)](/docs/architecture/adr) — Architecture decisions
 - [GitOps with ArgoCD](/docs/concepts/gitops) — Deployment strategy
 
 ---
