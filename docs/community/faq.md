@@ -35,7 +35,7 @@ They can. But:
 3. **Ecosystem stays here** — MCP bindings, UAC templates, integrations
 4. **Contributors paid HERE** — Why would they leave?
 
-AWS forked Elasticsearch because Elastic shared nothing. We redistribute 15% directly to contributors. Why would anyone leave?
+AWS forked Elasticsearch amid a licensing dispute. We aim to share value directly with contributors. Why would anyone leave?
 
 ### Kubernetes had Google with $3M/year. What do you have?
 
@@ -73,7 +73,7 @@ The code is free. The expertise, support, and convenience are not.
 They can try. But:
 
 1. **We know the code best** — We wrote it
-2. **Fastest patches** — Security fixes hit us first
+2. **Upstream patches** — Security fixes available from the source
 3. **Community trust** — Contributors work with us, not against us
 4. **Roadmap influence** — Enterprise customers shape the product
 

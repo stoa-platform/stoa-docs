@@ -14,7 +14,7 @@ STOA Platform offers flexible support options from community self-service to ded
 |------|---------|---------------|----------|
 | **Community** | GitHub Issues, Discord | Best effort | Evaluation, dev/test |
 | **Professional** | Email, Ticket Portal | 24h (business hours) | Production workloads |
-| **Enterprise** | Dedicated Slack, Phone | 4h (24/7 critical) | Mission-critical systems |
+| **Enterprise** | Dedicated Slack, Phone | 4h target (24/7 critical) | Mission-critical systems |
 
 ---
 
@@ -54,7 +54,7 @@ Open-source community resources for getting started and troubleshooting.
 
 **For production deployments**
 
-Guaranteed response times and access to STOA engineers through our partner network.
+Target response times and access to STOA engineers through our partner network.
 
 ### Channels
 
@@ -70,18 +70,20 @@ Guaranteed response times and access to STOA engineers through our partner netwo
 - Early access to new features
 - Production deployment guidance
 
-### Response SLA
+### Target Response Times
 
-| Severity | Response Time | Resolution Target |
-|----------|---------------|-------------------|
+| Severity | Target Response Time | Target Resolution |
+|----------|---------------------|-------------------|
 | **P1 - Critical** | 4 hours | 24 hours |
 | **P2 - High** | 8 hours | 3 business days |
 | **P3 - Medium** | 24 hours | 10 business days |
 | **P4 - Low** | 48 hours | Best effort |
 
+*Response times are targets, not contractual commitments. Formal SLA terms are defined in individual support agreements.*
+
 ### Delivery
 
-Professional support is delivered through our certified ESN (Enterprise Service Company) partners who have deep expertise in STOA deployment and enterprise integration.
+Professional support is delivered through our ESN (Enterprise Service Company) partner network with expertise in STOA deployment and enterprise integration.
 
 ---
 
@@ -89,7 +91,7 @@ Professional support is delivered through our certified ESN (Enterprise Service 
 
 **For mission-critical deployments**
 
-White-glove support with dedicated resources and custom SLAs.
+Dedicated support with custom SLAs tailored to your organization.
 
 ### Channels
 
@@ -148,7 +150,7 @@ Beyond support, our partner network offers specialized services:
 
 ## Partner Ecosystem
 
-STOA works with certified partners across Europe for local delivery:
+STOA works with partners across Europe for local delivery:
 
 ### Partner Types
 

@@ -4,7 +4,7 @@ sidebar_position: 3
 
 # Multi-Tenant Isolation
 
-How STOA ensures complete tenant isolation and security.
+How STOA implements tenant isolation and security.
 
 ## Tenant Isolation Model
 
@@ -127,8 +127,8 @@ STOA supports different tenant tiers:
 |------|-----------|----------|-----|
 | **Free** | Limited | Basic APIs | Best effort |
 | **Starter** | Moderate | APIs + Tools | 99% |
-| **Business** | High | Full platform | 99.9% |
-| **Enterprise** | Custom | White-label | 99.95% |
+| **Business** | High | Full platform | Per SLA agreement |
+| **Enterprise** | Custom | White-label | Custom SLA |
 
 ## Monitoring & Observability
 

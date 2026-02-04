@@ -13,7 +13,7 @@ STOA Platform supports multiple deployment models to match your security, sovere
 | Model | Control Plane | Gateway | Data Residency | Best For |
 |-------|---------------|---------|----------------|----------|
 | **Hybrid** | STOA Cloud (EU) | On-Premises | Business data on-prem | Most enterprises |
-| **Full On-Premises** | Your infrastructure | Your infrastructure | 100% on-prem | Max sovereignty |
+| **Full On-Premises** | Your infrastructure | Your infrastructure | Full on-prem | Max sovereignty |
 | **Multi-Cloud** | STOA Cloud | Multiple regions | Distributed | Global organizations |
 
 ---
@@ -125,7 +125,7 @@ flowchart TB
         CPL --> GWL
     end
 
-    Note["🔒 100% Data Residency<br/>Nothing leaves your perimeter"]
+    Note["🔒 Full Data Residency<br/>All data stays within your infrastructure"]
 
     style Infra fill:#d1fae5,stroke:#10b981
     style CPL fill:#a7f3d0,stroke:#10b981
@@ -221,8 +221,8 @@ flowchart TB
 | Metrics (aggregated) | On-prem → Cloud | TLS | Every 15s |
 | Alerts | Cloud → Ops team | TLS | On trigger |
 | Tokens (federated) | Cloud ↔ On-prem | TLS | Per request |
-| Payloads | Never leave on-prem | N/A | N/A |
-| Credentials | Never leave on-prem | N/A | N/A |
+| Payloads | Designed to remain on-prem | N/A | N/A |
+| Credentials | Designed to remain on-prem | N/A | N/A |
 
 ### Network Diagram
 

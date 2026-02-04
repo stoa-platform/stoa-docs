@@ -1,12 +1,12 @@
 ---
 sidebar_position: 3
 title: MCP Gateway
-description: The world's first MCP-native API Gateway for AI agents
+description: An MCP-native API Gateway for AI agents
 ---
 
 # MCP Gateway
 
-STOA's MCP Gateway is the **first MCP-native API Gateway**, enabling AI agents like Claude, GPT, and custom LLM applications to securely consume enterprise APIs through the Model Context Protocol.
+STOA's MCP Gateway is a **purpose-built MCP-native API Gateway**, enabling AI agents like Claude, GPT, and custom LLM applications to securely consume enterprise APIs through the Model Context Protocol.
 
 ## Overview
 

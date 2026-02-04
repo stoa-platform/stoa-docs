@@ -6,7 +6,7 @@ description: Comparing STOA's AI-native gateway approach with traditional API ga
 
 # Fiche #4: API Gateway Patterns — STOA vs Kong vs Apigee
 
-> STOA is not a general-purpose API gateway — it is the first AI-native gateway that governs tool access for LLM agents, complementing (not replacing) traditional gateways like Kong or Apigee.
+> STOA is not a general-purpose API gateway — it is a purpose-built AI-native gateway that governs tool access for LLM agents, complementing (not replacing) traditional gateways.
 
 ## 5 Key Points
 
@@ -70,6 +70,8 @@ STOA is designed to sit alongside your existing gateway. In sidecar mode, STOA d
 | **Deployment** | Any | Google Cloud | Any (K8s-native) |
 | **Pricing** | Enterprise license | Per API call | Open-source + Enterprise |
 
+*Comparison based on publicly available information. All product names are trademarks of their respective owners.*
+
 ### 5. When to Use What
 
 | Scenario | Recommendation |
@@ -84,7 +86,7 @@ STOA is designed to sit alongside your existing gateway. In sidecar mode, STOA d
 
 | Objection | Answer |
 |-----------|--------|
-| "We already have Kong/Apigee, we don't need another gateway" | STOA doesn't replace them. Sidecar mode adds AI governance behind your existing gateway. Zero disruption to current traffic. |
+| "We already have Kong/Apigee, we don't need another gateway" | STOA doesn't replace them. Sidecar mode adds AI governance behind your existing gateway with minimal disruption to current traffic. |
 | "MCP is niche — our APIs are REST" | Your APIs stay REST. STOA translates MCP to REST. AI agents speak MCP, backends speak REST — the gateway bridges both. |
 | "Why not add MCP support as a Kong plugin?" | A plugin can handle protocol translation, but not multi-tenant tool discovery, OPA-based per-tool policies, or the developer portal. STOA is purpose-built for AI governance. |
 | "Open-source means no support" | STOA offers an Enterprise tier with SLAs, support, and managed deployment — same model as Kong Enterprise vs Kong OSS. |

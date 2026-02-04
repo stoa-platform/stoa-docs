@@ -7,7 +7,7 @@ tags: [announcement, mcp]
 
 # Introducing STOA Platform
 
-We're excited to announce **STOA** — the API Gateway built for the AI era.
+We're excited to announce **STOA** — an API Gateway built for the AI era.
 
 <!-- truncate -->
 
@@ -16,7 +16,7 @@ We're excited to announce **STOA** — the API Gateway built for the AI era.
 The rise of AI agents and the Model Context Protocol (MCP) has created new challenges for enterprise API management:
 
 - **AI agents need secure access** to enterprise tools and data
-- **Traditional API gateways** weren't designed for MCP traffic
+- **Traditional API gateways** were not originally designed for MCP traffic
 - **Enterprises need governance** over how AI interacts with their systems
 
 STOA bridges this gap by providing a unified platform for both traditional APIs and MCP-enabled AI agents.
@@ -71,7 +71,7 @@ Check out our [Roadmap](/docs/roadmap) for the full timeline, including:
 
 - Q2 2026: Rate limiting, usage metering, audit logging
 - Q3 2026: CLI tool, Terraform provider, SDKs
-- Q4 2026: Rust + eBPF high-performance gateway
+- Q4 2026: High-performance Rust gateway (planned)
 
 ## Get Started
 

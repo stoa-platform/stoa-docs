@@ -6,7 +6,7 @@ description: The HLFH philosophy behind STOA — principles that guide everythin
 
 # Philosophy
 
-STOA is more than software. It's an embodiment of the HLFH philosophy — a framework designed to outlast any single project, organization, or person.
+STOA is built on the HLFH philosophy — a set of principles that guide how we build software, share value, and engage with our community.
 
 :::info The Core Belief
 **"Not to accumulate. To circulate."**
@@ -74,7 +74,7 @@ This isn't naivety — it's strategy. Those who give freely attract more than th
 
 4. **FREEDOM IS WON THROUGH DISCIPLINE** — Free from financial dependence, others' opinions, your own fears.
 
-5. **EQUITY IS NOT EQUALITY** — Each receives according to their contribution. But everyone has a place.
+5. **CONTRIBUTION IS RECOGNIZED** — Each receives according to their contribution. Everyone has a place.
 
 6. **WHAT CANNOT DIE IS IMMORTAL** — Organizations die. Ideas survive.
 
@@ -94,7 +94,7 @@ These principles guide every decision at STOA:
 ```yaml
 cornerstone_1_circulation:
   principle: "Not to accumulate. To circulate."
-  application: "45% redistribution"
+  application: "Revenue sharing with contributors (target: 45%)"
   test: "Is the money sleeping or working?"
 
 cornerstone_2_generosity:
@@ -119,7 +119,7 @@ cornerstone_5_evolution:
 
 cornerstone_6_sovereignty:
   principle: "Depend on no one"
-  application: "European sovereignty"
+  application: "European data sovereignty"
   test: "Can I be cut off?"
 
 cornerstone_7_mortality:
@@ -164,13 +164,13 @@ cornerstone_7_mortality:
 
 > "Don't seek for everything to happen as you wish, but wish for everything to happen as it actually does."
 
-**Translation**: Billionaires will attack. Hackers will attack. The system will attack. Accept it. Build anyway.
+**Translation**: Challenges will come — competitive pressure, security threats, market forces. Accept reality. Build anyway.
 
 ### Seneca
 
 > "It is not because things are difficult that we do not dare; it is because we do not dare that they are difficult."
 
-**Translation**: The system SEEMS invincible. But it is only because we don't dare to challenge it. HLFH dares.
+**Translation**: Difficult problems seem impossible only until someone attempts them. HLFH takes on hard problems.
 
 ---
 
@@ -178,17 +178,15 @@ cornerstone_7_mortality:
 
 We are at Year 0.
 
-We don't have money. We don't have certainties. We only have a vision.
-
-**And that's enough.**
+We have a vision and the determination to execute it.
 
 Because we're not looking to accumulate. We're looking to circulate.
 
-If HLFH succeeds, the flame spreads.  
-If HLFH fails, the flame was passed.  
+If HLFH succeeds, the ideas spread.
+If HLFH evolves, the principles endure.
 Either way, we will have done our part.
 
-*Amor Fati.* 🔥
+*Amor Fati.*
 
 ---
 

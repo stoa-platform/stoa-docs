@@ -47,7 +47,7 @@ Each API includes:
 - **Endpoints** - Available paths
 - **Pricing Tier** - Free, paid, etc.
 - **Rate Limits** - Request quotas
-- **SLA** - Uptime guarantees
+- **SLA** - Uptime targets
 
 ## Subscription Lifecycle
 
@@ -118,11 +118,11 @@ stoa subscription usage \
 | Plan | Self-Hosted | Managed SaaS | Price |
 |------|-------------|--------------|-------|
 | **Community** | Unlimited, forever | 1M requests/month | Free |
-| **Enterprise** | N/A | Unlimited + SLA 99.9% | €500/month |
+| **Enterprise** | N/A | Unlimited + custom SLA | Contact us |
 | **Sovereign** | On-premise option | Dedicated EU infra | Custom |
 
 :::info Self-Hosted Licensing
-STOA is Apache 2.0 licensed. Self-hosted deployments are **free, forever, unlimited**.
+STOA is Apache 2.0 licensed. Self-hosted deployments of the open-source core are free with no licensing fees.
 We monetize managed services and enterprise support.
 :::
 
@@ -135,7 +135,7 @@ stoa api plan create \
   --name enterprise \
   --rate-limit unlimited \
   --quota unlimited \
-  --features "SLA 99.9%,Priority support,Webhook notifications"
+  --features "Custom SLA,Priority support,Webhook notifications"
 ```
 
 ## Developer Portal

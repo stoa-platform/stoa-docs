@@ -381,7 +381,7 @@ gateway:
 - **Single language** (Rust) for all new gateway code
 - **Incremental migration** reduces risk
 - **No breaking changes** during transition
-- **Shadow mode differentiation**: No competitor (Kong, Apigee) offers auto UAC generation
+- **Shadow mode differentiation**: Auto UAC generation from observed traffic
 
 ### Negative
 
@@ -406,7 +406,7 @@ gateway:
 > *"Le mode Shadow c'est exactement ce qu'il nous faut pour les progiciels. On a 50 APIs non documentées, les éditeurs ne répondent plus, les devs d'origine sont partis."*
 
 **Validated:**
-- ✅ Shadow = zero risk (passive)
+- ✅ Shadow = minimal risk (passive, read-only)
 - ✅ UAC generation = automatic documentation
 - ✅ Natural progression: Shadow → Proxy → Full governance
 - ✅ Compatible with existing gateways (sidecar mode)
@@ -420,7 +420,7 @@ gateway:
 
 ## Commercial Pitch (30 seconds)
 
-> "Got legacy APIs with no docs? Black-box progiciels? Deploy STOA in Shadow mode for 2 weeks. We observe traffic, auto-generate interface contracts. Zero risk, zero changes. Then you decide: keep just the docs, or activate governance."
+> "Got legacy APIs with no docs? Deploy STOA in Shadow mode for 2 weeks. It observes traffic and auto-generates interface contracts with minimal disruption to existing infrastructure. Then you decide: keep just the docs, or activate governance."
 
 ## References
 

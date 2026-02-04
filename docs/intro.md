@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Getting Started with STOA
 
-Welcome to **STOA Platform** - A Cilium-inspired approach to API Management.
+Welcome to **STOA Platform** — an AI-native API management platform for MCP and enterprise workloads.
 
 STOA is a modern, cloud-native API management platform built on Kubernetes, designed for multi-tenant environments with GitOps-first architecture.
 
