@@ -77,7 +77,7 @@ Access tokens are short-lived (default: 1 hour). Refresh tokens handle re-authen
 | Objection | Answer |
 |-----------|--------|
 | "We already have OAuth — why another IdP?" | Keycloak federates with your existing IdP. No migration, no duplication. It adds multi-tenant isolation on top. |
-| "Token Exchange adds latency" | Exchange happens once per session, not per request. Downstream tokens are cached. Typical overhead: under 5ms. |
+| "Token Exchange adds latency" | Exchange happens once per session, not per request. Downstream tokens are cached. Typical overhead: minimal (depends on network and infrastructure). |
 | "Our security team won't accept cloud-based auth" | Full on-premises deployment is supported. Keycloak runs in your cluster. |
 | "RFC 8693 is niche — will it be supported long-term?" | RFC 8693 is an IETF standard supported by Keycloak, Auth0, and Azure AD. It's the standard way to delegate tokens across trust boundaries. |
 

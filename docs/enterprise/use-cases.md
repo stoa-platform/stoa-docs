@@ -6,7 +6,7 @@ description: Industry-specific use cases for STOA Platform across Banking, Insur
 
 # Enterprise Use Cases
 
-STOA Platform addresses critical API management challenges across regulated industries. Each vertical faces unique constraints that traditional solutions struggle to accommodate.
+STOA Platform addresses critical API management challenges across regulated industries. Each vertical faces specific constraints that require tailored solutions.
 
 ## Banking & Central Banks
 
@@ -35,7 +35,7 @@ flowchart LR
 
 **Pain points:**
 - **DORA compliance pressure** — 24-hour incident reporting with incomplete audit trails
-- **Legacy gateway opacity** — DataPower/webMethods as "black boxes" with limited observability
+- **Legacy gateway opacity** — Limited observability into existing gateway infrastructure
 - **Identity fragmentation** — Multiple token formats, no unified authorization
 - **Cost** — Expensive licenses for declining expertise availability
 
@@ -82,7 +82,7 @@ flowchart TB
 | Identity | Oracle OAM/OIM | OAM + Keycloak federation |
 | Observability | Scattered logs | Unified Grafana/Loki dashboards |
 | API Catalog | Excel/Confluence | Self-service Developer Portal |
-| Compliance | Manual reports | Automated DORA reporting |
+| Compliance | Manual reports | DORA-supportive audit trails |
 
 ---
 
@@ -156,7 +156,7 @@ flowchart TB
 
 **Key benefits:**
 - ✅ **Protocol translation** — Expose legacy SOAP as modern REST
-- ✅ **Partner onboarding** — Self-service subscription in minutes vs weeks
+- ✅ **Partner onboarding** — Self-service subscription to streamline onboarding
 - ✅ **Unified audit trail** — Cross-protocol transaction correlation
 - ✅ **Real-time monitoring** — SLA tracking across all API types
 
@@ -229,7 +229,7 @@ flowchart TB
     CA & CB & CU & WH --> STOA
     STOA --> TMS & WMS & BI
 
-    STOA -.- Benefit["✅ Onboarding: days, not months"]
+    STOA -.- Benefit["✅ Streamlined partner onboarding"]
 
     style Partners fill:#fef3c7,stroke:#f59e0b
     style STOA fill:#d1fae5,stroke:#10b981
@@ -311,8 +311,8 @@ flowchart TB
     end
 
     subgraph Scale["⚡ SCALING"]
-        S1["100K RPS"]
-        S2["<100ms latency"]
+        S1["High throughput"]
+        S2["Low latency"]
         S3["VIP Priority"]
     end
 

@@ -6,7 +6,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'STOA',
-  tagline: 'The Cilium of API Management',
+  tagline: 'AI-Native API Gateway for MCP & Enterprise',
   favicon: 'img/favicon.ico',
 
   // SEO & Head Tags
@@ -212,10 +212,14 @@ const config: Config = {
               label: 'Main Website',
               href: 'https://gostoa.dev',
             },
+            {
+              label: 'Trademark Notice',
+              to: '/docs/trademarks',
+            },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} STOA Platform. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} STOA Platform. Built with Docusaurus. All third-party trademarks are the property of their respective owners.`,
     },
     prism: {
       theme: prismThemes.github,

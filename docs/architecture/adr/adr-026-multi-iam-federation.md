@@ -25,7 +25,7 @@ Enterprise ecosystems frequently involve multiple independent organizations that
 
 The central problem: **N organizations, N different IAMs, one API platform — without forcing a central user directory.**
 
-Traditional approaches copy or synchronize user data into a central store. This creates GDPR liability, synchronization drift, and strips organizations of sovereignty over their own identities. STOA needs a pattern that enables unified API access while storing **zero user data** centrally.
+Traditional approaches copy or synchronize user data into a central store. This creates GDPR liability, synchronization drift, and reduces organizational control over their own identities. STOA needs a pattern that enables unified API access while storing **zero user data** centrally.
 
 ## Decision Drivers
 
@@ -316,9 +316,9 @@ Revocation propagation latency: < 1 second (Redis pub/sub across gateway instanc
 
 ### Positive
 
-- **Zero PII stored centrally** — GDPR data-controller obligations are eliminated for user identity data. The platform is a processor of transient authentication events only.
+- **Zero PII stored centrally** — GDPR data-controller obligations are significantly reduced for user identity data. The platform acts as a processor of transient authentication events only.
 - **Full organizational sovereignty** — Each organization retains complete control over user lifecycle, password policies, MFA requirements, and session management.
-- **No synchronization conflicts** — There is no directory to drift out of sync. The IdP is always the single source of truth.
+- **No synchronization conflicts** — There is no directory to drift out of sync. The IdP remains the source of truth for user data.
 - **Horizontal scaling per realm** — Realms are independent. Adding the 50th organization is the same operation as adding the 2nd.
 - **Protocol flexibility** — Organizations connect via whatever protocol their IAM supports (OIDC, SAML 2.0, LDAP). No migration required.
 - **Clean failure isolation** — One organization's IdP outage does not affect any other organization's users.
@@ -343,7 +343,7 @@ Revocation propagation latency: < 1 second (Redis pub/sub across gateway instanc
 
 ## Security Considerations
 
-### Realm Isolation Guarantees
+### Realm Isolation Design
 
 - Each realm runs with its own signing keys, client registrations, and session store.
 - The gateway enforces `stoa_realm` claim matching against the request's tenant context. A token issued for `org-alpha` cannot access `org-beta` APIs even if scopes match.

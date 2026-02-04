@@ -179,7 +179,7 @@ flowchart TB
     end
 
     subgraph DP["🚀 Data Plane (Rust + eBPF)"]
-        Proxy["stoa-proxy (Rust)<br/>tokio/hyper/tonic<br/>P50 < 1ms, 50k+ rps"]
+        Proxy["stoa-proxy (Rust)<br/>tokio/hyper/tonic"]
         eBPF["stoa-ebpf (Aya/Rust)<br/>XDP rate limiting<br/>Zero-copy processing"]
     end
 

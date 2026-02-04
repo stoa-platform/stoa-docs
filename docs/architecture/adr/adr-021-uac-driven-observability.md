@@ -238,14 +238,14 @@ fn tag_span_with_tenant(span: &mut impl Span, tenant_id: &str, client_id: &str) 
 
 ## Positionnement Marché
 
-| Gateway | Debug Réseau | Activation Dynamique | Multi-tenant Safe | Auto-expiry |
-|---------|--------------|---------------------|-------------------|-------------|
-| Kong | Non | Non | Non | Non |
-| Apigee | Trace (limité) | Non | Partiel | Non |
-| Gravitee | Logs | Non | Partiel | Non |
-| **STOA** | TCP/TLS/HTTP | Via UAC | JWT-isolated | Oui |
+| Capability | Traditional Gateways | STOA |
+|------------|---------------------|------|
+| Network Debug | Limited or external tooling | TCP/TLS/HTTP native |
+| Dynamic Activation | Generally not available | Via UAC contract |
+| Multi-tenant Safe | Varies by implementation | JWT-isolated by design |
+| Auto-expiry | Manual cleanup required | Built-in auto-disable |
 
-→ **Différenciateur unique** : Debug production-safe sans tcpdump.
+→ **Key differentiator**: Production-safe debugging without tcpdump.
 
 ---
 

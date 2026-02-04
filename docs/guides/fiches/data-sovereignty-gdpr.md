@@ -1,18 +1,18 @@
 ---
 sidebar_position: 4
 title: "Fiche #5: Data Sovereignty & GDPR"
-description: How STOA ensures European data sovereignty and regulatory compliance (GDPR, DORA, NIS2, CLOUD Act)
+description: How STOA supports European data sovereignty and regulatory compliance (GDPR, DORA, NIS2, CLOUD Act)
 ---
 
 # Fiche #5: Data Sovereignty & GDPR
 
-> STOA's hybrid architecture guarantees that sensitive business data and user identities never leave your perimeter, while metadata and metrics are hosted in EU-sovereign infrastructure.
+> STOA's hybrid architecture is designed so that sensitive business data and user identities remain within your perimeter, while metadata and metrics are hosted in EU-sovereign infrastructure.
 
 ## 5 Key Points
 
 ### 1. Clear Data Boundary: What Stays vs What Leaves
 
-The most important question for any enterprise: "Where does my data go?" STOA makes this explicit:
+A key question for any enterprise: "Where does my data go?" STOA makes this explicit:
 
 ```mermaid
 flowchart TB
@@ -63,7 +63,7 @@ flowchart TB
 The US CLOUD Act can compel US-headquartered providers to hand over data stored abroad. STOA mitigates this:
 
 - **Control Plane hosted in EU** (OVHcloud / Scaleway — not AWS/Azure/GCP)
-- **Business data never leaves your premises** in hybrid mode
+- **Business data is designed to remain within your premises** in hybrid mode
 - **Full on-prem option** eliminates any cloud dependency entirely
 - **Open-source codebase** — no hidden data exfiltration, fully auditable
 
@@ -92,7 +92,7 @@ STOA default: EU cloud (metadata) + On-prem (payloads)
 
 | Objection | Answer |
 |-----------|--------|
-| "Any cloud component is a sovereignty risk" | Full on-premises deployment is supported. Zero cloud dependency. Your cluster, your rules. |
+| "Any cloud component is a sovereignty risk" | Full on-premises deployment is supported with no required cloud dependency. Your cluster, your rules. |
 | "EU hosting doesn't protect against CLOUD Act" | Correct if the provider is US-headquartered. STOA's EU option uses EU-sovereign providers (OVHcloud, Scaleway). |
 | "We need SOC 2 / ISO 27001 certification" | On the roadmap: SOC 2 Type II (Q4 2026), ISO 27001 (2027). Current architecture is designed to meet these standards. |
 | "GDPR requires right to deletion — can STOA do that?" | Yes. Per-consumer data isolation allows targeted deletion. Audit logs can be configured with retention policies. |

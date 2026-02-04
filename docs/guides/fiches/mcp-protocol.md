@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: "Fiche #3: MCP Protocol — The USB-C of LLMs"
-description: Understanding the Model Context Protocol and why STOA is the first MCP-native API gateway
+description: Understanding the Model Context Protocol and how STOA provides an MCP-native API gateway
 ---
 
 # Fiche #3: MCP Protocol — The USB-C of LLMs
@@ -99,7 +99,7 @@ Apply with `kubectl apply`, and the tool is immediately discoverable by authoriz
 
 | Objection | Answer |
 |-----------|--------|
-| "MCP is too new, it's risky" | MCP is backed by Anthropic, adopted by Claude, Cursor, Windsurf, and dozens of open-source projects. The spec is stable (2024-11-05). |
+| "MCP is too new, it's risky" | MCP was created by Anthropic and has been adopted by Claude, Cursor, Windsurf, and dozens of open-source projects. The spec is stable (2024-11-05). |
 | "We already have REST APIs, why add MCP?" | You keep your REST APIs. MCP is the protocol AI agents use to discover and call them. STOA bridges MCP to REST — your backends don't change. |
 | "What about OpenAI function calling?" | Function calling is vendor-specific. MCP is an open standard. STOA supports both — agents using function calling can still go through the gateway. |
 | "Our APIs are internal, AI agents shouldn't access them" | That's exactly what the gateway controls. OPA policies define which agents can access which tools. No policy = no access. |

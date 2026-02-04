@@ -18,7 +18,7 @@ The Digital Operational Resilience Act requires financial entities to strengthen
 |------------------|----------------|
 | **ICT Risk Management** | Centralized Control Plane with full audit trail of all API operations |
 | **Incident Reporting** | Real-time alerting via Grafana + structured logs in OpenSearch for incident reconstruction |
-| **Operational Resilience Testing** | Built-in health checks, circuit breakers, and chaos engineering support |
+| **Operational Resilience Testing** | Built-in health checks and circuit breakers |
 | **Third-Party Risk** | API subscription governance with approval workflows and usage monitoring |
 
 **DORA Compliance Flow:**
@@ -53,7 +53,7 @@ STOA provides tools and features to support your compliance efforts. Certificati
 NIS2 expands cybersecurity requirements across essential sectors. STOA supports compliance through:
 
 - **Supply Chain Security** — Full provenance tracking of API dependencies and third-party integrations
-- **Sovereignty** — European-hosted Control Plane option with data residency guarantees
+- **Sovereignty** — European-hosted Control Plane option with data residency controls
 - **Incident Handling** — Automated alerting and audit logs meeting 24-hour reporting requirements
 - **Access Control** — Role-based access with Keycloak integration and multi-tenant isolation
 

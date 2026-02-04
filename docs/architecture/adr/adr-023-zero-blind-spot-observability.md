@@ -40,7 +40,7 @@ This is the "blind spot" problem that plagues traditional API management:
                    ❌ NO CORRELATION
 ```
 
-Traditional gateways (Kong, Apigee, AWS API Gateway) treat observability as **opt-in**:
+Many traditional gateways treat observability as **opt-in**:
 - Plugins must be enabled
 - Configuration is fragmented (metrics ≠ traces ≠ logs)
 - Can be disabled by misconfiguration
@@ -52,7 +52,7 @@ Traditional gateways (Kong, Apigee, AWS API Gateway) treat observability as **op
 
 ### The Principle
 
-> **"If a request passes through STOA, we KNOW what happened. Always."**
+> **"If a request passes through STOA, we know what happened — by design."**
 
 Observability in STOA is not a feature — it's a **property of the system**.
 
@@ -94,9 +94,9 @@ fn handle_request(req: Request) -> Response {
 
 #### 2. Zero Configuration Required
 
-| Traditional (Kong/Apigee) | STOA |
-|---------------------------|------|
-| Plugin observability à activer | Native, always active |
+| Traditional Approach | STOA Approach |
+|---------------------|--------------|
+| Plugin-based observability to enable | Native, active by default |
 | Separate config for metrics/traces/logs | Unified by default |
 | Can be disabled | Core, non-disableable |
 | Requires tuning | Works out-of-the-box |
@@ -105,7 +105,7 @@ fn handle_request(req: Request) -> Response {
 
 - If `X-Trace-ID` header present → propagated
 - Otherwise → auto-generated (UUID v4)
-- **NEVER** a request without correlation ID
+- By design, every request receives a correlation ID
 
 #### 4. Timing Inference for Blind Spots
 
@@ -147,11 +147,11 @@ apis:
    - Alerts include actionable context
 
 3. **Competitive differentiation**
-   - No other gateway offers this level of native observability
+   - Deep native observability as a core differentiator
    - Resonates strongly with enterprise ops teams
 
 4. **Trust building**
-   - "STOA never leaves you in the dark"
+   - Designed so operators have full context on every request
    - Reduces finger-pointing between teams
 
 ### Negative
@@ -161,7 +161,7 @@ apis:
    - Mitigated by retention policies and compression
 
 2. **Performance overhead**
-   - Minimal: `<1ms` per request for instrumentation
+   - Designed for minimal overhead per request for instrumentation
    - Tracing is sampled in high-volume scenarios
 
 3. **Complexity**
@@ -186,8 +186,8 @@ apis:
 ### Success Metrics
 
 1. **Any error can be diagnosed in `<5 minutes`** with native STOA data
-2. **Zero requests** without trace ID in production
-3. **100% of 5xx errors** captured in Error Snapshots
+2. By design, all requests have a trace ID in production
+3. All 5xx errors captured in Error Snapshots by default
 4. **Network anomalies detected** within 30 seconds
 
 ### Test Scenarios
@@ -213,7 +213,7 @@ apis:
 
 > *"L'observabilité n'est pas une feature, c'est une propriété du système."*
 
-> *"Avec Kong/Apigee, vous avez une erreur 502 et vous cherchez dans 5 dashboards pendant 2h. Avec STOA, vous avez le contexte complet en 1 clic."*
+> *"Avec un gateway traditionnel, une erreur 502 peut nécessiter de chercher dans plusieurs dashboards. Avec STOA, le contexte complet est disponible en un clic."*
 
 ---
 
