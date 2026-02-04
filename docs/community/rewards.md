@@ -131,18 +131,18 @@ Reward(contributor) = (Points_contributor / Total_points_all) × Pool_Q
 ### Example
 
 ```
-Q1 2027 Revenue = €150,000
-Contributors Pool = €22,500
-Total points Q1 = 2,000
+Quarterly Revenue = R
+Contributors Pool = 15% × R
+Total points Q = 2,000
 
 Contributor A: 500 points (25%)
-→ Reward = €5,625
+→ Reward = 25% × Pool
 
 Contributor B: 200 points (10%)
-→ Reward = €2,250
+→ Reward = 10% × Pool
 
 Contributor C: 100 points (5%)
-→ Reward = €1,125
+→ Reward = 5% × Pool
 ```
 
 ---
@@ -169,30 +169,6 @@ Everything is public:
 - **Dashboard**: Real-time point tracking per contributor
 - **Quarterly Reports**: Pool size, distributions, recipients
 - **Appeal Process**: 7-day window to contest any decision
-
----
-
-## Financial Projections
-
-```
-Year 1 (2026) — 5 Enterprise clients — €150K revenue
-├── Foundation: €15K
-├── Maintainers: €30K  
-├── Contributors: €22.5K (to share)
-└── HLFH: €82.5K
-
-Year 3 (2028) — 50 clients — €1.5M revenue
-├── Foundation: €150K
-├── Maintainers: €300K
-├── Contributors: €225K (serious pool)
-└── HLFH: €825K
-
-Year 5 (2030) — 200 clients — €6M revenue
-├── Foundation: €600K
-├── Maintainers: €1.2M
-├── Contributors: €900K (real salary possible)
-└── HLFH: €3.3M
-```
 
 ---
 

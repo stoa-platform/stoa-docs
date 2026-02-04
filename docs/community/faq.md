@@ -81,17 +81,7 @@ Red Hat has competitors offering "free" RHEL support. Red Hat still dominates. S
 
 ### Is this sustainable long-term?
 
-Let's do the math:
-
-```
-Year 5 projection: €6M enterprise revenue
-├── Foundation: €600K (sustainable infra)
-├── Maintainers: €1.2M (competitive salaries)
-├── Contributors: €900K (real rewards)
-└── Operations: €3.3M (growth + margin)
-```
-
-That's a self-sustaining ecosystem. No VC dependency. No "pivot to enterprise" bait-and-switch.
+The model is designed to be self-sustaining: as enterprise revenue grows, all pools (foundation, maintainers, contributors, operations) grow proportionally. No VC dependency. No "pivot to enterprise" bait-and-switch.
 
 ---
 

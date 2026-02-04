@@ -75,22 +75,6 @@ The STOA team brings deep enterprise API management expertise that cannot be rep
 | Migration adapters | Planned |
 | Contribution recognition | Planned Q3 2026 |
 
-### Pricing Strategy
-
-| Tier | Target | Status |
-|------|--------|--------|
-| **Community** | Self-hosted, DIY | Available |
-| **Pro** | PME, priority support | Planned Q2 2026 |
-| **Enterprise** | Large organizations, custom SLA | Planned Q3 2026 |
-| **Design Partner** | Early adopters, co-construction | Active |
-
-**What's NOT open source (commercial features, post-MVP):**
-- Advanced multi-tenant billing & chargeback
-- Compliance reporting (NIS2, DORA dashboards)
-- Enterprise SSO federation (beyond basic OIDC)
-- Premium support SLAs
-- Audit trail export (compliance format)
-
 ## Consequences
 
 ### Positive
@@ -109,7 +93,7 @@ The STOA team brings deep enterprise API management expertise that cannot be rep
 - Certification value depends on market recognition
 
 ### Mitigations
-- Early partner program (Q2 2026) to validate pricing before public launch
+- Early partner program to validate commercial model
 - Community growth tied to public roadmap transparency
 
 ## Compliance
