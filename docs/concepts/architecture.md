@@ -115,7 +115,7 @@ Traditional API traffic is handled by **webMethods Gateway** (current implementa
 |--------|---------|
 | Product | Software AG webMethods |
 | Features | Rate limiting, transformations, policies |
-| Protocol | REST, SOAP, GraphQL |
+| Protocol | REST, SOAP |
 
 :::info Future Roadmap
 Migration to a native Rust/eBPF gateway is planned for Phase 16+, providing improved performance and reduced operational overhead.

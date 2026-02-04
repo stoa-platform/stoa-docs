@@ -185,11 +185,11 @@ flowchart TB
 
     subgraph Binders["🔌 Protocol Binders (Cycle 13)"]
         REST["REST ✅"]
-        GQL["GraphQL ✅"]
-        GRPC["gRPC ✅"]
-        KafkaB["Kafka ✅"]
-        EDI["EDI/EDIFACT"]
-        SWIFT["SWIFT"]
+        GQL["GraphQL 📋"]
+        GRPC["gRPC 📋"]
+        KafkaB["Kafka 📋"]
+        EDI["EDI/EDIFACT 📋"]
+        SWIFT["SWIFT 📋"]
     end
 
     subgraph AI["🤖 AI Gateway (Cycle 17)"]

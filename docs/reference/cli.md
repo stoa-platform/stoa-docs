@@ -16,14 +16,11 @@ Command-line interface reference for STOA Platform.
 # Install via Homebrew (macOS/Linux)
 brew install stoa-platform/tap/stoa
 
+# Install via Homebrew (macOS/Linux)
+brew install stoa-platform/tap/stoactl
+
 # Install via npm
 npm install -g @stoa-platform/cli
-
-# Install via curl (Linux/macOS)
-curl -sfL https://get.gostoa.dev | sh
-
-# Install via PowerShell (Windows)
-iwr https://get.gostoa.dev/install.ps1 | iex
 ```
 
 ## Authentication

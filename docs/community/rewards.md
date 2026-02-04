@@ -29,9 +29,9 @@ In the age of AI, raw code output is increasingly commoditized. We pay for human
 │   └──────────────┘  └──────────────┘  └──────────────┘     │
 │                                                             │
 │   ┌─────────────────────────────────────────────────┐      │
-│   │              HLFH Operations                     │      │
+│   │              Operations                          │      │
 │   │                    55%                           │      │
-│   │  (Dev, Sales, Support, Infra, Reinvestment)     │      │
+│   │  (Development, Support, Infrastructure)          │      │
 │   └─────────────────────────────────────────────────┘      │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
@@ -41,10 +41,10 @@ In the age of AI, raw code output is increasingly commoditized. We pay for human
 
 | Pool | % | Usage |
 |------|---|-------|
-| **Foundation** | 10% | CI/CD infra (30%), Events/STOACon (25%), Legal/Trademark (20%), Grants (15%), Reserve (10%) |
-| **Maintainers** | 20% | Lead Maintainer (8%), Core Maintainers ×3 (4% each), Security Lead (4%) |
+| **Foundation** | 10% | Infrastructure, events, legal, grants |
+| **Maintainers** | 20% | Core maintainer compensation |
 | **Contributors** | 15% | Quarterly distribution based on points |
-| **HLFH Ops** | 55% | Dev (40%), Sales (20%), Support (15%), Infra (10%), Admin (5%), Margin (10%) |
+| **Operations** | 55% | Development, support, infrastructure |
 
 ---
 
@@ -172,26 +172,13 @@ Everything is public:
 
 ---
 
-## Roadmap
+## Program Status
 
-### Phase 1 — MVP (Q1 2026)
+The rewards program is being developed in phases:
 
-- [x] Document point system on docs.gostoa.dev
-- [ ] Create tracking spreadsheet
-- [ ] Define contribution validation process
-- [ ] First "dry run" (simulation without payment)
-
-### Phase 2 — Launch (Q2 2026)
-
-- [ ] First real payment to contributors
-- [ ] Publish Q1 transparency report
-- [ ] Public program announcement
-
-### Phase 3 — Scale (Q3-Q4 2026)
-
-- [ ] Automate tracking (GitHub Actions → DB)
-- [ ] Public contribution dashboard
-- [ ] Certification program operational
+1. **Documentation & Design** — Define point system and validation process *(current)*
+2. **Launch** — First distributions, transparency reports
+3. **Scale** — Automated tracking, public dashboard
 
 ---
 
