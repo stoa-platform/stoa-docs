@@ -8,9 +8,9 @@ description: Industry-specific use cases for STOA Platform across Banking, Insur
 
 STOA Platform addresses critical API management challenges across regulated industries. Each vertical faces specific constraints that require tailored solutions.
 
-## Banking & Central Banks
+## Banking & Financial Services
 
-**Target clients:** Commercial banks, European central banks, payment processors
+**Target clients:** Commercial banks, European financial institutions, payment processors
 
 ### The Challenge
 
