@@ -184,7 +184,7 @@ stoactl get apis -o json
 | Channel | Command |
 |---------|---------|
 | Homebrew | `brew install stoa-platform/tap/stoactl` |
-| Binary | `curl -sfL https://get.gostoa.dev/stoactl \| sh` |
+| Binary | See [GitHub Releases](https://github.com/stoa-platform/stoactl/releases) |
 | Docker | `docker run ghcr.io/stoa-platform/stoactl` |
 
 ## Consequences

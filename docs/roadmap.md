@@ -14,31 +14,30 @@ This roadmap reflects our current priorities and may evolve based on community f
 
 ---
 
-## 🚀 Q1 2026 — Foundation
+## ✅ Available Today
 
-**Theme: Core Platform & MCP Gateway**
+**Core Platform & MCP Gateway**
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Control Plane API (Python/FastAPI) | ✅ Done | |
-| MCP Gateway (Python/FastAPI) | ✅ Done | |
-| Developer Portal | ✅ Done | React + TypeScript |
-| Admin Console | ✅ Done | React + TypeScript |
-| Multi-tenant Architecture | ✅ Done | |
-| Keycloak SSO Integration | ✅ Done | |
-| API Key Management + Vault | ✅ Done | |
-| Subscription Management | ✅ Done | |
-| Basic Observability (Prometheus/Grafana) | ✅ Done | |
-| Documentation Site | ✅ Done | |
-| Helm Charts | ✅ Done | GitLab-hosted |
-| OPA Policy Engine | ✅ Done | |
-| webMethods Gateway Integration | ✅ Done | API traffic |
+| Feature | Status |
+|---------|--------|
+| Control Plane API (Python/FastAPI) | ✅ Done |
+| MCP Gateway (Python/FastAPI) | ✅ Done |
+| Developer Portal | ✅ Done |
+| Admin Console | ✅ Done |
+| Multi-tenant Architecture | ✅ Done |
+| Keycloak SSO Integration | ✅ Done |
+| API Key Management + Vault | ✅ Done |
+| Subscription Management | ✅ Done |
+| Basic Observability (Prometheus/Grafana) | ✅ Done |
+| Documentation Site | ✅ Done |
+| Helm Charts | ✅ Done |
+| OPA Policy Engine | ✅ Done |
 
 ---
 
-## 🔧 Q2 2026 — Enterprise Ready
+## 🔧 In Progress
 
-**Theme: Security, Scale & Self-Service**
+**Security, Scale & Self-Service**
 
 | Feature | Status |
 |---------|--------|
@@ -48,14 +47,12 @@ This roadmap reflects our current priorities and may evolve based on community f
 | Audit Logging | 📋 Planned |
 | API Versioning | 📋 Planned |
 | Schema Registry | 📋 Planned |
-| Webhook Notifications | 📋 Planned |
-| Backup & Disaster Recovery | 📋 Planned |
 
 ---
 
-## 🌐 Q3 2026 — Ecosystem
+## 📋 Planned
 
-**Theme: Integrations & Developer Experience**
+**Ecosystem & Developer Experience**
 
 | Feature | Status |
 |---------|--------|
@@ -65,56 +62,25 @@ This roadmap reflects our current priorities and may evolve based on community f
 | Pre-built MCP Connectors | 📋 Planned |
 | SDK (Python, TypeScript) | 📋 Planned |
 | OpenAPI Import | 📋 Planned |
-| Postman/Insomnia Collections | 📋 Planned |
+
+**Performance & Scale**
+
+| Feature | Status |
+|---------|--------|
+| High-performance gateway (Rust) | 📋 Planned |
+| Edge Deployment | 📋 Planned |
+| WebAssembly Plugins | 📋 Planned |
+| Response Caching | 📋 Planned |
 
 ---
 
-## ⚡ Q4 2026 — Performance & Edge
-
-**Theme: Global Scale & High Performance**
-
-| Feature | Status | Notes |
-|---------|--------|-------|
-| MCP Gateway (Rust + Tokio) | 📋 Planned | Native implementation |
-| eBPF Acceleration | 📋 Planned | Kernel-level performance |
-| Edge Deployment | 📋 Planned | |
-| WebAssembly Plugins | 📋 Planned | |
-| Response Caching | 📋 Planned | |
-| Geographic Load Balancing | 📋 Planned | |
-
-:::info Performance Vision
-**Targeted Performance Goals** (benchmarks in progress):
-- Kernel-level rate limiting and observability via eBPF
-- Latency target: Sub-millisecond overhead
-- Memory footprint target: < 80MB
-- Efficient kernel-level processing for improved performance
-:::
-
----
-
-## 🔮 2027 & Beyond
-
-**Theme: AI-Native Platform**
+## 🔮 Under Consideration
 
 - **AI Cost Management** — Token metering per team/project
 - **Agent Observability** — Trace AI agent workflows end-to-end
 - **Policy as Code** — Define access policies in natural language
 - **Marketplace** — Discover and share MCP tool configurations
-- **Multi-Cloud** — Native support for AWS, GCP, Azure
-- **Native Rust Gateway** — Replace webMethods with STOA-native gateway
-
----
-
-## Current vs Vision
-
-To help understand where we are today versus where we're heading:
-
-| Component | Current (Q1 2026) | Vision (Q4 2026+) |
-|-----------|-------------------|-------------------|
-| Control Plane | Python + FastAPI | Python + FastAPI |
-| MCP Gateway | Python + FastAPI | Rust + Tokio |
-| API Gateway | webMethods | Native Rust + eBPF |
-| Performance | User-space | Kernel-level (eBPF) |
+- **Multi-Cloud** — Native support for major cloud providers
 
 ---
 
@@ -139,4 +105,4 @@ We build in public and welcome contributions!
 
 ---
 
-*Last updated: January 2026*
+*This roadmap is directional and subject to change. For enterprise roadmap discussions, contact [sales@gostoa.dev](mailto:sales@gostoa.dev).*

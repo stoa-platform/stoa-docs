@@ -365,4 +365,4 @@ X-RateLimit-Reset: 1673276400
 
 ---
 
-🚧 **Coming Soon**: WebSocket API, Bulk operations, and GraphQL endpoint.
+🚧 **Coming Soon**: WebSocket API and Bulk operations.
