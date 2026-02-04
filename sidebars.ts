@@ -14,6 +14,7 @@ const sidebars: SidebarsConfig = {
         'concepts/gitops',
         'concepts/multi-tenant',
         'concepts/mcp-gateway-positioning',
+        'concepts/uac',
       ],
     },
     {
@@ -39,6 +40,9 @@ const sidebars: SidebarsConfig = {
         'guides/quick-start',
         'guides/authentication',
         'guides/subscriptions',
+        'guides/console',
+        'guides/portal',
+        'guides/observability',
         'guides/hybrid-gateway-adapter',
         {
           type: 'category',
@@ -77,6 +81,7 @@ const sidebars: SidebarsConfig = {
         'reference/mcp-tools',
         'reference/cli',
         'reference/security-configuration',
+        'reference/troubleshooting',
       ],
     },
     {
