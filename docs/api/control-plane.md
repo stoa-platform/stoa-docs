@@ -6,6 +6,21 @@ sidebar_position: 1
 
 REST API reference for STOA Control Plane.
 
+## OpenAPI Specification
+
+The complete OpenAPI 3.1 specification is available:
+
+- **JSON**: [openapi.json](https://raw.githubusercontent.com/stoa-platform/stoa/main/apis/control-plane-api/openapi.json)
+- **Swagger UI**: `https://api.gostoa.dev/docs`
+- **ReDoc**: `https://api.gostoa.dev/redoc`
+
+Import into your favorite API client (Postman, Insomnia, Bruno):
+
+```bash
+# Download spec
+curl -o openapi.json https://raw.githubusercontent.com/stoa-platform/stoa/main/apis/control-plane-api/openapi.json
+```
+
 ## Base URL
 
 ```

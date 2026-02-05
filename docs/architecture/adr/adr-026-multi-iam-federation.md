@@ -7,7 +7,7 @@ sidebar_label: Multi-IAM Federation
 
 ## Status
 
-Proposed
+Accepted
 
 ## Date
 
