@@ -8,6 +8,22 @@ This directory contains important architectural decisions for STOA Platform.
 
 ## 📚 ADR Index
 
+### 🏛️ Core Architecture
+
+| # | Title | Status |
+|:---:|-------|:------:|
+| [003](./adr-003-monorepo-architecture.md) | Monorepo Architecture — Multi-Service Polyglot | ✅ |
+| [004](./adr-004-gateway-adapter-pattern.md) | Gateway Adapter Pattern — Multi-Gateway Orchestration | ✅ |
+| [005](./adr-005-event-driven-kafka.md) | Event-Driven Architecture — Kafka Topics Design | ✅ |
+| [006](./adr-006-tool-registry-architecture.md) | Tool Registry Architecture — 7-Module Design | ✅ |
+
+### ⚡ Performance & Reliability
+
+| # | Title | Status |
+|:---:|-------|:------:|
+| [008](./adr-008-semantic-caching.md) | Semantic Response Caching — pgvector Strategy | ✅ |
+| [009](./adr-009-error-snapshots.md) | Error Snapshots — Time-Travel Debugging | ✅ |
+
 ### 🏗️ Platform & Infrastructure
 
 | # | Title | Status |
@@ -16,6 +32,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [002](./adr-002-stoactl-cli.md) | stoactl CLI Design | 📋 |
 | [007](./adr-007-gitops-argocd.md) | GitOps with Argo CD | ✅ |
 | [025](./adr-025-gateway-resilience-zombie.md) | Gateway Resilience — Anti-Zombie Node Pattern | 📋 |
+| [026](./adr-026-multi-iam-federation.md) | Multi-IAM Federation Pattern — Zero User Storage | ✅ |
 
 ### 🔐 Security & Compliance
 
@@ -46,6 +63,20 @@ This directory contains important architectural decisions for STOA Platform.
 | # | Title | Status |
 |:---:|-------|:------:|
 | [030](./adr-030-ai-context-management.md) | AI-Native Context Management Architecture | ✅ |
+| [031](./adr-031-ci-cd-reusable-workflow-architecture.md) | CI/CD Reusable Workflow Architecture | ✅ |
+| [032](./adr-032-response-transformation.md) | Response Transformation — Pluggable Adapters | ✅ |
+
+### 🎨 Frontend & UX
+
+| # | Title | Status |
+|:---:|-------|:------:|
+| [033](./adr-033-shared-ui-components.md) | Shared UI Components — Theme Abstraction | ✅ |
+
+### 🦀 Evolution
+
+| # | Title | Status |
+|:---:|-------|:------:|
+| [034](./adr-034-python-rust-migration.md) | Python to Rust Migration Strategy | ✅ |
 
 ---
 
