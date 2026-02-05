@@ -41,6 +41,12 @@ This directory contains important architectural decisions for STOA Platform.
 |:---:|-------|:------:|
 | [019](./adr-019-business-model-moat-strategy.md) | Business Model & Moat Strategy | ✅ |
 
+### 🛠️ Developer Experience & AI Workflow
+
+| # | Title | Status |
+|:---:|-------|:------:|
+| [030](./adr-030-ai-context-management.md) | AI-Native Context Management Architecture | ✅ |
+
 ---
 
 ## 🔮 Planned ADRs
