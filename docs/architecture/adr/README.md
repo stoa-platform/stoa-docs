@@ -78,6 +78,14 @@ This directory contains important architectural decisions for STOA Platform.
 |:---:|-------|:------:|
 | [034](./adr-034-python-rust-migration.md) | Python to Rust Migration Strategy | ✅ |
 
+### 🌐 Gateway & Deployment
+
+| # | Title | Status |
+|:---:|-------|:------:|
+| [035](./adr-035-gateway-adapter-pattern.md) | Gateway Adapter Pattern — Multi-Gateway Orchestration | ✅ |
+| [036](./adr-036-gateway-auto-registration.md) | Gateway Auto-Registration — Zero-Config Onboarding | ✅ |
+| [037](./adr-037-deployment-modes-sovereign-first.md) | Deployment Modes — Sovereign First Strategy | ✅ |
+
 ---
 
 ## 🔮 Planned ADRs
