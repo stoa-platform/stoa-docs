@@ -44,6 +44,7 @@ const sidebars: SidebarsConfig = {
         'guides/portal',
         'guides/observability',
         'guides/hybrid-gateway-adapter',
+        'guides/gateway-auto-registration',
         {
           type: 'category',
           label: 'Technical Fiches',
@@ -60,6 +61,7 @@ const sidebars: SidebarsConfig = {
           items: [
             'guides/migration/index',
             'guides/migration/ibm-webmethods',
+            'guides/migration/webmethods-sidecar',
             'guides/migration/oracle-oam',
           ],
         },
