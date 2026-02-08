@@ -39,3 +39,33 @@ roadmap:
   label: Roadmap
   permalink: /roadmap
   description: Future plans and direction
+
+architecture:
+  label: Architecture
+  permalink: /architecture
+  description: Architecture patterns and design decisions
+
+migration:
+  label: Migration
+  permalink: /migration
+  description: Migration guides from legacy platforms
+
+compliance:
+  label: Compliance
+  permalink: /compliance
+  description: Regulatory compliance (NIS2, DORA, GDPR)
+
+comparison:
+  label: Comparison
+  permalink: /comparison
+  description: Comparisons with other API gateways
+
+ai:
+  label: AI
+  permalink: /ai
+  description: AI agents, LLMs, and intelligent automation
+
+open-source:
+  label: Open Source
+  permalink: /open-source
+  description: Open source strategy and community
