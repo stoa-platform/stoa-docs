@@ -13,7 +13,7 @@ keywords:
   - multi-tenant architecture
 ---
 
-Building a **multi-tenant API gateway** is one of the hardest infrastructure challenges in platform engineering. You need strong isolation between tenants, shared infrastructure for efficiency, and the ability to scale without multiplying operational complexity. After two years of building STOA on Kubernetes, here are the lessons we learned.
+Building a **multi-tenant API gateway** is one of the hardest infrastructure challenges in platform engineering. You need strong isolation between tenants, shared infrastructure for efficiency, and the ability to scale without multiplying operational complexity. After years of building multi-tenant API platforms — and applying those lessons to STOA on Kubernetes — here is what we learned.
 
 <!-- truncate -->
 

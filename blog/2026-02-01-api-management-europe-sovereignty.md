@@ -73,7 +73,7 @@ However, not all open-source gateways are created equal for sovereignty:
 | Gateway | License | Origin | MCP Support | Multi-Tenancy | Self-Hosted |
 |---|---|---|---|---|---|
 | **STOA** | Apache 2.0 | European (France) | Native | Built-in (all tiers) | Yes (K8s, Docker) |
-| Kong OSS | Apache 2.0 | US (San Francisco) | No (plugin needed) | Enterprise only | Yes |
+| Kong OSS | Apache 2.0 | US (San Francisco) | Plugin (since 3.12) | Enterprise only | Yes |
 | Traefik | MIT | European (France) | No | Enterprise only | Yes |
 | Gravitee | Apache 2.0 | European (France) | No | Yes | Yes |
 | Tyk | MPL 2.0 | UK | No | Yes | Yes |

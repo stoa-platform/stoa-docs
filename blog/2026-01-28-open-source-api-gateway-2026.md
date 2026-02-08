@@ -28,7 +28,7 @@ Five open-source API gateways dominate the conversation in 2026. Each has a diff
 Kong remains the most widely deployed open-source API gateway. Built on OpenResty (Nginx + Lua), it has a mature plugin ecosystem and strong community. Kong's commercial offering (Kong Enterprise / Konnect) adds a management plane, developer portal, and enterprise support.
 
 **Strengths:** Mature ecosystem, large plugin library, proven at scale, strong commercial backing.
-**Weaknesses:** Lua-based plugin model can be a barrier for teams without Lua expertise. The open-source version lacks multi-tenancy and a developer portal. The gap between OSS and Enterprise features has widened over time.
+**Weaknesses:** Lua-based plugin model can be a barrier for teams without Lua expertise. The open-source version lacks multi-tenancy and a developer portal. The gap between OSS and Enterprise features has widened over time. MCP support is plugin-based (AI MCP Proxy, MCP OAuth2) rather than core architecture.
 
 ### Envoy Proxy
 
@@ -64,7 +64,7 @@ STOA is the newest entrant, purpose-built for the AI era. It combines a Rust-bas
 |---|:---:|:---:|:---:|:---:|:---:|
 | **License** | Apache 2.0 | Apache 2.0 | Apache 2.0 | MPL 2.0 | Apache 2.0 |
 | **Language** | Lua / Go | C++ | Lua / Go | Go | Rust / Python |
-| **MCP Support** | No | No | No | No | Native |
+| **MCP Support** | Plugin (since 3.12) | No | No | No | Native (core) |
 | **Multi-Tenancy (OSS)** | No | No | No | Yes | Yes |
 | **Developer Portal (OSS)** | No | No | No | Yes | Yes |
 | **Admin Console (OSS)** | No | No | Dashboard | Yes | Yes |
@@ -80,7 +80,7 @@ STOA is the newest entrant, purpose-built for the AI era. It combines a Rust-bas
 
 The most significant differentiator in 2026 is not performance or plugin count — it is **AI agent support**. As enterprises deploy AI agents (built on Claude, GPT, Gemini, and open-source models), these agents need secure, governed access to enterprise tools and data.
 
-The Model Context Protocol (MCP) has emerged as the standard for AI agent-to-tool communication. Yet most existing gateways treat MCP as an afterthought — if they support it at all.
+The Model Context Protocol (MCP) has emerged as the standard for AI agent-to-tool communication. Kong has moved fastest among incumbents, adding MCP proxy and OAuth2 plugins in Gateway 3.12, with MCP ACLs and guardrails following in 3.13. But there is a meaningful architectural difference between adding MCP support as plugins on an HTTP proxy and building a gateway where MCP is a core protocol alongside REST.
 
 ### Why MCP Matters for Gateways
 
@@ -92,7 +92,7 @@ MCP introduces new requirements that traditional API gateways were not designed 
 - **Session management** — AI agent sessions span multiple tool calls and require state tracking.
 - **Token optimization** — Tool descriptions must be compressed and cached to minimize LLM token usage.
 
-Bolting MCP support onto a gateway designed for REST proxying leads to architectural compromises. STOA was designed with MCP as a first-class protocol alongside REST, which means tool discovery, streaming, and session management are core features rather than plugins.
+The plugin approach works for bridging MCP-to-HTTP traffic. But deeper capabilities — CRD-based tool governance, per-tenant tool filtering, UAC "define once, expose as REST + MCP + GraphQL", and legacy gateway orchestration — require MCP to be a foundational protocol, not an adapter layer.
 
 ## Where Each Gateway Excels
 
@@ -102,7 +102,7 @@ Rather than declaring a single winner, here is where each gateway genuinely shin
 - You need a battle-tested gateway with the largest ecosystem of plugins.
 - Your team has experience with Nginx and Lua.
 - You are willing to invest in Kong Enterprise for management features.
-- You do not need MCP or native multi-tenancy.
+- Kong's plugin-based MCP support (AI MCP Proxy, MCP OAuth2, MCP ACLs) is sufficient for your AI use case.
 
 ### Choose Envoy When...
 - Performance is your top priority and you need L4/L7 proxy capabilities.
@@ -129,7 +129,7 @@ Rather than declaring a single winner, here is where each gateway genuinely shin
 
 ## The Convergence Ahead
 
-By late 2026, we expect MCP support to appear in more gateways — likely as plugins for Kong and APISIX, and as WASM filters for Envoy. The question is whether bolted-on MCP support will match the depth of a gateway designed for it natively.
+Kong has already added MCP support, and we expect APISIX and Envoy (via WASM filters) to follow. The question going forward is not "does your gateway support MCP?" but "how deeply is MCP integrated into your gateway's architecture?" — and whether your gateway can orchestrate existing legacy gateways alongside AI traffic.
 
 Similarly, multi-tenancy and developer portals are becoming table stakes. The trend is clear: open-source gateways are evolving from traffic proxies into full API management platforms.
 

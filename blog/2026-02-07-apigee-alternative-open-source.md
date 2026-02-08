@@ -65,7 +65,7 @@ The open-source API management ecosystem has matured dramatically. Here is how t
 | Developer Portal | Yes | Enterprise only | Yes | Yes |
 | Analytics Dashboard | Yes | Enterprise only | Yes | Yes |
 | Multi-Tenancy | Yes | Enterprise only | Yes | Yes |
-| MCP / AI Agent Support | No | No | No | Yes |
+| MCP / AI Agent Support | No | Plugin (since 3.12) | No | Native (core) |
 | Policy Engine | Proprietary XML | Lua plugins | Go middleware | OPA (standard) |
 | Hybrid Deployment | Apigee hybrid | Kong Hybrid (Enterprise) | Tyk Hybrid | Native (OSS) |
 | Data Sovereignty | GCP regions | Self-hosted | Self-hosted | Self-hosted + hybrid |

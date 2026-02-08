@@ -66,7 +66,7 @@ The gateway is the single entry point. Agents never talk directly to MCP servers
 
 ## How STOA Implements the MCP Gateway
 
-STOA's [MCP Gateway](/docs/concepts/mcp-gateway) is built from the ground up for production MCP traffic. It is not a traditional API gateway with an MCP plugin bolted on. Key design decisions include:
+STOA's [MCP Gateway](/docs/concepts/mcp-gateway) is built from the ground up for production MCP traffic. While other gateways like Kong have added MCP support via plugins (AI MCP Proxy, MCP OAuth2 since Gateway 3.12), STOA treats MCP as a first-class protocol in the gateway core. Key design decisions include:
 
 ### OPA Policy Engine Integration
 

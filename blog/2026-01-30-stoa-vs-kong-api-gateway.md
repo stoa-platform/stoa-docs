@@ -35,7 +35,7 @@ That world still exists. But a new layer has emerged:
 - **Security**: Tool-level authorization, tenant isolation, agent audit trails
 - **Governance**: Which agents can invoke which tools, in which context, with what data
 
-Kong was not designed for this world. STOA was.
+Kong has responded to this shift — adding MCP proxy and OAuth2 plugins in Gateway 3.12 (October 2025), MCP ACLs in 3.13, and a dedicated MCP server for Konnect API discovery. But there is a difference between adding MCP support to an existing HTTP gateway and building an MCP-native gateway from the ground up. That difference is what STOA represents.
 
 ## The Comparison
 
@@ -45,7 +45,7 @@ Here is an honest, feature-by-feature comparison:
 |---|---|---|
 | **REST/GraphQL proxying** | Excellent — mature, battle-tested | Good — standard reverse proxy capabilities |
 | **Plugin ecosystem** | 100+ plugins (auth, transforms, logging) | Growing — focused on AI/MCP-specific plugins |
-| **MCP protocol support** | Not native — requires custom plugin development | Native — built from the ground up for MCP |
+| **MCP protocol support** | Plugin-based — AI MCP Proxy + OAuth2 plugins (since Gateway 3.12) | Native — MCP is a first-class protocol in the gateway core |
 | **Multi-tenancy** | Enterprise tier only (workspaces) | Built-in — CRD-based tenant isolation, all tiers |
 | **AI agent authentication** | Possible via custom plugins | Native — JWT, API keys, mTLS with agent-aware context |
 | **OPA policy engine** | Community plugin (limited maintenance) | First-class integration — embedded OPA evaluator |
@@ -81,16 +81,18 @@ Kong's community is large and active. You will find answers on Stack Overflow, t
 
 ## Where STOA Excels
 
-### Native MCP Support
+### MCP-Native Architecture
 
-This is the core differentiator. STOA's [MCP Gateway](/docs/concepts/mcp-gateway) understands the Model Context Protocol at the infrastructure level. It can:
+Both STOA and Kong support MCP — but the architectural approach differs fundamentally. Kong added MCP via plugins on its Nginx/Lua stack: the AI MCP Proxy plugin bridges MCP-to-HTTP, and the AI MCP OAuth2 plugin handles agent auth. These are solid additions.
 
-- **Discover and filter tools** per tenant, so each team sees only the tools they are authorized to use.
-- **Enforce OPA policies** on every tool invocation, not just HTTP routes.
-- **Meter usage** per agent, per tool, per tenant — critical for cost allocation and anomaly detection.
-- **Audit every interaction** between an AI agent and your internal services.
+STOA takes a different approach: MCP is a first-class protocol in the gateway core, not a plugin on top of an HTTP proxy. This means:
 
-With Kong, you would need to build all of this as custom plugins. That is months of engineering work and ongoing maintenance for a protocol that is evolving rapidly.
+- **Tool discovery and filtering** are per-tenant by default, using Kubernetes CRDs — not per-route plugin configuration.
+- **OPA policies** evaluate every tool invocation with full tenant, scope, and agent context.
+- **Kafka-based metering** tracks usage per agent, per tool, per tenant — built into the core, not bolted on.
+- **UAC (Universal API Contract)** lets you define an API once and expose it as REST, MCP, and GraphQL — Kong requires separate plugin configuration per protocol.
+
+The difference is not "can it do MCP?" — both can. It is "was MCP a day-one architectural decision or a plugin added to an existing HTTP gateway?"
 
 ### Multi-Tenancy by Default
 
@@ -121,9 +123,9 @@ We have a detailed [Kong migration guide](/docs/guides/migration/kong) that walk
 ## When to Choose What
 
 **Choose Kong if:**
-- Your needs are purely traditional REST/GraphQL API management.
-- You rely heavily on specific Kong plugins with no equivalent elsewhere.
 - You need a battle-tested gateway with a decade of production history.
+- You rely heavily on specific Kong plugins with no equivalent elsewhere.
+- Kong's plugin-based MCP support (AI MCP Proxy, MCP OAuth2) meets your needs.
 - Your organization has existing Kong expertise and operational runbooks.
 
 **Choose STOA if:**
@@ -139,7 +141,7 @@ We have a detailed [Kong migration guide](/docs/guides/migration/kong) that walk
 
 The API gateway market is at an inflection point. The last major shift was from hardware appliances (F5, NGINX Plus) to cloud-native software gateways (Kong, Envoy, Traefik). The next shift is from HTTP-only gateways to protocol-aware AI gateways that understand MCP, manage agent identities, and enforce AI-specific policies.
 
-We built STOA because we believe this shift requires a new foundation, not a plugin on top of an existing one. Kong is a worthy incumbent. We aim to be a worthy successor — for the AI-native use case.
+We built STOA because we believe the AI-native use case benefits from a purpose-built foundation — where MCP, multi-tenancy, and legacy gateway orchestration are core architectural decisions, not additions to an HTTP proxy. Kong is a worthy competitor that has moved fast on AI. We differentiate on architecture, sovereignty, and the UAC "define once, expose everywhere" model.
 
 ## Try STOA
 
