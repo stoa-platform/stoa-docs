@@ -7,6 +7,10 @@ description: Deploy your first API through STOA and call it from an AI agent
 
 # ⚡ Quickstart: Your First API in 5 Minutes
 
+:::info Early Access — Private Beta
+STOA Platform is currently in private beta. The walkthrough below shows what the experience looks like once you have access. [Request access](mailto:christophe@hlfh.io) to get started.
+:::
+
 Get from zero to your first AI-accessible API in under 5 minutes.
 
 ## What You'll Build
@@ -244,5 +248,5 @@ Now that you've made your first call, explore further:
 ## Need Help?
 
 - 📚 [Full Documentation](https://docs.gostoa.dev)
-- 🐛 [GitHub Issues](https://github.com/stoa-platform/stoa/issues)
 - 💬 [Discord Community](https://discord.gg/j8tHSSes)
+- 📧 [Request Beta Access](mailto:christophe@hlfh.io)

@@ -7,6 +7,10 @@ keywords: [STOA, API gateway, MCP, getting started, introduction]
 
 # Getting Started with STOA
 
+:::info Early Access — Private Beta
+STOA Platform is currently in private beta. [Request access](mailto:christophe@hlfh.io) to get started, or explore the [Architecture Overview](/docs/concepts/architecture) and [Enterprise Use Cases](/docs/use-cases) to learn more.
+:::
+
 Welcome to **STOA Platform** — an AI-native API management platform for MCP and enterprise workloads.
 
 STOA is a modern, cloud-native API management platform built on Kubernetes, designed for multi-tenant environments with GitOps-first architecture.
@@ -23,14 +27,15 @@ STOA provides:
 
 ## Quick Start
 
-Get up and running with STOA in 5 minutes:
+Once you have beta access, you can interact with STOA in three ways:
 
-```bash
-# See Quick Start Guide for installation options
-# → Console UI: https://console.gostoa.dev
-# → API: https://api.gostoa.dev/v1
-# → MCP Gateway: https://mcp.gostoa.dev
-```
+| Path | URL | Best For |
+|------|-----|----------|
+| **Console UI** | [console.gostoa.dev](https://console.gostoa.dev) | Visual management, API catalog |
+| **REST API** | [api.gostoa.dev/v1](https://api.gostoa.dev/v1) | Automation, CI/CD |
+| **MCP Gateway** | [mcp.gostoa.dev](https://mcp.gostoa.dev) | AI agents (Claude, GPT) |
+
+See the [Quickstart Guide](/docs/guides/quickstart) for a step-by-step walkthrough.
 
 ## Architecture Overview
 

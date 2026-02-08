@@ -249,23 +249,25 @@ flowchart TB
 
 Ready to implement these use cases?
 
+:::info Early Access — Private Beta
+STOA Platform is currently in private beta. [Request access](mailto:christophe@hlfh.io) to deploy these use cases on your infrastructure, or explore the [Architecture Overview](/docs/concepts/architecture) to understand how STOA works.
+:::
+
 <Tabs>
   <TabItem value="saas" label="☁️ SaaS" default>
-    ```bash
-    # Sign up for STOA Cloud
-    # Visit https://console.gostoa.dev/signup
-    
-    # Create your first tenant
-    stoa tenant create --name my-company --tier starter
+    ```
+    1. Request beta access → christophe@hlfh.io
+    2. Receive your tenant credentials
+    3. Sign in at https://console.gostoa.dev
+    4. Create your first API in the Console
     ```
   </TabItem>
   <TabItem value="self-hosted" label="🏠 Self-Hosted">
-    ```bash
-    # Install via Helm (from source)
-    git clone https://github.com/stoa-platform/stoa.git && cd stoa
-    helm install stoa ./charts/stoa-platform \
-      --namespace stoa-system \
-      --create-namespace
+    ```
+    1. Request beta access → christophe@hlfh.io
+    2. Receive Helm chart access
+    3. helm repo add stoa https://charts.gostoa.dev
+    4. helm install stoa stoa/stoa-platform -n stoa-system
     ```
   </TabItem>
 </Tabs>
