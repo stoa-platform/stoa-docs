@@ -1,5 +1,8 @@
 ---
 sidebar_position: 10
+title: "OPA Policy Examples"
+description: "Open Policy Agent (OPA) policy templates for STOA — tool access control, tenant isolation, and rate limiting."
+keywords: [OPA, Open Policy Agent, policy, access control, Rego]
 ---
 
 # OPA Policy Examples

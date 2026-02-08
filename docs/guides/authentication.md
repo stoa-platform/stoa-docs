@@ -1,5 +1,8 @@
 ---
 sidebar_position: 2
+title: "Authentication Setup"
+description: "Configure OIDC/OAuth2 authentication with Keycloak for STOA Platform — multi-realm, JWT tokens, and role-based access."
+keywords: [authentication, Keycloak, OIDC, OAuth2, JWT, RBAC]
 ---
 
 # Authentication Setup

@@ -1,5 +1,8 @@
 ---
 sidebar_position: 4
+title: "Web Analytics"
+description: "Privacy-friendly web analytics for STOA documentation using Vercel Analytics — GDPR compliant, no cookies."
+keywords: [analytics, Vercel, privacy, GDPR, tracking]
 ---
 
 # Web Analytics

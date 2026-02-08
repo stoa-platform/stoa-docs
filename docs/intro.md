@@ -1,5 +1,8 @@
 ---
 sidebar_position: 1
+title: "Getting Started with STOA"
+description: "Introduction to STOA Platform — an open-source AI-native API gateway with MCP support, multi-tenant isolation, and GitOps-first architecture."
+keywords: [STOA, API gateway, MCP, getting started, introduction]
 ---
 
 # Getting Started with STOA

@@ -1,5 +1,8 @@
 ---
 sidebar_position: 2
+title: "CLI Reference"
+description: "STOA CLI reference — command-line interface for managing APIs, tenants, and gateway operations (planned Q3 2026)."
+keywords: [CLI, command line, stoactl, reference]
 ---
 
 # CLI Reference

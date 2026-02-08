@@ -1,5 +1,8 @@
 ---
 sidebar_position: 1
+title: "Control Plane API"
+description: "REST API reference for STOA Control Plane — tenants, APIs, tools, subscriptions, and gateway management."
+keywords: [API reference, REST API, control plane, OpenAPI]
 ---
 
 # Control Plane API

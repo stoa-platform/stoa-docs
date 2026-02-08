@@ -55,6 +55,7 @@ const sidebars: SidebarsConfig = {
             'guides/fiches/data-sovereignty-gdpr',
           ],
         },
+        'guides/opa-policies',
         {
           type: 'category',
           label: 'Migration',
@@ -62,6 +63,8 @@ const sidebars: SidebarsConfig = {
             'guides/migration/index',
             'guides/migration/ibm-webmethods',
             'guides/migration/webmethods-sidecar',
+            'guides/migration/kong',
+            'guides/migration/apigee',
             'guides/migration/oracle-oam',
           ],
         },
@@ -84,6 +87,15 @@ const sidebars: SidebarsConfig = {
         'reference/cli',
         'reference/security-configuration',
         'reference/troubleshooting',
+        {
+          type: 'category',
+          label: 'Kubernetes CRDs',
+          items: [
+            'reference/crds/index',
+            'reference/crds/tool',
+            'reference/crds/toolset',
+          ],
+        },
       ],
     },
     {

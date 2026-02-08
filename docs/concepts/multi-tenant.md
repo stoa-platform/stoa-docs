@@ -1,5 +1,8 @@
 ---
 sidebar_position: 3
+title: "Multi-Tenant Isolation"
+description: "STOA's hard multi-tenancy model with Kubernetes namespace isolation, Keycloak realms, and schema-per-tenant design."
+keywords: [multi-tenant, isolation, Kubernetes, Keycloak, security]
 ---
 
 # Multi-Tenant Isolation

@@ -1,5 +1,8 @@
 ---
 sidebar_position: 3
+title: "ToolSet CRD"
+description: "ToolSet CRD specification — generate multiple Tool resources from an OpenAPI specification automatically."
+keywords: [ToolSet CRD, Kubernetes, OpenAPI, custom resource]
 ---
 
 # ToolSet CRD

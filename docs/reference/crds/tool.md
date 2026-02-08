@@ -1,5 +1,8 @@
 ---
 sidebar_position: 2
+title: "Tool CRD"
+description: "Tool CRD specification — define individual MCP tools as Kubernetes resources for AI agent invocation."
+keywords: [Tool CRD, Kubernetes, MCP, custom resource]
 ---
 
 # Tool CRD

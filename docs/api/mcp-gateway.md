@@ -1,5 +1,8 @@
 ---
 sidebar_position: 2
+title: "MCP Gateway API"
+description: "Model Context Protocol (MCP) Gateway API reference — tool discovery, invocation, and AI agent integration."
+keywords: [MCP, Model Context Protocol, API, gateway, AI agents]
 ---
 
 # MCP Gateway API
