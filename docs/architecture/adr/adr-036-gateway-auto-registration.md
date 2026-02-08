@@ -212,6 +212,20 @@ Control Plane uses capabilities to:
 
 Add `STOA_SIDECAR` to `GatewayType` enum for sidecars with reduced capabilities.
 
+## Implementation Status
+
+| Component | Status | PR |
+|-----------|--------|-----|
+| Control Plane API — registration, heartbeat, health worker | ✅ Complete | — |
+| Control Plane API — config fetch (real deployments/policies) | ✅ Complete | [#170](https://github.com/stoa-platform/stoa/pull/170) |
+| STOA Gateway (Rust) — registration, heartbeat with real metrics | ✅ Complete | [#170](https://github.com/stoa-platform/stoa/pull/170) |
+| STOA Gateway (Rust) — deep readiness probe (CP + OIDC checks) | ✅ Complete | [#170](https://github.com/stoa-platform/stoa/pull/170) |
+| Console UI — auto-refresh, detail panel, live indicator | ✅ Complete | [#170](https://github.com/stoa-platform/stoa/pull/170) |
+| Helm chart — `control-plane-api-key` in deployment + ExternalSecret | ✅ Complete | [#170](https://github.com/stoa-platform/stoa/pull/170) |
+| K8s deployment.yaml — secret documentation | ✅ Complete | [#170](https://github.com/stoa-platform/stoa/pull/170) |
+| Sidecar mode (Tier 2) | Planned | Q2 2026 |
+| mTLS per-gateway certificates | Planned | Phase 2 |
+
 ## Related ADRs
 
 - [ADR-035: Gateway Adapter Pattern](./adr-035-gateway-adapter-pattern.md) — Defines the interface used by CP to orchestrate gateways

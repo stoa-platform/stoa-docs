@@ -207,6 +207,47 @@ This enables:
 
 ## Helm Chart Configuration
 
+### STOA Gateway (Tier 1)
+
+The Helm chart manages the `STOA_CONTROL_PLANE_API_KEY` secret via a Vault-backed ExternalSecret:
+
+```yaml
+# values.yaml
+stoaGateway:
+  enabled: true
+  replicas: 2
+
+  # Control Plane connection
+  controlPlaneUrl: "http://control-plane-api.stoa-system.svc.cluster.local:8000"
+
+  # Secret containing CONTROL_PLANE_API_KEY, JWT_SECRET, KEYCLOAK_CLIENT_SECRET, ADMIN_API_TOKEN
+  # CONTROL_PLANE_API_KEY is REQUIRED for auto-registration.
+  # Without it, the gateway skips registration and runs in standalone mode.
+  secretName: stoa-gateway-secrets
+
+  # ExternalSecret (Vault-backed) — syncs secrets from Vault into K8s Secret
+  externalSecret:
+    enabled: true
+    refreshInterval: 1h
+    secretStoreRef: vault-backend
+    vaultPath: stoa/data/gateway  # Must contain control_plane_api_key
+```
+
+The deployment template injects the secret as an environment variable:
+
+```yaml
+- name: STOA_CONTROL_PLANE_API_KEY
+  valueFrom:
+    secretKeyRef:
+      name: stoa-gateway-secrets
+      key: control-plane-api-key
+      optional: true  # Gateway runs standalone if missing
+```
+
+:::caution Required Vault Key
+The Vault path (`stoa/data/gateway`) must contain a `control_plane_api_key` property. Without it, the ExternalSecret will create an empty key, and the gateway will skip auto-registration.
+:::
+
 ### STOA Sidecar (Tier 2)
 
 Full configuration in `charts/stoa-platform/values.yaml`:
@@ -249,7 +290,7 @@ stoaSidecar:
 
 ## Console UI
 
-After registration, gateways appear at **Console > Gateways**:
+After registration, gateways appear at **Console > Gateways** with automatic 30-second polling (via TanStack React Query). No manual refresh needed.
 
 | Column | Description |
 |--------|-------------|
@@ -257,16 +298,59 @@ After registration, gateways appear at **Console > Gateways**:
 | Type | `stoa`, `stoa_sidecar`, `webmethods`, etc. |
 | Status | `ONLINE`, `OFFLINE`, `DEGRADED` |
 | Environment | `dev`, `staging`, `prod` |
-| Last Seen | Time since last heartbeat |
+| Live Indicator | Pulsing green dot if heartbeat received within 90s |
 | Capabilities | Feature badges |
 
 ### Status Indicators
 
-| Status | Meaning |
-|--------|---------|
-| ONLINE | Heartbeat received within 90s |
-| OFFLINE | No heartbeat for > 90s |
-| DEGRADED | Online but with high error rate |
+| Status | Meaning | Visual |
+|--------|---------|--------|
+| ONLINE | Heartbeat received within 90s | Pulsing green dot |
+| OFFLINE | No heartbeat for > 90s | Gray dot |
+| DEGRADED | Online but error rate > 5% | Orange badge in detail panel |
+
+### Gateway Detail Panel
+
+Click a gateway card to open the detail panel showing heartbeat metrics:
+
+| Metric | Source | Example |
+|--------|--------|---------|
+| Uptime | `health_details.uptime_seconds` | `1h 30m` |
+| Routes | `health_details.routes_count` | `15` |
+| Policies | `health_details.policies_count` | `5` |
+| Requests | `health_details.requests_total` | `10,000` |
+| Error Rate | `health_details.error_rate` | `2.0%` |
+| Registered At | `health_details.registered_at` | `2026-02-06` |
+
+When the error rate exceeds 5%, the panel displays a degraded warning badge.
+
+## Deep Readiness Probe
+
+The gateway's `/ready` endpoint performs real dependency checks before reporting readiness:
+
+1. **Control Plane connectivity** — HTTP GET to `{STOA_CONTROL_PLANE_URL}/health` with 3-second timeout
+2. **OIDC provider reachability** — Fetches OIDC configuration from Keycloak (if auth is enabled)
+
+If either check fails, the endpoint returns `503 SERVICE UNAVAILABLE` with a descriptive message:
+- `NOT READY: Control Plane unreachable`
+- `NOT READY: OIDC provider unreachable`
+
+This prevents Kubernetes from routing traffic to gateways that cannot enforce policies or validate tokens.
+
+## Config Fetch
+
+After registration, gateways periodically fetch their configuration from the Control Plane:
+
+```
+GET /v1/internal/gateways/{id}/config
+Header: X-Gateway-Key: gw_xxx
+```
+
+The response includes:
+- **pending_deployments** — API deployments targeted at this gateway
+- **pending_policies** — Rate limiting, access control, and governance policies
+
+This enables the Control Plane to push configuration changes to gateways without requiring a restart.
 
 ## Troubleshooting
 
