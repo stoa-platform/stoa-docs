@@ -1,5 +1,8 @@
 ---
 sidebar_position: 2
+title: "GitOps with ArgoCD"
+description: "How STOA leverages GitOps principles with ArgoCD for declarative, auditable configuration management."
+keywords: [GitOps, ArgoCD, Kubernetes, declarative, infrastructure as code]
 ---
 
 # GitOps with ArgoCD + AWX

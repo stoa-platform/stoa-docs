@@ -181,11 +181,13 @@ stoactl get apis -o json
 
 ### Distribution
 
-| Channel | Command |
-|---------|---------|
-| Homebrew | `brew install stoa-platform/tap/stoactl` |
-| Binary | See [GitHub Releases](https://github.com/stoa-platform/stoactl/releases) |
-| Docker | `docker run ghcr.io/stoa-platform/stoactl` |
+| Channel | Command | Status |
+|---------|---------|--------|
+| Homebrew | `brew install stoa-platform/tap/stoactl` | Planned Q3 2026 |
+| Binary | GitHub Releases | Planned Q3 2026 |
+| Docker | `docker run ghcr.io/stoa-platform/stoactl` | Planned Q3 2026 |
+
+> Distribution channels will be available when the CLI exits private beta. [Request access](mailto:christophe@hlfh.io) to participate.
 
 ## Consequences
 

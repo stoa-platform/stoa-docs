@@ -26,18 +26,69 @@ const config: Config = {
         content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
       },
     },
+    // JSON-LD: Organization
     {
-      tagName: 'link',
+      tagName: 'script',
       attributes: {
-        rel: 'canonical',
-        href: 'https://docs.gostoa.dev',
+        type: 'application/ld+json',
       },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'STOA Platform',
+        url: 'https://gostoa.dev',
+        logo: 'https://docs.gostoa.dev/img/logo.svg',
+        description: 'Open-source AI-native API gateway for MCP and enterprise workloads.',
+        sameAs: [
+          'https://github.com/stoa-platform',
+          'https://discord.gg/stoa-platform',
+        ],
+      }),
+    },
+    // JSON-LD: WebSite (enables Google sitelinks search box)
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'STOA Documentation',
+        url: 'https://docs.gostoa.dev',
+        description: 'Documentation for STOA Platform — the open-source AI-native API gateway.',
+      }),
+    },
+    // JSON-LD: SoftwareApplication
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'STOA Platform',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Kubernetes',
+        license: 'https://www.apache.org/licenses/LICENSE-2.0',
+        url: 'https://gostoa.dev',
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'EUR',
+          description: 'Open source — Apache 2.0 license',
+        },
+      }),
     },
   ],
 
   // Enable Mermaid diagrams
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
   },
   themes: ['@docusaurus/theme-mermaid'],
 
@@ -58,6 +109,7 @@ const config: Config = {
   projectName: 'stoa-docs', // Usually your repo name.
 
   onBrokenLinks: 'throw',
+  onBrokenAnchors: 'warn',
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -130,8 +182,18 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    // Global metadata — used as defaults for all pages
+    metadata: [
+      {name: 'description', content: 'STOA Platform documentation — open-source AI-native API gateway with MCP support, multi-tenant isolation, and European sovereignty (NIS2/DORA).'},
+      {name: 'keywords', content: 'API gateway, MCP, Model Context Protocol, AI gateway, open source, Kubernetes, multi-tenant, European, NIS2, DORA, STOA'},
+      {name: 'author', content: 'STOA Platform'},
+      {property: 'og:type', content: 'website'},
+      {property: 'og:site_name', content: 'STOA Documentation'},
+      {name: 'twitter:card', content: 'summary_large_image'},
+      {name: 'twitter:site', content: '@stoaplatform'},
+    ],
+    // Social card for link previews
+    image: 'img/stoa-social-card.svg',
     // Mermaid diagram theming
     mermaid: {
       theme: { light: 'neutral', dark: 'dark' },

@@ -1,5 +1,8 @@
 ---
 sidebar_label: WebMethods + STOA Sidecar
+title: "WebMethods + STOA Sidecar"
+description: "Deploy Software AG webMethods API Gateway with STOA sidecar for policy enforcement, rate limiting, and usage metering."
+keywords: [webMethods, sidecar, migration, Software AG, API gateway]
 ---
 
 # WebMethods Gateway + STOA Sidecar Integration

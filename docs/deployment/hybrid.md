@@ -254,16 +254,20 @@ flowchart TB
 
 ### Hybrid Deployment Quick Start
 
+:::info Private Beta
+Repository access is granted to beta participants. [Request access](mailto:christophe@hlfh.io) to get the Helm chart and deployment instructions.
+:::
+
 ```bash
 # 1. Create namespace
 kubectl create namespace stoa-system
 
-# 2. Clone and install from source
-git clone https://github.com/stoa-platform/stoa.git
-cd stoa
+# 2. Add the STOA Helm repository (provided with beta access)
+helm repo add stoa https://charts.gostoa.dev
+helm repo update
 
 # 3. Install with hybrid configuration
-helm install stoa ./charts/stoa-platform \
+helm install stoa stoa/stoa-platform \
   --namespace stoa-system \
   --set mode=hybrid \
   --set controlPlane.endpoint=https://api.gostoa.dev \

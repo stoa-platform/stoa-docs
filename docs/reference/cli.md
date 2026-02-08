@@ -1,5 +1,8 @@
 ---
 sidebar_position: 2
+title: "CLI Reference"
+description: "STOA CLI reference — command-line interface for managing APIs, tenants, and gateway operations (planned Q3 2026)."
+keywords: [CLI, command line, stoactl, reference]
 ---
 
 # CLI Reference
@@ -12,16 +15,9 @@ Command-line interface reference for STOA Platform.
 
 ## Installation
 
-```bash
-# Install via Homebrew (macOS/Linux)
-brew install stoa-platform/tap/stoa
-
-# Install via Homebrew (macOS/Linux)
-brew install stoa-platform/tap/stoactl
-
-# Install via npm
-npm install -g @stoa-platform/cli
-```
+:::info Private Beta
+The CLI will be distributed to beta participants when available. [Request access](mailto:christophe@hlfh.io) to be notified. In the meantime, use the [REST API](/docs/api/control-plane) or the [Console UI](https://console.gostoa.dev).
+:::
 
 ## Authentication
 

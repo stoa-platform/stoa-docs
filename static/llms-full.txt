@@ -1,0 +1,83 @@
+# STOA Platform — Full Documentation Index
+
+> For a concise overview, see /llms.txt
+
+## All Documentation Pages
+
+### Getting Started
+- /docs/intro — Introduction to STOA Platform
+
+### Concepts
+- /docs/concepts/architecture — Architecture Overview
+- /docs/concepts/mcp-gateway — MCP Gateway
+- /docs/concepts/mcp-gateway-positioning — MCP Gateway Positioning
+- /docs/concepts/gitops — GitOps with ArgoCD
+- /docs/concepts/multi-tenant — Multi-Tenant Isolation
+- /docs/concepts/uac — Universal API Contract (UAC)
+- /docs/concepts/gateway — Gateway Concepts
+- /docs/concepts/implementation-status — Implementation Status
+
+### Guides
+- /docs/guides/quick-start — Quick Start (5 minutes)
+- /docs/guides/authentication — Authentication with Keycloak
+- /docs/guides/subscriptions — API Subscriptions
+- /docs/guides/console — Console Admin Guide
+- /docs/guides/portal — Developer Portal Guide
+- /docs/guides/observability — Observability (Prometheus, Grafana, Loki)
+- /docs/guides/hybrid-gateway-adapter — Hybrid Gateway Adapter
+- /docs/guides/gateway-auto-registration — Gateway Auto-Registration
+- /docs/guides/opa-policies — OPA Policy Examples
+
+### Technical Deep-Dives
+- /docs/guides/fiches/oauth2-token-exchange — OAuth 2.0 + Token Exchange (RFC 8693)
+- /docs/guides/fiches/mcp-protocol — MCP Protocol — The USB-C of LLMs
+- /docs/guides/fiches/api-gateway-patterns — API Gateway Patterns: STOA vs Kong vs Apigee
+- /docs/guides/fiches/data-sovereignty-gdpr — Data Sovereignty & GDPR
+
+### Migration Guides
+- /docs/guides/migration/ — Migration from Legacy Platforms
+- /docs/guides/migration/ibm-webmethods — IBM webMethods / DataPower
+- /docs/guides/migration/webmethods-sidecar — WebMethods + STOA Sidecar
+- /docs/guides/migration/kong — Kong OSS / Enterprise
+- /docs/guides/migration/oracle-oam — Oracle OAM / API Platform
+- /docs/guides/migration/apigee — Google Apigee
+
+### Enterprise
+- /docs/enterprise/use-cases — Enterprise Use Cases
+- /docs/enterprise/security-compliance — Security & Compliance (DORA, NIS2, RGPD)
+- /docs/enterprise/support — Support & Services
+
+### Deployment
+- /docs/deployment/hybrid — Hybrid Deployment Models
+
+### API Reference
+- /docs/api/control-plane — Control Plane REST API
+- /docs/api/mcp-gateway — MCP Gateway API
+
+### Configuration Reference
+- /docs/reference/configuration — Configuration Reference
+- /docs/reference/mcp-tools — MCP Tools Reference
+- /docs/reference/cli — CLI Reference (stoactl)
+- /docs/reference/security-configuration — Security Configuration
+- /docs/reference/troubleshooting — Troubleshooting
+
+### Kubernetes CRDs
+- /docs/reference/crds/ — CRDs Overview
+- /docs/reference/crds/tool — Tool CRD
+- /docs/reference/crds/toolset — ToolSet CRD
+
+### Architecture Decisions (ADRs)
+- /docs/architecture/adr/ — ADR Index (38 decisions)
+
+### Community
+- /docs/community/ — Community Overview
+- /docs/community/philosophy — HLFH Philosophy
+- /docs/community/rewards — Contributor Rewards
+- /docs/community/faq — Community FAQ
+
+### Other
+- /docs/roadmap — Public Roadmap
+- /docs/use-cases — Use Cases
+- /docs/architecture — Architecture Diagrams
+- /docs/faq/ — FAQ
+- /blog — Changelog & Blog

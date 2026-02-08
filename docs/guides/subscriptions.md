@@ -1,5 +1,8 @@
 ---
 sidebar_position: 3
+title: "API Subscriptions"
+description: "Manage API access through STOA's subscription model — self-service discovery, approval workflows, and usage tracking."
+keywords: [API subscriptions, access management, developer portal, API catalog]
 ---
 
 # API & Tool Subscriptions

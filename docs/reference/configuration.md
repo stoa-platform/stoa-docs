@@ -1,5 +1,8 @@
 ---
 sidebar_position: 1
+title: "Configuration Reference"
+description: "Complete configuration reference for STOA Platform — environment variables, Helm values, and runtime settings."
+keywords: [configuration, reference, environment variables, Helm, settings]
 ---
 
 # Configuration Reference

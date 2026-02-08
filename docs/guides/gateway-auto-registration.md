@@ -1,5 +1,8 @@
 ---
 sidebar_label: Gateway Auto-Registration
+title: "Gateway Auto-Registration"
+description: "Configure STOA gateways to automatically register with the Control Plane at startup — zero manual configuration."
+keywords: [gateway, auto-registration, control plane, deployment, ADR-036]
 ---
 
 # Gateway Auto-Registration Guide

@@ -1,46 +1,58 @@
-# STOA Platform Documentation
+# STOA Platform
 
-> STOA is a cloud-native API management platform built on Kubernetes with GitOps-first architecture.
+> The European Agent Gateway — open-source, AI-native API management for MCP and enterprise workloads.
 
 ## What is STOA?
 
-STOA (derived from the Greek word for "porch" or "colonnade" - a gathering place for ideas) is an open-source API management platform that provides:
-
-- Multi-tenant API Gateway powered by Kong
-- GitOps-first configuration management with ArgoCD
-- Centralized authentication via Keycloak OIDC
-- MCP (Model Context Protocol) Gateway for AI agent integration
-- Developer portal and API catalog
-
-## Documentation Structure
-
-- /docs/intro - Introduction to STOA Platform
-- /docs/guides/quickstart - Quick Start Guide
-- /docs/guides/authentication - Authentication Setup with Keycloak
-- /docs/guides/subscriptions - API Subscription Management
-- /docs/concepts/architecture - Platform Architecture
-- /docs/concepts/gitops - GitOps Principles
-- /docs/concepts/multi-tenant - Multi-Tenancy Model
-- /docs/api/control-plane - Control Plane API Reference
-- /docs/api/mcp-gateway - MCP Gateway API Reference
-- /docs/reference/configuration - Configuration Reference
-- /docs/reference/cli - CLI Reference
+STOA is an open-source API management platform (Apache 2.0) that bridges traditional APIs and AI agents through the Model Context Protocol (MCP). It provides multi-tenant isolation, GitOps-first configuration, and European data sovereignty (NIS2/DORA compliance).
 
 ## Key Features
 
-1. **Multi-Tenant Architecture**: Isolated environments per tenant with shared infrastructure
-2. **GitOps Native**: All configuration stored in Git, reconciled by ArgoCD
-3. **Kong Gateway**: Enterprise-grade API gateway with plugins
-4. **Keycloak Integration**: OIDC/OAuth2 authentication and authorization
-5. **MCP Gateway**: Connect AI agents to enterprise APIs securely
+- **MCP Gateway**: Native Model Context Protocol support — AI agents discover and call APIs automatically
+- **Multi-Tenant Architecture**: Hard isolation with Kubernetes namespaces, Keycloak realms, and schema-per-tenant databases
+- **AI Gateway**: Token metering, semantic caching, smart routing across LLM providers
+- **GitOps Native**: ArgoCD integration for declarative tenant provisioning
+- **European Sovereign**: EU hosting with full data residency control, NIS2/DORA supportive
+- **Universal API Contract (UAC)**: Define once, expose everywhere — normalized API definitions
+- **Legacy Bridge**: Migration paths from webMethods, Kong, Apigee, Oracle OAM
 
-## Contact
+## Architecture
+
+```
+CONTROL PLANE (Cloud)                    DATA PLANE (On-Premise/Hybrid)
++----------------------------+           +----------------------+
+| Portal  Console  API  Auth |  <-sync-> | MCP Gateway  Sidecar |
+| (React) (React) (Py) (KC) |           | (Rust)       (Rust)  |
++----------------------------+           +----------------------+
+```
+
+## Components
+
+| Component | Technology | Description |
+|-----------|-----------|-------------|
+| Control Plane API | Python, FastAPI | Tenant, API, and gateway management |
+| Console UI | React, TypeScript | Admin interface |
+| Developer Portal | React, TypeScript | API catalog and subscription management |
+| MCP Gateway | Rust, Tokio, axum | High-performance MCP-native gateway |
+| STOA Gateway | Rust | Data plane gateway with 4 deployment modes |
+
+## Documentation
 
 - Website: https://gostoa.dev
 - Documentation: https://docs.gostoa.dev
-- GitHub: https://github.com/stoa-platform
+- Getting Started: https://docs.gostoa.dev/docs/intro
+- Quick Start: https://docs.gostoa.dev/docs/guides/quick-start
+- Architecture: https://docs.gostoa.dev/docs/concepts/architecture
+- MCP Gateway: https://docs.gostoa.dev/docs/concepts/mcp-gateway
+- API Reference: https://docs.gostoa.dev/docs/api/control-plane
+- Migration Guides: https://docs.gostoa.dev/docs/guides/migration/
+
+## Source Code
+
+- GitHub: https://github.com/stoa-platform/stoa
+- License: Apache 2.0
+
+## Contact
+
+- Email: contact@gostoa.dev
 - Discord: https://discord.gg/stoa-platform
-
-## License
-
-STOA Platform is open source software.
