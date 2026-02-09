@@ -13,6 +13,8 @@ keywords: [API management Europe, data sovereignty, NIS2, DORA, European API gat
 
 <!-- truncate -->
 
+> **Disclaimer:** This article provides general information about regulatory frameworks and how API infrastructure decisions intersect with compliance. It does not constitute legal advice. Organizations should consult qualified legal counsel for specific compliance requirements. All trademarks belong to their respective owners.
+
 ## The Regulatory Landscape in 2026
 
 European organizations now operate under a matrix of overlapping regulations that directly impact how API traffic is managed, where data flows, and who can access it. Here are the key frameworks:
@@ -178,3 +180,5 @@ If European data sovereignty is a priority for your organization:
 ---
 
 *Need sovereign API management for your European organization? [Start with the quickstart guide](/docs/guides/quickstart) to evaluate STOA on your own infrastructure, or read the [security and compliance documentation](/docs/enterprise/security-compliance) for a detailed regulatory mapping.*
+
+> **Disclaimer:** Feature comparisons are based on publicly available documentation as of February 2026. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners.

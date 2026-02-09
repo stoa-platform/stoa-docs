@@ -48,7 +48,7 @@ architecture:
 migration:
   label: Migration
   permalink: /migration
-  description: Migration guides from legacy platforms
+  description: Migration guides from existing platforms
 
 compliance:
   label: Compliance

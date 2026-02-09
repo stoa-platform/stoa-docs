@@ -17,7 +17,11 @@ The European regulatory landscape has shifted dramatically for organizations man
 
 <!-- truncate -->
 
-If your API gateway handles traffic for regulated industries, you need to understand how these two directives intersect with your API management strategy. This article breaks down what DORA and NIS2 require, how they impact API infrastructure specifically, and what capabilities your gateway must provide to stay compliant.
+If your API gateway handles traffic for regulated industries, you need to understand how these two directives intersect with your API management strategy. This article breaks down what DORA and NIS2 require, how they impact API infrastructure specifically, and what capabilities your gateway should provide to support compliance efforts.
+
+<!-- last verified: 2026-02 -->
+
+> **Disclaimer:** This article provides general information about regulatory requirements and how API gateway capabilities can support compliance efforts. It does not constitute legal advice. Organizations should consult qualified legal counsel for specific compliance requirements.
 
 ## What Are DORA and NIS2?
 
@@ -142,7 +146,7 @@ STOA uses Open Policy Agent (OPA) for policy enforcement, enabling auditable, ve
 
 ## Building Your Compliance Roadmap
 
-Achieving DORA NIS2 compliance is not a one-time project. It requires:
+Building toward DORA and NIS2 alignment is not a one-time project. It requires:
 
 1. **Gap assessment** — Map your current API infrastructure against the requirements table above.
 2. **Architecture review** — Evaluate whether your gateway supports hybrid deployment and data sovereignty.
@@ -152,7 +156,7 @@ Achieving DORA NIS2 compliance is not a one-time project. It requires:
 
 ## Get Started
 
-If you are evaluating API gateway platforms for regulated industries, STOA provides the security, auditability, and deployment flexibility that DORA and NIS2 demand.
+If you are evaluating API gateway platforms for regulated industries, STOA provides security, auditability, and deployment flexibility that support DORA and NIS2 compliance efforts.
 
 - Explore the [Security and Compliance documentation](https://docs.gostoa.dev/docs/enterprise/security-compliance)
 - Learn about [Hybrid Deployment](https://docs.gostoa.dev/docs/deployment/hybrid)
@@ -162,3 +166,5 @@ If you are evaluating API gateway platforms for regulated industries, STOA provi
 ---
 
 *Christophe Aboulicam is the Founder & CTO at HLFH, building STOA Platform to bring AI-native API management to European enterprises.*
+
+> **Disclaimer:** STOA Platform provides technical capabilities that support regulatory compliance efforts. This does not constitute legal advice or a guarantee of compliance. Organizations should consult qualified legal counsel for compliance requirements.

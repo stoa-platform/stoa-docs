@@ -4,7 +4,7 @@ title: "The ESB is Dead, Long Live MCP: From Integration Buses to AI Gateways"
 authors: [christophe]
 tags: [architecture, ai, migration]
 description: "The enterprise service bus had a good run. But the shift from ESBs to API gateways to MCP gateways is accelerating. Learn why the ESB is dead, what replaced it, and how MCP is the next evolution of enterprise integration."
-keywords: [ESB is dead, enterprise service bus, API gateway, MCP, legacy modernization, integration platform, SOA to microservices]
+keywords: [ESB is dead, enterprise service bus, API gateway, MCP, modernization, integration platform, SOA to microservices]
 ---
 
 # The ESB is Dead, Long Live MCP: From Integration Buses to AI Gateways
@@ -132,7 +132,7 @@ The most common reasons for keeping an ESB running:
 3. **Organizational inertia** — the integration team knows the ESB, and retraining is expensive.
 4. **No clear migration path** — until now.
 
-STOA addresses all four of these. The sidecar deployment mode handles legacy coexistence. OPA policies provide richer audit trails than any ESB. The admin console and developer portal reduce the learning curve. And the phased migration path eliminates the need for a risky big-bang cutover.
+STOA addresses all four of these. The sidecar deployment mode handles coexistence with existing platforms. OPA policies provide structured audit trails. The admin console and developer portal reduce the learning curve. And the phased migration path eliminates the need for a risky big-bang cutover.
 
 ## The Future: Unified API and AI Gateway
 
@@ -151,3 +151,5 @@ The ESB is dead. Long live MCP.
 ---
 
 *Still running an ESB? [Explore the migration guides](/docs/guides/migration/) to plan your path to a modern API and AI gateway — without disrupting production.*
+
+> **Disclaimer:** Product names mentioned are trademarks of their respective owners. Feature comparisons are based on publicly available documentation as of February 2026. This article describes general industry trends and does not imply any deficiency in specific products.
