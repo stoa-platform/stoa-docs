@@ -15,14 +15,6 @@ const config: Config = {
 
   // SEO & Head Tags
   headTags: [
-    // Google Search Console verification
-    {
-      tagName: 'meta',
-      attributes: {
-        name: 'google-site-verification',
-        content: 'REPLACE_WITH_YOUR_GSC_CODE',
-      },
-    },
     {
       tagName: 'meta',
       attributes: {
