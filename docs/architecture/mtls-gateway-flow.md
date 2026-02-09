@@ -6,7 +6,7 @@ sidebar_position: 3
 
 Detailed architecture diagrams for mTLS certificate-bound token validation in the STOA Gateway (Rust).
 
-> **Related ADRs**: [ADR-027](adr/adr-027-x509-header-authentication.md) (X509 Headers), [ADR-028](adr/adr-028-rfc8705-certificate-binding.md) (RFC 8705 Binding), [ADR-029](adr/adr-029-mtls-certificate-lifecycle.md) (Certificate Lifecycle), [ADR-039](adr/adr-039-rust-gateway-mtls-cert-bound-tokens.md) (Rust Gateway mTLS)
+> **Related ADRs**: [ADR-027](adr/adr-027-x509-header-authentication.md) (X509 Headers), [ADR-028](adr/adr-028-rfc8705-certificate-binding.md) (RFC 8705 Binding), [ADR-029](adr/adr-029-mtls-certificate-lifecycle.md) (Certificate Lifecycle), [ADR-039](adr/adr-039-mtls-cert-bound-tokens.md) (Rust Gateway mTLS)
 >
 > **Linear**: CAB-864
 
