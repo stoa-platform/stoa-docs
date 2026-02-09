@@ -247,7 +247,7 @@ export default function Home(): JSX.Element {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`${siteConfig.title} - The European Agent Gateway`}
+      title="The European Agent Gateway"
       description="STOA Platform - API management for the AI era. MCP Gateway, multi-tenant, GitOps native, European sovereign.">
       <HomepageHeader />
       <main>
