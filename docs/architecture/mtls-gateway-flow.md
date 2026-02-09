@@ -356,7 +356,7 @@ stoa_gateway_mtls_cert_expiry_days{consumer_id, tenant_id}
 
 | Alert | Condition | Severity |
 |-------|-----------|----------|
-| `MtlsBindingMismatchRate` | binding_mismatch rate > 0.1/s over 5m | Warning |
-| `MtlsCertExpiringSoon` | cert_expiry_days < 30 | Warning |
-| `MtlsCertExpired` | cert_expiry_days <= 0 | Critical |
-| `MtlsHighFailureRate` | failure rate > 5% over 5m | Critical |
+| `MtlsBindingMismatchRate` | binding_mismatch rate &gt; 0.1/s over 5m | Warning |
+| `MtlsCertExpiringSoon` | cert_expiry_days &lt; 30 | Warning |
+| `MtlsCertExpired` | cert_expiry_days &lt;= 0 | Critical |
+| `MtlsHighFailureRate` | failure rate &gt; 5% over 5m | Critical |
