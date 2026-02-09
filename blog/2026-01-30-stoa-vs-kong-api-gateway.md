@@ -41,6 +41,8 @@ Kong has responded to this shift — adding MCP proxy and OAuth2 plugins in Gate
 
 Here is an honest, feature-by-feature comparison:
 
+<!-- last verified: 2026-02 -->
+
 | Capability | Kong (OSS/Enterprise) | STOA |
 |---|---|---|
 | **REST/GraphQL proxying** | Excellent — mature, battle-tested | Good — standard reverse proxy capabilities |
@@ -155,3 +157,5 @@ See the difference for yourself:
 ---
 
 *Evaluating API gateways for your AI strategy? [Start with the quickstart](/docs/guides/quickstart) and see how STOA handles both traditional APIs and MCP traffic in a single platform.*
+
+> **Disclaimer:** Feature comparisons are based on publicly available documentation as of February 2026. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners.

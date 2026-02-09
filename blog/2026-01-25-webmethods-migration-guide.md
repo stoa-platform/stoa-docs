@@ -19,7 +19,7 @@ Before discussing the how, it is worth understanding the why. We have spoken wit
 
 ### License Cost Escalation
 
-Software AG's pricing model has shifted aggressively toward subscription-based licensing. Organizations that bought perpetual licenses years ago are finding that maintenance renewals approach the cost of a full subscription. For large deployments with multiple Integration Server instances, the annual spend can reach seven figures.
+Software AG's pricing model has shifted toward subscription-based licensing. Organizations that bought perpetual licenses years ago are finding that maintenance renewals can approach the cost of a full subscription. For large deployments with multiple Integration Server instances, total cost of ownership can become a significant budget line item. Contact Software AG directly for current pricing details.
 
 ### Talent Scarcity
 
@@ -217,3 +217,5 @@ If you are considering a webMethods migration, start here:
 ---
 
 *Planning a webMethods migration? [Start with the quickstart guide](/docs/guides/quickstart) to see STOA in action, then follow the [webMethods sidecar pattern](/docs/guides/migration/webmethods-sidecar) for a zero-disruption migration path.*
+
+> **Disclaimer:** This guide describes technical migration steps and does not imply any deficiency in the source platform. Migration decisions depend on specific organizational requirements. All trademarks belong to their respective owners.

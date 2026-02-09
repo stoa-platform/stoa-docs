@@ -60,6 +60,8 @@ STOA is the newest entrant, purpose-built for the AI era. It combines a Rust-bas
 
 ## Feature Comparison Table
 
+<!-- last verified: 2026-02 -->
+
 | Feature | Kong OSS | Envoy | APISIX | Tyk OSS | STOA |
 |---|:---:|:---:|:---:|:---:|:---:|
 | **License** | Apache 2.0 | Apache 2.0 | Apache 2.0 | MPL 2.0 | Apache 2.0 |
@@ -145,3 +147,5 @@ If your use case involves AI agents, multi-tenancy, or European compliance, STOA
 ---
 
 *Christophe Aboulicam is the Founder & CTO at HLFH. He has spent 15 years in API management and integration, most recently building STOA to address the AI-native future of enterprise APIs.*
+
+> **Disclaimer:** Feature comparisons are based on publicly available documentation as of February 2026. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners.

@@ -25,16 +25,7 @@ Apigee was a pioneer in API management. Acquired by Google in 2016, it brought e
 
 ### Cost Escalation
 
-Apigee's pricing model is opaque and scales with API call volume. Organizations report annual costs in the six-figure range for moderate traffic volumes. When budgets tighten, API gateway costs that were once accepted become scrutinized — especially when open-source alternatives offer comparable features at a fraction of the cost.
-
-The pricing structure typically includes:
-
-- **Base platform fee** — Significant regardless of usage.
-- **Per-API-call charges** — Costs scale linearly with traffic.
-- **Environment fees** — Dev, staging, and production environments each add cost.
-- **Add-on features** — Advanced security, monetization, and analytics carry additional charges.
-
-For organizations running thousands of APIs across multiple environments, total cost of ownership can become a major budget line item.
+Apigee's pricing model scales with API call volume. Organizations running many APIs across multiple environments may find that total cost of ownership becomes a significant budget line item — especially when evaluating open-source alternatives that offer comparable features without platform license fees. Contact Google Cloud directly for current Apigee pricing details.
 
 ### Vendor Lock-In
 
@@ -72,33 +63,36 @@ The open-source API management ecosystem has matured dramatically. Here is how t
 | License | Proprietary | Apache 2.0 | MPL 2.0 | Apache 2.0 |
 | Lock-In Risk | High | Low | Low | Low |
 
-The critical difference: features that Apigee includes in its (expensive) proprietary offering — developer portal, analytics, multi-tenancy — are available in the open-source editions of Tyk and STOA.
+<!-- last verified: 2026-02 -->
 
-## Total Cost of Ownership Analysis
+The critical difference: features that Apigee includes in its proprietary offering — developer portal, analytics, multi-tenancy — are available in the open-source editions of Tyk and STOA.
 
-A fair comparison must account for all costs, not just licensing.
+## Total Cost of Ownership Considerations
 
-### Apigee Total Cost
+A fair comparison must account for all costs, not just licensing. The main cost categories to evaluate include:
 
-| Cost Category | Annual Estimate (mid-size org) |
-|---|---|
-| Platform license | $150,000 - $500,000+ |
-| GCP infrastructure (required) | $30,000 - $100,000 |
-| Professional services / training | $20,000 - $50,000 |
-| Migration cost (when GCP mandates changes) | $10,000 - $30,000 |
-| **Total** | **$210,000 - $680,000+** |
+### Proprietary API Gateway Costs
 
-### Open Source (STOA) Total Cost
+Proprietary API gateways typically include several cost components:
 
-| Cost Category | Annual Estimate (mid-size org) |
-|---|---|
-| License | $0 (Apache 2.0) |
-| Infrastructure (Kubernetes cluster) | $20,000 - $60,000 |
-| Engineering time (setup + operations) | $30,000 - $80,000 |
-| Optional commercial support | $0 - $50,000 |
-| **Total** | **$50,000 - $190,000** |
+- **Platform license fee** — Often the largest component, scaling with usage or environment count.
+- **Cloud infrastructure** — Required compute, networking, and storage (may be tied to a specific cloud provider).
+- **Professional services and training** — Onboarding, migration assistance, and ongoing enablement.
+- **Migration costs** — When the vendor mandates architectural changes between versions.
 
-The infrastructure cost exists regardless of gateway choice — you need compute to run your APIs. The key difference is eliminating the platform license fee and gaining the flexibility to run on any cloud provider or on-premise infrastructure.
+Contact vendors directly for current pricing, as models vary significantly and change over time.
+
+### Open Source Alternative Costs
+
+Open-source gateways eliminate the platform license fee but introduce other cost considerations:
+
+- **Infrastructure** — Kubernetes cluster or equivalent compute (this cost exists regardless of gateway choice).
+- **Engineering time** — Setup, configuration, and ongoing operations.
+- **Optional commercial support** — Available from most open-source vendors for production deployments.
+
+The key difference is eliminating vendor lock-in on the platform license and gaining the flexibility to run on any cloud provider or on-premise infrastructure.
+
+<!-- last verified: 2026-02 -->
 
 ## Migration Path: Apigee to STOA
 
@@ -186,3 +180,5 @@ If Apigee's cost, lock-in, or lack of AI-native features is driving you to explo
 ---
 
 *Christophe Aboulicam is the Founder & CTO at HLFH. Before building STOA, he spent over a decade implementing and operating enterprise API management platforms including webMethods, Kong, and Apigee.*
+
+> **Disclaimer:** Feature comparisons are based on publicly available documentation as of February 2026. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners.
