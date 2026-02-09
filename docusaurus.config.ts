@@ -9,16 +9,12 @@ const config: Config = {
   tagline: 'AI-Native API Gateway for MCP & Enterprise',
   favicon: 'img/favicon.ico',
 
+  // Note: trailingSlash left undefined (Docusaurus default) because existing
+  // relative links in index.md files break with both true and false.
+  // TODO: fix all relative links then set trailingSlash: false for SEO.
+
   // SEO & Head Tags
   headTags: [
-    // Google Search Console verification (replace with your code)
-    // {
-    //   tagName: 'meta',
-    //   attributes: {
-    //     name: 'google-site-verification',
-    //     content: 'YOUR_VERIFICATION_CODE',
-    //   },
-    // },
     {
       tagName: 'meta',
       attributes: {
@@ -35,9 +31,13 @@ const config: Config = {
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'Organization',
+        '@id': 'https://gostoa.dev/#organization',
         name: 'STOA Platform',
         url: 'https://gostoa.dev',
-        logo: 'https://docs.gostoa.dev/img/logo.svg',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://docs.gostoa.dev/img/logo.svg',
+        },
         description: 'Open-source AI-native API gateway for MCP and enterprise workloads.',
         sameAs: [
           'https://github.com/stoa-platform',
@@ -45,7 +45,7 @@ const config: Config = {
         ],
       }),
     },
-    // JSON-LD: WebSite (enables Google sitelinks search box)
+    // JSON-LD: WebSite (enables Google sitelinks search box — no SearchAction until Algolia is configured)
     {
       tagName: 'script',
       attributes: {
@@ -54,9 +54,13 @@ const config: Config = {
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'WebSite',
+        '@id': 'https://docs.gostoa.dev/#website',
         name: 'STOA Documentation',
         url: 'https://docs.gostoa.dev',
         description: 'Documentation for STOA Platform — the open-source AI-native API gateway.',
+        publisher: {
+          '@id': 'https://gostoa.dev/#organization',
+        },
       }),
     },
     // JSON-LD: SoftwareApplication
@@ -109,7 +113,7 @@ const config: Config = {
   projectName: 'stoa-docs', // Usually your repo name.
 
   onBrokenLinks: 'throw',
-  onBrokenAnchors: 'warn',
+  onBrokenAnchors: 'throw',
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -157,7 +161,7 @@ const config: Config = {
           lastmod: 'date',
           changefreq: 'weekly',
           priority: 0.5,
-          ignorePatterns: ['/tags/**'],
+          ignorePatterns: ['**/tags/**', '/blog/page/**', '/blog/archive'],
           filename: 'sitemap.xml',
           createSitemapItems: async (params) => {
             const {defaultCreateSitemapItems, ...rest} = params;
@@ -189,11 +193,13 @@ const config: Config = {
       {name: 'author', content: 'STOA Platform'},
       {property: 'og:type', content: 'website'},
       {property: 'og:site_name', content: 'STOA Documentation'},
+      {property: 'og:image', content: 'https://docs.gostoa.dev/img/stoa-social-card.png'},
       {name: 'twitter:card', content: 'summary_large_image'},
       {name: 'twitter:site', content: '@stoaplatform'},
+      {name: 'twitter:image', content: 'https://docs.gostoa.dev/img/stoa-social-card.png'},
     ],
-    // Social card for link previews
-    image: 'img/stoa-social-card.svg',
+    // Social card for link previews (PNG — SVG not supported by social platforms)
+    image: 'img/stoa-social-card.png',
     // Mermaid diagram theming
     mermaid: {
       theme: { light: 'neutral', dark: 'dark' },
