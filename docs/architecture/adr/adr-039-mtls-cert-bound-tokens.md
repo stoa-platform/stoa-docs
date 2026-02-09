@@ -4,7 +4,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | Draft |
+| **Status** | ✅ Accepted |
 | **Date** | 2026-02-09 |
 | **Decision Makers** | Platform Team, Security Team |
 | **Linear** | CAB-864 |
