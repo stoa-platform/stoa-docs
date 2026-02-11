@@ -149,6 +149,7 @@ We built STOA because we believe the AI-native use case benefits from a purpose-
 
 See the difference for yourself:
 
+- **[API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Comprehensive migration framework for all platforms.
 - **[Quickstart Guide](/docs/guides/quickstart)** — Running instance in 15 minutes.
 - **[API Gateway Patterns](/docs/guides/fiches/api-gateway-patterns)** — Deep dive into architectural patterns.
 - **[Kong Migration Guide](/docs/guides/migration/kong)** — Step-by-step migration path.

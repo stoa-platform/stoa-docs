@@ -209,13 +209,20 @@ This is significantly faster and lower-risk than a traditional rip-and-replace m
 
 If you are considering a webMethods migration, start here:
 
-- **[webMethods Migration Guide](/docs/guides/migration/ibm-webmethods)** — Detailed technical documentation with code examples.
-- **[webMethods Sidecar Pattern](/docs/guides/migration/webmethods-sidecar)** — Deep dive into the sidecar deployment architecture.
+- **[API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Comprehensive guide covering all legacy gateway migrations with decision framework.
+- **[webMethods Migration Guide](/docs/guides/migration/ibm-webmethods)** — Detailed technical documentation with code examples, phase-by-phase.
 - **[Quickstart](/docs/guides/quickstart)** — Deploy STOA in 15 minutes to evaluate it against your use case.
+- **[API Gateway Patterns — STOA vs Kong vs Apigee](/docs/guides/fiches/api-gateway-patterns)** — Understand how STOA complements existing gateways.
 - **[Console](https://console.gostoa.dev)** — Explore the admin console that replaces Integration Console.
+
+### Also Migrating from Other Platforms?
+
+- **[Kong Migration Guide](/docs/guides/migration/kong)** — Declarative config mapping, plugin translation
+- **[Apigee Migration Guide](/docs/guides/migration/apigee)** — Proxy export, European sovereignty angle
+- **[Oracle OAM Migration Guide](/docs/guides/migration/oracle-oam)** — Identity federation with Keycloak
 
 ---
 
-*Planning a webMethods migration? [Start with the quickstart guide](/docs/guides/quickstart) to see STOA in action, then follow the [webMethods sidecar pattern](/docs/guides/migration/webmethods-sidecar) for a zero-disruption migration path.*
+*Planning a webMethods migration? [Start with the quickstart guide](/docs/guides/quickstart) to see STOA in action, or read the [complete API gateway migration guide](/blog/api-gateway-migration-guide-2026) for a vendor-neutral decision framework.*
 
-> **Disclaimer:** This guide describes technical migration steps and does not imply any deficiency in the source platform. Migration decisions depend on specific organizational requirements. All trademarks belong to their respective owners.
+> This guide describes technical migration steps and does not imply any deficiency in the source platform. Migration decisions depend on specific organizational requirements. All trademarks belong to their respective owners. See [trademarks](/docs/trademarks).

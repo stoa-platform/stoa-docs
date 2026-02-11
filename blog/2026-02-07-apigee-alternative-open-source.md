@@ -180,6 +180,14 @@ If Apigee's cost, lock-in, or lack of AI-native features is driving you to explo
 
 ---
 
+### Related Reading
+
+- **[API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Complete migration framework for all legacy platforms.
+- **[Apigee Migration Guide](/docs/guides/migration/apigee)** — Step-by-step proxy export, policy translation, and traffic migration.
+- **[API Gateway Patterns — STOA vs Kong vs Apigee](/docs/guides/fiches/api-gateway-patterns)** — Architectural comparison and decision framework.
+
+---
+
 *Christophe Aboulicam is the Founder & CTO at HLFH. Before building STOA, he spent over a decade implementing and operating enterprise API management platforms including webMethods, Kong, and Apigee.*
 
 > **Disclaimer:** Feature comparisons are based on publicly available documentation as of February 2026. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners.
