@@ -105,6 +105,19 @@ The Console operates in different modes depending on the target environment:
 - The "Edit" button on any resource generates a **Git PR** instead of calling the API directly
 - The "Promote to Prod" button on a staging resource generates a PR with env-specific transformations applied
 
+**Console Workflow Visibility**: The Console provides real-time status of promotion workflows:
+
+| State | Console Display | Source |
+|-------|----------------|--------|
+| PR Created | "Promotion pending — awaiting review" + PR link | GitHub API webhook |
+| PR Approved | "Approved by [reviewer] — merging" | GitHub API webhook |
+| Merged | "Merged — deploying to prod" | GitHub API webhook |
+| ArgoCD Syncing | "Deploying — 10% canary" + progress bar | ArgoCD API polling |
+| Synced + Healthy | "Live in production" + green badge | ArgoCD API polling |
+| Rollback | "Rolled back — metric degradation detected" + alert | Argo Rollouts webhook |
+
+This enables the requester to track the full lifecycle without leaving the Console.
+
 **Rationale**: Apigee enterprises disable direct UI deployment to production and force CI/CD pipelines. WSO2 adds approval workflows. STOA combines both: the Console IS the approval workflow UI, but it writes to Git, not the database.
 
 ### 3. UAC as the Unit of Promotion
@@ -294,7 +307,60 @@ stoa-config/
 │           └── prod/
 ```
 
-Each tenant's CODEOWNERS file controls who can approve production promotions for their APIs.
+### 8. Tenant-Owned Approval Routing
+
+Promotion approvers are defined **by the tenant owner**, not by a platform-wide CODEOWNERS file. This uses a hybrid approach combining ArgoCD AppProject RBAC with Control Plane metadata:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ Control Plane API (source of truth for approvers)        │
+│                                                          │
+│  Tenant: acme-corp                                       │
+│    owner: alice@acme.com                                 │
+│    promotion_approvers:                                  │
+│      - alice@acme.com     (tenant admin)                │
+│      - bob@acme.com       (devops lead)                 │
+│    approval_policy: "any_one"  (1 of N approvers)       │
+└──────────────┬──────────────────────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────────────────────────┐
+│ GitHub Actions (enforce approval before merge)           │
+│                                                          │
+│  on: pull_request (paths: overlays/prod/tenants/acme/*) │
+│    1. Query CP API: GET /tenants/acme/promotion-approvers│
+│    2. Check PR approvals match required approvers        │
+│    3. Block merge if no matching approval                │
+└──────────────┬──────────────────────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────────────────────────┐
+│ ArgoCD AppProject (defense in depth)                     │
+│                                                          │
+│  Project: acme-corp                                      │
+│    sourceRepos: [stoa-config]                            │
+│    destinations: [namespace: tenant-acme]                │
+│    roles:                                                │
+│      - name: sync-admin                                  │
+│        policies: ["p, proj:acme:sync-admin, app, sync,  │
+│                    acme-corp/*, allow"]                   │
+│        groups: [acme-admins]                             │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Why tenant-owned, not platform-wide CODEOWNERS**:
+
+| Approach | Pros | Cons |
+|----------|------|------|
+| GitHub CODEOWNERS (per-path) | Simple, native GitHub | Platform team must edit file for every tenant change; no self-service |
+| GitLab Approval Rules | Per-path sections, flexible | Requires GitLab migration |
+| **CP API metadata + GH Actions** (chosen) | Tenant self-service, API-driven, Console UI | Custom GH Action needed |
+| ArgoCD AppProject RBAC | Defense in depth, K8s-native | Sync-level only, not PR-level |
+
+The chosen approach (CP API metadata enforced by GitHub Actions, backed by ArgoCD AppProject) provides:
+- **Self-service**: Tenant owners manage their own approvers via Console UI
+- **Defense in depth**: Even if GH Actions bypassed, ArgoCD AppProject blocks unauthorized syncs
+- **Auditability**: Approver changes tracked in CP API audit log
 
 ## Consequences
 
