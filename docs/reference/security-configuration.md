@@ -2,6 +2,7 @@
 sidebar_position: 10
 title: Security Configuration
 description: Security hardening guide for STOA Platform — JWT, CORS, SSE limits, and Kubernetes
+keywords: [security, configuration, JWT, CORS, hardening, Kubernetes]
 ---
 
 # Security Configuration

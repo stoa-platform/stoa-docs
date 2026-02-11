@@ -2,7 +2,8 @@
 sidebar_position: 1
 slug: /guides/quickstart
 title: "Quickstart: Your First API in 5 Minutes"
-description: Deploy your first API through STOA and call it from an AI agent
+description: "Deploy your first API through STOA and call it from an AI agent in under 5 minutes."
+keywords: [STOA, quickstart, getting started, API gateway, MCP, AI agent, tutorial]
 ---
 
 # ⚡ Quickstart: Your First API in 5 Minutes

@@ -2,6 +2,7 @@
 title: Security & Compliance
 description: How STOA Platform addresses enterprise security requirements and regulatory compliance (DORA, NIS2, RGPD)
 sidebar_position: 2
+keywords: [security, compliance, DORA, NIS2, RGPD, GDPR, enterprise, regulation]
 ---
 
 # Security & Compliance

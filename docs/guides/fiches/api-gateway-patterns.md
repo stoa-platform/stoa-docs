@@ -1,10 +1,11 @@
 ---
 sidebar_position: 3
-title: "Fiche #4: API Gateway Patterns — STOA vs Kong vs Apigee"
-description: Comparing STOA's AI-native gateway approach with traditional API gateways
+title: "API Gateway Patterns — STOA vs Kong vs Apigee (2026 Comparison)"
+description: "Compare API gateway patterns: STOA's AI-native MCP approach vs traditional gateways like Kong and Apigee. Feature comparison, deployment modes, and decision framework."
+keywords: [API gateway comparison, STOA vs Kong, STOA vs Apigee, Kong alternative, Apigee alternative, MCP gateway, AI-native gateway, API gateway patterns 2026]
 ---
 
-# Fiche #4: API Gateway Patterns — STOA vs Kong vs Apigee
+# API Gateway Patterns — STOA vs Kong vs Apigee (2026 Comparison)
 
 > STOA is not a general-purpose API gateway — it is a purpose-built AI-native gateway that governs tool access for LLM agents, complementing (not replacing) traditional gateways.
 
@@ -93,7 +94,14 @@ STOA is designed to sit alongside your existing gateway. In sidecar mode, STOA d
 
 ## Further Reading
 
+- **[API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Comprehensive migration guide covering all platforms
 - [ADR-024: Gateway Unified Modes](/docs/architecture/adr/adr-024-gateway-unified-modes) — Architecture decision record
 - [MCP Gateway Positioning](/docs/concepts/mcp-gateway-positioning) — What STOA does vs doesn't do
-- [Migration from Kong](/docs/guides/migration/kong) — Kong coexistence guide
-- [Migration from Apigee](/docs/guides/migration/apigee) — Apigee coexistence guide
+- [Migration from Kong](/docs/guides/migration/kong) — Kong migration with plugin mapping
+- [Migration from Apigee](/docs/guides/migration/apigee) — Apigee migration with policy translation
+- [Migration from webMethods](/docs/guides/migration/ibm-webmethods) — webMethods/DataPower migration
+- [Migration from Oracle OAM](/docs/guides/migration/oracle-oam) — Oracle identity migration
+
+---
+
+> Feature comparisons are based on publicly available documentation as of 2026-02. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners. See [trademarks](/docs/trademarks).

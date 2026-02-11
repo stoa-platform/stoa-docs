@@ -6,9 +6,10 @@ tags: [architecture, feature]
 description: "How to build a secure multi-tenant API gateway on Kubernetes. Learn the tradeoffs between namespace-per-tenant and shared models, and how STOA implements tenant isolation with Keycloak, OPA, and schema-per-tenant databases."
 keywords:
   - multi-tenant API gateway
+  - Kubernetes API gateway
+  - API gateway multi-tenancy
   - Kubernetes multi-tenancy
-  - API isolation
-  - tenant security
+  - tenant isolation
   - API gateway Kubernetes
   - multi-tenant architecture
 ---

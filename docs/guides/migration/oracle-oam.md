@@ -1,7 +1,8 @@
 ---
 sidebar_position: 3
 title: Oracle OAM / API Platform
-description: Migration guide from Oracle Access Manager and Oracle API Platform to STOA Platform
+description: "Migrate from Oracle Access Manager, OIM, and Oracle API Platform to STOA with Keycloak federation."
+keywords: [migration, Oracle OAM, Oracle API Platform, STOA, Keycloak, identity, Oracle migration]
 ---
 
 # Migration from Oracle OAM / API Platform

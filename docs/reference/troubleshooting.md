@@ -1,7 +1,8 @@
 ---
 sidebar_position: 4
 title: Troubleshooting
-description: Common issues and solutions.
+description: "Diagnose and fix common STOA Platform issues — pod failures, authentication errors, gateway problems, and deployment troubleshooting."
+keywords: [troubleshooting, debugging, errors, Kubernetes, deployment issues]
 ---
 
 # Troubleshooting

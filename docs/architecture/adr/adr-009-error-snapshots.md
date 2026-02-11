@@ -1,5 +1,8 @@
 ---
 sidebar_position: 9
+title: "ADR-009: Error Snapshots"
+description: "Decides the time-travel debugging architecture with error snapshots, PII masking, and OpenSearch storage for gateway diagnostics."
+keywords: [error snapshots, debugging, PII masking, OpenSearch, observability, diagnostics]
 ---
 
 # ADR-009: Error Snapshots — Time-Travel Debugging with PII Masking

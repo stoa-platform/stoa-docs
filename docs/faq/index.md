@@ -2,6 +2,7 @@
 sidebar_position: 5
 title: FAQ
 description: Frequently Asked Questions about STOA Platform
+keywords: [FAQ, questions, STOA, MCP, API gateway, open source]
 ---
 
 # Frequently Asked Questions

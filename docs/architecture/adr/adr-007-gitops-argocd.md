@@ -1,6 +1,8 @@
 ---
 sidebar_position: 7
 title: "ADR-007: GitOps with Argo CD"
+description: "Decides the adoption of Argo CD for GitOps-based continuous deployment of STOA platform components to Kubernetes."
+keywords: [GitOps, Argo CD, continuous deployment, Kubernetes, infrastructure as code]
 ---
 
 # ADR-007: GitOps with Argo CD for STOA Continuous Deployment

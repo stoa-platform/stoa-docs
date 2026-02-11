@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 title: "ADR-001: Third-Party API Exposure Strategy"
+description: "Decides the public API facade strategy for exposing third-party APIs through STOA with unified authentication and governance."
+keywords: [API exposure, public facade, third-party APIs, API governance, strategy]
 ---
 
 # ADR-001: Third-Party API Exposure Strategy — Public API Façade

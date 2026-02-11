@@ -1,7 +1,8 @@
 ---
 sidebar_position: 1
 title: Migration from Legacy
-description: Migration guides from legacy API management platforms to STOA Platform
+description: "Explore migration guides from legacy API management platforms like webMethods, Kong, and Apigee to STOA."
+keywords: [migration, API gateway, legacy, STOA, alternative, API management]
 ---
 
 # Migration from Legacy Platforms

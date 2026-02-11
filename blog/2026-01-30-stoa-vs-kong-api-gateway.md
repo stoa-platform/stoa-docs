@@ -4,7 +4,7 @@ title: "STOA vs Kong: Why We Built a New API Gateway for the AI Era"
 authors: [christophe]
 tags: [comparison, open-source]
 description: "An honest comparison of STOA and Kong API gateways. Learn where Kong excels, where STOA excels, and why the AI era demands a new kind of API gateway — a Kong alternative built for MCP and multi-tenancy."
-keywords: [Kong alternative, API gateway comparison, open source API gateway, MCP support, Kong vs STOA, AI API gateway, API management]
+keywords: [Kong alternative, Kong vs STOA, open source API gateway comparison, API gateway comparison 2026, AI API gateway, MCP support, API management]
 ---
 
 # STOA vs Kong: Why We Built a New API Gateway for the AI Era
@@ -149,6 +149,7 @@ We built STOA because we believe the AI-native use case benefits from a purpose-
 
 See the difference for yourself:
 
+- **[API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Comprehensive migration framework for all platforms.
 - **[Quickstart Guide](/docs/guides/quickstart)** — Running instance in 15 minutes.
 - **[API Gateway Patterns](/docs/guides/fiches/api-gateway-patterns)** — Deep dive into architectural patterns.
 - **[Kong Migration Guide](/docs/guides/migration/kong)** — Step-by-step migration path.

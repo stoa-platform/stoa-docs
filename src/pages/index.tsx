@@ -247,8 +247,8 @@ export default function Home(): JSX.Element {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title="The European Agent Gateway"
-      description="STOA Platform - API management for the AI era. MCP Gateway, multi-tenant, GitOps native, European sovereign.">
+      title="Open-Source AI API Gateway — Docs, Guides & Migration"
+      description="STOA Platform documentation — modernize your API gateway with MCP support, multi-tenant isolation, and migration guides from webMethods, Apigee, Kong.">
       <HomepageHeader />
       <main>
         <QuickStartSection />

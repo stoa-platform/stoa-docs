@@ -2,6 +2,8 @@
 title: "ADR-021: UAC-Driven Observability"
 sidebar_label: "ADR-021: UAC-Driven Observability"
 sidebar_position: 21
+description: "Decides the UAC-driven observability system enabling surgical debugging with dynamic network-level tracing without polluting Prometheus."
+keywords: [UAC, observability, debugging, tracing, Prometheus, network diagnostics]
 ---
 
 # ADR-021: UAC-Driven Observability — Debug Chirurgical sans tcpdump

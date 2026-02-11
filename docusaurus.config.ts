@@ -5,8 +5,8 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'STOA',
-  tagline: 'AI-Native API Gateway for MCP & Enterprise',
+  title: 'STOA — Open-Source AI API Gateway',
+  tagline: 'Modernize Your API Gateway — MCP, Multi-Tenant, European Sovereign',
   favicon: 'img/favicon.ico',
 
   // Note: trailingSlash left undefined (Docusaurus default) because existing
@@ -45,7 +45,7 @@ const config: Config = {
         ],
       }),
     },
-    // JSON-LD: WebSite (enables Google sitelinks search box — no SearchAction until Algolia is configured)
+    // JSON-LD: WebSite with SearchAction (enables Google sitelinks search box)
     {
       tagName: 'script',
       attributes: {
@@ -57,9 +57,17 @@ const config: Config = {
         '@id': 'https://docs.gostoa.dev/#website',
         name: 'STOA Documentation',
         url: 'https://docs.gostoa.dev',
-        description: 'Documentation for STOA Platform — the open-source AI-native API gateway.',
+        description: 'Documentation, guides, and migration tutorials for STOA — the open-source AI-native API gateway.',
         publisher: {
           '@id': 'https://gostoa.dev/#organization',
+        },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: 'https://docs.gostoa.dev/search?q={search_term_string}',
+          },
+          'query-input': 'required name=search_term_string',
         },
       }),
     },
@@ -161,7 +169,7 @@ const config: Config = {
           lastmod: 'date',
           changefreq: 'weekly',
           priority: 0.5,
-          ignorePatterns: ['**/tags/**', '/blog/page/**', '/blog/archive'],
+          ignorePatterns: ['**/tags/**', '/blog/page/**', '/blog/archive', '/docs/category/**'],
           filename: 'sitemap.xml',
           createSitemapItems: async (params) => {
             const {defaultCreateSitemapItems, ...rest} = params;
@@ -188,8 +196,8 @@ const config: Config = {
   themeConfig: {
     // Global metadata — used as defaults for all pages
     metadata: [
-      {name: 'description', content: 'STOA Platform documentation — open-source AI-native API gateway with MCP support, multi-tenant isolation, and European sovereignty (NIS2/DORA).'},
-      {name: 'keywords', content: 'API gateway, MCP, Model Context Protocol, AI gateway, open source, Kubernetes, multi-tenant, European, NIS2, DORA, STOA'},
+      {name: 'description', content: 'STOA documentation — open-source API gateway for AI agents. MCP support, multi-tenant isolation, migration guides from webMethods, Apigee, Kong. NIS2/DORA ready.'},
+      {name: 'keywords', content: 'API gateway, MCP, Model Context Protocol, AI gateway, open source, Kubernetes, multi-tenant, European, NIS2, DORA, STOA, API gateway migration, webMethods alternative, Apigee alternative'},
       {name: 'author', content: 'STOA Platform'},
       {property: 'og:type', content: 'website'},
       {property: 'og:site_name', content: 'STOA Documentation'},

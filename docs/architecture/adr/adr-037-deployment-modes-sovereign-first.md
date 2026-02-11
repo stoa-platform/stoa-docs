@@ -1,3 +1,9 @@
+---
+title: "ADR-037: Deployment Modes - Sovereign First"
+description: "Decides the sovereign-first deployment strategy with on-premise, hybrid, and SaaS modes for regulated European organizations."
+keywords: [deployment modes, sovereign cloud, data sovereignty, NIS2, DORA, on-premise, hybrid]
+---
+
 # ADR-037: Deployment Modes Strategy — Sovereign First
 
 ## Metadata

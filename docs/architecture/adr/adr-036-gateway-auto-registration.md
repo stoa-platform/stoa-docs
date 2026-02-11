@@ -1,3 +1,9 @@
+---
+title: "ADR-036: Gateway Auto-Registration"
+description: "Decides the automatic gateway registration mechanism where gateways self-register with the Control Plane on startup via heartbeat."
+keywords: [gateway registration, auto-discovery, heartbeat, Control Plane, operations]
+---
+
 # ADR-036: Gateway Auto-Registration
 
 ## Metadata

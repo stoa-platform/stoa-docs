@@ -1,5 +1,8 @@
 ---
 sidebar_position: 34
+title: "ADR-034: Python to Rust Migration Strategy"
+description: "Decides the phased migration strategy from Python MCP Gateway to Rust-based STOA Gateway for performance and safety improvements."
+keywords: [Python, Rust, migration, gateway, performance, safety, Tokio]
 ---
 
 # ADR-034: Python to Rust Migration Strategy

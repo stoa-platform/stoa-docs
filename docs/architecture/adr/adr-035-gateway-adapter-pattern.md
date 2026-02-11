@@ -1,3 +1,9 @@
+---
+title: "ADR-035: Gateway Adapter Pattern"
+description: "Decides the declarative adapter pattern for orchestrating multi-vendor API gateways via idempotent REST reconciliation loops."
+keywords: [gateway adapter, multi-vendor, webMethods, reconciliation, GitOps, API lifecycle]
+---
+
 # ADR-035: Gateway Adapter Pattern
 
 ## Metadata

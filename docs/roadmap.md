@@ -1,7 +1,8 @@
 ---
 sidebar_position: 5
 title: Roadmap
-description: STOA Platform public roadmap and upcoming features
+description: "STOA Platform public roadmap — upcoming features for the open-source AI-native API gateway with MCP support."
+keywords: [roadmap, features, release plan, MCP gateway, API management, STOA, open source]
 ---
 
 # Roadmap
@@ -14,83 +15,71 @@ This roadmap reflects our current priorities and may evolve based on community f
 
 ---
 
-## ✅ Available Today
+## Available Today
 
-**Core Platform & MCP Gateway**
+**Core Platform, MCP Gateway & Multi-Vendor Support**
 
 | Feature | Status |
 |---------|--------|
-| Control Plane API (Python/FastAPI) | ✅ Done |
-| MCP Gateway (Python/FastAPI) | ✅ Done |
-| Developer Portal | ✅ Done |
-| Admin Console | ✅ Done |
-| Multi-tenant Architecture | ✅ Done |
-| Keycloak SSO Integration | ✅ Done |
-| API Key Management + Vault | ✅ Done |
-| Subscription Management | ✅ Done |
-| Basic Observability (Prometheus/Grafana) | ✅ Done |
-| Documentation Site | ✅ Done |
-| Helm Charts | ✅ Done |
-| OPA Policy Engine | ✅ Done |
+| Control Plane API (Python/FastAPI) | Done |
+| STOA Gateway (Rust/Tokio/axum) | Done |
+| MCP Protocol — tool discovery, invocation, SSE | Done |
+| Developer Portal — self-service API discovery | Done |
+| Admin Console — API catalog, observability, tenant ops | Done |
+| Multi-tenant Architecture — namespace-level isolation | Done |
+| Keycloak SSO — OIDC, LDAP federation, multi-realm | Done |
+| Rate Limiting — per-consumer quotas | Done |
+| Circuit Breaker — per-upstream with zombie reaper | Done |
+| mTLS — certificate-bound tokens (RFC 8705) | Done |
+| Security Headers — OWASP best practices, SSRF blocklist | Done |
+| Gateway Adapters — webMethods, Kong, Gravitee | Done |
+| Gateway Auto-Registration — zero-config heartbeat | Done |
+| Observability — Prometheus, Grafana, OpenSearch | Done |
+| Helm Charts | Done |
+| OPA Policy Engine | Done |
+| Consumer Onboarding — data model, Keycloak sync, quotas | Done |
+| Born GitOps — declarative API lifecycle (ADR-040) | Done |
 
 ---
 
-## 🔧 In Progress
+## In Progress
 
-**Security, Scale & Self-Service**
+**Sidecar Mode, CLI & Developer Experience**
 
 | Feature | Status |
 |---------|--------|
-| Rate Limiting & Quotas | 🔄 In Progress |
-| Usage Metering & Analytics | 🔄 In Progress |
-| RBAC Policies (Fine-grained) | 📋 Planned |
-| Audit Logging | 📋 Planned |
-| API Versioning | 📋 Planned |
-| Schema Registry | 📋 Planned |
+| Gateway Sidecar Mode — coexist with Kong, Envoy, etc. | In Progress |
+| CLI Tool (`stoa`) — kubectl-style management | In Progress |
+| Terraform Provider | Planned |
+| OpenAPI Import — auto-register from spec | Planned |
+| SDK (Python, TypeScript) | Planned |
 
 ---
 
-## 📋 Planned
+## Planned
 
-**Ecosystem & Developer Experience**
-
-| Feature | Status |
-|---------|--------|
-| CLI Tool (`stoa`) | 📋 Planned |
-| Terraform Provider | 📋 Planned |
-| GitOps Templates (ArgoCD) | 📋 Planned |
-| Pre-built MCP Connectors | 📋 Planned |
-| SDK (Python, TypeScript) | 📋 Planned |
-| OpenAPI Import | 📋 Planned |
-
-**Performance & Scale**
+**Performance, Scale & Ecosystem**
 
 | Feature | Status |
 |---------|--------|
-| High-performance gateway (Rust) | 📋 Planned |
-| Edge Deployment | 📋 Planned |
-| WebAssembly Plugins | 📋 Planned |
-| Response Caching | 📋 Planned |
+| Gateway Proxy Mode — transparent proxy for legacy backends | Planned |
+| Gateway Shadow Mode — traffic mirroring for validation | Planned |
+| Edge Deployment | Planned |
+| WebAssembly Plugins | Planned |
+| Response Caching | Planned |
+| Pre-built MCP Connectors | Planned |
+| GitOps Templates (ArgoCD) | Planned |
+| Public Helm Registry | Planned |
 
 ---
 
-## 🔮 Under Consideration
+## Under Consideration
 
 - **AI Cost Management** — Token metering per team/project
 - **Agent Observability** — Trace AI agent workflows end-to-end
 - **Policy as Code** — Define access policies in natural language
 - **Marketplace** — Discover and share MCP tool configurations
-- **Multi-Cloud** — Native support for major cloud providers
-
----
-
-## Legend
-
-| Icon | Meaning |
-|------|---------|
-| ✅ | Done |
-| 🔄 | In Progress |
-| 📋 | Planned |
+- **Multi-Cloud Native** — Provider-specific optimizations
 
 ---
 
@@ -98,10 +87,10 @@ This roadmap reflects our current priorities and may evolve based on community f
 
 We build in public and welcome contributions!
 
-- 💬 **Discord**: [Join the community](https://discord.gg/j8tHSSes)
-- 🐛 **Issues**: [Report bugs or request features](https://github.com/stoa-platform/stoa/issues)
-- 🤝 **Contribute**: [Contributing guide](https://github.com/stoa-platform/stoa/blob/main/CONTRIBUTING.md)
-- 📧 **Contact**: [hello@gostoa.dev](mailto:hello@gostoa.dev)
+- **Discord**: [Join the community](https://discord.gg/j8tHSSes)
+- **Issues**: [Report bugs or request features](https://github.com/stoa-platform/stoa/issues)
+- **Contribute**: [Contributing guide](https://github.com/stoa-platform/stoa/blob/main/CONTRIBUTING.md)
+- **Contact**: [hello@gostoa.dev](mailto:hello@gostoa.dev)
 
 ---
 

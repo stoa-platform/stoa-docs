@@ -1,3 +1,9 @@
+---
+title: "Architecture Decision Records"
+description: "Index of all Architecture Decision Records (ADRs) for the STOA Platform, documenting key technical and architectural choices."
+keywords: [ADR, architecture decisions, STOA platform, technical decisions]
+---
+
 # Architecture Decision Records (ADRs)
 
 > **"Each tool to its purpose"** — No one-size-fits-all

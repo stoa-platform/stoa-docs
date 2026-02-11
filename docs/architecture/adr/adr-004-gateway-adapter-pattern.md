@@ -1,5 +1,8 @@
 ---
 sidebar_position: 4
+title: "ADR-004: Gateway Adapter Pattern"
+description: "Decides the multi-gateway orchestration pattern enabling STOA to manage heterogeneous API gateways through a unified adapter interface."
+keywords: [gateway adapter, orchestration, multi-gateway, API management, abstraction]
 ---
 
 # ADR-004: Gateway Adapter Pattern — Multi-Gateway Orchestration

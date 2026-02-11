@@ -1,5 +1,8 @@
 ---
 sidebar_position: 3
+title: "mTLS Gateway Authentication Flow"
+description: "Detailed architecture diagrams for mTLS certificate-bound token validation in the STOA Gateway, including end-to-end flows and Keycloak integration."
+keywords: [mTLS, authentication, gateway, certificate, TLS, security, Keycloak]
 ---
 
 # mTLS Gateway Authentication Flow

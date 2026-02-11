@@ -1,3 +1,9 @@
+---
+title: "ADR-029: mTLS Certificate Lifecycle Management"
+description: "Decides the architecture for automated mTLS certificate rotation, bulk onboarding, and zero-downtime renewal for enterprise API consumers."
+keywords: [mTLS, certificate lifecycle, rotation, bulk onboarding, zero downtime, PKI]
+---
+
 # ADR-029: mTLS Certificate Lifecycle Management
 
 ## Status

@@ -1,7 +1,8 @@
 ---
 sidebar_position: 2
 title: IBM webMethods / DataPower
-description: Migration guide from IBM webMethods and DataPower to STOA Platform
+description: "Migrate from IBM webMethods and DataPower to STOA Platform with a phased, zero-downtime approach."
+keywords: [migration, webMethods, DataPower, IBM, Software AG, STOA, API gateway, webMethods migration]
 ---
 
 # Migration from IBM webMethods / DataPower

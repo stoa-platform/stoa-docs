@@ -1,7 +1,8 @@
 ---
 sidebar_position: 18
 title: "ADR-018: Security Hardening P0 — Team Coca Pentest"
-description: "P0 security fixes following internal pentest audit"
+description: "Decides the P0 critical security fixes following the internal Team Coca pentest audit including auth, CORS, and injection hardening."
+keywords: [security hardening, pentest, P0 fixes, CORS, injection, authentication]
 ---
 
 # ADR-018: Security Hardening P0 — Team Coca Pentest

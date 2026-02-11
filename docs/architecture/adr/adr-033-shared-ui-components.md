@@ -1,5 +1,8 @@
 ---
 sidebar_position: 33
+title: "ADR-033: Shared UI Components"
+description: "Decides the theme abstraction and reusable component patterns shared between Console and Portal React applications."
+keywords: [shared components, UI, theme abstraction, React, Console, Portal, design system]
 ---
 
 # ADR-033: Shared UI Components — Theme Abstraction & Reusable Patterns

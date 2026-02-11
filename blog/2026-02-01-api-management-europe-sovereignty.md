@@ -4,7 +4,7 @@ title: "API Management in Europe: Data Sovereignty, NIS2, and the Case for Europ
 authors: [christophe]
 tags: [compliance, open-source]
 description: "European organizations face mounting regulatory pressure from NIS2, DORA, and GDPR. Learn why API management in Europe requires data sovereignty, and how European-born gateways like STOA address compliance without compromising capability."
-keywords: [API management Europe, data sovereignty, NIS2, DORA, European API gateway, GDPR, CLOUD Act, sovereign cloud, API compliance]
+keywords: [European API management, sovereign API gateway, API management GDPR, data sovereignty, CLOUD Act, NIS2, DORA, European API gateway, sovereign cloud]
 ---
 
 # API Management in Europe: Data Sovereignty, NIS2, and the Case for European Gateways

@@ -1,7 +1,8 @@
 ---
 sidebar_position: 4
 title: "Fiche #5: Data Sovereignty & GDPR"
-description: How STOA supports European data sovereignty and regulatory compliance (GDPR, DORA, NIS2, CLOUD Act)
+description: "Discover how STOA supports European data sovereignty and regulatory compliance with GDPR, DORA, and NIS2."
+keywords: [GDPR, data sovereignty, DORA, NIS2, compliance, STOA, European regulation]
 ---
 
 # Fiche #5: Data Sovereignty & GDPR

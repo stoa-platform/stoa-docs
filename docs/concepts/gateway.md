@@ -1,5 +1,8 @@
 ---
 sidebar_position: 5
+title: "STOA Gateway Deployment Modes"
+description: "Learn about the STOA Gateway's 4 deployment modes: edge-mcp, sidecar, proxy, and shadow for any use case."
+keywords: [STOA, gateway, deployment modes, edge-mcp, sidecar, proxy, concepts, API gateway]
 ---
 
 # STOA Gateway

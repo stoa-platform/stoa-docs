@@ -2,7 +2,8 @@
 title: "ADR-022: UAC Tenant Architecture"
 sidebar_label: "ADR-022: UAC Tenant Architecture"
 sidebar_position: 22
-description: "Flat files over inheritance for UAC configuration"
+description: "Decides to use flat, self-contained UAC configuration files per tenant instead of inheritance or merge-based approaches."
+keywords: [UAC, tenant architecture, flat files, configuration, multi-tenant, isolation]
 ---
 
 # ADR-022: UAC Tenant Architecture — Flat Files over Inheritance

@@ -1,5 +1,8 @@
 ---
 sidebar_position: 31
+title: "ADR-031: CI/CD Reusable Workflow Architecture"
+description: "Decides the reusable GitHub Actions workflow architecture for consistent CI/CD pipelines across all STOA platform components."
+keywords: [CI/CD, GitHub Actions, reusable workflows, automation, pipelines]
 ---
 
 # ADR-031: CI/CD Reusable Workflow Architecture

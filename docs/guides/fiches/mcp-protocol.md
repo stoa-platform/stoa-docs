@@ -1,7 +1,8 @@
 ---
 sidebar_position: 2
 title: "Fiche #3: MCP Protocol — The USB-C of LLMs"
-description: Understanding the Model Context Protocol and how STOA provides an MCP-native API gateway
+description: "Understand the Model Context Protocol (MCP) and how STOA provides an MCP-native API gateway for AI agents."
+keywords: [MCP, Model Context Protocol, STOA, AI agents, LLM, tool invocation, API gateway]
 ---
 
 # Fiche #3: MCP Protocol — The USB-C of LLMs

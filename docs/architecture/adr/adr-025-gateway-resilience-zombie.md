@@ -1,7 +1,8 @@
 ---
 sidebar_position: 25
 title: "ADR-025: Gateway Resilience — Anti-Zombie Node Pattern"
-description: "Deep readiness probes, last gasp logging, and anomaly detection for zombie node prevention"
+description: "Decides the anti-zombie node pattern with deep readiness probes, last-gasp logging, and anomaly detection for gateway resilience."
+keywords: [gateway resilience, zombie nodes, readiness probes, anomaly detection, reliability]
 ---
 
 # ADR-025: Gateway Resilience — Anti-Zombie Node Pattern
