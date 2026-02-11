@@ -2,6 +2,7 @@
 sidebar_position: 2
 title: Architecture Overview
 description: High-level architecture of STOA Platform — Live (Feb 2026) vs Target (v1.0 Q3 2026)
+keywords: [architecture, overview, control plane, data plane, Kubernetes, design]
 ---
 
 # Architecture Overview

@@ -1,3 +1,9 @@
+---
+title: "ADR-028: RFC 8705 Certificate Binding Validation"
+description: "Decides how the MCP Gateway validates certificate-bound JWT tokens using RFC 8705 fingerprint normalization and timing-safe comparison."
+keywords: [RFC 8705, certificate binding, JWT, mTLS, fingerprint, security]
+---
+
 # ADR-028: RFC 8705 Certificate Binding Validation
 
 ## Status

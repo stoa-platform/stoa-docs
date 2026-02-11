@@ -1,5 +1,8 @@
 ---
 sidebar_position: 38
+title: "ADR-038: Sidecar Deployment on VM Infrastructure"
+description: "Decides the sidecar deployment strategies for running STOA Gateway alongside applications on VM-based infrastructure without Kubernetes."
+keywords: [sidecar, VM deployment, systemd, gateway, non-Kubernetes, infrastructure]
 ---
 
 # ADR-038: Sidecar Deployment Strategies on VM-Based Infrastructure

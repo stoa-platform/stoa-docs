@@ -1,7 +1,8 @@
 ---
 sidebar_position: 10
 title: Implementation Status
-description: Current implementation vs Future Vision
+description: "Track STOA Platform's current implementation status and future roadmap for each component and feature."
+keywords: [STOA, implementation, status, roadmap, architecture, concepts]
 ---
 
 # Implementation Status

@@ -1,7 +1,8 @@
 ---
 sidebar_position: 4
 title: Universal API Contract
-description: UAC — the normalized API definition model in STOA.
+description: "Define once, expose everywhere — learn how STOA's Universal API Contract normalizes API definitions across gateways."
+keywords: [STOA, UAC, Universal API Contract, API definition, gateway-agnostic, concepts]
 ---
 
 # Universal API Contract (UAC)

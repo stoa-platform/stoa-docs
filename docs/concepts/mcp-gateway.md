@@ -1,7 +1,8 @@
 ---
 sidebar_position: 3
 title: MCP Gateway
-description: An MCP-native API Gateway for AI agents
+description: "Explore STOA's MCP-native API Gateway that lets AI agents securely consume enterprise APIs via MCP protocol."
+keywords: [STOA, MCP Gateway, MCP, AI agents, API gateway, tool invocation, concepts]
 ---
 
 # MCP Gateway

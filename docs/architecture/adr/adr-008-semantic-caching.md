@@ -1,5 +1,8 @@
 ---
 sidebar_position: 8
+title: "ADR-008: Semantic Response Caching"
+description: "Decides the pgvector-based semantic caching strategy for MCP tool responses to reduce latency and token consumption."
+keywords: [semantic caching, pgvector, response caching, performance, token optimization]
 ---
 
 # ADR-008: Semantic Response Caching — pgvector Strategy

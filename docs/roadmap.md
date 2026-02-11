@@ -2,6 +2,7 @@
 sidebar_position: 5
 title: Roadmap
 description: STOA Platform public roadmap and upcoming features
+keywords: [roadmap, features, release plan, MCP gateway, API management]
 ---
 
 # Roadmap

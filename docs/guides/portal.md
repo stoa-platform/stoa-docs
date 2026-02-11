@@ -1,7 +1,8 @@
 ---
 sidebar_position: 1
 title: Developer Portal
-description: Consumer workflow — discover, subscribe, and test APIs.
+description: "Discover, subscribe to, and test APIs using the STOA Developer Portal for API consumers."
+keywords: [STOA, developer portal, API catalog, API discovery, subscriptions, guide, tutorial]
 ---
 
 # Developer Portal

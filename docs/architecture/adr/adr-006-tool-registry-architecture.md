@@ -1,5 +1,8 @@
 ---
 sidebar_position: 6
+title: "ADR-006: Tool Registry Architecture"
+description: "Decides the modular 7-module design for the MCP tool registry, covering discovery, validation, RBAC, and lifecycle management."
+keywords: [tool registry, MCP, modular design, RBAC, discovery, lifecycle]
 ---
 
 # ADR-006: Tool Registry Architecture — Modular 7-Module Design

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 11
 title: "ADR-011: API Security Modes"
+description: "Decides the API security mode selection strategy supporting mTLS, OAuth2, and hybrid authentication for different enterprise scenarios."
+keywords: [API security, mTLS, OAuth2, hybrid authentication, security modes]
 ---
 
 # ADR-011: API Security Mode Selection — mTLS / OAuth2 / Hybrid

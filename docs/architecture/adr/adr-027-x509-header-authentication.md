@@ -1,3 +1,9 @@
+---
+title: "ADR-027: X509 Header-Based Authentication"
+description: "Decides how STOA validates mTLS client certificates via HTTP headers when TLS is terminated at the edge load balancer."
+keywords: [mTLS, X509, certificate authentication, TLS termination, Keycloak, security]
+---
+
 # ADR-027: X509 Header-Based Authentication
 
 ## Status

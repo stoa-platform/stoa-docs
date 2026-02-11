@@ -2,6 +2,7 @@
 sidebar_position: 1
 title: Enterprise Use Cases
 description: Industry-specific use cases for STOA Platform across Banking, Insurance, Logistics, and Luxury/Retail
+keywords: [enterprise, use cases, banking, insurance, logistics, API modernization]
 ---
 
 # Enterprise Use Cases

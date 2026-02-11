@@ -1,7 +1,8 @@
 ---
 sidebar_position: 4
 title: MCP Tools Reference
-description: Complete reference for STOA Platform MCP tools
+description: "Complete reference for STOA Platform MCP tools — discovery, catalog, subscriptions, observability, and security tool endpoints."
+keywords: [MCP tools, API reference, tool discovery, AI agents, Model Context Protocol]
 ---
 
 # MCP Tools Reference

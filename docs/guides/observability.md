@@ -1,7 +1,8 @@
 ---
 sidebar_position: 5
 title: Observability
-description: Monitoring with Prometheus, Grafana, and Loki.
+description: "Set up monitoring for STOA Platform with Prometheus metrics, Grafana dashboards, and Loki log aggregation."
+keywords: [STOA, observability, Prometheus, Grafana, Loki, monitoring, guide]
 ---
 
 # Observability

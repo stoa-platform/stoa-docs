@@ -1,6 +1,8 @@
 ---
 sidebar_position: 12
 title: "ADR-012: MCP RBAC Architecture"
+description: "Decides the RBAC and multi-tenant governance architecture for MCP tools including role-based access, OPA policies, and tenant isolation."
+keywords: [RBAC, MCP, multi-tenant, governance, OPA, access control, security]
 ---
 
 # ADR-012: MCP Tools Architecture — RBAC & Multi-Tenant Governance

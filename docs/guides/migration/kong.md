@@ -1,7 +1,8 @@
 ---
 sidebar_position: 4
 title: Kong OSS / Enterprise
-description: Migration guide from Kong Gateway to STOA Platform (Coming Soon)
+description: "Migrate from Kong Gateway OSS or Enterprise to STOA Platform while preserving your existing configs."
+keywords: [migration, Kong, Kong Gateway, STOA, API gateway, alternative, Kong migration]
 ---
 
 # Migration from Kong OSS / Enterprise

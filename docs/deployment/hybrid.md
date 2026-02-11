@@ -2,6 +2,7 @@
 sidebar_position: 1
 title: Hybrid Deployment
 description: STOA Platform hybrid deployment models — Control Plane Cloud + Gateway On-Premises, Full On-Premises, and Multi-Cloud options
+keywords: [deployment, hybrid, on-premises, multi-cloud, Kubernetes, sovereignty]
 ---
 
 # Hybrid Deployment

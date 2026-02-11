@@ -1,6 +1,8 @@
 ---
 sidebar_position: 19
 title: "ADR-019: Business Model"
+description: "Decides the open-source business model and competitive moat strategy for STOA Platform including licensing and monetization approach."
+keywords: [business model, open source, strategy, monetization, competitive moat]
 ---
 
 # ADR-019: Business Model

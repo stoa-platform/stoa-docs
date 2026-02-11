@@ -1,7 +1,8 @@
 ---
 sidebar_position: 15
 title: "ADR-015: Token Optimization Architecture"
-description: Pipeline de réduction de consommation de tokens pour les devs IA via MCP Gateway
+description: "Decides the token optimization engine pipeline for reducing AI developer token consumption through the MCP Gateway."
+keywords: [token optimization, AI, MCP Gateway, cost reduction, pipeline, LLM]
 ---
 
 # ADR-015: Token Optimization Architecture — Token Optimization Engine

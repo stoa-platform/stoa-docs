@@ -1,7 +1,8 @@
 ---
 sidebar_position: 2
 title: "ADR-002: stoactl CLI Design"
-description: Architecture Decision Record for the GitOps-native STOA CLI
+description: "Architecture Decision Record for the GitOps-native STOA CLI tool built with Go and Cobra for kubectl-style API management."
+keywords: [stoactl, CLI, Go, Cobra, GitOps, kubectl, API management]
 ---
 
 # ADR-001: stoactl CLI Design

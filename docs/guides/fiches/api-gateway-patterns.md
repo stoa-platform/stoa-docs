@@ -1,7 +1,8 @@
 ---
 sidebar_position: 3
 title: "Fiche #4: API Gateway Patterns — STOA vs Kong vs Apigee"
-description: Comparing STOA's AI-native gateway approach with traditional API gateways
+description: "Compare STOA's AI-native gateway approach with traditional API gateways like Kong and Apigee."
+keywords: [STOA, API gateway, Kong, Apigee, comparison, MCP, AI-native gateway]
 ---
 
 # Fiche #4: API Gateway Patterns — STOA vs Kong vs Apigee

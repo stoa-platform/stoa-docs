@@ -1,5 +1,8 @@
 ---
 sidebar_position: 24
+title: "ADR-024: Unified Gateway Modes"
+description: "Decides the unified gateway architecture with mode-based configuration supporting edge-MCP, sidecar, proxy, and shadow deployment modes."
+keywords: [gateway modes, unified architecture, edge-MCP, sidecar, proxy, configuration]
 ---
 
 # ADR-024: Unified Gateway Architecture with Mode-Based Configuration

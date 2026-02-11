@@ -5,14 +5,14 @@ authors: [stoa-team]
 tags: [ai, mcp, feature]
 description: "Learn how to securely connect AI agents like Claude and GPT to enterprise APIs using the Model Context Protocol (MCP). Understand the security risks of direct API access and how an MCP gateway provides governance, authentication, and audit logging."
 keywords:
-  - AI agents enterprise APIs
-  - MCP
-  - AI security
-  - tool use
-  - Claude
-  - GPT
+  - AI agents enterprise API
+  - connect AI agents to APIs
+  - MCP enterprise integration
   - Model Context Protocol
+  - AI security
   - AI gateway
+  - Claude tool use
+  - GPT API integration
 ---
 
 Connecting **AI agents to enterprise APIs** is the next frontier of digital transformation — and the next frontier of security risk. As organizations deploy AI agents built on Claude, GPT, Gemini, and open-source models, these agents need access to internal systems: databases, CRMs, ERPs, payment processors, and more. The question is not whether to grant this access, but how to do it without opening a new attack surface.

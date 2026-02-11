@@ -2,6 +2,7 @@
 sidebar_position: 4
 title: FAQ
 description: Common questions about STOA's open source model and sustainability
+keywords: [FAQ, open source, licensing, Apache 2.0, sustainability, community]
 ---
 
 # Frequently Asked Questions

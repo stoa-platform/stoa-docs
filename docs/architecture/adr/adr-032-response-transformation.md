@@ -1,5 +1,8 @@
 ---
 sidebar_position: 32
+title: "ADR-032: Response Transformation"
+description: "Decides the pluggable adapter pattern for response transformation enabling format conversion between legacy APIs and MCP tool outputs."
+keywords: [response transformation, adapter pattern, format conversion, MCP, legacy APIs]
 ---
 
 # ADR-032: Response Transformation — Pluggable Adapter Pattern

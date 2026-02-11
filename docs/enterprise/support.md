@@ -2,6 +2,7 @@
 sidebar_position: 3
 title: Support & Services
 description: STOA Platform support tiers, professional services, and partner ecosystem
+keywords: [support, services, enterprise, SLA, professional services, partner]
 ---
 
 # Support & Services

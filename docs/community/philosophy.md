@@ -2,6 +2,7 @@
 sidebar_position: 2
 title: Philosophy
 description: The HLFH philosophy behind STOA — principles that guide everything we build
+keywords: [philosophy, HLFH, values, open source, principles, sustainability]
 ---
 
 # Philosophy

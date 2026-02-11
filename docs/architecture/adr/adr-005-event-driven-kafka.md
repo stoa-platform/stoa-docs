@@ -1,5 +1,8 @@
 ---
 sidebar_position: 5
+title: "ADR-005: Event-Driven Architecture with Kafka"
+description: "Decides the Kafka topic design and event-driven architecture for asynchronous communication between STOA platform components."
+keywords: [Kafka, event-driven, topics, asynchronous, messaging, architecture]
 ---
 
 # ADR-005: Event-Driven Architecture — Kafka Topics Design

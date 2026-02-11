@@ -4,7 +4,7 @@ title: "Migrating from webMethods to a Modern API Gateway: A Practical Guide"
 authors: [stoa-team]
 tags: [migration, architecture]
 description: "A practical guide to migrating from Software AG webMethods to a modern API gateway. Learn the sidecar approach, phased migration strategy, and how STOA makes webMethods migration non-disruptive."
-keywords: [webMethods migration, Software AG webMethods, API gateway migration, legacy modernization, webMethods alternative, integration platform migration]
+keywords: [webMethods migration, webMethods alternative, webMethods end of life, API gateway migration, Software AG migration, Software AG webMethods, integration platform modernization]
 ---
 
 # Migrating from webMethods to a Modern API Gateway: A Practical Guide

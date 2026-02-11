@@ -1,6 +1,8 @@
 ---
 sidebar_position: 23
 title: "ADR-023: Zero Blind Spot Observability"
+description: "Decides the zero blind spot observability strategy ensuring full visibility across all gateway and API interactions with no monitoring gaps."
+keywords: [observability, monitoring, zero blind spot, metrics, logging, tracing]
 ---
 
 # ADR-023: Zero Blind Spot Observability

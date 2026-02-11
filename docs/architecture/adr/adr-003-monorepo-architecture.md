@@ -1,5 +1,8 @@
 ---
 sidebar_position: 3
+title: "ADR-003: Monorepo Architecture"
+description: "Decides the monorepo structure for STOA Platform with multi-service polyglot design spanning Python, TypeScript, and Rust."
+keywords: [monorepo, architecture, polyglot, Python, TypeScript, Rust, microservices]
 ---
 
 # ADR-003: Monorepo Architecture — Multi-Service Polyglot Design

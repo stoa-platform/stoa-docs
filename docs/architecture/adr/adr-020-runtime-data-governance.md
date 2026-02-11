@@ -1,7 +1,8 @@
 ---
 sidebar_position: 20
 title: "ADR-020: Runtime Data Governance"
-description: Control Plane vs Git for API metadata management
+description: "Decides between Control Plane database and Git repositories for managing API metadata, choosing runtime-first with Git sync."
+keywords: [data governance, Control Plane, Git, API metadata, runtime, synchronization]
 ---
 
 # ADR-020: Runtime Data Governance — Control Plane vs Git

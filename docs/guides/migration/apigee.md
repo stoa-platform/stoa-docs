@@ -1,7 +1,8 @@
 ---
 sidebar_position: 5
 title: Google Apigee
-description: Migration guide from Google Apigee to STOA Platform (Coming Soon)
+description: "Migrate from Google Apigee to STOA Platform with this step-by-step guide for API proxy conversion."
+keywords: [migration, Apigee, Google Cloud, STOA, API gateway, alternative, Apigee migration]
 ---
 
 # Migration from Google Apigee

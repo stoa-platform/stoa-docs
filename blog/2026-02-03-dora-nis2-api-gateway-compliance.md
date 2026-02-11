@@ -5,12 +5,13 @@ authors: [christophe]
 tags: [compliance, architecture]
 description: "Learn how DORA and NIS2 regulations impact API gateway infrastructure. Discover the security, audit, and resilience requirements your API platform must meet for financial services and critical infrastructure compliance."
 keywords:
-  - DORA NIS2 compliance
+  - DORA compliance API
+  - NIS2 API gateway
+  - European API compliance
+  - financial regulation API
   - API gateway compliance
-  - financial services API security
-  - cybersecurity directive
-  - EU regulation API management
   - digital operational resilience
+  - cybersecurity directive
 ---
 
 The European regulatory landscape has shifted dramatically for organizations managing digital infrastructure. **DORA NIS2 compliance** is no longer a future concern — it is an immediate operational requirement for any organization operating API gateways in financial services, healthcare, energy, or critical infrastructure sectors across the EU.

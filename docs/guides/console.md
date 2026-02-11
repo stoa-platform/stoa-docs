@@ -1,7 +1,8 @@
 ---
 sidebar_position: 2
 title: Console
-description: Admin workflow — manage tenants, APIs, users, and gateways.
+description: "Learn to manage tenants, APIs, users, and gateways from the STOA Console admin interface."
+keywords: [STOA, console, admin, API management, tenant management, guide, tutorial]
 ---
 
 # Console

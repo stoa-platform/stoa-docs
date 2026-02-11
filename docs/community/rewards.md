@@ -2,6 +2,7 @@
 sidebar_position: 3
 title: Contributor Rewards
 description: How STOA values and compensates open source contributions
+keywords: [contributor rewards, revenue sharing, compensation, open source, community]
 ---
 
 # Contributor Rewards Program

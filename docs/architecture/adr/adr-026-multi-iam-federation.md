@@ -1,6 +1,8 @@
 ---
 title: "ADR-026: Multi-IAM Federation Pattern"
 sidebar_label: Multi-IAM Federation
+description: "Decides the zero user storage architecture for multi-IAM federation using Keycloak identity brokering with LDAP, SAML, and OIDC providers."
+keywords: [IAM federation, Keycloak, identity brokering, LDAP, SAML, OIDC, multi-tenant]
 ---
 
 # ADR-026: Multi-IAM Federation Pattern — Zero User Storage Architecture

@@ -1,7 +1,8 @@
 ---
 sidebar_position: 1
 title: Architecture Overview
-description: High-level architecture of the STOA Platform
+description: "Understand the high-level architecture of STOA Platform with its Control Plane and Data Plane separation."
+keywords: [STOA, architecture, control plane, data plane, concepts, API gateway, cloud-native]
 ---
 
 # Architecture Overview

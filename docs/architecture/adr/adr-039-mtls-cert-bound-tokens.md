@@ -1,3 +1,9 @@
+---
+title: "ADR-039: Rust Gateway mTLS Cert-Bound Tokens"
+description: "Decides the Rust gateway implementation of mTLS certificate-bound token validation with SHA-256 fingerprint matching."
+keywords: [mTLS, Rust gateway, certificate-bound tokens, RFC 8705, security, validation]
+---
+
 # ADR-039: Rust Gateway mTLS + Certificate-Bound Token Validation
 
 ## Metadata

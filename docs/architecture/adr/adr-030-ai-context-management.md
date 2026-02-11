@@ -1,3 +1,9 @@
+---
+title: "ADR-030: AI-Native Context Management"
+description: "Decides the context management architecture for AI Factory sessions, including memory files, rules, and agent delegation patterns."
+keywords: [AI Factory, context management, Claude Code, memory, session state, agents]
+---
+
 # ADR-030: AI-Native Context Management Architecture
 
 ## Metadata
