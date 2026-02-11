@@ -1,7 +1,7 @@
 ---
 sidebar_position: 99
 title: Trademark Notice
-description: Third-party trademark attributions used in STOA documentation
+description: Third-party trademark attributions used in STOA documentation — vendor names, legal compliance, and comparative information guidelines
 keywords: [trademarks, legal, attributions, third-party, intellectual property]
 ---
 

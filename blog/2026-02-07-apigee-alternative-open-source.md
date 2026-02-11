@@ -1,9 +1,9 @@
 ---
 slug: apigee-alternative-open-source
-title: "Looking for an Apigee Alternative? Why Open Source API Gateways Are Winning"
+title: "Apigee Alternative: Why Open Source Gateways Win"
 authors: [christophe]
 tags: [comparison, open-source, migration]
-description: "Evaluating alternatives to Google Apigee? Learn why teams are migrating to open source API gateways, compare costs and features, and discover how to migrate from Apigee to STOA Platform."
+description: "Why teams migrate from Google Apigee to open source gateways. Compare costs, features, lock-in risks, and get a proven migration roadmap."
 keywords:
   - Apigee alternative
   - Apigee open source alternative

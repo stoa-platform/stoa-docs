@@ -1,9 +1,9 @@
 ---
 slug: mulesoft-migration-open-source-gateway
-title: "MuleSoft Migration: Moving from Anypoint to an Open-Source API Gateway"
+title: "MuleSoft Migration: Anypoint to Open-Source Gateways"
 authors: [stoa-team]
 tags: [migration, architecture]
-description: "A practical guide to migrating from MuleSoft Anypoint Platform to an open-source API gateway. Understand the decoupling strategy, API extraction patterns, and when MuleSoft migration makes sense."
+description: "Migrate from MuleSoft Anypoint to open-source gateways. Decoupling strategy, API extraction, and when migration makes sense for your platform."
 keywords: [MuleSoft migration, MuleSoft alternative, Anypoint migration, MuleSoft open source alternative, API gateway migration, MuleSoft to open source, iPaaS migration, Salesforce MuleSoft]
 ---
 

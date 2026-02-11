@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
-title: FAQ
-description: Common questions about STOA's open source model and sustainability
+title: "FAQ: STOA Platform Questions & Answers"
+description: Common questions about STOA's open source model, sustainability, licensing (Apache 2.0), pricing, MCP support, and deployment options
 keywords: [FAQ, open source, licensing, Apache 2.0, sustainability, community]
 ---
 

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
-title: "Kubernetes CRDs"
-description: "STOA Kubernetes Custom Resource Definitions (CRDs) reference — Tool and ToolSet resources for declarative management."
+title: "Kubernetes CRDs for STOA: Tool & ToolSet Resources"
+description: "STOA Kubernetes Custom Resource Definitions (CRDs) reference — Tool and ToolSet resources for declarative MCP tool management and GitOps workflows"
 keywords: [CRD, Kubernetes, custom resources, Tool, ToolSet]
 ---
 

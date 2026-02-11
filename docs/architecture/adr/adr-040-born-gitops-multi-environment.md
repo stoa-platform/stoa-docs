@@ -1,3 +1,9 @@
+---
+title: "ADR-040: Born GitOps — Multi-Environment Promotion Architecture"
+description: "Architecture decision for GitOps-first multi-environment API deployment. Git as the single source of truth, directory-per-environment layout, and UAC-based promotion through dev, staging, and production."
+keywords: [ADR, GitOps, multi-environment, deployment, Kubernetes, ArgoCD, promotion, UAC]
+---
+
 # ADR-040: Born GitOps — Multi-Environment Promotion Architecture
 
 ## Metadata

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
-title: Roadmap
-description: "STOA Platform public roadmap — upcoming features for the open-source AI-native API gateway with MCP support."
+title: "STOA Platform Roadmap: Features & Milestones"
+description: "STOA Platform public roadmap — upcoming features for the open-source AI-native API gateway with MCP support, sidecar mode, CLI, and performance improvements"
 keywords: [roadmap, features, release plan, MCP gateway, API management, STOA, open source]
 ---
 

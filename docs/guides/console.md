@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
-title: Console
-description: "Learn to manage tenants, APIs, users, and gateways from the STOA Console admin interface."
+title: "STOA Console: Multi-Tenant Admin Dashboard"
+description: "Manage tenants, APIs, users, and gateways from the STOA Console admin interface — multi-tenant RBAC, observability, and lifecycle management"
 keywords: [STOA, console, admin, API management, tenant management, guide, tutorial]
 ---
 

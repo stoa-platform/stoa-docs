@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Fiche #2: OAuth 2.0 + Token Exchange (RFC 8693)"
-description: "Learn how STOA uses OAuth 2.0 and RFC 8693 Token Exchange for secure multi-tenant API access."
+description: "Learn how STOA uses OAuth 2.0 and RFC 8693 Token Exchange for secure multi-tenant API access — delegation, cross-tenant authorization, and Keycloak federation"
 keywords: [OAuth2, token exchange, RFC 8693, Keycloak, STOA, multi-tenant, security]
 ---
 

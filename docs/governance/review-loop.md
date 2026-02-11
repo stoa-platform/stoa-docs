@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Implementation Review Loop
-description: Standard Marchemalo - Code quality validation process for STOA Platform
+description: Standard Marchemalo — multi-persona code quality validation with security gates, architecture review, and iterative improvement to 9+/10 score
 keywords: [governance, review, quality, security, architecture]
 ---
 

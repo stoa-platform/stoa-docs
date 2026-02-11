@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
-title: Governance
-description: STOA Platform governance, quality standards, and decision-making processes
+title: "STOA Governance: Quality Standards & Processes"
+description: STOA Platform governance, quality standards, and decision-making processes — implementation review loop, ADRs, Council review, and transparent contributions
 keywords: [governance, standards, quality, decisions, community]
 ---
 

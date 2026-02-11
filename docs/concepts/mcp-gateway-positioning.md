@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 title: MCP Gateway Positioning
-description: "Clarify what STOA MCP Gateway manages vs AI providers — tool governance, not token billing."
+description: "Clarify what STOA MCP Gateway manages vs AI providers — tool invocation governance, multi-tenant isolation, and policy enforcement (not token billing)"
 keywords: [STOA, MCP Gateway, positioning, AI agents, governance, billing, concepts]
 ---
 
