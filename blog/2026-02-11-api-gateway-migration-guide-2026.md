@@ -153,7 +153,18 @@ When confident, shift to 100% through the new gateway:
 
 ## Platform-Specific Migration Guides
 
-Each legacy platform has unique migration challenges. Use these guides for platform-specific instructions:
+For detailed, hands-on guidance for your specific platform:
+
+| Source Platform | Blog Guide | Documentation |
+|----------------|-----------|---------------|
+| Software AG webMethods | [webMethods Migration Guide](/blog/webmethods-migration-guide) | [Docs: webMethods Migration](/docs/guides/migration/ibm-webmethods) |
+| MuleSoft Anypoint | [MuleSoft Migration Guide](/blog/mulesoft-migration-open-source-gateway) | — |
+| Google Apigee | [Apigee Migration Guide](/blog/apigee-alternative-open-source) | [Docs: Apigee Migration](/docs/guides/migration/apigee) |
+| IBM DataPower / TIBCO | [DataPower & TIBCO Guide](/blog/datapower-tibco-migration-guide) | — |
+| Kong OSS/Enterprise | — | [Docs: Kong Migration](/docs/guides/migration/kong) |
+| Oracle OAM | — | [Docs: Oracle OAM Migration](/docs/guides/migration/oracle-oam) |
+
+Each legacy platform has unique migration challenges:
 
 ### IBM webMethods / DataPower
 

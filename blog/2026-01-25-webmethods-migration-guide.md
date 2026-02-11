@@ -13,6 +13,10 @@ keywords: [webMethods migration, webMethods alternative, webMethods end of life,
 
 <!-- truncate -->
 
+:::info Part of the API Gateway Migration Series
+This article is part of our [complete API gateway migration guide](/blog/api-gateway-migration-guide-2026). Whether you're coming from webMethods, MuleSoft, Apigee, or DataPower, the core migration principles are the same.
+:::
+
 ## Why Organizations Are Leaving webMethods
 
 Before discussing the how, it is worth understanding the why. We have spoken with dozens of enterprises currently evaluating their webMethods position, and the same pain points come up repeatedly:
@@ -220,6 +224,19 @@ If you are considering a webMethods migration, start here:
 - **[Kong Migration Guide](/docs/guides/migration/kong)** — Declarative config mapping, plugin translation
 - **[Apigee Migration Guide](/docs/guides/migration/apigee)** — Proxy export, European sovereignty angle
 - **[Oracle OAM Migration Guide](/docs/guides/migration/oracle-oam)** — Identity federation with Keycloak
+
+---
+
+## Related Migration Guides
+
+This article is part of our API gateway migration series. Explore guides for other platforms:
+
+- **[Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Vendor-neutral decision framework and phased migration strategy
+- **[MuleSoft Migration Guide](/blog/mulesoft-migration-open-source-gateway)** — Decouple gateway from iPaaS, migrate to open source
+- **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Escape vendor lock-in, move to self-hosted gateways
+- **[DataPower & TIBCO Migration Guide](/blog/datapower-tibco-migration-guide)** — Protocol translation and identity migration
+
+For detailed technical walkthroughs, see our [migration documentation](/docs/guides/migration/).
 
 ---
 

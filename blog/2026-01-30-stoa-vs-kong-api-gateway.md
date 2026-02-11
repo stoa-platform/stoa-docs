@@ -157,6 +157,14 @@ See the difference for yourself:
 
 ---
 
+## Further Reading
+
+- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
+- [Kong Migration Guide](/docs/guides/migration/kong) — Detailed migration path from Kong to STOA
+- [API Gateway Patterns](/docs/guides/fiches/api-gateway-patterns) — Architecture patterns for modern API gateways
+
+---
+
 *Evaluating API gateways for your AI strategy? [Start with the quickstart](/docs/guides/quickstart) and see how STOA handles both traditional APIs and MCP traffic in a single platform.*
 
 > **Disclaimer:** Feature comparisons are based on publicly available documentation as of February 2026. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners.
