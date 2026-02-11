@@ -25,6 +25,8 @@ keywords:
 
 AI agents need a secure, standardized way to access your APIs. The Model Context Protocol (MCP) provides that bridge, and STOA Platform makes it trivial to deploy. In this tutorial, you'll learn how to set up a production-ready MCP gateway using Docker Compose in under 10 minutes.
 
+**New to MCP gateways?** Start with our comprehensive guide: [What is an MCP Gateway?](/blog/what-is-mcp-gateway) to understand the architecture and security model before deploying.
+
 By the end of this guide, you'll have a running gateway that exposes your existing REST APIs to AI agents like Claude, connects to authentication, and enforces runtime policies.
 
 <!-- truncate -->
@@ -385,9 +387,23 @@ This tutorial uses:
 
 For the latest versions, check the [STOA releases page](https://github.com/stoa-platform/stoa/releases).
 
+## Frequently Asked Questions
+
+### What are the minimum Docker requirements for running an MCP gateway?
+
+You need Docker 20.10+ and Docker Compose 2.x. For development/testing, allocate at least 4GB RAM to Docker Desktop. For production, deploy on a Linux server with 8GB+ RAM and persistent volumes for PostgreSQL data. The gateway itself is lightweight (Rust binary, ~50MB RAM under load), but Keycloak and PostgreSQL require more resources. See the [quickstart guide](https://docs.gostoa.dev/docs/guides/quick-start) for Kubernetes deployment options.
+
+### Is this setup production-ready?
+
+The Docker Compose setup is suitable for development, testing, and low-traffic production deployments. Before production use, replace all `changeme` passwords with secrets from a vault, enable TLS for all services, configure log aggregation, and set up Prometheus alerts. For high-availability production deployments with multiple replicas, use the [Helm chart](https://docs.gostoa.dev/docs/guides/quick-start) on Kubernetes.
+
+### What's the next step after completing this quickstart?
+
+After the quickstart, add more tools by registering additional REST API endpoints, enable mTLS for gateway-to-backend security, integrate with your Control Plane for UI-based tool management instead of curl, and deploy to Kubernetes for production use. Explore the full platform capabilities in the [MCP gateway concepts guide](/blog/what-is-mcp-gateway) and [architecture documentation](https://docs.gostoa.dev/docs/concepts/architecture).
+
 ---
 
-**About STOA Platform**: STOA is the open-source API gateway built for AI agents. Define your API contract once with the Universal API Contract (UAC), and expose it everywhere: MCP, REST, GraphQL, gRPC. Apache 2.0 licensed. [Get started today](/docs/guides/quickstart).
+**About STOA Platform**: STOA is the open-source API gateway built for AI agents. Define your API contract once with the Universal API Contract (UAC), and expose it everywhere: MCP, REST, GraphQL, gRPC. Apache 2.0 licensed. [Get started today](https://docs.gostoa.dev/docs/guides/quick-start).
 
 **Need help?** Join our [Discord community](https://discord.gg/stoa-platform) or check the [troubleshooting guide](/docs/reference/troubleshooting).
 

@@ -6,8 +6,11 @@ tags: [migration, architecture]
 description: "Migrate from MuleSoft Anypoint to open-source gateways. Decoupling strategy, API extraction, and when migration makes sense for your platform."
 keywords: [MuleSoft migration, MuleSoft alternative, Anypoint migration, MuleSoft open source alternative, API gateway migration, MuleSoft to open source, iPaaS migration, Salesforce MuleSoft]
 ---
+<!-- last verified: 2026-02 -->
 
 # MuleSoft Migration: Moving from Anypoint to an Open-Source API Gateway
+
+MuleSoft migrations work best when you separate the API gateway layer from integration flows. Move Experience APIs (routing, auth, rate limiting) to open-source gateways while keeping Anypoint for DataWeave transformations and complex connectors.
 
 **MuleSoft Anypoint** has become one of the most widely deployed integration platforms in enterprise IT. Since Salesforce's acquisition in 2018, the platform has deepened its ties to the Salesforce ecosystem while organizations face evolving requirements around AI agent support, European data sovereignty, and infrastructure cost management.
 
@@ -191,7 +194,27 @@ This article is part of our API gateway migration series. Explore guides for oth
 - **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Escape vendor lock-in, move to self-hosted gateways
 - **[DataPower & TIBCO Migration Guide](/blog/datapower-tibco-migration-guide)** — Protocol translation and identity migration
 
-For detailed technical walkthroughs, see our [migration documentation](/docs/guides/migration/).
+For detailed technical walkthroughs, see our [migration documentation](https://docs.gostoa.dev/docs/guides/migration/).
+
+---
+
+## Frequently Asked Questions
+
+### Should I migrate the entire MuleSoft platform or just the gateway layer?
+
+Migrate the gateway layer (Experience APIs) first. These handle routing, authentication, and rate limiting — commodity functions well-served by open-source alternatives. Keep MuleSoft for integration-heavy Process and System APIs that rely on DataWeave transformations and Salesforce/SAP connectors. This partial migration can reduce license costs significantly while preserving high-value integration capabilities. See the layered migration approach in this guide.
+
+### What happens to my DataWeave transformations if I migrate?
+
+If an API is "gateway-only" (routing + policies, no DataWeave), it's a safe migration candidate. If it uses DataWeave for complex transformations, either keep it in MuleSoft or rewrite the transformation logic as a microservice. Don't try to replicate DataWeave in another language unless the transformation is simple. The cost of rewriting complex DataWeave often exceeds the license savings. See the complete migration framework at [API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026).
+
+### How does MuleSoft Anypoint Exchange compare to a self-hosted API catalog?
+
+Anypoint Exchange provides an internal marketplace with reusable assets, versioning, and dependency management. Open-source alternatives include Backstage (Spotify's developer portal) or STOA Portal for API catalogs. Exchange is sticky if you have hundreds of shared assets. If your catalog is primarily API documentation, a self-hosted portal can replace it. Export API specifications from Exchange (RAML/OAS) and import them into your new catalog during migration.
+
+### What's the typical cost savings from migrating MuleSoft to open source?
+
+Cost savings depend on your license structure, infrastructure, and usage. Organizations report 40-70% reduction in gateway-layer costs by moving Experience APIs to open-source while keeping MuleSoft for integration. The savings come from eliminating per-core or per-app licensing for simple routing workloads. However, self-hosted gateways add operational costs (Kubernetes, monitoring, support). A TCO analysis should include license, infrastructure, operations, and training. See the cost considerations section in this guide.
 
 ---
 

@@ -13,8 +13,11 @@ keywords:
   - API gateway Kubernetes
   - multi-tenant architecture
 ---
+<!-- last verified: 2026-02 -->
 
 Building a **multi-tenant API gateway** is one of the hardest infrastructure challenges in platform engineering. You need strong isolation between tenants, shared infrastructure for efficiency, and the ability to scale without multiplying operational complexity. After years of building multi-tenant API platforms — and applying those lessons to STOA on Kubernetes — here is what we learned.
+
+This article is part of the [Open-Source API Gateway 2026](/blog/open-source-api-gateway-2026) series, covering architectural patterns for modern API infrastructure.
 
 <!-- truncate -->
 
@@ -207,6 +210,26 @@ STOA's multi-tenant architecture is available out of the box. Whether you are bu
 - Explore the [Architecture Overview](https://docs.gostoa.dev/docs/concepts/architecture)
 - Try STOA with the [Quickstart Guide](https://docs.gostoa.dev/docs/guides/quickstart)
 - Deploy on your own Kubernetes cluster with the [Hybrid Deployment Guide](https://docs.gostoa.dev/docs/deployment/hybrid)
+
+---
+
+## Frequently Asked Questions
+
+### What's the difference between namespace-per-tenant and shared gateway models?
+
+Namespace-per-tenant deploys a separate gateway instance for each tenant in its own Kubernetes namespace, providing strong isolation but high operational overhead. Shared gateway uses a single deployment with application-layer tenant isolation (tenant context in JWT, scoped policies, partitioned storage). STOA uses a hybrid: shared gateway deployment with per-tenant namespaces for custom resources, combining efficiency with blast radius containment. See the comparison table in this article and [multi-tenant concepts](https://docs.gostoa.dev/docs/concepts/multi-tenant).
+
+### How do you prevent one tenant from accessing another tenant's data?
+
+STOA enforces isolation at three layers: (1) Kubernetes RBAC ensures service accounts only watch resources in their assigned namespaces, (2) Keycloak realm separation provides independent identity management per tenant, (3) PostgreSQL schema-per-tenant partitions all data at the database level. Tenant context is immutable after authentication and propagated as a JWT claim. See the security architecture section in this guide.
+
+### What Kubernetes resources do I need for multi-tenant isolation?
+
+At minimum: NetworkPolicies (restrict pod-to-pod communication across tenant namespaces), RBAC roles (prevent cross-namespace resource access), ResourceQuotas (limit resource consumption per tenant), and PodSecurityPolicies or admission controllers like Kyverno (enforce security baselines). STOA uses all of these plus custom resources (CRDs) for tenant-specific API configurations. See [Kubernetes multi-tenancy concepts](https://docs.gostoa.dev/docs/concepts/multi-tenant).
+
+### How does multi-tenant rate limiting work?
+
+STOA implements hierarchical rate limiting: (1) Global limit protects infrastructure from overload, (2) Per-tenant limit ensures each tenant gets a guaranteed allocation, (3) Per-subscription limit controls individual API keys within a tenant. This prevents noisy-neighbor problems where one tenant's traffic spike affects others. Tenant context from the JWT drives the rate limit key selection. See Lesson 3 in this article.
 
 ---
 

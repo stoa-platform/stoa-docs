@@ -7,13 +7,15 @@ keywords: [contributor rewards, revenue sharing, compensation, open source, comm
 
 # Contributor Rewards Program
 
-STOA redistributes **45% of enterprise revenue** to the community. This page explains how contributions are valued and rewarded.
+:::info Where We Are Today
+STOA is a pre-revenue, open-source project. There is no money to distribute yet — and we won't pretend otherwise.
 
-:::tip Why This Matters
-**"The code becomes commodity. The vision remains rare. Pay for what's rare."**
+What exists today: a **framework** for how revenue will be shared when it arrives. We publish it now so contributors know the intent from day one, not after the fact.
 
-In the age of AI, raw code output is increasingly commoditized. We pay for human judgment, community building, and lasting impact.
+**Why contribute today?** Because you believe in open-source API management, you want to learn, and you want to shape a project early. The financial rewards will come later — the community, the skills, and the impact start now.
 :::
+
+STOA's commitment: when enterprise revenue exists, **45% goes back to the community**. This page explains the framework we've designed for that day.
 
 ---
 
@@ -175,21 +177,25 @@ Everything is public:
 
 ## Program Status
 
-The rewards program is being developed in phases:
+| Phase | Status | Description |
+|-------|--------|-------------|
+| **1. Framework Design** | **Done** | Point system, value dimensions, distribution model — documented here |
+| **2. Community Building** | **Current** | Growing contributor base, establishing culture, tracking contributions informally |
+| **3. Revenue Generation** | Upcoming | Enterprise customers, managed service, support contracts |
+| **4. First Distributions** | Future | Quarterly payouts, transparency reports, public dashboard |
 
-1. **Documentation & Design** — Define point system and validation process *(current)*
-2. **Launch** — First distributions, transparency reports
-3. **Scale** — Automated tracking, public dashboard
+We are in **Phase 2**. Contributions are valued and tracked, but there is no financial distribution yet. When Phase 3 generates revenue, Phase 4 activates automatically — contributors who joined early will benefit from their accumulated contributions.
 
 ---
 
-## Get Started
+## Get Started Today
 
 1. **Join Discord** — [discord.gg/j8tHSSes](https://discord.gg/j8tHSSes)
 2. **Pick an issue** — Look for `good-first-issue` labels
 3. **Submit a PR** — Follow contribution guidelines
-4. **Earn points** — Your contributions are tracked automatically
-5. **Get rewarded** — Quarterly distributions
+4. **Build your track record** — Every contribution is visible in git history
+
+The financial rewards will come. But the learning, the community, and the portfolio value of contributing to an open-source project? That starts now.
 
 ---
 

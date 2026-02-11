@@ -17,6 +17,8 @@ The API gateway landscape has evolved rapidly with the rise of AI agents, zero-t
 
 Whether you're migrating from a legacy gateway, evaluating new solutions, or building AI-native integrations, understanding these concepts is critical. We've included practical context on how modern platforms like STOA handle each capability.
 
+For a comprehensive introduction to MCP-specific terminology and architecture, see our guide: [What is an MCP Gateway?](/blog/what-is-mcp-gateway)
+
 ---
 
 ### API Gateway
@@ -141,11 +143,27 @@ Zero Trust is a security model that assumes no network boundary is trustworthy. 
 
 ---
 
+## Frequently Asked Questions
+
+### What scope does this glossary cover?
+
+This glossary focuses on modern API gateway concepts essential for 2026 deployments, including traditional patterns (REST, authentication, rate limiting) and emerging technologies (MCP, AI agents, zero-trust architectures). It intentionally excludes deprecated patterns (SOAP, WS-Security) and vendor-specific terminology. For migration from legacy platforms, see the [API Gateway Migration Guide](/blog/api-gateway-migration-guide-2026).
+
+### Where can I learn more about MCP-specific terminology?
+
+For deeper coverage of Model Context Protocol concepts like tool discovery, JSON-RPC transport, and AI agent authentication, see our comprehensive guide: [What is an MCP Gateway?](/blog/what-is-mcp-gateway). That article covers MCP architecture, use cases, and how STOA implements MCP natively.
+
+### What other resources complement this glossary?
+
+After understanding the terminology, explore practical implementation patterns in our [Open Source API Gateway Comparison 2026](/blog/open-source-api-gateway-2026), which compares Kong, Tyk, Gravitee, APISIX, and STOA across features, performance, and deployment models. For hands-on learning, follow the [MCP Gateway Quickstart](/blog/mcp-gateway-quickstart-docker) to deploy a working gateway in 10 minutes.
+
+---
+
 ## Further Reading
 
 - [API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — comprehensive migration hub
-- [API Gateway Patterns](/docs/guides/fiches/api-gateway-patterns) — technical implementation patterns
-- [MCP Gateway Concepts](/docs/concepts/mcp-gateway) — how STOA bridges legacy APIs and AI agents
+- [API Gateway Patterns](https://docs.gostoa.dev/docs/guides/fiches/api-gateway-patterns) — technical implementation patterns
+- [MCP Gateway Concepts](/blog/what-is-mcp-gateway) — how STOA bridges legacy APIs and AI agents
 - [Open Source API Gateway Comparison 2026](/blog/open-source-api-gateway-2026) — Kong, Tyk, Gravitee, APISIX, and STOA
 
 ---

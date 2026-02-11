@@ -14,6 +14,8 @@ keywords:
   - MCP gateway
 ---
 
+The open-source API gateway landscape in 2026 includes Kong, Envoy, APISIX, Tyk, Gravitee, and STOA. This guide compares their architectures, MCP support, multi-tenancy, and licensing — with a focus on AI-readiness and European sovereignty.
+
 The **open source API gateway** landscape in 2026 looks very different from what it was just two years ago. The rise of AI agents, the Model Context Protocol (MCP), and stricter European regulations have reshaped what organizations expect from their API infrastructure. This article provides an honest comparison of the leading open-source gateways and where each one excels.
 
 <!-- truncate -->

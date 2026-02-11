@@ -11,6 +11,8 @@ keywords: [Kong alternative, Kong vs STOA, open source API gateway comparison, A
 
 If you are evaluating API gateways in 2026, Kong is almost certainly on your shortlist. It deserves to be. Kong is a mature, battle-tested platform with a massive plugin ecosystem and years of production deployments. So why did we build STOA as a **Kong alternative**? Not because Kong is bad — but because the problem has changed.
 
+For a broader comparison of open-source gateways, see our [Open Source API Gateway Guide](/blog/open-source-api-gateway-2026). For a comprehensive decision framework when migrating from any legacy platform, consult the [API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026).
+
 <!-- truncate -->
 
 ## Respect Where It Is Due
