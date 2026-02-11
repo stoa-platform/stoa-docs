@@ -15,6 +15,8 @@ export default function BlogPostPageWrapper(props: Props): React.ReactElement {
   const {content} = props;
   const {metadata} = content;
 
+  const tags = metadata.tags?.map((t) => t.label) || [];
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'TechArticle',
@@ -35,6 +37,12 @@ export default function BlogPostPageWrapper(props: Props): React.ReactElement {
       '@id': `https://docs.gostoa.dev${metadata.permalink}`,
     },
     image: 'https://docs.gostoa.dev/img/stoa-social-card.png',
+    proficiencyLevel: 'Expert',
+    ...(tags.length > 0 && {keywords: tags.join(', ')}),
+    isPartOf: {
+      '@id': 'https://docs.gostoa.dev/#website',
+    },
+    inLanguage: 'en',
   };
 
   return (
