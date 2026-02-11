@@ -6,6 +6,7 @@ tags: [open-source, community, education]
 description: "The business case for true open source. Why STOA chose Apache 2.0 over BSL, SSPL, or dual-licensing — and why it matters for your stack decisions."
 keywords: [apache 2.0 license, BSL license, open source license comparison, SSPL vs Apache, open core, open source business model, vendor lock-in, source available, true open source]
 ---
+<!-- last verified: 2026-02 -->
 
 # Why We Chose Apache 2.0 (And What We Think About BSL)
 
@@ -15,7 +16,7 @@ We understand why they did it. We chose a different path anyway.
 
 STOA Platform is licensed under **Apache 2.0** — one of the most permissive open-source licenses that exists. No source-available tricks. No "open core" where the useful features are paywalled. No license change planned for when we hit a revenue target.
 
-Here's why.
+Here's why — and why this matters for every developer choosing an [open-source API gateway](/blog/open-source-api-gateway-2026) today.
 
 <!-- truncate -->
 
@@ -113,7 +114,7 @@ This is a competitive advantage that takes years to build and seconds to destroy
 
 ## The Revenue-Sharing Alternative
 
-Instead of restricting the license to capture revenue, we designed a contributor rewards program where **45% of enterprise revenue flows back to the community** (see [Contributor Rewards](/docs/community/rewards)).
+Instead of restricting the license to capture revenue, we designed a contributor rewards program where **45% of enterprise revenue flows back to the community** (see [Contributor Rewards](https://docs.gostoa.dev/docs/community/rewards)).
 
 The logic: if the community creates value, the community should share in the revenue — not be locked out of it.
 
@@ -154,5 +155,27 @@ If you care about true open source:
 - **Ask vendors the hard question**: "Do you commit to never changing the license?"
 
 ---
+
+## FAQ
+
+### Can Apache 2.0 really sustain a business?
+
+Yes. Kubernetes (Google), Envoy (Lyft), Apache Kafka (Confluent), and Terraform/OpenTofu prove that Apache 2.0 projects can generate billions in enterprise revenue. The business model is services, not license restrictions.
+
+### What if someone forks STOA and competes with you?
+
+They can fork the code but not the brand (trademark), the community, or the ecosystem. Maintaining a competitive fork requires sustained engineering investment. Most forks die within 6 months — the ones that survive (OpenTofu, Valkey) prove there was a real community need.
+
+### How does STOA's license affect my project?
+
+Apache 2.0 is one of the most permissive licenses. You can use STOA commercially, modify it, embed it in proprietary software, and redistribute it. The only requirement: keep the license notice and NOTICE file. No copyleft, no patent traps.
+
+### Where can I read more about STOA's open-source philosophy?
+
+See our [community philosophy](https://docs.gostoa.dev/docs/community/philosophy) for the full HLFH values, and our [contributor rewards program](https://docs.gostoa.dev/docs/community/rewards) for how we plan to share revenue with the community. For the security side of open source, see our [API security checklist](/blog/api-security-checklist-solo-dev).
+
+---
+
+**Related**: [Open Source API Gateway Guide](/blog/open-source-api-gateway-2026) | [STOA Philosophy](https://docs.gostoa.dev/docs/community/philosophy) | [API Security Checklist](/blog/api-security-checklist-solo-dev)
 
 *STOA is Apache 2.0. Always has been. Always will be. [Star us on GitHub](https://github.com/stoa-platform/stoa) if that matters to you.*

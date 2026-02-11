@@ -6,14 +6,17 @@ tags: [security, education, tutorial, api-gateway]
 description: "A practical, no-budget security checklist for freelancers, indie hackers, and small teams building APIs. No enterprise tools required."
 keywords: [api security checklist, developer security, api authentication, rate limiting, OWASP API, freelancer security, api best practices, secure api development, api key management, solo developer]
 ---
+<!-- last verified: 2026-02 -->
 
 # API Security Checklist: 10 Things Every Solo Dev Must Do
+
+**10 practical security steps that take less than a day and prevent 95% of API incidents.** No enterprise budget, no complex tooling — just engineering discipline. Covers secrets, rate limiting, CORS, auth, TLS, logging, and dependency management.
 
 You're a freelancer. You shipped an API for a client. It works. Tests pass. Invoice sent.
 
 Six months later, the client calls: someone scraped their entire user database through your API. No rate limiting. No input validation. Default CORS headers. The API key was in the frontend JavaScript.
 
-This happens more often than anyone admits. And it's almost always preventable with a simple checklist.
+This happens more often than anyone admits. And it's almost always preventable with a simple checklist. This is part of our [open-source API management](/blog/open-source-api-gateway-2026) philosophy: security should be accessible to everyone, not just enterprises.
 
 <!-- truncate -->
 
@@ -423,5 +426,27 @@ The philosophy is simple: **security shouldn't be a premium feature**. If your g
 Print it. Pin it above your monitor. Check it before every deployment.
 
 ---
+
+## FAQ
+
+### What's the single most important item on this list?
+
+**Item #1: Never expose secrets in client-side code.** It's the most common and most damaging mistake. If you only do one thing, move all API keys server-side today. For a deeper dive on secret management, see [Your API Keys Are in Your Git History](/blog/api-keys-in-git-history).
+
+### Does this checklist apply to internal APIs too?
+
+Yes. Internal APIs are often less secured than public ones, which makes them attractive lateral movement targets once an attacker is inside your network. Items 3 (rate limiting), 7 (HTTPS), and 9 (logging) are especially important for internal services.
+
+### How does STOA handle these automatically?
+
+STOA Platform implements all 10 items as defaults in the free tier — see the [comparison table above](#how-stoa-makes-this-automatic). The key difference: you don't configure security per-endpoint, you define it once as policy-as-code and it applies everywhere. Learn more in the [Quick Start guide](https://docs.gostoa.dev/docs/guides/quick-start).
+
+### What about GraphQL APIs?
+
+The same principles apply: rate limit by query complexity (not just requests/second), validate input schemas, and never expose introspection in production. Items 4, 6, and 9 need GraphQL-specific implementation.
+
+---
+
+**Related**: [Open Source API Gateway Guide](/blog/open-source-api-gateway-2026) | [API Keys in Git History](/blog/api-keys-in-git-history) | [GitOps in 10 Minutes](/blog/gitops-in-10-minutes)
 
 *Building APIs for clients? Join a community of developers who take security seriously — [Discord](https://discord.gg/j8tHSSes) | [GitHub](https://github.com/stoa-platform/stoa)*

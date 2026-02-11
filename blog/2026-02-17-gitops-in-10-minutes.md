@@ -9,11 +9,15 @@ keywords: [gitops tutorial, gitops beginner, infrastructure as code, argocd, kub
 
 # GitOps in 10 Minutes: Why Your Infrastructure Should Be a Git Repo
 
+**GitOps means your infrastructure is defined in Git and automatically deployed from it.** This guide explains what GitOps is, why it matters for solo devs and small teams, and how to start — from versioning config files to full ArgoCD automation.
+
 You know how to `git push` your code. But what about your infrastructure?
 
 Your Nginx config, your firewall rules, your database credentials, your Kubernetes manifests — where do they live? If the answer involves SSH, a shared Wiki page, or "ask Jean-Michel, he set it up" — you have a problem.
 
 **GitOps** means treating infrastructure the same way you treat code: versioned, reviewed, auditable, and automatically deployed from a Git repo. No more SSH. No more "works on my machine." No more mystery configs.
+
+GitOps is a core principle of [open-source API management](/blog/open-source-api-gateway-2026) — and one of the reasons STOA was [designed GitOps-first](https://docs.gostoa.dev/docs/concepts/gitops) from day one.
 
 <!-- truncate -->
 
@@ -259,5 +263,27 @@ This feels restrictive at first. Then it becomes liberating. Because when everyt
 **Stop SSHing into servers. Start `git push`-ing your infrastructure.**
 
 ---
+
+## FAQ
+
+### Do I need Kubernetes for GitOps?
+
+No. GitOps is a pattern, not a Kubernetes feature. You can version Nginx configs, Docker Compose files, or even shell scripts in Git and auto-apply them with CI/CD. Kubernetes + ArgoCD is the most popular GitOps stack, but Level 1 and Level 2 in this guide work without Kubernetes.
+
+### What's the difference between GitOps and Infrastructure as Code (IaC)?
+
+IaC (Terraform, Pulumi) describes infrastructure declaratively. GitOps adds the **reconciliation loop**: a tool continuously ensures the live state matches the Git state. IaC is "define and apply." GitOps is "define, apply, and keep in sync forever."
+
+### How does STOA use GitOps?
+
+STOA stores API contracts, routing policies, and access rules as declarative YAML. ArgoCD watches the Git repo and applies changes automatically — see [ADR-007](https://docs.gostoa.dev/docs/architecture/adr/adr-007-gitops-argocd) for the full architecture. Even [secret management](/blog/api-keys-in-git-history) follows GitOps patterns via sealed-secrets.
+
+### Is GitOps secure? What about secrets in Git?
+
+Never store plaintext secrets in Git. Use encrypted secrets (sealed-secrets, SOPS) or external secret managers (Vault, Infisical). The encryption key lives outside Git; the encrypted blob is safe to commit. See our [API security checklist](/blog/api-security-checklist-solo-dev) for more.
+
+---
+
+**Related**: [Open Source API Gateway Guide](/blog/open-source-api-gateway-2026) | [API Security Checklist](/blog/api-security-checklist-solo-dev) | [Quick Start](https://docs.gostoa.dev/docs/guides/quick-start)
 
 *Want to manage your APIs with GitOps? [STOA Quick Start](https://docs.gostoa.dev/docs/guides/quick-start) gets you running in 5 minutes. Join the community on [Discord](https://discord.gg/j8tHSSes).*

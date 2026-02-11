@@ -6,14 +6,19 @@ tags: [security, education, tutorial]
 description: "90% of leaked secrets come from git commits. Learn how to detect, remove, and prevent API key leaks — even as a solo developer."
 keywords: [api key security, git secrets, gitleaks, secret scanning, api key leak, git history secrets, developer security, credential rotation, secret management]
 ---
+<!-- last verified: 2026-02 -->
 
 # Your API Keys Are in Your Git History (And How to Fix It)
+
+**Deleted API keys stay in git history forever.** This article shows you how to detect leaked secrets with gitleaks, remove them from history, and prevent future leaks with pre-commit hooks and proper secret management.
 
 You removed the hardcoded API key from your code. You committed the fix. You pushed. You're safe now, right?
 
 **No.** The key is still in your git history. Anyone with `git log -p` can find it in seconds.
 
 This isn't a theoretical risk. GitHub scans over 100 million commits per day and finds **thousands of valid secrets** — API keys, database passwords, cloud credentials. Most of them were "removed" by developers who thought deleting the line was enough.
+
+This is one of the most critical security gaps in modern API development — and one of the reasons we built [STOA as an open-source API gateway](/blog/open-source-api-gateway-2026) with secrets management as a default, not an add-on.
 
 <!-- truncate -->
 
@@ -264,6 +269,26 @@ If gitleaks finds something: **rotate the secret immediately**, then clean the h
 
 If you want to go further — automatic rotation, mTLS, audit trails, policy-as-code — [try STOA](https://docs.gostoa.dev/docs/guides/quick-start). It's free, open source, and takes 5 minutes to set up.
 
+## FAQ
+
+### Can I use gitleaks on private repositories?
+
+Yes. Gitleaks runs locally — it scans your local git history without sending anything to external servers. It works on any repository, private or public.
+
+### What if I already pushed a secret to a public repo?
+
+**Rotate the secret immediately.** Assume it's compromised. Then clean the history with `git filter-repo` and force push. GitHub's secret scanning may have already flagged it — check your repository's Security tab.
+
+### Does STOA eliminate the need for API keys entirely?
+
+For service-to-service communication, yes — STOA uses [mTLS certificates](https://docs.gostoa.dev/docs/architecture/adr/adr-039-mtls-cert-bound-tokens) instead of static keys. For external consumers, STOA issues short-lived OAuth tokens that expire automatically. The goal is zero static secrets in your codebase.
+
+### How does this relate to the OWASP API Security Top 10?
+
+Exposed secrets map to OWASP API8:2023 — Security Misconfiguration. Our [API Security Checklist](/blog/api-security-checklist-solo-dev) covers all 10 OWASP API risks with practical fixes.
+
 ---
+
+**Related**: [Open Source API Gateway Guide](/blog/open-source-api-gateway-2026) | [API Security Checklist](/blog/api-security-checklist-solo-dev) | [Quick Start](https://docs.gostoa.dev/docs/guides/quick-start)
 
 *Found this useful? Star us on [GitHub](https://github.com/stoa-platform/stoa) and join the conversation on [Discord](https://discord.gg/j8tHSSes).*
