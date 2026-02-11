@@ -157,6 +157,76 @@ function FeaturesSection() {
   );
 }
 
+type MigrationGuide = {
+  platform: string;
+  path: string;
+  description: string;
+};
+
+const MigrationGuides: MigrationGuide[] = [
+  {
+    platform: 'IBM webMethods',
+    path: '/docs/guides/migration/ibm-webmethods',
+    description: 'webMethods / DataPower to STOA',
+  },
+  {
+    platform: 'Google Apigee',
+    path: '/docs/guides/migration/apigee',
+    description: 'Apigee X / hybrid to STOA',
+  },
+  {
+    platform: 'Kong',
+    path: '/docs/guides/migration/kong',
+    description: 'Kong Gateway to STOA',
+  },
+  {
+    platform: 'Oracle OAM',
+    path: '/docs/guides/migration/oracle-oam',
+    description: 'Oracle Access Manager to STOA',
+  },
+  {
+    platform: 'webMethods Sidecar',
+    path: '/docs/guides/migration/webmethods-sidecar',
+    description: 'Run STOA alongside webMethods',
+  },
+];
+
+function MigrationSection() {
+  return (
+    <section className={styles.migration}>
+      <div className="container">
+        <div className={styles.sectionHeader}>
+          <Heading as="h2">Migrate from Any API Gateway</Heading>
+          <p>
+            Step-by-step migration guides from legacy API gateways to an
+            AI-native, open-source platform
+          </p>
+        </div>
+        <div className={styles.migrationGrid}>
+          {MigrationGuides.map((guide) => (
+            <Link key={guide.platform} to={guide.path} className={styles.migrationCard}>
+              <strong>{guide.platform}</strong>
+              <span>{guide.description}</span>
+            </Link>
+          ))}
+        </div>
+        <div className={styles.migrationLinks}>
+          <Link
+            className="button button--primary button--md"
+            to="/blog/api-gateway-migration-guide-2026">
+            Complete Migration Guide 2026
+          </Link>
+          <Link
+            className="button button--outline button--md"
+            to="/blog/open-source-api-gateway-2026">
+            Gateway Comparison 2026
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function ComparisonSection() {
   return (
     <section className={styles.comparison}>
@@ -253,6 +323,7 @@ export default function Home(): JSX.Element {
       <main>
         <QuickStartSection />
         <FeaturesSection />
+        <MigrationSection />
         <ComparisonSection />
         <CTASection />
       </main>
