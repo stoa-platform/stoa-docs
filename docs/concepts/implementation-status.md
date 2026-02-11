@@ -91,7 +91,7 @@ See the full [Roadmap](/docs/roadmap) for upcoming features and priorities.
 ### Near-Term (Q1-Q2 2026)
 
 - Gateway sidecar mode for existing gateway coexistence
-- Born GitOps — tenant-owned approval workflows ([ADR-040](/docs/architecture/adr/adr-040-born-gitops-api-lifecycle))
+- Born GitOps — tenant-owned approval workflows (ADR-040)
 - CLI tool general availability
 - Terraform provider
 
