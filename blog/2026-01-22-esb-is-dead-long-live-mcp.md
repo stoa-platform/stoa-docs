@@ -7,6 +7,8 @@ description: "Why the enterprise service bus is obsolete. Discover the shift fro
 keywords: [ESB replacement, ESB vs API gateway, enterprise service bus alternative, ESB migration, ESB is dead, MCP, integration platform modernization]
 ---
 
+<!-- last verified: 2026-02 -->
+
 # The ESB is Dead, Long Live MCP: From Integration Buses to AI Gateways
 
 Let us say what many enterprise architects are thinking but few vendors will admit: **the ESB is dead**. The enterprise service bus — that monolithic integration middleware that defined the SOA era — has been in decline for a decade. What killed it was not a single technology but a series of architectural shifts: microservices, API gateways, event-driven architectures, and now the Model Context Protocol (MCP). Each shift made the ESB less relevant. MCP may be the final blow.

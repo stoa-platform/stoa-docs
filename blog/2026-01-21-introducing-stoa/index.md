@@ -16,6 +16,8 @@ keywords:
 
 # Introducing STOA Platform
 
+STOA Platform is an open-source, AI-native API gateway built for the Model Context Protocol (MCP) era. It bridges legacy APIs and AI agents with unified governance, European sovereignty, and zero vendor lock-in — all under Apache 2.0.
+
 We're excited to announce **STOA** — an API Gateway built for the AI era.
 
 <!-- truncate -->
@@ -89,6 +91,22 @@ Check out our [Roadmap](/docs/roadmap) for the full timeline, including:
 - [Discord](https://discord.gg/j8tHSSes)
 
 We're building in public and welcome contributions. Join us!
+
+---
+
+## Frequently Asked Questions
+
+### Is STOA free?
+
+Yes, STOA is fully open source under Apache 2.0. There are no enterprise-only features or paywalls. Multi-tenancy, the developer portal, admin console, and all governance capabilities are included in the open-source distribution. Read more about our licensing philosophy in [Why Apache 2.0, Not BSL](/blog/why-apache-2-not-bsl).
+
+### What makes STOA different from Kong or Envoy?
+
+STOA is the first open-source gateway with native MCP support — the protocol that AI agents use to discover and invoke tools. While Kong and Envoy are excellent HTTP proxies, STOA is built from the ground up for multi-tenancy, European data sovereignty, and hybrid deployment models. See our detailed comparison in [Open Source API Gateway Guide 2026](/blog/open-source-api-gateway-2026).
+
+### How do I get started?
+
+The fastest way to try STOA is with our Docker Compose quick start. You can have a running instance with the gateway, portal, and console in under 15 minutes. Check out the [Quick Start Guide](https://docs.gostoa.dev/docs/guides/quick-start) for step-by-step instructions.
 
 ---
 

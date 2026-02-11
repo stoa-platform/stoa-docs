@@ -7,6 +7,8 @@ description: "Discover what an MCP gateway is and why AI agents need one. Securi
 keywords: [MCP gateway, Model Context Protocol, AI API gateway, MCP server, AI agent security, API gateway for AI, AI governance, enterprise AI]
 ---
 
+<!-- last verified: 2026-02 -->
+
 # What is an MCP Gateway? The Missing Piece for AI Agent Security
 
 As AI agents move from demos to production, enterprises face a critical question: how do you give an LLM secure, governed access to your internal tools and data? The answer is an **MCP gateway** — a new category of infrastructure that sits between AI agents and the services they consume, enforcing security, observability, and policy at every interaction.
@@ -135,6 +137,28 @@ STOA is open-source (Apache 2.0) and designed for self-hosted or cloud deploymen
 
 The MCP gateway is the infrastructure layer that makes AI agents enterprise-ready. As more organizations move from AI experiments to production deployments, this is the piece that will separate governed, secure AI operations from the next generation of shadow IT.
 
+## Frequently Asked Questions
+
+### What is the difference between an MCP gateway and an API gateway?
+
+An MCP gateway is purpose-built for AI agent traffic and the Model Context Protocol, while traditional API gateways focus on REST/GraphQL. MCP gateways handle dynamic tool discovery, context-dependent invocations, and AI-specific patterns like streaming and token optimization. Traditional gateways like Kong have added MCP support via plugins, but STOA treats MCP as a first-class protocol in the gateway core. See our [2026 API Gateway Comparison](/blog/open-source-api-gateway-2026) for detailed technical differences.
+
+### Do I need an MCP gateway for Claude or GPT?
+
+If you're using Claude or GPT in isolation with public APIs, no. But if you want to give AI agents secure access to your internal tools, enforce policies, track usage, or support multiple tenants, then yes. The MCP gateway sits between the AI agent and your backend systems, providing authentication, authorization, audit logging, and rate limiting. Learn more in [Connecting AI Agents to Enterprise APIs](/blog/connecting-ai-agents-enterprise-apis).
+
+### Is STOA's MCP gateway open source?
+
+Yes. STOA Platform is Apache 2.0 licensed, including the MCP gateway component. You can deploy it on your own infrastructure, modify it, and use it commercially without restrictions. We chose Apache 2.0 over business source licenses to avoid lock-in and enable community contributions. Read our reasoning in [Why Apache 2.0, Not BSL](/blog/why-apache-2-not-bsl).
+
+## Related Articles
+
+Explore more about MCP gateways and AI agent infrastructure:
+
+- [ESB is Dead, Long Live MCP](/blog/esb-is-dead-long-live-mcp) — How the Model Context Protocol replaces traditional integration middleware
+- [Connecting AI Agents to Enterprise APIs](/blog/connecting-ai-agents-enterprise-apis) — Patterns for secure AI agent integration
+- [MCP Gateway Quickstart with Docker](/blog/mcp-gateway-quickstart-docker) — Deploy a working MCP gateway in 10 minutes
+
 ---
 
-*Ready to secure your AI agent infrastructure? [Start with the quickstart guide](/docs/guides/quickstart) or [explore the MCP gateway documentation](/docs/concepts/mcp-gateway).*
+*Ready to secure your AI agent infrastructure? [Start with the quickstart guide](https://docs.gostoa.dev/docs/guides/quick-start) or [explore the MCP gateway documentation](https://docs.gostoa.dev/docs/concepts/mcp-gateway).*

@@ -201,7 +201,21 @@ This article is part of our API gateway migration series. Explore guides for oth
 - **[MuleSoft Migration Guide](/blog/mulesoft-migration-open-source-gateway)** — Decouple gateway from iPaaS, migrate to open source
 - **[DataPower & TIBCO Migration Guide](/blog/datapower-tibco-migration-guide)** — Protocol translation and identity migration
 
-For detailed technical walkthroughs, see our [migration documentation](/docs/guides/migration/).
+For detailed technical walkthroughs, see our [migration documentation](https://docs.gostoa.dev/docs/guides/migration/).
+
+## Frequently Asked Questions
+
+### What are the actual cost differences between Apigee and open source?
+
+Apigee pricing varies significantly based on API call volume, number of environments, and contract terms. Contact Google Cloud directly for current pricing. Open-source alternatives like STOA eliminate platform license fees but require infrastructure costs (Kubernetes cluster) and engineering time for setup and operations. For organizations with existing Kubernetes expertise, the total cost of ownership can be 60-80% lower than Apigee over three years. See the [complete migration guide](/blog/api-gateway-migration-guide-2026) for TCO comparison frameworks.
+
+### How complex is migrating from Apigee to an open-source gateway?
+
+Complexity depends on how deeply you've invested in Apigee-specific features. Simple proxy-and-route APIs migrate easily (weeks). Custom JavaScript callouts, shared flows, and monetization logic require reimplementation (months). The migration path in this guide uses a parallel deployment approach: run STOA alongside Apigee, migrate traffic gradually, and keep Apigee as fallback until confidence is high. Most teams complete migration in 4-6 months. See the [Apigee migration guide](https://docs.gostoa.dev/docs/guides/migration/) for detailed technical steps.
+
+### Will I lose features by moving to an open-source gateway?
+
+Not necessarily. Features that Apigee includes (developer portal, analytics, multi-tenancy) are available in open-source platforms like STOA and Tyk. However, if you rely on Apigee-specific capabilities like monetization, GraphQL federation, or deep Google Cloud integrations, you'll need equivalent solutions. Evaluate your actual feature usage — most organizations use less than 30% of Apigee's capabilities. The [Kong vs STOA comparison](/blog/stoa-vs-kong) provides feature-by-feature analysis.
 
 ---
 

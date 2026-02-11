@@ -6,8 +6,11 @@ tags: [migration, architecture]
 description: "Migrate from IBM DataPower and TIBCO to modern gateways. Protocol translation, identity migration, and sidecar approach for zero disruption."
 keywords: [DataPower migration, TIBCO migration, IBM DataPower alternative, TIBCO BusinessWorks migration, API gateway modernization, legacy gateway migration, enterprise integration migration]
 ---
+<!-- last verified: 2026-02 -->
 
 # Migrating from DataPower and TIBCO to a Modern API Gateway
+
+Migrating from IBM DataPower or TIBCO requires separating gateway routing from protocol-specific functions. This guide covers a sidecar approach: deploy STOA for REST/JSON traffic, federate identity via OIDC, and keep legacy systems for B2B protocols where they excel.
 
 IBM DataPower and TIBCO BusinessWorks represent two of the most deeply embedded integration platforms in enterprise IT. Both handle critical workloads — security token services, multi-protocol mediation, B2B gateway functions — that organizations depend on daily.
 
@@ -213,7 +216,23 @@ This article is part of our API gateway migration series. Explore guides for oth
 - **[MuleSoft Migration Guide](/blog/mulesoft-migration-open-source-gateway)** — Decouple gateway from iPaaS, migrate to open source
 - **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Escape vendor lock-in, move to self-hosted gateways
 
-For detailed technical walkthroughs, see our [migration documentation](/docs/guides/migration/).
+For detailed technical walkthroughs, see our [migration documentation](https://docs.gostoa.dev/docs/guides/migration/).
+
+---
+
+## Frequently Asked Questions
+
+### What makes DataPower different from modern API gateways?
+
+DataPower was built for the SOAP/XML era with multi-protocol mediation (HTTP, MQ, JMS, FTP) in a hardened appliance. Modern gateways focus on REST/JSON with Kubernetes-native deployment. DataPower excels at complex token transformation chains and B2B protocols (AS2, SFTP). If your workload is REST API routing, a modern gateway is simpler and easier to staff. For specialized B2B or multi-protocol needs, DataPower may still be the right tool.
+
+### Can I run DataPower and a modern gateway side-by-side?
+
+Yes. This is the recommended approach. Deploy a modern gateway for new REST/JSON APIs and AI agent workloads. Keep DataPower for SOAP transformations, Security Token Service (STS), and B2B protocols. Federate identity between them using Keycloak as a bridge. See the sidecar approach diagram in this guide and the complete migration framework at [API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026).
+
+### How do I handle complex XSLT transformations in DataPower during migration?
+
+For simple SOAP-to-REST transformations, migrate to modern gateways. For complex XSLT chains with custom logic, keep them in DataPower or rewrite as microservices. Don't try to replicate DataPower's XML processing power in a REST-focused gateway. Instead, route REST traffic through the modern gateway and keep SOAP workloads in DataPower. See also [MuleSoft Migration Guide](/blog/mulesoft-migration-open-source-gateway) for similar separation-of-concerns patterns.
 
 ---
 

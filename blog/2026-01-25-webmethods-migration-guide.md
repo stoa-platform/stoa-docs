@@ -7,6 +7,8 @@ description: "Migrate from Software AG webMethods to modern gateways. Sidecar ap
 keywords: [webMethods migration, webMethods alternative, webMethods end of life, API gateway migration, Software AG migration, Software AG webMethods, integration platform modernization]
 ---
 
+<!-- last verified: 2026-02 -->
+
 # Migrating from webMethods to a Modern API Gateway: A Practical Guide
 
 **webMethods migration** is one of the most common — and most dreaded — modernization projects in enterprise IT. Software AG's webMethods Integration Server has been a cornerstone of enterprise integration for over two decades, but rising license costs, shrinking talent pools, and the inability to handle AI agent traffic are pushing organizations to look for alternatives. This guide provides a practical, non-disruptive path forward.
@@ -236,10 +238,24 @@ This article is part of our API gateway migration series. Explore guides for oth
 - **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Escape vendor lock-in, move to self-hosted gateways
 - **[DataPower & TIBCO Migration Guide](/blog/datapower-tibco-migration-guide)** — Protocol translation and identity migration
 
-For detailed technical walkthroughs, see our [migration documentation](/docs/guides/migration/).
+For detailed technical walkthroughs, see our [migration documentation](https://docs.gostoa.dev/docs/guides/migration/).
+
+## Frequently Asked Questions
+
+### How risky is a webMethods migration?
+
+With the sidecar approach described in this guide, migration risk is minimal. webMethods continues handling existing integrations while STOA takes on new traffic. There's no cutover deadline, and you can rollback any migrated integration with a routing change. The biggest risk is underestimating the complexity of Flow services — many contain years of accumulated business logic that requires careful analysis during Phase 1. Start with simple pass-through integrations to build confidence before tackling complex orchestrations.
+
+### How long does a typical webMethods migration take?
+
+For a mid-size deployment (50-200 Flow services), expect 6-8 months with a team of 3-5 engineers. Assessment takes 4 weeks, sidecar deployment 4 weeks, facade development 8-12 weeks, traffic migration 6-8 weeks, and decommission 4-6 weeks. This is significantly faster than a rip-and-replace migration (typically 12-18 months) because the phased approach reduces risk and allows parallel work. See the [complete migration guide](/blog/api-gateway-migration-guide-2026) for timeline frameworks applicable to all legacy platforms.
+
+### Can webMethods and STOA run side-by-side indefinitely?
+
+Yes. Some organizations choose to keep webMethods for legacy integrations that rarely change while routing all new development through STOA. This is a valid long-term strategy, especially if the webMethods license is already paid for. However, you'll still pay maintenance fees and carry the operational overhead of two platforms. Most teams prefer to complete the migration within 12-18 months to eliminate dual-platform complexity. See [migration best practices](https://docs.gostoa.dev/docs/guides/migration/) for coexistence patterns.
 
 ---
 
-*Planning a webMethods migration? [Start with the quickstart guide](/docs/guides/quickstart) to see STOA in action, or read the [complete API gateway migration guide](/blog/api-gateway-migration-guide-2026) for a vendor-neutral decision framework.*
+*Planning a webMethods migration? [Start with the quickstart guide](https://docs.gostoa.dev/docs/guides/quick-start) to see STOA in action, or read the [complete API gateway migration guide](/blog/api-gateway-migration-guide-2026) for a vendor-neutral decision framework.*
 
 > This guide describes technical migration steps and does not imply any deficiency in the source platform. Migration decisions depend on specific organizational requirements. All trademarks belong to their respective owners. See [trademarks](/docs/trademarks).

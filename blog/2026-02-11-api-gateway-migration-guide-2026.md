@@ -6,8 +6,11 @@ tags: [migration, architecture, ai]
 description: "Compare migration paths from legacy API gateways to AI-native platforms. Decision framework, risk assessment, and phased migration strategy for 2026."
 keywords: [API gateway migration, API gateway modernization, webMethods migration, Kong migration, Apigee migration, MuleSoft migration, DataPower migration, Oracle OAM migration, MCP gateway, AI gateway, API management migration 2026, legacy API gateway, enterprise API modernization]
 ---
+<!-- last verified: 2026-02 -->
 
 # API Gateway Migration Guide 2026: From Legacy to AI-Native
+
+Enterprise API gateways face a 2026 inflection point. AI agents need MCP, regulators demand NIS2/DORA, and Kubernetes is the new runtime. This guide provides a vendor-neutral framework for migrating from legacy gateways using a zero-downtime augment-first strategy.
 
 Enterprise API gateways are at an inflection point. The rise of AI agents that consume APIs programmatically — combined with European sovereignty requirements (NIS2, DORA) and the shift to Kubernetes-native infrastructure — is forcing organizations to rethink their API management stack.
 
@@ -297,6 +300,26 @@ If you're evaluating an API gateway migration:
 5. **Measure everything** — Latency, error rates, developer satisfaction, time-to-first-call
 
 For a hands-on walkthrough, see the [STOA Quick Start Guide](/docs/guides/quickstart) — deploy a full API management stack in minutes.
+
+---
+
+## Frequently Asked Questions
+
+### When should I start an API gateway migration?
+
+Start when you face a clear pain point: license costs exceeding budget, compliance gaps (NIS2/DORA), AI agent support needed, or talent shortages. Don't migrate just because a technology is old — migrate when the cost of staying outweighs the cost of moving. Use the augment-first strategy to validate the new gateway with zero risk before committing to full migration.
+
+### How long does a typical migration take?
+
+Phase 1 (Augment) takes 2-4 weeks and has zero business risk. Phase 2 (Coexist) takes another 2-4 weeks of gradual traffic shifting. Phase 3 (Migrate) is 1-2 weeks of final cutover and decommissioning. Total: 6-10 weeks for a typical enterprise deployment with 50-100 APIs. Large deployments (500+ APIs) may take 6-12 months in staged waves.
+
+### Can I run the old and new gateways in parallel indefinitely?
+
+Yes. Many organizations run legacy gateways for years in "maintenance mode" while routing new APIs exclusively through modern gateways. This is often the lowest-risk approach. Keep the legacy gateway for APIs that are complex to migrate (heavy SOAP transformations, B2B protocols) and use the new gateway for REST/JSON and AI agent workloads.
+
+### What if my vendor-specific features don't have open-source equivalents?
+
+Focus on separating the gateway layer (routing, auth, rate limiting) from integration logic (complex transformations, connectors). Gateway functions have excellent open-source equivalents. Integration-heavy workloads may justify keeping the legacy platform. See the platform-specific guides: [webMethods](/blog/webmethods-migration-guide), [MuleSoft](/blog/mulesoft-migration-open-source-gateway), [DataPower/TIBCO](/blog/datapower-tibco-migration-guide), [Apigee](/blog/apigee-alternative-open-source).
 
 ---
 
