@@ -28,20 +28,22 @@ This is not a theoretical concern — it is the #1 blocker for enterprise adopti
 
 ### How Competitors Handle This
 
+<!-- last verified: 2026-02 — sources linked in References section -->
+
 | Platform | Multi-Env Model | GitOps Status | Promotion Mechanism | Approval Workflow |
 |----------|----------------|---------------|--------------------|--------------------|
-| **Kong** (Konnect) | Runtime Groups (1 per env) | Retrofit (decK CLI added later) | `deck dump` staging → edit → `deck sync` prod | GitHub PR reviews (no native gate) |
-| **Apigee** (Google) | Environment Groups + Revisions | Retrofit (Maven plugins) | Same revision deployed across envs, env-specific TargetServers/KVMs | RBAC only (no native approval) |
-| **Gravitee** | Cockpit + GKO (K8s Operator) | Semi-native (GKO recent) | UI promotion via Cockpit SaaS | Built-in (Cockpit enterprise) |
-| **Tyk** | tyk-sync + Tyk Operator | Retrofit (imperative CLI) | Export dev → Git → Import staging/prod | Manual (no native gate) |
-| **WSO2** | Workflow Engine | UI-first | Publisher submits → Admin approves | Native workflow engine |
-| **MuleSoft** | Environment Promotion | UI-first | API schema promotion dev → staging → prod | Enterprise governance |
+| **Kong** (Konnect) | Runtime Groups (1 per env) | decK CLI (first released 2019, [GitHub](https://github.com/Kong/deck)) added to database-backed Konnect | `deck dump` staging → edit → `deck sync` prod | GitHub PR reviews (no native gate) |
+| **Apigee** (Google) | Environment Groups + Revisions | Maven plugins ([apigee-deploy-maven-plugin](https://github.com/apigee/apigee-deploy-maven-plugin), 2015) + apigeecli added to database-backed platform | Same revision deployed across envs, env-specific TargetServers/KVMs | RBAC only (no native approval) |
+| **Gravitee** | Cockpit + GKO (K8s Operator) | GKO [v1.0 released 2023](https://www.gravitee.io/blog/gitops-for-api-management); Cockpit is SaaS-based | UI promotion via Cockpit SaaS | Built-in (Cockpit enterprise) |
+| **Tyk** | tyk-sync + Tyk Operator | tyk-sync ([docs](https://docs.tyk.technology/api-management/automations/sync)) is imperative CLI; Tyk Operator added for K8s | Export dev → Git → Import staging/prod | Manual (no native gate) |
+| **WSO2** | Workflow Engine | UI-first; CI/CD via [WSO2 apictl](https://apim.docs.wso2.com/en/4.3.0/) added later | Publisher submits → Admin approves | Native workflow engine |
+| **MuleSoft** | Environment Promotion | UI-first; [Anypoint CLI](https://docs.mulesoft.com/anypoint-cli/latest/) for automation | API schema promotion dev → staging → prod | Enterprise governance |
 
-**Key observation**: Every competitor either retrofitted GitOps onto a database-backed control plane, or offers UI-first governance without Git as the source of truth. None of them are **Born GitOps** — where Git IS the control plane, not a sync target.
+**Key observation** (as of February 2026): The major API management platforms were originally designed with database-backed control planes. GitOps tooling (decK, Maven plugins, tyk-sync, GKO, apictl) was added incrementally to enable declarative workflows. None were designed from the ground up with Git as the primary control plane. STOA has the opportunity to be **Born GitOps** — where Git IS the control plane, not a sync target.
 
 ### Industry Consensus
 
-Research across Kong, Apigee, Gravitee, Tyk, ArgoCD, Flux CD, and Backstage reveals clear patterns:
+Research across Kong, Apigee, Gravitee, Tyk, ArgoCD, Flux CD, and Backstage (as of February 2026) reveals clear patterns:
 
 1. **Directory-per-environment >> Branch-per-environment** — constant complexity, no drift, easy rollback
 2. **Git-driven >> UI-driven** for production — audit trail, approval via PR, rollback via `git revert`
@@ -252,11 +254,11 @@ The Console provides a "Promote to Prod" button that automates the entire promot
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Differentiation from competitors**:
-- **vs Kong**: Kong requires manual `deck dump` → edit → `deck sync`. STOA automates the entire flow.
-- **vs Gravitee**: Gravitee promotes via SaaS Cockpit (proprietary). STOA promotes via Git (open, auditable).
-- **vs Apigee**: Apigee has no native approval workflow. STOA uses Git PR reviews as the approval mechanism.
-- **vs WSO2**: WSO2's workflow engine is proprietary and UI-driven. STOA's workflow is Git-native and tool-agnostic.
+**Differentiation from competitors** (as of February 2026):
+- **vs Kong**: Kong's decK CLI requires manual `deck dump` → edit → `deck sync` ([docs](https://developer.konghq.com/deck/gateway/sync/)). STOA automates the entire flow via Console → Git PR.
+- **vs Gravitee**: Gravitee promotes via Cockpit SaaS ([blog](https://www.gravitee.io/blog/gitops-for-api-management)). STOA promotes via Git (open, auditable, no SaaS dependency).
+- **vs Apigee**: Apigee's UI deployment is RBAC-gated but has no native approval workflow ([docs](https://docs.apigee.com/api-platform/deploy/deploying-proxies-ui)). STOA uses Git PR reviews as the approval mechanism.
+- **vs WSO2**: WSO2's workflow engine is built into the product ([docs](https://apim.docs.wso2.com/en/4.3.0/deploy-and-publish/deploy-on-gateway/deploy-api/revision-deployment-workflow/)). STOA uses Git-native workflows (tool-agnostic, works with GitHub, GitLab, Bitbucket).
 
 ### 6. Drift Detection and Reconciliation
 
@@ -396,3 +398,13 @@ All governance happens in the Console UI with RBAC-gated deployments.
 - [Cloudogu: GitOps Promotion Patterns](https://platform.cloudogu.com/en/blog/gitops-repository-patterns-part-4-promotion-patterns/)
 - [WSO2 Revision Deployment Workflow](https://apim.docs.wso2.com/en/4.3.0/deploy-and-publish/deploy-on-gateway/deploy-api/revision-deployment-workflow/)
 - [Argo Rollouts Progressive Delivery](https://argoproj.github.io/argo-rollouts/)
+- [Kong decK GitHub Repository](https://github.com/Kong/deck) (first commit: 2019)
+- [Apigee Deploy Maven Plugin](https://github.com/apigee/apigee-deploy-maven-plugin) (first commit: 2015)
+- [Apigee UI Deployment](https://docs.apigee.com/api-platform/deploy/deploying-proxies-ui)
+- [WSO2 apictl CLI](https://apim.docs.wso2.com/en/4.3.0/)
+- [MuleSoft Anypoint CLI](https://docs.mulesoft.com/anypoint-cli/latest/)
+
+> Feature comparisons are based on publicly available documentation as of
+> February 2026. Product capabilities change frequently. We encourage readers
+> to verify current features directly with each vendor. All trademarks
+> belong to their respective owners.
