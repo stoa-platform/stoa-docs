@@ -84,6 +84,56 @@
   line-height: 1.6;
 }
 
+/* Migration Section */
+.migration {
+  padding: 4rem 0;
+  background: var(--ifm-background-surface-color);
+}
+
+.migrationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.migrationCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  background: var(--ifm-color-emphasis-100);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+
+.migrationCard:hover {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  text-decoration: none;
+  color: inherit;
+}
+
+.migrationCard strong {
+  font-size: 1.1rem;
+}
+
+.migrationCard span {
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.migrationLinks {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
 /* Comparison Section */
 .comparison {
   padding: 4rem 0;
