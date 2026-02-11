@@ -69,3 +69,28 @@ open-source:
   label: Open Source
   permalink: /open-source
   description: Open source strategy and community
+
+tutorial:
+  label: Tutorial
+  permalink: /tutorial
+  description: Step-by-step guides and how-to articles
+
+education:
+  label: Education
+  permalink: /education
+  description: Educational content and glossaries
+
+docker:
+  label: Docker
+  permalink: /docker
+  description: Docker and container-related content
+
+quickstart:
+  label: Quickstart
+  permalink: /quickstart
+  description: Quick start guides and getting started
+
+api-gateway:
+  label: API Gateway
+  permalink: /api-gateway
+  description: API gateway concepts and patterns
