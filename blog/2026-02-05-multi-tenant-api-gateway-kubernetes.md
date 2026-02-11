@@ -1,9 +1,9 @@
 ---
 slug: multi-tenant-api-gateway-kubernetes
-title: "Building a Multi-Tenant API Gateway on Kubernetes: Lessons Learned"
+title: "Multi-Tenant API Gateway on Kubernetes: Lessons Learned"
 authors: [stoa-team]
 tags: [architecture, feature]
-description: "How to build a secure multi-tenant API gateway on Kubernetes. Learn the tradeoffs between namespace-per-tenant and shared models, and how STOA implements tenant isolation with Keycloak, OPA, and schema-per-tenant databases."
+description: "Build secure multi-tenant API gateways on Kubernetes. Compare namespace vs shared models and learn tenant isolation with Keycloak, OPA, and CRDs."
 keywords:
   - multi-tenant API gateway
   - Kubernetes API gateway

@@ -3,7 +3,7 @@ slug: api-gateway-migration-guide-2026
 title: "API Gateway Migration Guide 2026: From Legacy to AI-Native"
 authors: [stoa-team]
 tags: [migration, architecture, ai]
-description: "The definitive guide to API gateway migration in 2026. Compare migration paths from webMethods, Kong, Apigee, DataPower, Oracle OAM, and MuleSoft to an AI-native MCP gateway. Includes decision framework, risk assessment, and phased migration strategy."
+description: "Compare migration paths from legacy API gateways to AI-native platforms. Decision framework, risk assessment, and phased migration strategy for 2026."
 keywords: [API gateway migration, API gateway modernization, webMethods migration, Kong migration, Apigee migration, MuleSoft migration, DataPower migration, Oracle OAM migration, MCP gateway, AI gateway, API management migration 2026, legacy API gateway, enterprise API modernization]
 ---
 

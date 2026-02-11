@@ -2,7 +2,7 @@
 sidebar_position: 4
 slug: /guides/hybrid-gateway-adapter
 title: "Hybrid Gateway Adapter — Bring Your Own Gateway"
-description: "Implement a custom gateway adapter to orchestrate any API gateway through STOA's unified interface."
+description: "Implement a custom gateway adapter to orchestrate any API gateway through STOA's unified interface — Kong, Apigee, webMethods, AWS API Gateway integration"
 keywords: [STOA, gateway adapter, hybrid, bring your own gateway, API gateway, integration, guide]
 ---
 

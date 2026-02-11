@@ -1,9 +1,9 @@
 ---
 slug: open-source-api-gateway-2026
-title: "The State of Open Source API Gateways in 2026: Kong, Envoy, APISIX, and STOA"
+title: "Open Source API Gateways 2026: Kong, Envoy, APISIX, STOA"
 authors: [christophe]
 tags: [comparison, open-source]
-description: "A comprehensive comparison of open source API gateways in 2026, including Kong, Envoy, APISIX, Tyk, and STOA. Compare MCP support, multi-tenancy, licensing, language, and AI-native capabilities."
+description: "Compare Kong, Envoy, APISIX, Tyk, and STOA in 2026. MCP support, multi-tenancy, licensing, performance, and AI-native capabilities evaluated."
 keywords:
   - open source API gateway
   - best API gateway 2026

@@ -2,7 +2,7 @@
 sidebar_position: 1
 slug: /guides/quickstart
 title: "Quickstart: Your First API in 5 Minutes"
-description: "Deploy your first API through STOA and call it from an AI agent in under 5 minutes."
+description: "Deploy your first API through STOA and call it from an AI agent in under 5 minutes — Docker Compose setup, Claude.ai MCP integration, and testing"
 keywords: [STOA, quickstart, getting started, API gateway, MCP, AI agent, tutorial]
 ---
 

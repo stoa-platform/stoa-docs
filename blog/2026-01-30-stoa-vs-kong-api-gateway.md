@@ -3,7 +3,7 @@ slug: stoa-vs-kong
 title: "STOA vs Kong: Why We Built a New API Gateway for the AI Era"
 authors: [christophe]
 tags: [comparison, open-source]
-description: "An honest comparison of STOA and Kong API gateways. Learn where Kong excels, where STOA excels, and why the AI era demands a new kind of API gateway — a Kong alternative built for MCP and multi-tenancy."
+description: "Honest comparison of STOA and Kong. Discover why the AI era demands MCP-native gateways with multi-tenancy, sovereignty, and open-source features."
 keywords: [Kong alternative, Kong vs STOA, open source API gateway comparison, API gateway comparison 2026, AI API gateway, MCP support, API management]
 ---
 

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 title: Security Configuration
-description: Security hardening guide for STOA Platform — JWT, CORS, SSE limits, and Kubernetes
+description: Security hardening guide for STOA Platform — JWT audience validation, CORS, SSE limits, OWASP best practices, and Kubernetes Pod Security Standards
 keywords: [security, configuration, JWT, CORS, hardening, Kubernetes]
 ---
 

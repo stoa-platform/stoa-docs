@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
-title: Community
-description: Join the STOA community — philosophy, contribution rewards, and governance
+title: "STOA Community: Contribute & Get Rewarded"
+description: Join the STOA community — 45% revenue redistribution, HLFH philosophy, contributor rewards program, transparent governance, and sustainable open source
 keywords: [community, open source, contributions, governance, HLFH]
 ---
 

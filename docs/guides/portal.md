@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
-title: Developer Portal
-description: "Discover, subscribe to, and test APIs using the STOA Developer Portal for API consumers."
+title: "Developer Portal: API Discovery & Testing"
+description: "Discover, subscribe to, and test APIs using the STOA Developer Portal — API catalog, developer experience, subscription management, and testing sandbox"
 keywords: [STOA, developer portal, API catalog, API discovery, subscriptions, guide, tutorial]
 ---
 

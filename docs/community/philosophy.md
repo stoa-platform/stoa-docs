@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
-title: Philosophy
-description: The HLFH philosophy behind STOA — principles that guide everything we build
+title: "HLFH Philosophy: Open Source Sustainability"
+description: The HLFH philosophy behind STOA — circulation over accumulation, open source sustainability, 45% revenue redistribution, and lasting impact
 keywords: [philosophy, HLFH, values, open source, principles, sustainability]
 ---
 
