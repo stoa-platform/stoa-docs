@@ -147,6 +147,14 @@ If your use case involves AI agents, multi-tenancy, or European compliance, STOA
 
 ---
 
+## Further Reading
+
+- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
+- [API Gateway Patterns](/docs/guides/fiches/api-gateway-patterns) — Architecture patterns for modern API gateways
+- [MCP Gateway Concepts](/docs/concepts/mcp-gateway) — Understanding AI-native gateway architecture
+
+---
+
 *Christophe Aboulicam is the Founder & CTO at HLFH. He has spent 15 years in API management and integration, most recently building STOA to address the AI-native future of enterprise APIs.*
 
 > **Disclaimer:** Feature comparisons are based on publicly available documentation as of February 2026. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners.

@@ -179,6 +179,14 @@ If European data sovereignty is a priority for your organization:
 
 ---
 
+## Further Reading
+
+- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
+- [DORA and NIS2 Compliance](/blog/dora-nis2-api-gateway-compliance) — Technical requirements for regulated industries
+- [Enterprise Security Compliance](/docs/enterprise/security-compliance) — How STOA addresses European regulations
+
+---
+
 *Need sovereign API management for your European organization? [Start with the quickstart guide](/docs/guides/quickstart) to evaluate STOA on your own infrastructure, or read the [security and compliance documentation](/docs/enterprise/security-compliance) for a detailed regulatory mapping.*
 
 > **Disclaimer:** Feature comparisons are based on publicly available documentation as of February 2026. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners.

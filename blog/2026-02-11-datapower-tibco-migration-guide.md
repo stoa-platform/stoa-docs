@@ -15,6 +15,10 @@ This guide provides a practical assessment of migration approaches for organizat
 
 <!-- truncate -->
 
+:::info Part of the API Gateway Migration Series
+This article is part of our [complete API gateway migration guide](/blog/api-gateway-migration-guide-2026). Whether you're coming from webMethods, MuleSoft, Apigee, or DataPower, the core migration principles are the same.
+:::
+
 ## IBM DataPower: The Enterprise Security Gateway
 
 ### What DataPower Does Well
@@ -197,6 +201,19 @@ Legacy platforms often excel at specific functions. The goal is not to eliminate
 - **[webMethods Migration Guide](/blog/webmethods-migration-guide)** — Detailed guide for Software AG stack
 - **[IBM webMethods / DataPower — Technical Guide](/docs/guides/migration/ibm-webmethods)** — Phase-by-phase with code examples
 - **[STOA Quick Start Guide](/docs/guides/quickstart)** — Deploy and evaluate in 15 minutes
+
+---
+
+## Related Migration Guides
+
+This article is part of our API gateway migration series. Explore guides for other platforms:
+
+- **[Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Vendor-neutral decision framework and phased migration strategy
+- **[webMethods Migration Guide](/blog/webmethods-migration-guide)** — Sidecar approach for Software AG platforms
+- **[MuleSoft Migration Guide](/blog/mulesoft-migration-open-source-gateway)** — Decouple gateway from iPaaS, migrate to open source
+- **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Escape vendor lock-in, move to self-hosted gateways
+
+For detailed technical walkthroughs, see our [migration documentation](/docs/guides/migration/).
 
 ---
 

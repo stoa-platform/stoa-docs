@@ -283,4 +283,12 @@ Connecting AI agents to enterprise APIs securely is not optional — it is the f
 
 ---
 
+## Further Reading
+
+- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
+- [MCP Gateway Concepts](/docs/concepts/mcp-gateway) — Deep dive into Model Context Protocol
+- [API Gateway Patterns](/docs/guides/fiches/api-gateway-patterns) — Architecture patterns for AI-native gateways
+
+---
+
 *The STOA Team builds open-source API management for the AI era. Join us on [GitHub](https://github.com/stoa-platform) and [Discord](https://discord.gg/j8tHSSes).*

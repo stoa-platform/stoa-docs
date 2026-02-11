@@ -166,6 +166,14 @@ If you are evaluating API gateway platforms for regulated industries, STOA provi
 
 ---
 
+## Further Reading
+
+- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
+- [API Management in Europe: Data Sovereignty](/blog/api-management-europe-sovereignty) — How gateway jurisdiction impacts compliance
+- [Enterprise Security Compliance](/docs/enterprise/security-compliance) — Detailed regulatory mapping
+
+---
+
 *Christophe Aboulicam is the Founder & CTO at HLFH, building STOA Platform to bring AI-native API management to European enterprises.*
 
 > **Disclaimer:** STOA Platform provides technical capabilities that support regulatory compliance efforts. This does not constitute legal advice or a guarantee of compliance. Organizations should consult qualified legal counsel for compliance requirements.

@@ -18,6 +18,10 @@ If you are evaluating an **Apigee alternative**, you are not alone. Since Google
 
 <!-- truncate -->
 
+:::info Part of the API Gateway Migration Series
+This article is part of our [complete API gateway migration guide](/blog/api-gateway-migration-guide-2026). Whether you're coming from webMethods, MuleSoft, Apigee, or DataPower, the core migration principles are the same.
+:::
+
 This article examines why teams are leaving Apigee, what the open-source alternatives look like in 2026, and how to plan a successful migration without disrupting your API consumers.
 
 ## Why Teams Are Leaving Apigee
@@ -185,6 +189,19 @@ If Apigee's cost, lock-in, or lack of AI-native features is driving you to explo
 - **[API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Complete migration framework for all legacy platforms.
 - **[Apigee Migration Guide](/docs/guides/migration/apigee)** — Step-by-step proxy export, policy translation, and traffic migration.
 - **[API Gateway Patterns — STOA vs Kong vs Apigee](/docs/guides/fiches/api-gateway-patterns)** — Architectural comparison and decision framework.
+
+---
+
+## Related Migration Guides
+
+This article is part of our API gateway migration series. Explore guides for other platforms:
+
+- **[Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Vendor-neutral decision framework and phased migration strategy
+- **[webMethods Migration Guide](/blog/webmethods-migration-guide)** — Sidecar approach for Software AG platforms
+- **[MuleSoft Migration Guide](/blog/mulesoft-migration-open-source-gateway)** — Decouple gateway from iPaaS, migrate to open source
+- **[DataPower & TIBCO Migration Guide](/blog/datapower-tibco-migration-guide)** — Protocol translation and identity migration
+
+For detailed technical walkthroughs, see our [migration documentation](/docs/guides/migration/).
 
 ---
 
