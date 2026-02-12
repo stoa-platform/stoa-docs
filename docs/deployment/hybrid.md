@@ -271,7 +271,7 @@ helm repo update
 helm install stoa stoa/stoa-platform \
   --namespace stoa-system \
   --set mode=hybrid \
-  --set controlPlane.endpoint=https://api.gostoa.dev \
+  --set controlPlane.endpoint=https://api.<YOUR_DOMAIN> \
   --set controlPlane.tenantId=YOUR_TENANT_ID
 
 # 4. Verify installation

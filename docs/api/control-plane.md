@@ -14,8 +14,8 @@ REST API reference for STOA Control Plane.
 The complete OpenAPI 3.1 specification is available:
 
 - **JSON**: [openapi.json](https://raw.githubusercontent.com/stoa-platform/stoa/main/apis/control-plane-api/openapi.json)
-- **Swagger UI**: `https://api.gostoa.dev/docs`
-- **ReDoc**: `https://api.gostoa.dev/redoc`
+- **Swagger UI**: `${STOA_API_URL}/docs`
+- **ReDoc**: `${STOA_API_URL}/redoc`
 
 Import into your favorite API client (Postman, Insomnia, Bruno):
 
@@ -27,8 +27,16 @@ curl -o openapi.json https://raw.githubusercontent.com/stoa-platform/stoa/main/a
 ## Base URL
 
 ```
-https://api.gostoa.dev/v1
+${STOA_API_URL}/v1
 ```
+
+:::tip Configure your environment
+```bash
+export STOA_API_URL="https://api.gostoa.dev"   # Replace with your domain
+export STOA_AUTH_URL="https://auth.gostoa.dev"  # Keycloak OIDC provider
+```
+Self-hosted? Replace `gostoa.dev` with your domain.
+:::
 
 ## Authentication
 
@@ -41,7 +49,7 @@ Authorization: Bearer <access_token>
 Get access token from Keycloak:
 
 ```bash
-curl -X POST https://auth.gostoa.dev/realms/stoa/protocol/openid-connect/token \
+curl -X POST ${STOA_AUTH_URL}/realms/stoa/protocol/openid-connect/token \
   -d "client_id=control-plane-api" \
   -d "client_secret=${STOA_CLIENT_SECRET}" \
   -d "grant_type=client_credentials"
@@ -71,7 +79,7 @@ Content-Type: application/json
   "name": "acme",
   "tier": "starter",
   "status": "provisioning",
-  "gateway_url": "https://gateway.gostoa.dev/acme",
+  "gateway_url": "https://gateway.<YOUR_DOMAIN>/acme",
   "created_at": "2025-01-09T10:00:00Z"
 }
 ```
@@ -135,7 +143,7 @@ Content-Type: application/json
 {
   "id": "api-xyz789",
   "name": "payment-api",
-  "public_url": "https://gateway.gostoa.dev/acme/payments",
+  "public_url": "https://gateway.<YOUR_DOMAIN>/acme/payments",
   "status": "active",
   "created_at": "2025-01-09T10:15:00Z"
 }

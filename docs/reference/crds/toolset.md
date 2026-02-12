@@ -29,9 +29,9 @@ spec:
   displayName: Payment API Tools
   description: Tools generated from Payment API OpenAPI spec
   openAPISpec:
-    url: https://api.gostoa.dev/acme/payment-api/v2/openapi.json
+    url: https://api.<YOUR_DOMAIN>/acme/payment-api/v2/openapi.json
     refreshInterval: "1h"
-  baseURL: https://api.gostoa.dev/acme/payment-api/v2
+  baseURL: https://api.<YOUR_DOMAIN>/acme/payment-api/v2
   selector:
     tags:
       - payments

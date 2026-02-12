@@ -58,7 +58,7 @@ Deploy a STOA gateway with automatic registration:
 
 ```bash
 # Minimal configuration (2 env vars)
-export STOA_CONTROL_PLANE_URL=https://api.gostoa.dev
+export STOA_CONTROL_PLANE_URL=https://api.<YOUR_DOMAIN>
 export STOA_CONTROL_PLANE_API_KEY=gw_your_key_here
 
 # Start the gateway
@@ -103,7 +103,7 @@ spec:
             - name: STOA_GATEWAY_MODE
               value: "sidecar"
             - name: STOA_CONTROL_PLANE_URL
-              value: "https://api.gostoa.dev"
+              value: "https://api.<YOUR_DOMAIN>"
             - name: STOA_CONTROL_PLANE_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -272,7 +272,7 @@ stoaSidecar:
   secretName: stoa-sidecar-secrets  # Must contain control-plane-api-key
 
   # Keycloak OIDC (for token validation)
-  keycloakUrl: "https://auth.gostoa.dev"
+  keycloakUrl: "https://auth.<YOUR_DOMAIN>"
   keycloakRealm: stoa
   keycloakClientId: stoa-sidecar
 
@@ -376,7 +376,7 @@ This enables the Control Plane to push configuration changes to gateways without
 
 4. **Test registration endpoint manually:**
    ```bash
-   curl -X POST https://api.gostoa.dev/v1/internal/gateways/register \
+   curl -X POST ${STOA_API_URL}/v1/internal/gateways/register \
      -H "X-Gateway-Key: gw_your_key" \
      -H "Content-Type: application/json" \
      -d '{

@@ -262,8 +262,8 @@ jwks:
   max_retries: 3
   timeout: 5s
   endpoints:
-    org-alpha: https://auth.gostoa.dev/realms/org-alpha/protocol/openid-connect/certs
-    org-beta: https://auth.gostoa.dev/realms/org-beta/protocol/openid-connect/certs
+    org-alpha: https://auth.<YOUR_DOMAIN>/realms/org-alpha/protocol/openid-connect/certs
+    org-beta: https://auth.<YOUR_DOMAIN>/realms/org-beta/protocol/openid-connect/certs
 ```
 
 Key rotation at any organization propagates automatically: the org rotates keys in their IdP, Keycloak picks up the new JWKS on next validation, and the gateway refreshes its cache within the TTL window.

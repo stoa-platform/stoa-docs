@@ -193,7 +193,7 @@ def generate_curl_command(snapshot: MCPErrorSnapshot) -> str:
 Example output:
 
 ```bash
-curl -X POST 'https://mcp.gostoa.dev/tools/call' \
+curl -X POST '${STOA_GATEWAY_URL}/tools/call' \
   -H 'Authorization: ${YOUR_AUTHORIZATION_HERE}' \
   -H 'Content-Type: application/json' \
   -d '{"tool": "acme:payment-api:create", "arguments": {...}}'

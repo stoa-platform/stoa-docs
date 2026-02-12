@@ -153,7 +153,7 @@ STOA provides a web portal for developers:
 - **Usage Dashboard** - View analytics
 - **Billing** - Manage payment methods
 
-Access portal at: `https://portal.gostoa.dev/{tenant}`
+Access portal at: `https://portal.<YOUR_DOMAIN>/{tenant}`
 
 ### Portal Configuration
 
@@ -185,11 +185,11 @@ sk_test_abc123xyz789...     # Sandbox/Test
 
 ```bash
 # In request header
-curl https://gateway.gostoa.dev/acme/payment-api/charge \
+curl ${STOA_GATEWAY_URL}/acme/payment-api/charge \
   -H "X-API-Key: sk_live_abc123xyz789"
 
 # Or as query parameter (not recommended)
-curl https://gateway.gostoa.dev/acme/payment-api/charge?apikey=sk_live_abc123
+curl ${STOA_GATEWAY_URL}/acme/payment-api/charge?apikey=sk_live_abc123
 ```
 
 ## Webhooks

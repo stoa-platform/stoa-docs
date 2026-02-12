@@ -12,10 +12,12 @@ interface CodeExample {
   mcp: string;
 }
 
+// URLs use STOA hosted service. Self-hosted users: replace gostoa.dev with your domain.
 const examples: Record<string, CodeExample> = {
   subscribe: {
     curl: `# Subscribe to an API
-curl -X POST https://api.gostoa.dev/v1/subscriptions \\
+# Set STOA_API_URL to your instance (e.g. https://api.gostoa.dev)
+curl -X POST $STOA_API_URL/v1/subscriptions \\
   -H "Authorization: Bearer $STOA_TOKEN" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -25,8 +27,10 @@ curl -X POST https://api.gostoa.dev/v1/subscriptions \\
     python: `# Subscribe to an API
 import httpx
 
+STOA_API_URL = "https://api.gostoa.dev"  # Replace with your domain
+
 client = httpx.Client(
-    base_url="https://api.gostoa.dev/v1",
+    base_url=f"{STOA_API_URL}/v1",
     headers={"Authorization": f"Bearer {STOA_TOKEN}"}
 )
 
@@ -38,8 +42,10 @@ response = client.post("/subscriptions", json={
 subscription = response.json()
 print(f"Subscribed! Key: {subscription['api_key']}")`,
     typescript: `// Subscribe to an API
+const STOA_API_URL = 'https://api.gostoa.dev'; // Replace with your domain
+
 const response = await fetch(
-  'https://api.gostoa.dev/v1/subscriptions',
+  \`\${STOA_API_URL}/v1/subscriptions\`,
   {
     method: 'POST',
     headers: {
@@ -69,14 +75,17 @@ stoa_subscription(
   },
   call: {
     curl: `# Call an API through STOA Gateway
-curl https://gateway.gostoa.dev/v1/billing/invoices \\
+# Set STOA_GATEWAY_URL to your instance (e.g. https://mcp.gostoa.dev)
+curl $STOA_GATEWAY_URL/v1/billing/invoices \\
   -H "X-API-Key: $API_KEY" \\
   -H "Content-Type: application/json"`,
     python: `# Call an API through STOA Gateway
 import httpx
 
+STOA_GATEWAY_URL = "https://mcp.gostoa.dev"  # Replace with your domain
+
 client = httpx.Client(
-    base_url="https://gateway.gostoa.dev/v1",
+    base_url=f"{STOA_GATEWAY_URL}/v1",
     headers={"X-API-Key": API_KEY}
 )
 
@@ -84,8 +93,10 @@ invoices = client.get("/billing/invoices").json()
 for inv in invoices["data"]:
     print(f"Invoice {inv['id']}: €{inv['amount']}")`,
     typescript: `// Call an API through STOA Gateway
+const STOA_GATEWAY_URL = 'https://mcp.gostoa.dev'; // Replace with your domain
+
 const response = await fetch(
-  'https://gateway.gostoa.dev/v1/billing/invoices',
+  \`\${STOA_GATEWAY_URL}/v1/billing/invoices\`,
   {
     headers: {
       'X-API-Key': API_KEY,
@@ -94,7 +105,7 @@ const response = await fetch(
 );
 
 const { data: invoices } = await response.json();
-invoices.forEach(inv => 
+invoices.forEach(inv =>
   console.log(\`Invoice \${inv.id}: €\${inv.amount}\`)
 );`,
     mcp: `# In Claude.ai - natural language API calls
@@ -108,7 +119,7 @@ invoices.forEach(inv =>
   },
   metrics: {
     curl: `# Check your API usage and quota
-curl https://api.gostoa.dev/v1/subscriptions/sub-123/quota \\
+curl $STOA_API_URL/v1/subscriptions/sub-123/quota \\
   -H "Authorization: Bearer $STOA_TOKEN"
 
 # Response:
@@ -120,8 +131,10 @@ curl https://api.gostoa.dev/v1/subscriptions/sub-123/quota \\
     python: `# Check your API usage and quota
 import httpx
 
+STOA_API_URL = "https://api.gostoa.dev"  # Replace with your domain
+
 client = httpx.Client(
-    base_url="https://api.gostoa.dev/v1",
+    base_url=f"{STOA_API_URL}/v1",
     headers={"Authorization": f"Bearer {STOA_TOKEN}"}
 )
 
@@ -130,8 +143,10 @@ quota = client.get("/subscriptions/sub-123/quota").json()
 print(f"Usage: {quota['requests_used']}/{quota['requests_limit']}")
 print(f"Remaining: {quota['requests_limit'] - quota['requests_used']}")`,
     typescript: `// Check your API usage and quota
+const STOA_API_URL = 'https://api.gostoa.dev'; // Replace with your domain
+
 const response = await fetch(
-  'https://api.gostoa.dev/v1/subscriptions/sub-123/quota',
+  \`\${STOA_API_URL}/v1/subscriptions/sub-123/quota\`,
   {
     headers: {
       'Authorization': \`Bearer \${STOA_TOKEN}\`,

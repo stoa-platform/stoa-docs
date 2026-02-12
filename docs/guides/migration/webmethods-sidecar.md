@@ -72,8 +72,8 @@ stoaSidecar:
     tag: latest
 
   environment: prod
-  controlPlaneUrl: "https://api.gostoa.dev"
-  keycloakUrl: "https://auth.gostoa.dev"
+  controlPlaneUrl: "https://api.<YOUR_DOMAIN>"
+  keycloakUrl: "https://auth.<YOUR_DOMAIN>"
   keycloakRealm: stoa
   keycloakClientId: stoa-sidecar
   secretName: stoa-sidecar-secrets
@@ -186,7 +186,7 @@ stoa_sidecar_rate_limit_hits_total{tenant="acme"} 150
 ### Creating a Rate Limit Policy
 
 ```bash
-curl -X POST https://api.gostoa.dev/v1/admin/policies \
+curl -X POST ${STOA_API_URL}/v1/admin/policies \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -204,7 +204,7 @@ curl -X POST https://api.gostoa.dev/v1/admin/policies \
 ### Binding Policy to Gateway
 
 ```bash
-curl -X POST https://api.gostoa.dev/v1/admin/policies/bindings \
+curl -X POST ${STOA_API_URL}/v1/admin/policies/bindings \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{

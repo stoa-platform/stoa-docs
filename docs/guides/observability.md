@@ -14,7 +14,7 @@ STOA includes a built-in observability stack with Prometheus for metrics, Grafan
 | Component | Purpose | Access |
 |-----------|---------|--------|
 | **Prometheus** | Metrics collection and alerting | Internal (in-cluster) |
-| **Grafana** | Dashboards and visualization | `https://grafana.gostoa.dev` |
+| **Grafana** | Dashboards and visualization | `https://grafana.<YOUR_DOMAIN>` |
 | **Loki** | Log aggregation and search | Via Grafana |
 
 ## Metrics
@@ -141,21 +141,21 @@ STOA includes operational runbooks organized by severity:
 
 ### Critical
 
-- [Gateway Down](https://docs.gostoa.dev/runbooks/critical/gateway-down) — Gateway unreachable
-- [Database Connection](https://docs.gostoa.dev/runbooks/critical/database-connection) — PostgreSQL connectivity issues
-- [Vault Sealed](https://docs.gostoa.dev/runbooks/critical/vault-sealed) — Vault requires unsealing
-- [Vault Restore](https://docs.gostoa.dev/runbooks/critical/vault-restore) — Vault disaster recovery
+- Gateway Down — Gateway unreachable
+- Database Connection — PostgreSQL connectivity issues
+- Vault Sealed — Vault requires unsealing
+- Vault Restore — Vault disaster recovery
 
 ### High Priority
 
-- [Certificate Expiration](https://docs.gostoa.dev/runbooks/high/certificate-expiration) — TLS cert approaching expiry
-- [Gateway High Latency](https://docs.gostoa.dev/runbooks/high/gateway-high-latency) — Response time degradation
-- [Kafka Lag](https://docs.gostoa.dev/runbooks/high/kafka-lag) — Consumer falling behind
+- Certificate Expiration — TLS cert approaching expiry
+- Gateway High Latency — Response time degradation
+- Kafka Lag — Consumer falling behind
 
 ### Medium Priority
 
-- [API Rollback](https://docs.gostoa.dev/runbooks/medium/api-rollback) — Revert a bad API deployment
-- [AWX Unreachable](https://docs.gostoa.dev/runbooks/medium/awx-unreachable) — Ansible automation server down
+- API Rollback — Revert a bad API deployment
+- AWX Unreachable — Ansible automation server down
 
 ## Health Endpoints
 
@@ -168,6 +168,6 @@ All services expose health check endpoints:
 | `/health/startup` | Startup probe — initialization complete |
 
 ```bash
-curl https://api.gostoa.dev/health/ready
+curl ${STOA_API_URL}/health/ready
 # {"status": "ok"}
 ```
