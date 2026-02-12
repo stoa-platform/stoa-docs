@@ -94,7 +94,9 @@ Not all migrations are equal. The right approach depends on your source platform
 | Oracle OAM / API Platform | Medium | Identity federation |
 | Google Apigee | Medium | Custom policy translation |
 | MuleSoft Anypoint | Medium-High | Tight Salesforce ecosystem coupling |
-| TIBCO / Axway | Medium | Legacy protocol support |
+| TIBCO | Medium | Legacy protocol support |
+| Axway | Medium | Policy Studio translation |
+| WSO2 API Manager | Medium | Synapse mediation migration |
 | AWS API Gateway | Low-Medium | Cloud service dependency mapping |
 
 ---
@@ -164,6 +166,8 @@ For detailed, hands-on guidance for your specific platform:
 | MuleSoft Anypoint | [MuleSoft Migration Guide](/blog/mulesoft-migration-open-source-gateway) | — |
 | Google Apigee | [Apigee Migration Guide](/blog/apigee-alternative-open-source) | [Docs: Apigee Migration](/docs/guides/migration/apigee) |
 | IBM DataPower / TIBCO | [DataPower & TIBCO Guide](/blog/datapower-tibco-migration-guide) | — |
+| Axway | [Axway Migration Guide](/blog/axway-api-gateway-migration-open-source) | — |
+| WSO2 API Manager | [WSO2 Alternative Guide](/blog/wso2-api-manager-open-source-alternative) | — |
 | Kong OSS/Enterprise | — | [Docs: Kong Migration](/docs/guides/migration/kong) |
 | Oracle OAM | — | [Docs: Oracle OAM Migration](/docs/guides/migration/oracle-oam) |
 

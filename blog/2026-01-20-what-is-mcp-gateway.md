@@ -158,6 +158,9 @@ Explore more about MCP gateways and AI agent infrastructure:
 - [ESB is Dead, Long Live MCP](/blog/esb-is-dead-long-live-mcp) — How the Model Context Protocol replaces traditional integration middleware
 - [Connecting AI Agents to Enterprise APIs](/blog/connecting-ai-agents-enterprise-apis) — Patterns for secure AI agent integration
 - [MCP Gateway Quickstart with Docker](/blog/mcp-gateway-quickstart-docker) — Deploy a working MCP gateway in 10 minutes
+- [MCP Protocol Deep Dive](/blog/mcp-protocol-architecture-deep-dive) — Architecture, message flow, and transport layers
+- [Convert REST APIs to MCP Tools](/blog/convert-rest-api-to-mcp-tools) — Step-by-step guide to exposing your APIs to AI agents
+- [MCP vs OpenAI Function Calling vs LangChain Tools](/blog/mcp-vs-openai-function-calling-vs-langchain) — Which approach should you use?
 
 ---
 
