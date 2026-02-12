@@ -1,4 +1,5 @@
 ---
+unlisted: true
 slug: gitops-in-10-minutes
 title: "GitOps in 10 Minutes: Why Your Infrastructure Should Be a Git Repo"
 authors: [christophe]
