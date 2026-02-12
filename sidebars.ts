@@ -82,6 +82,8 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Reference',
       items: [
+        'reference/hardware-requirements',
+        'reference/performance-benchmarks',
         'reference/configuration',
         'reference/mcp-tools',
         'reference/cli',
