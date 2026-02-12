@@ -1,487 +1,353 @@
 ---
 sidebar_position: 2
-title: "STOA CLI Reference (stoactl)"
-description: "STOA CLI reference — kubectl-style command-line interface for managing APIs, tenants, subscriptions, and gateway operations (planned Q3 2026)"
-keywords: [CLI, command line, stoactl, reference]
+title: "CLI Reference (stoactl)"
+description: "stoactl CLI reference — kubectl-style command-line interface for managing STOA Platform resources, bridging APIs to MCP, and local development"
+keywords: [CLI, command line, stoactl, reference, MCP, bridge, OpenAPI]
 ---
 
-# CLI Reference
+# CLI Reference (stoactl)
 
-:::caution Coming Soon — Q3 2026
-The `stoa` CLI is not yet available. This page documents the **planned** interface. Use the [REST API](/docs/api/control-plane) for now.
-:::
-
-Command-line interface reference for STOA Platform.
+`stoactl` is a kubectl-style CLI for managing STOA Platform resources. It provides project scaffolding, API-to-MCP bridging, diagnostics, and resource management.
 
 ## Installation
 
-:::info Private Beta
-The CLI will be distributed to beta participants when available. [Request access](mailto:christophe@hlfh.io) to be notified. In the meantime, use the [REST API](/docs/api/control-plane) or the [Console UI](https://console.gostoa.dev).
-:::
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-## Authentication
+<Tabs>
+<TabItem value="macos" label="macOS (Homebrew)">
 
 ```bash
-# Login to STOA
-stoa login
-
-# Login with specific realm
-stoa login --realm acme
-
-# Set API endpoint
-stoa config set api-url https://api.<YOUR_DOMAIN>
-
-# View current config
-stoa config view
+brew install stoa-platform/tap/stoactl
 ```
 
-## Global Flags
-
-All commands support these flags:
+</TabItem>
+<TabItem value="linux" label="Linux">
 
 ```bash
---api-url string       API endpoint URL
---token string         Authentication token
---tenant string        Tenant context
---output string        Output format: json, yaml, table (default: table)
---verbose             Enable verbose logging
---quiet               Suppress non-essential output
+curl -sSL https://get.gostoa.dev | sh
 ```
 
-## Tenant Commands
-
-### `stoa tenant`
-
-Manage tenants.
+</TabItem>
+<TabItem value="go" label="From source (Go 1.22+)">
 
 ```bash
-# Create tenant
-stoa tenant create \
-  --name acme \
-  --tier starter \
-  --admin-email admin@acme.com \
-  --region us-east-1
-
-# List tenants
-stoa tenant list
-
-# Get tenant details
-stoa tenant get acme
-
-# Update tenant
-stoa tenant update acme \
-  --tier business
-
-# Delete tenant
-stoa tenant delete acme
-
-# Get tenant status
-stoa tenant status acme
+go install github.com/stoa-platform/stoactl@latest
 ```
 
-## API Commands
+</TabItem>
+</Tabs>
 
-### `stoa api`
+---
 
-Manage APIs.
+## Quick Reference
+
+| Command | Description |
+|---------|-------------|
+| `stoactl init` | Initialize a new STOA project |
+| `stoactl bridge` | Convert OpenAPI spec to MCP Tool CRDs |
+| `stoactl doctor` | Run diagnostic checks |
+| `stoactl apply` | Create or update a resource from a YAML file |
+| `stoactl get` | List resources (apis, deployments, tools) |
+| `stoactl delete` | Delete a resource |
+| `stoactl auth` | Authentication commands |
+| `stoactl config` | Manage CLI contexts |
+| `stoactl token-usage` | View API token usage statistics |
+| `stoactl version` | Print version information |
+
+---
+
+## Project Commands
+
+### `stoactl init`
+
+Create a new STOA project with everything needed to run a local MCP gateway.
 
 ```bash
-# Register API
-stoa api register \
-  --tenant acme \
-  --name payment-api \
-  --upstream https://api.payments.example.com \
-  --path /payments \
-  --version v1
-
-# List APIs
-stoa api list --tenant acme
-
-# Get API details
-stoa api get --tenant acme --name payment-api
-
-# Update API
-stoa api update \
-  --tenant acme \
-  --name payment-api \
-  --rate-limit 2000
-
-# Delete API
-stoa api delete --tenant acme --name payment-api
-
-# Test API
-stoa api test \
-  --tenant acme \
-  --name payment-api \
-  --endpoint /health
+stoactl init <name> [flags]
 ```
 
-### API Policy Commands
+**Flags:**
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--port` | `8080` | Gateway port |
+| `--dir` | `.` | Parent directory for the project |
+| `--no-context` | `false` | Skip creating a local CLI context |
+
+**Example:**
 
 ```bash
-# Add rate limiting
-stoa api policy add-rate-limit \
-  --tenant acme \
-  --api payment-api \
-  --requests 1000 \
-  --period hour
-
-# Add CORS
-stoa api policy add-cors \
-  --tenant acme \
-  --api payment-api \
-  --origins "*"
-
-# Add caching
-stoa api policy add-cache \
-  --tenant acme \
-  --api payment-api \
-  --ttl 300
-
-# List policies
-stoa api policy list \
-  --tenant acme \
-  --api payment-api
-
-# Remove policy
-stoa api policy remove \
-  --tenant acme \
-  --api payment-api \
-  --name rate-limiting
+stoactl init my-api --port 9090
+cd my-api
+docker compose up -d
+stoactl doctor
 ```
 
-## Subscription Commands
+**Generated files:**
+- `docker-compose.yml` — Gateway + echo backend
+- `stoa.yaml` — Gateway configuration
+- `echo-nginx.conf` — Echo backend (static JSON for testing)
+- `example-api.yaml` — Sample OpenAPI spec for bridge
+- `README.md` — Project-specific quickstart
+- `tools/` — Output directory for bridge
 
-### `stoa subscription`
+### `stoactl doctor`
 
-Manage API subscriptions.
+Run 6 diagnostic checks to verify your local setup.
 
 ```bash
-# Create subscription
-stoa subscription create \
-  --tenant acme \
-  --api payment-api \
-  --plan standard \
-  --app my-mobile-app
-
-# List subscriptions
-stoa subscription list --tenant acme
-
-# Get subscription details
-stoa subscription get --subscription-id sub-12345
-
-# Approve subscription
-stoa subscription approve \
-  --subscription-id sub-12345 \
-  --rate-limit 1000
-
-# Reject subscription
-stoa subscription reject \
-  --subscription-id sub-12345 \
-  --reason "Invalid use case"
-
-# Cancel subscription
-stoa subscription cancel --subscription-id sub-12345
-
-# View usage
-stoa subscription usage \
-  --subscription-id sub-12345 \
-  --period last-30-days
+stoactl doctor
 ```
 
-## API Key Commands
+**Checks:**
 
-### `stoa apikey`
+| Check | What it verifies |
+|-------|-----------------|
+| Docker | Docker daemon is running |
+| Gateway | Health endpoint responds (HTTP 200) |
+| Keychain | OS Keychain is accessible |
+| API key | Valid authentication token exists |
+| Port | Gateway port is available |
+| MCP endpoint | SSE endpoint is responding |
 
-Manage API keys.
+---
+
+## Bridge Commands
+
+### `stoactl bridge`
+
+Convert an OpenAPI 3.x specification into STOA Tool CRDs. Each path+method operation becomes a separate MCP tool.
 
 ```bash
-# List API keys
-stoa apikey list --tenant acme
-
-# Create API key
-stoa apikey create \
-  --subscription-id sub-12345 \
-  --name "Production Key" \
-  --expires 2026-01-01
-
-# Rotate API key
-stoa apikey rotate --key-id key-abc123
-
-# Revoke API key
-stoa apikey revoke --key-id key-abc123
-
-# Show API key
-stoa apikey show --key-id key-abc123
+stoactl bridge <spec-file> [flags]
 ```
 
-## Authentication Commands
+**Flags:**
 
-### `stoa auth`
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--namespace` | *(required)* | Target namespace for generated tools |
+| `--output` | `./tools/` | Output directory for YAML files |
+| `--server` | From spec | Override `servers[0].url` |
+| `--auth-secret` | — | K8s secret name for authentication |
+| `--include-tags` | All | Only include operations with these tags |
+| `--exclude-tags` | None | Exclude operations with these tags |
+| `--include-ops` | All | Only include these operationIds |
+| `--timeout` | `30s` | Default timeout for generated tools |
+| `--dry-run` | `false` | Show summary without writing files |
+| `--apply` | `false` | Register tools directly via API *(planned)* |
 
-Manage authentication settings.
+**Examples:**
 
 ```bash
-# Configure API authentication
-stoa auth configure \
-  --tenant acme \
-  --api payment-api \
-  --provider keycloak \
-  --issuer https://auth.<YOUR_DOMAIN>/realms/acme
+# Generate tools from an OpenAPI spec
+stoactl bridge petstore.yaml --namespace tenant-acme
 
-# Create role
-stoa auth role create \
-  --tenant acme \
-  --name api-admin \
-  --description "API Administrator"
+# Preview without writing files
+stoactl bridge petstore.yaml --namespace tenant-acme --dry-run
 
-# Assign role
-stoa auth role assign \
-  --tenant acme \
-  --user user@example.com \
-  --role api-admin
+# Filter by tags
+stoactl bridge api.yaml --namespace default --include-tags payments --exclude-tags internal
 
-# List roles
-stoa auth role list --tenant acme
-
-# Test authentication
-stoa auth test-connection --tenant acme
-
-# Inspect token
-stoa auth token inspect <token>
+# Override backend URL
+stoactl bridge api.yaml --namespace default --server https://api.internal.com
 ```
 
-## MCP Commands
+**Mapping rules:**
 
-### `stoa mcp`
+| OpenAPI Field | Tool CRD Field |
+|--------------|----------------|
+| `operationId` | `metadata.name` (kebab-case) |
+| `summary` | `spec.displayName` |
+| `description` | `spec.description` |
+| `servers[0].url + path` | `spec.endpoint` |
+| HTTP method | `spec.method` |
+| `parameters` + `requestBody` | `spec.inputSchema` |
+| `security` + `securitySchemes` | `spec.authentication` |
+| `tags` | `spec.tags` |
 
-Manage MCP tools and resources.
+---
+
+## Resource Commands
+
+### `stoactl apply`
+
+Create or update a resource from a YAML file.
 
 ```bash
-# Register MCP server
-stoa mcp register \
-  --tenant acme \
-  --name customer-tools \
-  --url https://tools.acme.com/mcp \
-  --transport http
-
-# List MCP servers
-stoa mcp list --tenant acme
-
-# List available tools
-stoa mcp tools list --tenant acme
-
-# Invoke tool
-stoa mcp tools invoke \
-  --tenant acme \
-  --tool search_database \
-  --args '{"query":"customer@example.com"}'
-
-# List resources
-stoa mcp resources list --tenant acme
-
-# Read resource
-stoa mcp resources read \
-  --tenant acme \
-  --uri "customer://db/customers/123"
-
-# Grant tool permission
-stoa mcp permission grant \
-  --tenant acme \
-  --tool search_database \
-  --role customer-service
-
-# View metrics
-stoa mcp metrics --tenant acme
+stoactl apply -f <file>
 ```
 
-## Metrics Commands
-
-### `stoa metrics`
-
-View metrics and analytics.
+**Example:**
 
 ```bash
-# Get tenant metrics
-stoa metrics tenant \
-  --tenant acme \
-  --start 2025-01-01 \
-  --end 2025-01-31 \
-  --granularity day
+# Apply a single tool
+stoactl apply -f tools/list-pets.yaml
 
-# Get API metrics
-stoa metrics api \
-  --tenant acme \
-  --api payment-api \
-  --period last-7-days
-
-# Export metrics
-stoa metrics export \
-  --tenant acme \
-  --format csv \
-  --output metrics.csv
-
-# Live metrics
-stoa metrics watch --tenant acme
+# Apply all tools in a directory
+for f in tools/*.yaml; do stoactl apply -f "$f"; done
 ```
 
-## Log Commands
+### `stoactl get`
 
-### `stoa logs`
-
-View logs.
+List resources from the control plane.
 
 ```bash
-# Stream tenant logs
-stoa logs --tenant acme --follow
-
-# Filter by API
-stoa logs --tenant acme --api payment-api
-
-# Filter by level
-stoa logs --tenant acme --level error
-
-# Show last N lines
-stoa logs --tenant acme --tail 100
-
-# Time range
-stoa logs \
-  --tenant acme \
-  --since "2025-01-09T10:00:00Z" \
-  --until "2025-01-09T11:00:00Z"
+stoactl get <resource-type>
 ```
 
-## Configuration Commands
+**Resource types:** `apis`, `deployments`, `tools`
 
-### `stoa config`
-
-Manage CLI configuration.
+**Example:**
 
 ```bash
-# View config
-stoa config view
-
-# Set value
-stoa config set api-url https://api.<YOUR_DOMAIN>
-stoa config set default-tenant acme
-
-# Get value
-stoa config get api-url
-
-# List all settings
-stoa config list
-
-# Reset to defaults
-stoa config reset
+stoactl get apis
+stoactl get tools
+stoactl get deployments
 ```
 
-## Portal Commands
+### `stoactl delete`
 
-### `stoa portal`
-
-Manage developer portal.
+Delete a resource.
 
 ```bash
-# Configure portal
-stoa portal configure \
-  --tenant acme \
-  --logo https://acme.com/logo.png \
-  --primary-color "#4F46E5"
-
-# Add custom domain
-stoa portal domain add \
-  --tenant acme \
-  --domain portal.acme.com
-
-# Enable/disable portal
-stoa portal enable --tenant acme
-stoa portal disable --tenant acme
-
-# Get portal URL
-stoa portal url --tenant acme
+stoactl delete <resource-type> <name>
 ```
 
-## Utility Commands
-
-### `stoa version`
-
-Show version information.
+**Example:**
 
 ```bash
-stoa version
-```
-
-### `stoa completion`
-
-Generate shell completion scripts.
-
-```bash
-# Bash
-stoa completion bash > /etc/bash_completion.d/stoa
-
-# Zsh
-stoa completion zsh > /usr/local/share/zsh/site-functions/_stoa
-
-# Fish
-stoa completion fish > ~/.config/fish/completions/stoa.fish
-
-# PowerShell
-stoa completion powershell > stoa.ps1
-```
-
-### `stoa help`
-
-Get help for any command.
-
-```bash
-stoa help
-stoa help tenant
-stoa help api register
-```
-
-## Examples
-
-### End-to-End Workflow
-
-```bash
-# 1. Login
-stoa login
-
-# 2. Create tenant
-stoa tenant create \
-  --name acme \
-  --tier starter \
-  --admin-email admin@acme.com
-
-# 3. Register API
-stoa api register \
-  --tenant acme \
-  --name payment-api \
-  --upstream https://api.payments.example.com \
-  --path /payments
-
-# 4. Enable authentication
-stoa auth configure \
-  --tenant acme \
-  --api payment-api \
-  --provider keycloak
-
-# 5. Create subscription
-stoa subscription create \
-  --tenant acme \
-  --api payment-api \
-  --plan standard
-
-# 6. Test API
-stoa api test \
-  --tenant acme \
-  --api payment-api \
-  --endpoint /health
-
-# 7. Monitor
-stoa metrics watch --tenant acme
+stoactl delete tool list-pets
+stoactl delete api payment-api
 ```
 
 ---
 
-🚧 **Coming Soon**: CI/CD integration commands, import/export utilities, and backup/restore commands.
+## Authentication Commands
+
+### `stoactl auth login`
+
+Authenticate with STOA Platform using OAuth2 device flow.
+
+```bash
+stoactl auth login
+```
+
+This initiates the device authorization flow:
+1. You receive a code and URL
+2. Open the URL in your browser
+3. Enter the code to authorize
+4. Credentials are stored in your OS Keychain
+
+### `stoactl auth logout`
+
+Remove stored credentials.
+
+```bash
+stoactl auth logout
+```
+
+### `stoactl auth whoami`
+
+Display current authentication status.
+
+```bash
+stoactl auth whoami
+```
+
+### `stoactl auth rotate-key`
+
+Generate a new API key and store it in the OS Keychain.
+
+```bash
+stoactl auth rotate-key [flags]
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--auto` | `false` | Enable automatic rotation reminder |
+| `--interval` | `90d` | Rotation interval |
+
+---
+
+## Configuration Commands
+
+### `stoactl config set-context`
+
+Create or update a named context.
+
+```bash
+stoactl config set-context <name> --server <url> --tenant <tenant>
+```
+
+**Example:**
+
+```bash
+stoactl config set-context prod --server ${STOA_API_URL} --tenant acme
+stoactl config set-context local --server http://localhost:8080 --tenant default
+```
+
+### `stoactl config use-context`
+
+Switch to a named context.
+
+```bash
+stoactl config use-context <name>
+```
+
+### `stoactl config get-contexts`
+
+List all configured contexts.
+
+```bash
+stoactl config get-contexts
+```
+
+---
+
+## Utility Commands
+
+### `stoactl token-usage`
+
+View API token usage statistics.
+
+```bash
+stoactl token-usage
+```
+
+### `stoactl version`
+
+Print version and build information.
+
+```bash
+stoactl version
+```
+
+---
+
+## End-to-End Workflow
+
+```bash
+# 1. Set up project
+stoactl init my-api && cd my-api
+
+# 2. Start gateway
+docker compose up -d
+
+# 3. Verify setup
+stoactl doctor
+
+# 4. Connect to hosted platform (optional)
+stoactl config set-context prod --server ${STOA_API_URL} --tenant acme
+stoactl auth login
+
+# 5. Bridge your API to MCP
+stoactl bridge your-api.yaml --namespace default --output ./tools/
+
+# 6. Register tools
+for f in tools/*.yaml; do stoactl apply -f "$f"; done
+
+# 7. Verify
+stoactl get tools
+```
