@@ -66,7 +66,7 @@ STOA Gateway automatically configures OIDC, but you can customize:
 stoa api auth configure \
   --tenant acme \
   --api my-api \
-  --issuer https://auth.gostoa.dev/realms/acme \
+  --issuer ${STOA_AUTH_URL}/realms/acme \
   --client-id api-my-api \
   --client-secret <secret> \
   --scope openid,profile,email
@@ -77,14 +77,14 @@ stoa api auth configure \
 ```bash
 # Get access token
 TOKEN=$(curl -X POST \
-  https://auth.gostoa.dev/realms/acme/protocol/openid-connect/token \
+  ${STOA_AUTH_URL}/realms/acme/protocol/openid-connect/token \
   -d "client_id=api-my-api" \
   -d "client_secret=${STOA_CLIENT_SECRET}" \
   -d "grant_type=client_credentials" \
   | jq -r '.access_token')
 
 # Call API with token
-curl https://gateway.gostoa.dev/acme/my-api/users \
+curl ${STOA_GATEWAY_URL}/acme/my-api/users \
   -H "Authorization: Bearer $TOKEN"
 ```
 

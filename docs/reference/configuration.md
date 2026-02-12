@@ -17,7 +17,7 @@ Complete configuration reference for STOA Platform.
 # Server
 STOA_HOST=0.0.0.0
 STOA_PORT=8080
-STOA_BASE_URL=https://api.gostoa.dev
+STOA_BASE_URL=https://api.<YOUR_DOMAIN>
 
 # Database
 STOA_DB_HOST=postgres
@@ -27,25 +27,25 @@ STOA_DB_USER=stoa
 STOA_DB_PASSWORD=secret
 
 # Keycloak
-STOA_KEYCLOAK_URL=https://auth.gostoa.dev
+STOA_KEYCLOAK_URL=https://auth.<YOUR_DOMAIN>
 STOA_KEYCLOAK_ADMIN_USER=admin
 STOA_KEYCLOAK_ADMIN_PASSWORD=secret
 STOA_KEYCLOAK_REALM=master
 
 # ArgoCD
-STOA_ARGOCD_URL=https://argocd.gostoa.dev
+STOA_ARGOCD_URL=https://argocd.<YOUR_DOMAIN>
 STOA_ARGOCD_TOKEN=secret
 STOA_ARGOCD_NAMESPACE=argocd
 
 # AWX
-STOA_AWX_URL=https://awx.gostoa.dev
+STOA_AWX_URL=https://awx.<YOUR_DOMAIN>
 STOA_AWX_TOKEN=secret
 STOA_AWX_ORGANIZATION=stoa
 
 # Kong
 STOA_KONG_ADMIN_URL=http://kong-admin:8001
 STOA_KONG_ADMIN_TOKEN=secret
-STOA_KONG_GATEWAY_URL=https://gateway.gostoa.dev
+STOA_KONG_GATEWAY_URL=https://gateway.<YOUR_DOMAIN>
 
 # Logging
 STOA_LOG_LEVEL=info
@@ -82,14 +82,14 @@ controlPlane:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
-      - host: api.gostoa.dev
+      - host: api.<YOUR_DOMAIN>
         paths:
           - path: /
             pathType: Prefix
     tls:
       - secretName: api-tls
         hosts:
-          - api.gostoa.dev
+          - api.<YOUR_DOMAIN>
 
 database:
   enabled: true
@@ -113,14 +113,14 @@ keycloak:
 
   ingress:
     enabled: true
-    hostname: auth.gostoa.dev
+    hostname: auth.<YOUR_DOMAIN>
 
 argocd:
   enabled: true
   server:
     ingress:
       enabled: true
-      hostname: argocd.gostoa.dev
+      hostname: argocd.<YOUR_DOMAIN>
 
 awx:
   enabled: true
@@ -133,7 +133,7 @@ awx:
 
   ingress:
     enabled: true
-    hostname: awx.gostoa.dev
+    hostname: awx.<YOUR_DOMAIN>
 
 kafka:
   enabled: true
@@ -169,7 +169,7 @@ spec:
   networking:
     gateway:
       replicas: 2
-      domain: acme.gostoa.dev
+      domain: acme.<YOUR_DOMAIN>
       tls:
         enabled: true
         issuer: letsencrypt-prod
@@ -185,7 +185,7 @@ spec:
     keycloak:
       realm: acme
       clientId: acme-gateway
-      issuerUrl: https://auth.gostoa.dev/realms/acme
+      issuerUrl: https://auth.<YOUR_DOMAIN>/realms/acme
 
   storage:
     persistence:
@@ -235,7 +235,7 @@ spec:
     enabled: true
     type: oidc
     config:
-      issuer: https://auth.gostoa.dev/realms/acme
+      issuer: https://auth.<YOUR_DOMAIN>/realms/acme
       scopes: [openid, api:read, api:write]
 
   rateLimiting:

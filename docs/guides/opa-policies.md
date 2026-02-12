@@ -47,7 +47,7 @@ Policies receive this input structure:
   "token": {
     "sub": "user-id",
     "aud": "stoa-gateway",
-    "iss": "https://auth.gostoa.dev",
+    "iss": "https://auth.<YOUR_DOMAIN>",
     "exp": 1707234567,
     "stoa_realm": "tenant-acme",
     "scope": "tools:read tools:execute",
@@ -407,7 +407,7 @@ kubectl logs -l app=mcp-gateway -n stoa-system | grep "opa_decision"
 Enable tracing for specific requests:
 
 ```bash
-curl -X POST https://mcp.gostoa.dev/tools/call \
+curl -X POST ${STOA_GATEWAY_URL}/tools/call \
   -H "X-OPA-Trace: true" \
   -d '...'
 ```

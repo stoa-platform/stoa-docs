@@ -21,7 +21,7 @@ STOA provides native support for the Model Context Protocol (MCP), enabling:
 ## Base URL
 
 ```
-https://mcp.gostoa.dev/v1/{tenant}
+${STOA_GATEWAY_URL}/v1/{tenant}
 ```
 
 ## Authentication
@@ -278,7 +278,7 @@ Content-Type: application/json
 For streaming and bidirectional communication:
 
 ```javascript
-const ws = new WebSocket('wss://mcp.gostoa.dev/v1/acme/ws');
+const ws = new WebSocket('wss://mcp.<YOUR_DOMAIN>/v1/acme/ws');
 
 // Authenticate
 ws.send(JSON.stringify({
@@ -441,8 +441,11 @@ import os
 import requests
 
 # Authenticate
+STOA_AUTH_URL = os.environ.get('STOA_AUTH_URL', 'https://auth.gostoa.dev')
+STOA_GATEWAY_URL = os.environ.get('STOA_GATEWAY_URL', 'https://mcp.gostoa.dev')
+
 auth_response = requests.post(
-    'https://auth.gostoa.dev/realms/stoa/protocol/openid-connect/token',
+    f'{STOA_AUTH_URL}/realms/stoa/protocol/openid-connect/token',
     data={
         'client_id': 'my-app',
         'client_secret': os.environ.get('STOA_CLIENT_SECRET'),
@@ -453,7 +456,7 @@ token = auth_response.json()['access_token']
 
 # Invoke MCP tool
 response = requests.post(
-    'https://mcp.gostoa.dev/v1/acme/mcp/tools/call',
+    f'{STOA_GATEWAY_URL}/v1/acme/mcp/tools/call',
     headers={'Authorization': f'Bearer {token}'},
     json={
         'name': 'search_database',
@@ -468,7 +471,8 @@ print(result['content'][0]['text'])
 ### JavaScript Client
 
 ```javascript
-const response = await fetch('https://mcp.gostoa.dev/v1/acme/mcp/tools/call', {
+const STOA_GATEWAY_URL = 'https://mcp.gostoa.dev'; // Replace with your domain
+const response = await fetch(`${STOA_GATEWAY_URL}/v1/acme/mcp/tools/call`, {
   method: 'POST',
   headers: {
     'Authorization': `Bearer ${token}`,

@@ -77,12 +77,25 @@ alembic stamp head  # Reset to current state (use cautiously)
 
 ## Authentication
 
+:::tip Configure your environment
+The examples below use environment variables. Set them for your STOA instance:
+
+```bash
+export STOA_API_URL="https://api.gostoa.dev"       # Replace with your domain
+export STOA_AUTH_URL="https://auth.gostoa.dev"      # Keycloak OIDC provider
+export STOA_GATEWAY_URL="https://mcp.gostoa.dev"    # MCP Gateway endpoint
+export STOA_CONSOLE_URL="https://console.gostoa.dev"
+```
+
+Self-hosted? Replace `gostoa.dev` with your domain.
+:::
+
 ### 401 Unauthorized on All Requests
 
 **Checklist**:
 
 1. Token expired? Re-authenticate: `stoa login --server ...`
-2. Keycloak reachable? `curl https://auth.gostoa.dev/health`
+2. Keycloak reachable? `curl ${STOA_AUTH_URL}/health`
 3. Realm correct? Must be `stoa`
 4. Client ID correct? `control-plane-ui` for Console, `stoa-portal` for Portal
 5. Clock skew? Ensure server and client clocks are synchronized
@@ -94,8 +107,8 @@ alembic stamp head  # Reset to current state (use cautiously)
 **Fix**: In Keycloak admin:
 
 1. Open the client configuration (`control-plane-ui` or `stoa-portal`)
-2. Add the application URL to **Web Origins** (e.g., `https://console.gostoa.dev`)
-3. Add to **Valid Redirect URIs** (e.g., `https://console.gostoa.dev/*`)
+2. Add the application URL to **Web Origins** (e.g., `${STOA_CONSOLE_URL}`)
+3. Add to **Valid Redirect URIs** (e.g., `${STOA_CONSOLE_URL}/*`)
 
 ### Token Missing Scopes
 
@@ -159,7 +172,7 @@ Verify your Rego policy has a path to `allow = true` for your use case.
 
 1. APIs published? Check in Console UI or via API
 2. Portal visibility enabled? API must have `portal.visible: true`
-3. API endpoint returns data? `curl https://api.gostoa.dev/v1/portal/apis`
+3. API endpoint returns data? `curl ${STOA_API_URL}/v1/portal/apis`
 4. Auth working? Portal needs valid token to fetch catalog
 
 ### Search Returns 500

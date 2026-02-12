@@ -236,7 +236,7 @@ ProxiedTool(
     tenant_id="acme",
     api_id="payment-api",
     operation="create_payment",
-    endpoint="https://api.gostoa.dev/acme/payment-api/v1/payments",
+    endpoint="https://api.<YOUR_DOMAIN>/acme/payment-api/v1/payments",
     method="POST"
 )
 ```

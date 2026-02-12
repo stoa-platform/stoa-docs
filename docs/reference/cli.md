@@ -29,7 +29,7 @@ stoa login
 stoa login --realm acme
 
 # Set API endpoint
-stoa config set api-url https://api.gostoa.dev
+stoa config set api-url https://api.<YOUR_DOMAIN>
 
 # View current config
 stoa config view
@@ -227,7 +227,7 @@ stoa auth configure \
   --tenant acme \
   --api payment-api \
   --provider keycloak \
-  --issuer https://auth.gostoa.dev/realms/acme
+  --issuer https://auth.<YOUR_DOMAIN>/realms/acme
 
 # Create role
 stoa auth role create \
@@ -362,7 +362,7 @@ Manage CLI configuration.
 stoa config view
 
 # Set value
-stoa config set api-url https://api.gostoa.dev
+stoa config set api-url https://api.<YOUR_DOMAIN>
 stoa config set default-tenant acme
 
 # Get value

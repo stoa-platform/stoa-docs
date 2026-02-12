@@ -138,7 +138,7 @@ CORS_ORIGINS=https://console.stoa.dev,http://localhost:3000,http://localhost:517
 
 ```bash
 # Test CORS preflight
-curl -X OPTIONS https://api.stoa.dev/v1/tools \
+curl -X OPTIONS ${STOA_API_URL}/v1/tools \
   -H "Origin: https://evil.com" \
   -H "Access-Control-Request-Method: GET" \
   -v
@@ -217,12 +217,12 @@ If not configured, the limiter will use the direct connection IP (which may be y
 ```bash
 # Test rate limit (should get 429 on 11th connection)
 for i in {1..15}; do
-  curl -N "https://api.stoa.dev/mcp/sse" \
+  curl -N "${STOA_API_URL}/mcp/sse" \
     -H "Authorization: Bearer $TOKEN" &
 done
 
 # Check active connections (if you have access)
-curl https://api.stoa.dev/metrics | grep stoa_sse
+curl ${STOA_API_URL}/metrics | grep stoa_sse
 ```
 
 ### Response Codes

@@ -122,13 +122,14 @@ Use the built-in **API Playground**:
 ### Step 1: Get an Access Token
 
 ```bash
-# Set your credentials
-export STOA_URL="https://api.gostoa.dev"
+# Set your credentials (replace gostoa.dev with your domain for self-hosted)
+export STOA_URL="https://api.<YOUR_DOMAIN>"
+export STOA_AUTH_URL="https://auth.<YOUR_DOMAIN>"
 export CLIENT_ID="your-client-id"
 export CLIENT_SECRET="your-client-secret"
 
 # Get OAuth token from Keycloak
-TOKEN=$(curl -s -X POST "https://auth.gostoa.dev/realms/stoa/protocol/openid-connect/token" \
+TOKEN=$(curl -s -X POST "${STOA_AUTH_URL}/realms/stoa/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=${CLIENT_ID}" \
   -d "client_secret=${CLIENT_SECRET}" \

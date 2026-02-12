@@ -127,7 +127,7 @@ gateway:
       requests_per_minute: 1000
     authentication:
       type: jwt
-      issuer: https://auth.gostoa.dev
+      issuer: https://auth.<YOUR_DOMAIN>
 ```
 
 ### Proxy Mode
@@ -159,7 +159,7 @@ gateway:
       requests_per_second: 100
     authentication:
       type: jwt
-      issuer: https://auth.gostoa.dev
+      issuer: https://auth.<YOUR_DOMAIN>
     transforms:
       request:
         add_headers:
@@ -341,7 +341,7 @@ GATEWAY_PORT=3001
 GATEWAY_LOG_LEVEL=info
 
 # Keycloak (all modes)
-KEYCLOAK_URL=https://auth.gostoa.dev
+KEYCLOAK_URL=https://auth.<YOUR_DOMAIN>
 KEYCLOAK_REALM=stoa
 KEYCLOAK_CLIENT_ID=stoa-gateway
 

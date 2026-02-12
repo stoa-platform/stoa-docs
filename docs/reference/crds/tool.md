@@ -32,7 +32,7 @@ metadata:
 spec:
   displayName: Create Payment
   description: Create a new payment transaction
-  endpoint: https://api.gostoa.dev/acme/payment-api/v2/payments
+  endpoint: https://api.<YOUR_DOMAIN>/acme/payment-api/v2/payments
   method: POST
   version: "2.0.0"
   tags:

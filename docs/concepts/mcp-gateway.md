@@ -130,7 +130,7 @@ MCP_GATEWAY_PORT=3001
 CONTROL_PLANE_URL=http://control-plane:8080
 
 # Keycloak
-KEYCLOAK_URL=https://auth.gostoa.dev
+KEYCLOAK_URL=https://auth.<YOUR_DOMAIN>
 KEYCLOAK_REALM=stoa
 
 # OPA (for policies)
