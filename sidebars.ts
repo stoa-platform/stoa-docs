@@ -45,6 +45,8 @@ const sidebars: SidebarsConfig = {
         'guides/observability',
         'guides/hybrid-gateway-adapter',
         'guides/gateway-auto-registration',
+        'guides/mcp-getting-started',
+        'guides/mcp-tools-development',
         {
           type: 'category',
           label: 'Technical Fiches',

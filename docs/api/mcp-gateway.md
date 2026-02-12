@@ -1,59 +1,58 @@
 ---
 sidebar_position: 2
 title: "MCP Gateway API Reference: Tool Discovery & Invocation"
-description: "Model Context Protocol (MCP) Gateway API reference — tool discovery, invocation, resource access, prompt management, and AI agent integration with Claude.ai"
-keywords: [MCP, Model Context Protocol, API, gateway, AI agents]
+description: "Model Context Protocol (MCP) Gateway API reference — SSE transport, tool discovery, invocation, OAuth 2.1 discovery, and JSON-RPC protocol."
+keywords: [MCP, Model Context Protocol, API, gateway, AI agents, SSE, JSON-RPC, OAuth 2.1]
 ---
+
+import EnvSetup from '@site/docs/_partials/_env-setup.mdx';
 
 # MCP Gateway API
 
-Model Context Protocol (MCP) Gateway endpoints and integration.
+Complete API reference for the STOA Gateway MCP endpoints.
+
+<EnvSetup />
 
 ## Overview
 
-STOA provides native support for the Model Context Protocol (MCP), enabling:
+The STOA Gateway implements the [Model Context Protocol](https://modelcontextprotocol.io) (MCP) specification version `2025-03-26`, with backward compatibility for `2024-11-05`.
 
-- **Tool Discovery** - Browse available MCP tools
-- **Tool Invocation** - Execute tools via MCP protocol
-- **Resource Access** - Access MCP resources
-- **Prompt Management** - Manage and execute prompts
+Two access patterns:
 
-## Base URL
-
-```
-${STOA_GATEWAY_URL}/v1/{tenant}
-```
+| Pattern | Transport | Use Case |
+|---------|-----------|----------|
+| **REST** | HTTP POST | Scripts, simple integrations, one-shot calls |
+| **MCP Protocol** | SSE (JSON-RPC) | AI agents, streaming, session-based |
 
 ## Authentication
 
-MCP Gateway uses JWT tokens from Keycloak:
+All endpoints (except discovery) require a JWT Bearer token from Keycloak:
 
 ```bash
-Authorization: Bearer <access_token>
+# Get token
+TOKEN=$(curl -s -X POST "${STOA_AUTH_URL}/realms/stoa/protocol/openid-connect/token" \
+  -d "client_id=my-app" \
+  -d "client_secret=${CLIENT_SECRET}" \
+  -d "grant_type=client_credentials" | jq -r '.access_token')
+
+# Use token
+curl -H "Authorization: Bearer ${TOKEN}" "${STOA_GATEWAY_URL}/mcp/v1/tools"
 ```
 
-## MCP Protocol
+Public endpoints (no auth required): `initialize`, `ping`, and OAuth discovery.
 
-STOA implements MCP specification: [modelcontextprotocol.io](https://modelcontextprotocol.io)
+---
 
-### Transport
+## REST Endpoints
 
-Supports both HTTP and WebSocket transports:
+Simple HTTP endpoints for tool operations.
 
-- **HTTP**: Request/response for simple invocations
-- **WebSocket**: Bidirectional for streaming and notifications
-
-## Tools
-
-### List Available Tools
+### List Tools
 
 ```http
-POST /mcp/tools/list
+POST /mcp/v1/tools
+Authorization: Bearer <token>
 Content-Type: application/json
-
-{
-  "cursor": null
-}
 ```
 
 **Response:**
@@ -62,35 +61,36 @@ Content-Type: application/json
 {
   "tools": [
     {
-      "name": "search_database",
-      "description": "Search customer database",
+      "name": "get-weather",
+      "description": "Returns current weather for a given city",
       "inputSchema": {
         "type": "object",
         "properties": {
-          "query": {
-            "type": "string",
-            "description": "Search query"
-          }
+          "q": { "type": "string", "description": "City name" }
         },
-        "required": ["query"]
+        "required": ["q"]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
       }
     }
-  ],
-  "nextCursor": null
+  ]
 }
 ```
 
 ### Invoke Tool
 
 ```http
-POST /mcp/tools/call
+POST /mcp/v1/tools/invoke
+Authorization: Bearer <token>
 Content-Type: application/json
 
 {
-  "name": "search_database",
-  "arguments": {
-    "query": "customer@example.com"
-  }
+  "name": "get-weather",
+  "arguments": { "q": "Paris" }
 }
 ```
 
@@ -101,336 +101,337 @@ Content-Type: application/json
   "content": [
     {
       "type": "text",
-      "text": "Found 1 customer matching query..."
+      "text": "{\"location\":{\"name\":\"Paris\"},\"current\":{\"temp_c\":12.0}}"
     }
   ],
   "isError": false
 }
 ```
 
-## Resources
+---
 
-### List Resources
+## MCP Protocol Endpoints (JSON-RPC over SSE)
+
+Full MCP specification compliance via Server-Sent Events transport.
+
+### Initialize Session
+
+Handshake with protocol version negotiation:
 
 ```http
-POST /mcp/resources/list
+POST /mcp/sse
+Authorization: Bearer <token>
 Content-Type: application/json
 
 {
-  "cursor": null
-}
-```
-
-**Response:**
-
-```json
-{
-  "resources": [
-    {
-      "uri": "customer://db/customers/123",
-      "name": "Customer Record #123",
-      "mimeType": "application/json",
-      "description": "Customer database record"
-    }
-  ]
-}
-```
-
-### Read Resource
-
-```http
-POST /mcp/resources/read
-Content-Type: application/json
-
-{
-  "uri": "customer://db/customers/123"
-}
-```
-
-**Response:**
-
-```json
-{
-  "contents": [
-    {
-      "uri": "customer://db/customers/123",
-      "mimeType": "application/json",
-      "text": "{\"id\": 123, \"name\": \"Acme Corp\", ...}"
-    }
-  ]
-}
-```
-
-### Subscribe to Resource
-
-```http
-POST /mcp/resources/subscribe
-Content-Type: application/json
-
-{
-  "uri": "customer://db/customers/123"
-}
-```
-
-## Prompts
-
-### List Prompts
-
-```http
-POST /mcp/prompts/list
-Content-Type: application/json
-
-{
-  "cursor": null
-}
-```
-
-**Response:**
-
-```json
-{
-  "prompts": [
-    {
-      "name": "analyze_customer",
-      "description": "Analyze customer behavior",
-      "arguments": [
-        {
-          "name": "customer_id",
-          "description": "Customer ID to analyze",
-          "required": true
-        }
-      ]
-    }
-  ]
-}
-```
-
-### Get Prompt
-
-```http
-POST /mcp/prompts/get
-Content-Type: application/json
-
-{
-  "name": "analyze_customer",
-  "arguments": {
-    "customer_id": "123"
-  }
-}
-```
-
-**Response:**
-
-```json
-{
-  "description": "Analyze customer behavior for customer #123",
-  "messages": [
-    {
-      "role": "user",
-      "content": {
-        "type": "text",
-        "text": "Analyze the behavior of customer #123..."
-      }
-    }
-  ]
-}
-```
-
-## Sampling (LLM Completion)
-
-STOA can proxy LLM requests for MCP tools:
-
-```http
-POST /mcp/sampling/createMessage
-Content-Type: application/json
-
-{
-  "messages": [
-    {
-      "role": "user",
-      "content": {
-        "type": "text",
-        "text": "Summarize this customer data..."
-      }
-    }
-  ],
-  "maxTokens": 1000,
-  "systemPrompt": "You are a helpful customer service assistant."
-}
-```
-
-**Response:**
-
-```json
-{
-  "role": "assistant",
-  "content": {
-    "type": "text",
-    "text": "Based on the customer data provided..."
-  },
-  "model": "claude-3-5-sonnet-20241022",
-  "stopReason": "end_turn"
-}
-```
-
-## WebSocket Connection
-
-For streaming and bidirectional communication:
-
-```javascript
-const ws = new WebSocket('wss://mcp.<YOUR_DOMAIN>/v1/acme/ws');
-
-// Authenticate
-ws.send(JSON.stringify({
-  jsonrpc: '2.0',
-  method: 'initialize',
-  params: {
-    protocolVersion: '2024-11-05',
-    capabilities: {
-      tools: {},
-      resources: {},
-      prompts: {}
+  "jsonrpc": "2.0",
+  "method": "initialize",
+  "params": {
+    "protocolVersion": "2025-03-26",
+    "capabilities": {
+      "tools": {}
     },
-    clientInfo: {
-      name: 'my-app',
-      version: '1.0.0'
+    "clientInfo": {
+      "name": "my-agent",
+      "version": "1.0.0"
     }
   },
-  id: 1
-}));
-
-// Invoke tool
-ws.send(JSON.stringify({
-  jsonrpc: '2.0',
-  method: 'tools/call',
-  params: {
-    name: 'search_database',
-    arguments: {
-      query: 'customer@example.com'
-    }
-  },
-  id: 2
-}));
-```
-
-## MCP Server Integration
-
-Register your MCP server with STOA:
-
-```bash
-# Register MCP server
-stoa mcp register \
-  --tenant acme \
-  --name customer-tools \
-  --url https://tools.acme.com/mcp \
-  --transport http
-```
-
-**Configuration:**
-
-```json
-{
-  "name": "customer-tools",
-  "url": "https://tools.acme.com/mcp",
-  "transport": "http",
-  "capabilities": {
-    "tools": true,
-    "resources": true,
-    "prompts": true
-  },
-  "auth": {
-    "type": "bearer",
-    "token": "..."
-  }
+  "id": 1
 }
-```
-
-## Security
-
-### Tool Permissions
-
-Control which users can invoke which tools:
-
-```bash
-stoa mcp permission grant \
-  --tenant acme \
-  --tool search_database \
-  --role customer-service
-```
-
-### Resource Access Control
-
-Restrict resource access:
-
-```bash
-stoa mcp acl add \
-  --tenant acme \
-  --resource "customer://db/*" \
-  --allow-roles admin,customer-service
-```
-
-## Monitoring
-
-### Tool Invocation Metrics
-
-```http
-GET /tenants/{tenant_id}/mcp/metrics
-  ?start_date=2025-01-01
-  &end_date=2025-01-31
 ```
 
 **Response:**
 
 ```json
 {
-  "tool_invocations": 12453,
-  "success_rate": 0.989,
-  "avg_latency_ms": 234,
-  "top_tools": [
-    {
-      "name": "search_database",
-      "invocations": 8921
-    }
-  ]
-}
-```
-
-## MCP Protocol Extensions
-
-STOA extends MCP with:
-
-### Batch Operations
-
-```http
-POST /mcp/tools/batch
-Content-Type: application/json
-
-{
-  "calls": [
-    {
-      "name": "search_database",
-      "arguments": {"query": "user1@example.com"}
+  "jsonrpc": "2.0",
+  "result": {
+    "protocolVersion": "2025-03-26",
+    "capabilities": {
+      "tools": { "listChanged": true },
+      "tokenOptimization": {
+        "supported": true,
+        "levels": ["none", "moderate", "aggressive"]
+      },
+      "elicitation": {}
     },
-    {
-      "name": "search_database",
-      "arguments": {"query": "user2@example.com"}
+    "serverInfo": {
+      "name": "stoa-gateway",
+      "version": "0.1.0"
     }
-  ]
+  },
+  "id": 1
 }
 ```
 
-### Caching
+### List Tools (JSON-RPC)
 
 ```http
-POST /mcp/tools/call
+POST /mcp/sse
 Content-Type: application/json
-X-MCP-Cache: max-age=300
 
 {
-  "name": "expensive_operation",
-  "arguments": {...}
+  "jsonrpc": "2.0",
+  "method": "tools/list",
+  "id": 2
 }
 ```
+
+### Call Tool (JSON-RPC)
+
+```http
+POST /mcp/sse
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "get-weather",
+    "arguments": { "q": "London" }
+  },
+  "id": 3
+}
+```
+
+### Batch Requests (MCP 2025-03-26)
+
+Send multiple JSON-RPC requests in a single call:
+
+```http
+POST /mcp/sse
+Content-Type: application/json
+
+[
+  {
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": { "name": "get-weather", "arguments": { "q": "Paris" } },
+    "id": 1
+  },
+  {
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": { "name": "get-weather", "arguments": { "q": "London" } },
+    "id": 2
+  }
+]
+```
+
+All requests are processed concurrently. Response is an array of JSON-RPC results.
+
+### Ping
+
+```http
+POST /mcp/sse
+Content-Type: application/json
+
+{ "jsonrpc": "2.0", "method": "ping", "id": 99 }
+```
+
+### Close Session
+
+```http
+DELETE /mcp/sse?sessionId=<session-id>
+```
+
+### SSE Stream (Legacy)
+
+```http
+GET /mcp/sse?sessionId=<session-id>
+```
+
+Opens a persistent SSE connection for streaming responses.
+
+### Supported JSON-RPC Methods
+
+| Method | Auth Required | Description |
+|--------|--------------|-------------|
+| `initialize` | No | Handshake + version negotiation |
+| `ping` | No | Keepalive |
+| `notifications/initialized` | No | Client acknowledgment (no response) |
+| `tools/list` | Yes | List available tools |
+| `tools/call` | Yes | Execute a tool |
+| `resources/list` | Yes | List resources (returns `[]`) |
+
+---
+
+## Discovery Endpoints
+
+### MCP Server Discovery
+
+```http
+GET /mcp
+```
+
+Returns server metadata: name, version, protocol version, available endpoints.
+
+### MCP Capabilities
+
+```http
+GET /mcp/capabilities
+```
+
+Returns detailed capability information including supported features.
+
+### MCP Health
+
+```http
+GET /mcp/health
+```
+
+Returns MCP-specific health: tool count, active sessions, status.
+
+---
+
+## OAuth 2.1 Discovery
+
+STOA implements OAuth 2.1 discovery per RFC 9728, enabling AI agents to authenticate automatically.
+
+### Protected Resource Metadata (RFC 9728)
+
+```http
+GET /.well-known/oauth-protected-resource
+```
+
+```json
+{
+  "resource": "https://mcp.<YOUR_DOMAIN>",
+  "authorization_servers": ["https://auth.<YOUR_DOMAIN>/realms/stoa"],
+  "scopes_supported": ["stoa:read", "stoa:write", "stoa:execute"]
+}
+```
+
+### Authorization Server Metadata (RFC 8414)
+
+```http
+GET /.well-known/oauth-authorization-server
+```
+
+### OpenID Connect Discovery
+
+```http
+GET /.well-known/openid-configuration
+```
+
+### Token Proxy
+
+```http
+POST /oauth/token
+```
+
+Transparent proxy to Keycloak token endpoint. Allows AI agents to obtain tokens without knowing the Keycloak URL.
+
+### Dynamic Client Registration
+
+```http
+POST /oauth/register
+```
+
+Proxy to Keycloak DCR endpoint for automated client registration.
+
+---
+
+## Execution Pipeline
+
+Every tool invocation goes through this pipeline:
+
+```mermaid
+graph TD
+    A[Request] --> B[JWT Auth]
+    B --> C[Rate Limit Check]
+    C --> D[OPA Policy Evaluation]
+    D --> E[Tool Execution]
+    E --> F[Kafka Metering]
+    F --> G[Response]
+    B -->|401| H[Unauthorized]
+    C -->|429| I[Rate Limited]
+    D -->|403| J[Policy Denied]
+```
+
+1. **JWT Auth** — Bearer token validated against Keycloak JWKS
+2. **Rate Limit** — Per-consumer quota check (if configured)
+3. **OPA Policy** — Role-based access control with scopes
+4. **Tool Execution** — HTTP call to backend endpoint
+5. **Kafka Metering** — Event emitted for analytics (optional, feature-gated)
+
+### RBAC Scope Mapping
+
+| Role | Scopes |
+|------|--------|
+| `cpi-admin` | `admin`, `read`, `write`, `execute`, `deploy`, `audit` |
+| `tenant-admin` | `read`, `write`, `execute` |
+| `devops` | `read`, `write`, `deploy` |
+| `viewer` | `read` |
+
+---
+
+## Token Optimization
+
+Reduce LLM token usage with the `X-Token-Optimization` header:
+
+```bash
+curl -X POST "${STOA_GATEWAY_URL}/mcp/tools/call" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "X-Token-Optimization: aggressive" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "get-weather", "arguments": {"q": "Paris"}}'
+```
+
+| Level | Effect |
+|-------|--------|
+| `none` | Full response (default) |
+| `moderate` | Remove redundant fields |
+| `aggressive` | Minimal response, optimized for LLM context |
+
+---
+
+## Session Management
+
+SSE sessions have a configurable TTL (default: 30 minutes). Sessions are automatically cleaned up by a background task.
+
+### Session Stats (Admin)
+
+```http
+GET /admin/sessions/stats
+Authorization: Bearer <admin-token>
+```
+
+```json
+{
+  "active_sessions": 12,
+  "zombie_sessions": 0,
+  "total_created": 1543
+}
+```
+
+---
+
+## Error Responses
+
+| Status | Error | Cause |
+|--------|-------|-------|
+| `401` | `Unauthorized` | Missing/expired JWT token |
+| `403` | `Forbidden` | OPA policy denied the action |
+| `404` | `Tool not found` | Tool name doesn't exist in registry |
+| `429` | `Rate limited` | Consumer quota exceeded |
+| `500` | `Tool execution failed` | Backend endpoint returned error |
+| `502` | `Backend unreachable` | Backend endpoint is down |
+
+JSON-RPC errors follow the MCP specification:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "error": {
+    "code": -32602,
+    "message": "Tool not found: unknown-tool"
+  },
+  "id": 3
+}
+```
+
+---
 
 ## Examples
 
@@ -440,28 +441,25 @@ X-MCP-Cache: max-age=300
 import os
 import requests
 
-# Authenticate
-STOA_AUTH_URL = os.environ.get('STOA_AUTH_URL', 'https://auth.gostoa.dev')
-STOA_GATEWAY_URL = os.environ.get('STOA_GATEWAY_URL', 'https://mcp.gostoa.dev')
+STOA_AUTH_URL = os.environ['STOA_AUTH_URL']
+STOA_GATEWAY_URL = os.environ['STOA_GATEWAY_URL']
 
-auth_response = requests.post(
+# Authenticate
+auth = requests.post(
     f'{STOA_AUTH_URL}/realms/stoa/protocol/openid-connect/token',
     data={
         'client_id': 'my-app',
-        'client_secret': os.environ.get('STOA_CLIENT_SECRET'),
+        'client_secret': os.environ['STOA_CLIENT_SECRET'],
         'grant_type': 'client_credentials'
     }
 )
-token = auth_response.json()['access_token']
+token = auth.json()['access_token']
 
-# Invoke MCP tool
+# Invoke tool
 response = requests.post(
-    f'{STOA_GATEWAY_URL}/v1/acme/mcp/tools/call',
+    f'{STOA_GATEWAY_URL}/mcp/tools/call',
     headers={'Authorization': f'Bearer {token}'},
-    json={
-        'name': 'search_database',
-        'arguments': {'query': 'customer@example.com'}
-    }
+    json={'name': 'get-weather', 'arguments': {'q': 'Paris'}}
 )
 
 result = response.json()
@@ -471,18 +469,17 @@ print(result['content'][0]['text'])
 ### JavaScript Client
 
 ```javascript
-const STOA_GATEWAY_URL = 'https://mcp.gostoa.dev'; // Replace with your domain
-const response = await fetch(`${STOA_GATEWAY_URL}/v1/acme/mcp/tools/call`, {
+const STOA_GATEWAY_URL = process.env.STOA_GATEWAY_URL;
+
+const response = await fetch(`${STOA_GATEWAY_URL}/mcp/tools/call`, {
   method: 'POST',
   headers: {
     'Authorization': `Bearer ${token}`,
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    name: 'search_database',
-    arguments: {
-      query: 'customer@example.com'
-    }
+    name: 'get-weather',
+    arguments: { q: 'Paris' }
   })
 });
 
@@ -492,4 +489,9 @@ console.log(result.content[0].text);
 
 ---
 
-🚧 **Coming Soon**: Server-sent events, progress notifications, and tool composition workflows.
+## Related
+
+- [MCP Getting Started](/docs/guides/mcp-getting-started) — Hands-on tutorial
+- [MCP Tools Development](/docs/guides/mcp-tools-development) — Build custom tools
+- [MCP Protocol Fiche](/docs/guides/fiches/mcp-protocol) — Protocol deep-dive
+- [CRD Reference](/docs/reference/crds/) — Tool and ToolSet specs
