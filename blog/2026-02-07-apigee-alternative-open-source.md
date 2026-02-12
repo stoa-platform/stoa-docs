@@ -180,7 +180,7 @@ If Apigee's cost, lock-in, or lack of AI-native features is driving you to explo
 - Read the [Apigee Migration Guide](https://docs.gostoa.dev/docs/guides/migration/apigee)
 - Explore [Enterprise Use Cases](https://docs.gostoa.dev/docs/enterprise/use-cases)
 - Try STOA with the [Quickstart Guide](https://docs.gostoa.dev/docs/guides/quickstart)
-- Talk to us on [Discord](https://discord.gg/j8tHSSes) about your migration scenario
+- Talk to us on [Discord](https://discord.gostoa.dev) about your migration scenario
 
 ---
 

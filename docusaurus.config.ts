@@ -41,7 +41,7 @@ const config: Config = {
         description: 'Open-source AI-native API gateway for MCP and enterprise workloads.',
         sameAs: [
           'https://github.com/stoa-platform',
-          'https://discord.gg/stoa-platform',
+          'https://discord.gostoa.dev',
         ],
       }),
     },
@@ -273,7 +273,7 @@ const config: Config = {
             },
             {
               label: 'Discord',
-              href: 'https://discord.gg/stoa-platform',
+              href: 'https://discord.gostoa.dev',
             },
           ],
         },

@@ -286,4 +286,4 @@ Never store plaintext secrets in Git. Use encrypted secrets (sealed-secrets, SOP
 
 **Related**: [Open Source API Gateway Guide](/blog/open-source-api-gateway-2026) | [API Security Checklist](/blog/api-security-checklist-solo-dev) | [Quick Start](https://docs.gostoa.dev/docs/guides/quick-start)
 
-*Want to manage your APIs with GitOps? [STOA Quick Start](https://docs.gostoa.dev/docs/guides/quick-start) gets you running in 5 minutes. Join the community on [Discord](https://discord.gg/j8tHSSes).*
+*Want to manage your APIs with GitOps? [STOA Quick Start](https://docs.gostoa.dev/docs/guides/quick-start) gets you running in 5 minutes. Join the community on [Discord](https://discord.gostoa.dev).*

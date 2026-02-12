@@ -190,7 +190,7 @@ We are in **Phase 2**. Contributions are valued and tracked, but there is no fin
 
 ## Get Started Today
 
-1. **Join Discord** — [discord.gg/j8tHSSes](https://discord.gg/j8tHSSes)
+1. **Join Discord** — [discord.gostoa.dev](https://discord.gostoa.dev)
 2. **Pick an issue** — Look for `good-first-issue` labels
 3. **Submit a PR** — Follow contribution guidelines
 4. **Build your track record** — Every contribution is visible in git history

@@ -10,7 +10,7 @@ keywords: [roadmap, features, release plan, MCP gateway, API management, STOA, o
 Our vision for STOA Platform — building the gateway for the AI era.
 
 :::info Living Document
-This roadmap reflects our current priorities and may evolve based on community feedback and market needs. Have ideas? [Join the discussion on Discord](https://discord.gg/j8tHSSes).
+This roadmap reflects our current priorities and may evolve based on community feedback and market needs. Have ideas? [Join the discussion on Discord](https://discord.gostoa.dev).
 :::
 
 ---
@@ -87,7 +87,7 @@ This roadmap reflects our current priorities and may evolve based on community f
 
 We build in public and welcome contributions!
 
-- **Discord**: [Join the community](https://discord.gg/j8tHSSes)
+- **Discord**: [Join the community](https://discord.gostoa.dev)
 - **Issues**: [Report bugs or request features](https://github.com/stoa-platform/stoa/issues)
 - **Contribute**: [Contributing guide](https://github.com/stoa-platform/stoa/blob/main/CONTRIBUTING.md)
 - **Contact**: [hello@gostoa.dev](mailto:hello@gostoa.dev)
