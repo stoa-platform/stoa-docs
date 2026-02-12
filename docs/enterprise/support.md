@@ -30,7 +30,7 @@ Open-source community resources for getting started and troubleshooting.
 - 🐛 **GitHub Issues** — Bug reports, feature requests
   - [stoa-platform/stoa](https://github.com/stoa-platform/stoa/issues)
 - 💬 **Discord** — Real-time community chat
-  - [Join STOA Discord](https://discord.gg/j8tHSSes)
+  - [Join STOA Discord](https://discord.gostoa.dev)
 - 📚 **Documentation** — Guides, API reference, tutorials
   - [docs.gostoa.dev](https://docs.gostoa.dev)
 

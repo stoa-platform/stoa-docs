@@ -449,4 +449,4 @@ The same principles apply: rate limit by query complexity (not just requests/sec
 
 **Related**: [Open Source API Gateway Guide](/blog/open-source-api-gateway-2026) | [API Keys in Git History](/blog/api-keys-in-git-history) | [GitOps in 10 Minutes](/blog/gitops-in-10-minutes)
 
-*Building APIs for clients? Join a community of developers who take security seriously — [Discord](https://discord.gg/j8tHSSes) | [GitHub](https://github.com/stoa-platform/stoa)*
+*Building APIs for clients? Join a community of developers who take security seriously — [Discord](https://discord.gostoa.dev) | [GitHub](https://github.com/stoa-platform/stoa)*

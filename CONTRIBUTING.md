@@ -207,7 +207,7 @@ make test-coverage
 
 ## Community
 
-- 💬 [Discord](https://discord.gg/stoa) — Chat with the community
+- 💬 [Discord](https://discord.gostoa.dev) — Chat with the community
 - 🐦 [Twitter/X](https://x.com/gostoa) — Follow for updates
 - 📧 [Email](mailto:hello@gostoa.dev) — Reach out directly
 

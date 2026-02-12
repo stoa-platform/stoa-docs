@@ -250,5 +250,5 @@ Now that you've made your first call, explore further:
 ## Need Help?
 
 - 📚 [Full Documentation](https://docs.gostoa.dev)
-- 💬 [Discord Community](https://discord.gg/j8tHSSes)
+- 💬 [Discord Community](https://discord.gostoa.dev)
 - 📧 [Request Beta Access](mailto:christophe@hlfh.io)

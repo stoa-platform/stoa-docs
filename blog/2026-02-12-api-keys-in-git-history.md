@@ -291,4 +291,4 @@ Exposed secrets map to OWASP API8:2023 — Security Misconfiguration. Our [API S
 
 **Related**: [Open Source API Gateway Guide](/blog/open-source-api-gateway-2026) | [API Security Checklist](/blog/api-security-checklist-solo-dev) | [Quick Start](https://docs.gostoa.dev/docs/guides/quick-start)
 
-*Found this useful? Star us on [GitHub](https://github.com/stoa-platform/stoa) and join the conversation on [Discord](https://discord.gg/j8tHSSes).*
+*Found this useful? Star us on [GitHub](https://github.com/stoa-platform/stoa) and join the conversation on [Discord](https://discord.gostoa.dev).*
