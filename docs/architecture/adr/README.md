@@ -63,6 +63,7 @@ This directory contains important architectural decisions for STOA Platform.
 | # | Title | Status |
 |:---:|-------|:------:|
 | [019](./adr-019-business-model-moat-strategy.md) | Business Model & Moat Strategy | ✅ |
+| [041](./adr-041-plugin-architecture-community-enterprise.md) | Plugin Architecture — Community Core vs Enterprise Extensions | ✅ |
 
 ### 🛠️ Developer Experience & AI Workflow
 
