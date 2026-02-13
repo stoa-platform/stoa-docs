@@ -219,10 +219,14 @@ Now that you've made your first call, explore further:
 
 | Goal | Guide |
 |------|-------|
-| Add your own API to the catalog | [Control Plane API](/docs/api/control-plane) |
-| Understand the architecture | [Architecture Overview](/docs/concepts/architecture) |
-| Connect more AI agents | [MCP Integration](/docs/concepts/mcp-gateway) |
-| Deploy STOA on your infrastructure | [Hybrid Deployment](/docs/deployment/hybrid) |
+| Build custom MCP tools | [MCP Tools Development](/docs/guides/mcp-tools-development) |
+| Manage subscriptions and plans | [Subscription Lifecycle](/docs/guides/subscriptions-lifecycle) |
+| Register API consumers | [Consumer Onboarding](/docs/guides/consumer-onboarding) |
+| Rotate API keys safely | [API Key Rotation](/docs/guides/api-key-rotation) |
+| Manage dev/staging/prod | [Environment Management](/docs/guides/environment-management) |
+| Understand RBAC roles | [RBAC Permissions](/docs/reference/rbac-permissions) |
+| Connect more AI agents | [MCP Getting Started](/docs/guides/mcp-getting-started) |
+| Deploy on your infrastructure | [Hybrid Deployment](/docs/deployment/hybrid) |
 
 ---
 

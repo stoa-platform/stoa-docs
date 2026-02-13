@@ -47,6 +47,10 @@ const sidebars: SidebarsConfig = {
         'guides/gateway-auto-registration',
         'guides/mcp-getting-started',
         'guides/mcp-tools-development',
+        'guides/subscriptions-lifecycle',
+        'guides/consumer-onboarding',
+        'guides/api-key-rotation',
+        'guides/environment-management',
         {
           type: 'category',
           label: 'Technical Fiches',
@@ -78,6 +82,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'api/control-plane',
         'api/mcp-gateway',
+        'api/gateway-admin-api',
       ],
     },
     {
@@ -89,6 +94,9 @@ const sidebars: SidebarsConfig = {
         'reference/configuration',
         'reference/mcp-tools',
         'reference/cli',
+        'reference/rbac-permissions',
+        'reference/oauth-discovery',
+        'reference/quotas',
         'reference/security-configuration',
         'reference/troubleshooting',
         {
