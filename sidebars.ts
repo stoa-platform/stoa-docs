@@ -35,6 +35,15 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Administration',
+      items: [
+        'admin/installation',
+        'admin/keycloak',
+        'admin/monitoring',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Guides',
       items: [
         'guides/quick-start',
@@ -51,6 +60,8 @@ const sidebars: SidebarsConfig = {
         'guides/consumer-onboarding',
         'guides/api-key-rotation',
         'guides/environment-management',
+        'guides/multi-gateway-setup',
+        'guides/gateway-modes',
         {
           type: 'category',
           label: 'Technical Fiches',

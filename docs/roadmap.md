@@ -35,24 +35,29 @@ This roadmap reflects our current priorities and may evolve based on community f
 | Gateway Adapters — webMethods, Kong, Gravitee | Done |
 | Gateway Auto-Registration — zero-config heartbeat | Done |
 | Observability — Prometheus, Grafana, OpenSearch | Done |
-| Helm Charts | Done |
+| Helm Charts — full platform deployment | Done |
 | OPA Policy Engine | Done |
 | Consumer Onboarding — data model, Keycloak sync, quotas | Done |
 | Born GitOps — declarative API lifecycle (ADR-040) | Done |
+| Gateway Arena — continuous benchmark lab (STOA vs Kong vs Gravitee) | Done |
+| Audit Trail — OpenSearch data pipeline, Fluent Bit | Done |
+| ArgoCD Integration — GitOps deployment on OVH + Hetzner | Done |
+| CRDs — Tool, ToolSet, GatewayInstance, GatewayBinding | Done |
+| SLO Dashboard — APDEX, error budget, availability tracking | Done |
+| Documentation v1.0 — 30+ guides, references, and API docs | Done |
 
 ---
 
 ## In Progress
 
-**Sidecar Mode, CLI & Developer Experience**
+**GitOps Operator, Sidecar Mode & Developer Experience**
 
 | Feature | Status |
 |---------|--------|
+| GitOps Reconciliation Operator — K8s operator replacing AWX (ADR-042) | In Progress |
 | Gateway Sidecar Mode — coexist with Kong, Envoy, etc. | In Progress |
-| CLI Tool (`stoa`) — kubectl-style management | In Progress |
-| Terraform Provider | Planned |
-| OpenAPI Import — auto-register from spec | Planned |
-| SDK (Python, TypeScript) | Planned |
+| CLI Tool (`stoactl`) — kubectl-style management (Go/Cobra) | In Progress |
+| Landing Page & Pricing (gostoa.dev) | In Progress |
 
 ---
 
@@ -62,8 +67,11 @@ This roadmap reflects our current priorities and may evolve based on community f
 
 | Feature | Status |
 |---------|--------|
-| Gateway Proxy Mode — transparent proxy for legacy backends | Planned |
-| Gateway Shadow Mode — traffic mirroring for validation | Planned |
+| Gateway Proxy Mode — transparent proxy for legacy backends | Planned (Q3 2026) |
+| Gateway Shadow Mode — traffic mirroring and UAC generation | Planned (Q4 2026) |
+| Terraform Provider | Planned |
+| OpenAPI Import — auto-register from spec | Planned |
+| SDK (Python, TypeScript) | Planned |
 | Edge Deployment | Planned |
 | WebAssembly Plugins | Planned |
 | Response Caching | Planned |
