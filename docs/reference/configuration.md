@@ -37,11 +37,6 @@ STOA_ARGOCD_URL=https://argocd.<YOUR_DOMAIN>
 STOA_ARGOCD_TOKEN=secret
 STOA_ARGOCD_NAMESPACE=argocd
 
-# AWX
-STOA_AWX_URL=https://awx.<YOUR_DOMAIN>
-STOA_AWX_TOKEN=secret
-STOA_AWX_ORGANIZATION=stoa
-
 # Kong
 STOA_KONG_ADMIN_URL=http://kong-admin:8001
 STOA_KONG_ADMIN_TOKEN=secret
@@ -121,19 +116,6 @@ argocd:
     ingress:
       enabled: true
       hostname: argocd.<YOUR_DOMAIN>
-
-awx:
-  enabled: true
-  replicas: 2
-
-  postgres:
-    enabled: true
-    persistence:
-      size: 20Gi
-
-  ingress:
-    enabled: true
-    hostname: awx.<YOUR_DOMAIN>
 
 kafka:
   enabled: true

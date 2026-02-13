@@ -13,7 +13,7 @@ keywords: [STOA, gateway adapter, hybrid, bring your own gateway, API gateway, i
 STOA's Gateway Adapter Pattern allows you to orchestrate **any API gateway** through a unified, gateway-agnostic interface. Your APIs, policies, OIDC configuration, and applications are declared in Git; the adapter translates them into gateway-specific REST calls during the GitOps reconciliation cycle.
 
 ```
-Git (desired state) → ArgoCD → AWX → Ansible → Gateway Adapter → Your Gateway
+Git (desired state) → ArgoCD → Control Plane API → Gateway Adapter → Your Gateway
 ```
 
 ## Architecture
@@ -93,25 +93,29 @@ class KongGatewayAdapter(GatewayAdapterInterface):
 
 ### 3. Register the adapter
 
-In `provisioning_service.py`, swap the adapter:
+In `adapters/registry.py`, register the new adapter class:
 
 ```python
 from ..adapters.kong import KongGatewayAdapter
-gateway_adapter = KongGatewayAdapter()
+
+ADAPTER_REGISTRY = {
+    "kong": KongGatewayAdapter,
+    # ... other adapters
+}
 ```
 
-### 4. Update Ansible tasks (optional)
-
-For full GitOps reconciliation, create gateway-specific Ansible tasks or reuse the generic ones with the adapter's REST mappings.
+The Control Plane API creates adapters via `AdapterRegistry.create(gateway_type)` — no external orchestration needed.
 
 ## Supported Gateways
 
-| Gateway | Status | Adapter |
-|---------|--------|---------|
-| webMethods 10.x/11.x | ✅ Production | `adapters/webmethods/` |
-| Kong | 🔜 Planned Q3 2026 | — |
-| Apigee | 🔜 Planned Q4 2026 | — |
-| AWS API Gateway | 🔜 Planned Q4 2026 | — |
+| Gateway | Status | Adapter | Notes |
+|---------|--------|---------|-------|
+| STOA Gateway (Rust) | ✅ Production | `adapters/stoa/` | Native, in-memory, MCP-first |
+| Kong (DB-less) | ✅ Production | `adapters/kong/` | Declarative reload via `POST /config` |
+| Gravitee (APIM v4) | ✅ Production | `adapters/gravitee/` | Full CRUD + lifecycle management |
+| webMethods 10.x/11.x | ✅ Production | `adapters/webmethods/` | Full OIDC, aliases, backup |
+| Apigee | 🔜 Planned | — | — |
+| AWS API Gateway | 🔜 Planned | — | — |
 
 ## Configuration
 
@@ -148,13 +152,13 @@ webmethods/
 ## Local Development
 
 ```bash
-# Start local webMethods sandbox
-docker compose -f deploy/docker-compose/docker-compose.webmethods.yml up -d
+# Start the STOA platform locally
+docker compose up -d
 
-# Run smoke test
-./scripts/test-gateway-api.sh http://localhost:5555
+# Run adapter health check
+curl ${STOA_API_URL}/v1/gateways
 
-# Run reconciliation in dry-run
-ansible-playbook ansible/reconcile-webmethods/reconcile-webmethods.yml \
-  -e "env=dev" --check
+# Trigger a sync via the Control Plane API
+curl -X POST ${STOA_API_URL}/v1/deployments/{id}/sync \
+  -H "Authorization: Bearer $TOKEN"
 ```

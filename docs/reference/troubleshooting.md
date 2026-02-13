@@ -189,23 +189,25 @@ This was a known issue (CAB-1044) caused by unescaped LIKE wildcards. Ensure you
 
 **Checklist**:
 
-1. GitLab sync working? Check ArgoCD for sync status
-2. AWX job ran? Check AWX job history
-3. Gateway adapter connected? Check adapter health in AWX logs
-4. Gateway credentials valid? Verify `WM_GATEWAY_URL`, `WM_ADMIN_USER`, `WM_ADMIN_PASSWORD`
+1. ArgoCD sync working? Check ArgoCD application status
+2. Gateway adapter healthy? `curl ${STOA_API_URL}/v1/gateways` — check `status: online`
+3. Deployment sync status? Check `sync_status` in Console deployment view
+4. Gateway credentials valid? Verify gateway instance `auth_config` in the Control Plane
 
 ### Drift Detected
 
 **Symptom**: Console shows "Drift" status for an API.
 
-Drift means the gateway state differs from the desired state in Git. Trigger a reconciliation:
+Drift means the gateway state differs from the desired state in the Control Plane. The reconciliation engine detects this automatically. To trigger a manual re-sync:
 
 ```bash
-# Via AWX
-awx job_templates launch --id <reconciliation-template-id>
+# Via Control Plane API
+curl -X POST ${STOA_API_URL}/v1/deployments/{deployment_id}/sync \
+  -H "Authorization: Bearer $TOKEN"
 
-# Or via Ansible directly
-ansible-playbook playbooks/reconcile.yml -e "tenant=acme"
+# Check deployment sync status
+curl ${STOA_API_URL}/v1/deployments/{deployment_id} \
+  -H "Authorization: Bearer $TOKEN"
 ```
 
 ## Vault

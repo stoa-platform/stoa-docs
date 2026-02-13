@@ -155,7 +155,7 @@ STOA includes operational runbooks organized by severity:
 ### Medium Priority
 
 - API Rollback — Revert a bad API deployment
-- AWX Unreachable — Ansible automation server down
+- Gateway Adapter Failure — Gateway instance unreachable or degraded
 
 ## Health Endpoints
 

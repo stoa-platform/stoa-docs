@@ -83,7 +83,7 @@ Console UI / CLI / API
   ArgoCD (detects change)
         │
         ▼
-  AWX / Ansible
+  Control Plane API
         │ (reads UAC)
         ▼
   Gateway Adapter
