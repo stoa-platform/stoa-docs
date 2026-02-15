@@ -171,7 +171,7 @@ The `hint` field is a STOA innovation: it suggests to the agent what action to t
 
 Structure Kafka producers in the Control Plane for all lifecycle events.
 
-- Control Plane → Kafka producers (5 topic families)
+- Control Plane → Kafka producers (8 topic families)
 - Kafka → PostgreSQL sink (audit, replay)
 - Kafka → Prometheus metrics bridge
 - Topic policies versioned in Git (delivery semantics per topic)
@@ -206,6 +206,54 @@ Kafka events feed automatic governance rules.
 - Dead Letter Queue + retry policies per tenant
 
 **Total: 26 points**
+
+## Value Proposition — Third-Party Gateway Cost Reduction
+
+### Problem: Polling Is Expensive
+
+When a client keeps a third-party gateway (webMethods, Kong Enterprise, Apigee) billed per transaction, three patterns exist for monitoring their APIs:
+
+| Pattern | Cost | Latency | Onboarding Impact |
+|---------|------|---------|-------------------|
+| **Polling** (Control Plane → Gateway) | Ghost transactions (pure monitoring) | Depends on interval | None |
+| **Webhook** (Backend → STOA) | Low | Real-time | Heavy (dev required on backend side) |
+| **Batch/cron** (file export) | Medium | Hours | Medium |
+
+Concrete example — webMethods billed per transaction:
+- **Without Kafka**: polling every 30s × 200 APIs × 5 consumers = ~2.9M transactions/day of pure monitoring
+- **With Kafka**: 0 monitoring transactions. Events flow through Kafka, consumers read Kafka (free)
+
+### Solution: Kafka as Free Fan-Out
+
+```
+API Request → webMethods (1 transaction) → Kafka event (fire & forget)
+                                              ├── Portal (catalog refresh)
+                                              ├── Grafana (metrics)
+                                              ├── Audit trail (PostgreSQL)
+                                              ├── MCP Agent notification
+                                              └── Billing metering
+```
+
+1 Kafka event → N independent consumers. Zero additional transactions on the paid gateway.
+
+### Impact on Onboarding
+
+**Without Kafka** — onboarding an API:
+1. Declare the API in the Portal
+2. Configure webhook backend → STOA (dev required on backend team side)
+3. Handle callback auth (mutual TLS, API key...)
+4. Implement retries on backend side (if STOA is down, events are lost)
+5. Test webhook end-to-end
+
+**With Kafka** — onboarding an API:
+1. Declare the API in the Portal
+2. Done.
+
+The backend does not change a single line of code. The gateway emits the event into Kafka. Total decoupling.
+
+### 30-Second Client Pitch
+
+> "You keep your gateway. We place Kafka alongside it. Your monitoring costs drop to zero, API onboarding goes from 5-10 days to 2 clicks, and your AI agents get notified in real-time. Your backends don't change a single line of code."
 
 ## Consequences
 
