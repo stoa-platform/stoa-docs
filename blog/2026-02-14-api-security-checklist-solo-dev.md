@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: api-security-checklist-solo-dev
 title: "API Security Checklist: 10 Things Every Solo Dev Must Do"
 authors: [christophe]
