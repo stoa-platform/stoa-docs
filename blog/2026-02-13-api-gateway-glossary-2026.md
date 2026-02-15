@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: api-gateway-glossary-2026
 title: "API Gateway Glossary 2026: 30 Terms Every Developer Should Know"
 description: "Complete API gateway glossary covering authentication, MCP, mTLS, rate limiting, and modern gateway concepts for 2026."

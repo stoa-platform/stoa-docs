@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: stoa-gateway-performance-benchmarks
 title: "STOA Gateway Performance: Sub-Millisecond Overhead, Fully Reproducible"
 authors: [stoa-team]
