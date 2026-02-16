@@ -4,6 +4,8 @@ description: "Architecture decision for GitOps-first multi-environment API deplo
 keywords: [ADR, GitOps, multi-environment, deployment, Kubernetes, ArgoCD, promotion, UAC]
 ---
 
+import GitOpsArchitecture from '@site/src/components/GitOpsArchitecture';
+
 # ADR-040: Born GitOps — Multi-Environment Promotion Architecture
 
 ## Metadata
@@ -66,31 +68,7 @@ STOA has no legacy database-backed control plane to maintain. The Control Plane 
 
 All API configuration that affects routing, security, and behavior is stored in Git as declarative YAML. The database stores runtime state (metrics, logs, session data) but not configuration truth.
 
-```
-┌──────────────────────────────────────────────────────────┐
-│                     Git Repository                        │
-│          (Source of Truth — all config here)               │
-│                                                           │
-│  stoa-config/                                             │
-│  ├── base/                 # Shared across all envs       │
-│  │   ├── apis/             # UAC definitions              │
-│  │   ├── gateways/         # Gateway configurations       │
-│  │   ├── policies/         # Security policies, RBAC      │
-│  │   └── consumers/        # Consumer registrations       │
-│  ├── overlays/                                            │
-│  │   ├── dev/              # Dev patches                  │
-│  │   ├── staging/          # Staging patches              │
-│  │   └── prod/             # Prod patches                 │
-│  └── kustomization.yaml                                   │
-└──────────────────────────────────────────────────────────┘
-         │                    │                    │
-    ArgoCD sync          ArgoCD sync          ArgoCD sync
-         │                    │                    │
-    ┌────▼────┐         ┌────▼────┐         ┌────▼────┐
-    │   Dev   │         │ Staging │         │  Prod   │
-    │ Cluster │         │ Cluster │         │ Cluster │
-    └─────────┘         └─────────┘         └─────────┘
-```
+<GitOpsArchitecture />
 
 **Rationale**: Kong, Apigee, and Tyk all recommend Git as the source of truth for production, but their control planes remain database-backed with Git as a sync mechanism. STOA inverts this: Git is primary, the database caches what Git declares.
 
@@ -192,29 +170,7 @@ spec:
 
 All environments are managed in a single Git branch (`main`) with directory-based overlays.
 
-```
-stoa-config/
-├── base/                        # Shared definitions
-│   ├── apis/
-│   │   ├── payments-api.yaml
-│   │   └── inventory-api.yaml
-│   ├── gateways/
-│   │   └── edge-gateway.yaml
-│   └── policies/
-│       ├── rate-limit.yaml
-│       └── cors.yaml
-├── overlays/
-│   ├── dev/
-│   │   ├── kustomization.yaml   # replicas: 1, debug: true
-│   │   └── patches/
-│   ├── staging/
-│   │   ├── kustomization.yaml   # replicas: 2, staging URLs
-│   │   └── patches/
-│   └── prod/
-│       ├── kustomization.yaml   # replicas: 5, prod URLs, strict limits
-│       └── patches/
-└── kustomization.yaml
-```
+*The interactive **Architecture** tab above shows the complete directory structure with clickable environment overlays.*
 
 **Why not branches**:
 - Branch-per-environment causes drift (hotfix in prod never merged to dev)
@@ -228,50 +184,7 @@ stoa-config/
 
 The Console provides a "Promote to Prod" button that automates the entire promotion workflow while keeping Git as the authority:
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ Console (Staging view)                                       │
-│                                                              │
-│  payments-api v2.1.0                                         │
-│  Status: ✅ Healthy | Traffic: 450 req/min | Errors: 0.01%  │
-│                                                              │
-│  [Promote to Prod]                                           │
-└──────────────┬──────────────────────────────────────────────┘
-               │
-               ▼
-┌─────────────────────────────────────────────────────────────┐
-│ Step 1: Generate PR                                          │
-│  - Copy staging UAC overlay → prod overlay                   │
-│  - Apply env-specific transformations (URLs, replicas, etc.) │
-│  - Attach staging health report (latency, error rate, uptime)│
-└──────────────┬──────────────────────────────────────────────┘
-               │
-               ▼
-┌─────────────────────────────────────────────────────────────┐
-│ Step 2: Review & Approve                                     │
-│  - PR created with full diff visible                         │
-│  - CODEOWNERS review required                                │
-│  - Staging metrics attached as PR comment                    │
-│  - Console shows PR status in real-time                      │
-└──────────────┬──────────────────────────────────────────────┘
-               │  (human approves PR)
-               ▼
-┌─────────────────────────────────────────────────────────────┐
-│ Step 3: Merge & Deploy                                       │
-│  - Squash merge to main                                      │
-│  - ArgoCD detects change in prod overlay                     │
-│  - Reconciliation: Gateway config updated                    │
-│  - Progressive delivery (canary 10% → 50% → 100%)           │
-└──────────────┬──────────────────────────────────────────────┘
-               │
-               ▼
-┌─────────────────────────────────────────────────────────────┐
-│ Step 4: Verify & Rollback                                    │
-│  - Prometheus metrics monitored (error rate, latency)        │
-│  - If degradation: automatic rollback (git revert + sync)    │
-│  - Console shows deployment progress with live metrics       │
-└─────────────────────────────────────────────────────────────┘
-```
+*See the interactive **Promotion** tab above for the full 4-step workflow visualization.*
 
 **Differentiation from competitors** (as of February 2026):
 - **vs Kong**: Kong's decK CLI requires manual `deck dump` → edit → `deck sync` ([docs](https://developer.konghq.com/deck/gateway/sync/)). STOA automates the entire flow via Console → Git PR.
@@ -296,63 +209,13 @@ ArgoCD continuously compares the Git-declared state against the live cluster sta
 
 Each tenant can have its own environment progression, scoped by namespace:
 
-```
-stoa-config/
-├── tenants/
-│   ├── acme-corp/
-│   │   ├── base/
-│   │   └── overlays/
-│   │       ├── dev/
-│   │       ├── staging/
-│   │       └── prod/
-│   └── globex/
-│       ├── base/
-│       └── overlays/
-│           ├── dev/
-│           ├── staging/
-│           └── prod/
-```
+*See the interactive **Multi-Tenant** tab above for the per-tenant directory structure.*
 
 ### 8. Tenant-Owned Approval Routing
 
 Promotion approvers are defined **by the tenant owner**, not by a platform-wide CODEOWNERS file. This uses a hybrid approach combining ArgoCD AppProject RBAC with Control Plane metadata:
 
-```
-┌─────────────────────────────────────────────────────────┐
-│ Control Plane API (source of truth for approvers)        │
-│                                                          │
-│  Tenant: acme-corp                                       │
-│    owner: alice@acme.com                                 │
-│    promotion_approvers:                                  │
-│      - alice@acme.com     (tenant admin)                │
-│      - bob@acme.com       (devops lead)                 │
-│    approval_policy: "any_one"  (1 of N approvers)       │
-└──────────────┬──────────────────────────────────────────┘
-               │
-               ▼
-┌─────────────────────────────────────────────────────────┐
-│ GitHub Actions (enforce approval before merge)           │
-│                                                          │
-│  on: pull_request (paths: overlays/prod/tenants/acme/*) │
-│    1. Query CP API: GET /tenants/acme/promotion-approvers│
-│    2. Check PR approvals match required approvers        │
-│    3. Block merge if no matching approval                │
-└──────────────┬──────────────────────────────────────────┘
-               │
-               ▼
-┌─────────────────────────────────────────────────────────┐
-│ ArgoCD AppProject (defense in depth)                     │
-│                                                          │
-│  Project: acme-corp                                      │
-│    sourceRepos: [stoa-config]                            │
-│    destinations: [namespace: tenant-acme]                │
-│    roles:                                                │
-│      - name: sync-admin                                  │
-│        policies: ["p, proj:acme:sync-admin, app, sync,  │
-│                    acme-corp/*, allow"]                   │
-│        groups: [acme-admins]                             │
-└─────────────────────────────────────────────────────────┘
-```
+*See the interactive **Multi-Tenant** tab above for the 3-layer approval routing visualization.*
 
 **Why tenant-owned, not platform-wide CODEOWNERS**:
 
