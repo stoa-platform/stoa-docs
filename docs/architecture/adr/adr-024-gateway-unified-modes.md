@@ -5,6 +5,8 @@ description: "Decides the unified gateway architecture with mode-based configura
 keywords: [gateway modes, unified architecture, edge-MCP, sidecar, proxy, configuration]
 ---
 
+import GatewayModesArchitecture from '@site/src/components/GatewayModesArchitecture';
+
 # ADR-024: Unified Gateway Architecture with Mode-Based Configuration
 
 ## Metadata
@@ -49,28 +51,7 @@ Adopt a **unified gateway architecture** with 4 deployment modes, configured via
 
 ### Four Deployment Modes
 
-#### Architecture Diagram
-
-```
-                           ┌─────────────────────────────────────┐
-                           │          stoa-gateway               │
-                           │     (Rust + Tokio + Hyper)          │
-                           └─────────────────────────────────────┘
-                                           │
-            ┌──────────────┬───────────────┼───────────────┬──────────────┐
-            ▼              ▼               ▼               ▼
-     ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
-     │  SHADOW  │   │  PROXY   │   │ EDGE-MCP │   │ SIDECAR  │
-     │          │   │          │   │          │   │          │
-     │ Observe  │   │ Enforce  │   │ MCP      │   │ Enrich   │
-     │ Learn    │   │ Route    │   │ Protocol │   │ Observe  │
-     │ Gen UAC  │   │ Transform│   │ AI-Ready │   │ Adapt    │
-     └────┬─────┘   └────┬─────┘   └────┬─────┘   └────┬─────┘
-          │              │              │              │
-          ▼              ▼              ▼              ▼
-     Legacy/         Internal       AI Agents      Kong/wM/
-     Progiciels      APIs          Claude, GPT     Apigee
-```
+<GatewayModesArchitecture />
 
 #### Mode Overview
 
@@ -80,17 +61,6 @@ Adopt a **unified gateway architecture** with 4 deployment modes, configured via
 | **sidecar** | Behind 3rd-party GW | Observability, enrichment | Kong, webMethods, Apigee existing |
 | **proxy** | Inline active | Policy enforcement, rate limit, transform | Classic API Management |
 | **shadow** | Passive MITM | Observe, log, auto-generate UAC | Legacy APIs, undocumented progiciels |
-
-#### Mode Complexity Progression
-
-```
-Complexity:  Shadow  <  Proxy  <  Sidecar  <  Edge-MCP
-                │         │          │           │
-                │         │          │           └── + MCP protocol layer
-                │         │          └── + Protocol adapters
-                │         └── + Write path (transforms, routing)
-                └── Read-only (simplest)
-```
 
 ## Mode Details
 
