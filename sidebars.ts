@@ -158,6 +158,13 @@ const sidebars: SidebarsConfig = {
         'community/faq',
       ],
     },
+    {
+      type: 'category',
+      label: 'Legal',
+      items: [
+        'legal/terms',
+      ],
+    },
     'faq/index',
     'roadmap',
   ],
