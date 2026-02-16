@@ -292,6 +292,9 @@ export default function KafkaMCPArchitecture(): JSX.Element {
         ))}
       </div>
 
+      {/* Tab Content — fixed height to prevent layout shift */}
+      <div style={{ minHeight: '520px' }}>
+
       {/* Architecture Tab */}
       {activeTab === 'architecture' && (
         <div>
@@ -598,6 +601,8 @@ consumers:
           </div>
         </div>
       )}
+
+      </div>{/* end tab content wrapper */}
 
       {/* Footer */}
       <div style={{
