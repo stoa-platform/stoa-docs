@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'STOA — Open-Source AI API Gateway',
   tagline: 'Modernize Your API Gateway — MCP, Multi-Tenant, European Sovereign',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   // Note: trailingSlash left undefined (Docusaurus default) because existing
   // relative links in index.md files break with both true and false.
