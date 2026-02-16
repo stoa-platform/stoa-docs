@@ -292,11 +292,14 @@ export default function KafkaMCPArchitecture(): JSX.Element {
         ))}
       </div>
 
-      {/* Tab Content — fixed height to prevent layout shift */}
-      <div style={{ minHeight: '520px' }}>
+      {/* Tab Content — CSS Grid overlay: all panels rendered, inactive hidden */}
+      <div style={{ display: 'grid' }}>
 
       {/* Architecture Tab */}
-      {activeTab === 'architecture' && (
+      <div style={{
+        gridRow: 1, gridColumn: 1,
+        visibility: activeTab === 'architecture' ? 'visible' : 'hidden',
+      }}>
         <div>
           <div style={{
             background: C.surface, border: `1px solid ${C.border}`, borderRadius: '12px',
@@ -375,10 +378,13 @@ export default function KafkaMCPArchitecture(): JSX.Element {
             </p>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Topics Tab */}
-      {activeTab === 'topics' && (
+      <div style={{
+        gridRow: 1, gridColumn: 1,
+        visibility: activeTab === 'topics' ? 'visible' : 'hidden',
+      }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {topics.map((topic, i) => (
             <div key={i} style={{
@@ -432,10 +438,13 @@ consumers:
             </pre>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Phases Tab */}
-      {activeTab === 'phases' && (
+      <div style={{
+        gridRow: 1, gridColumn: 1,
+        visibility: activeTab === 'phases' ? 'visible' : 'hidden',
+      }}>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
           {/* Phase selector */}
           <div style={{
@@ -521,10 +530,13 @@ consumers:
             </div>
           ))}
         </div>
-      )}
+      </div>
 
       {/* Use Cases Tab */}
-      {activeTab === 'usecases' && (
+      <div style={{
+        gridRow: 1, gridColumn: 1,
+        visibility: activeTab === 'usecases' ? 'visible' : 'hidden',
+      }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {useCases.map((uc, i) => (
             <div key={i} style={{
@@ -600,9 +612,9 @@ consumers:
             </p>
           </div>
         </div>
-      )}
+      </div>
 
-      </div>{/* end tab content wrapper */}
+      </div>{/* end tab content grid */}
 
       {/* Footer */}
       <div style={{
