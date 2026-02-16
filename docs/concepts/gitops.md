@@ -112,8 +112,13 @@ spec:
 
 ArgoCD integrates with STOA's CI pipeline:
 
-```
-Push to main → CI (lint, test, build) → Docker image → ArgoCD detects → Sync → Pod updated
+```mermaid
+flowchart LR
+    P["Push to main"] --> CI["CI<br/>lint, test, build"]
+    CI --> D["Docker image"]
+    D --> A["ArgoCD detects"]
+    A --> S["Sync"]
+    S --> Pod["Pod updated ✅"]
 ```
 
 | Step | Tool | Trigger |
