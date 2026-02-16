@@ -121,59 +121,36 @@ This is a **non-breaking** change: `cnf` is `Option`, existing tokens without it
 
 Insert mTLS processing into the existing `combined_auth_middleware()` in two stages:
 
-```
-Request
-  │
-  ▼
-┌─────────────────────────────────────────────────┐
-│ Rate Limiter (existing)                         │
-└──────────────────┬──────────────────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────────────────┐
-│ [NEW] mTLS Header Extraction                    │
-│   if mtls_enabled:                              │
-│     parse X-SSL-Client-* headers                │
-│     verify X-SSL-Client-Verify = "SUCCESS"      │
-│     build CertificateInfo                       │
-│     store in request.extensions                 │
-│   else:                                         │
-│     no-op (zero overhead)                       │
-└──────────────────┬──────────────────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────────────────┐
-│ JWT / API Key Authentication (existing)         │
-│   try JWT → fallback API Key                    │
-│   extract Claims + build AuthenticatedUser      │
-└──────────────────┬──────────────────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────────────────┐
-│ [NEW] Certificate-Token Binding Verification    │
-│   if CertificateInfo present in extensions:     │
-│     extract claims.cnf.x5t_s256                 │
-│     compare fingerprints (timing-safe)          │
-│     match → continue                            │
-│     mismatch → 403 MTLS_BINDING_MISMATCH        │
-│   if no CertificateInfo + mtls_required:        │
-│     → 401 MTLS_CERT_REQUIRED                    │
-│   if no cnf + require_binding + cert present:   │
-│     → 403 MTLS_BINDING_REQUIRED                 │
-└──────────────────┬──────────────────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────────────────┐
-│ RBAC Enforcement (existing)                     │
-└──────────────────┬──────────────────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────────────────┐
-│ OPA Policy Evaluation (existing)                │
-└──────────────────┬──────────────────────────────┘
-                   │
-                   ▼
-  Handler (AuthUser + CertInfo extractors)
+```mermaid
+flowchart TD
+    REQ([Request]) --> RL
+
+    RL["**Rate Limiter** _(existing)_"]
+    RL --> MTLS
+
+    MTLS["**🆕 mTLS Header Extraction**<br/>if mtls_enabled:<br/>• parse X-SSL-Client-* headers<br/>• verify X-SSL-Client-Verify = SUCCESS<br/>• build CertificateInfo → extensions<br/>else: no-op _(zero overhead)_"]
+    MTLS --> JWT
+
+    JWT["**JWT / API Key Auth** _(existing)_<br/>try JWT → fallback API Key<br/>extract Claims + AuthenticatedUser"]
+    JWT --> BIND
+
+    BIND["**🆕 Certificate-Token Binding**<br/>if CertificateInfo present:<br/>• compare fingerprints _(timing-safe)_<br/>• match → continue<br/>• mismatch → 403 MTLS_BINDING_MISMATCH<br/>if no cert + mtls_required → 401<br/>if no cnf + require_binding → 403"]
+    BIND --> RBAC
+
+    RBAC["**RBAC Enforcement** _(existing)_"]
+    RBAC --> OPA
+
+    OPA["**OPA Policy Evaluation** _(existing)_"]
+    OPA --> HANDLER
+
+    HANDLER([Handler — AuthUser + CertInfo extractors])
+
+    style MTLS fill:#fef3c7,stroke:#f59e0b,color:#000
+    style BIND fill:#fef3c7,stroke:#f59e0b,color:#000
+    style RL fill:#e0f2fe,stroke:#0284c7,color:#000
+    style JWT fill:#e0f2fe,stroke:#0284c7,color:#000
+    style RBAC fill:#e0f2fe,stroke:#0284c7,color:#000
+    style OPA fill:#e0f2fe,stroke:#0284c7,color:#000
 ```
 
 **Key design choice**: mTLS extraction happens **before** JWT validation (to fail fast on invalid certificates), binding verification happens **after** (needs both cert and JWT claims).
