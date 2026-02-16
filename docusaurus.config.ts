@@ -225,12 +225,11 @@ const config: Config = {
       disableSwitch: false,
       respectPrefersColorScheme: true,
     },
-    // Algolia search configuration (placeholder - requires setup)
-    // algolia: {
-    //   appId: 'YOUR_APP_ID',
-    //   apiKey: 'YOUR_SEARCH_API_KEY',
-    //   indexName: 'stoa-docs',
-    // },
+    algolia: {
+      appId: 'GIWP67WK7V',
+      apiKey: '6f5bb332c047a35c99fd3a151c44cc7f',
+      indexName: 'stoa-docs',
+    },
     navbar: {
       title: 'STOA',
       logo: {
