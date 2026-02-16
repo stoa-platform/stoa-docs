@@ -5,6 +5,8 @@ description: "Decides the phased migration strategy from Python MCP Gateway to R
 keywords: [Python, Rust, migration, gateway, performance, safety, Tokio]
 ---
 
+import MigrationArchitecture from '@site/src/components/MigrationArchitecture';
+
 # ADR-034: Python to Rust Migration Strategy
 
 ## Metadata
@@ -35,24 +37,7 @@ Implement a **phased migration** with shadow validation, targeting Q4 2026 for f
 
 ### Migration Phases
 
-```
-┌───────────────────────────────────────────────────────────────────┐
-│                     Migration Timeline                             │
-├───────────────────────────────────────────────────────────────────┤
-│                                                                    │
-│  Q1 2026        Q2 2026        Q3 2026        Q4 2026             │
-│     │              │              │              │                 │
-│     ▼              ▼              ▼              ▼                 │
-│  ┌──────┐      ┌──────┐      ┌──────┐      ┌──────┐              │
-│  │Python│      │ Rust │      │ Rust │      │ Rust │              │
-│  │ 100% │      │edge- │      │proxy/│      │shadow│              │
-│  │      │      │ mcp  │      │sidecar│     │ mode │              │
-│  └──────┘      └──────┘      └──────┘      └──────┘              │
-│                                                                    │
-│  mcp-gateway   stoa-gateway  stoa-gateway  stoa-gateway           │
-│  (production)  (canary)      (majority)    (complete)             │
-└───────────────────────────────────────────────────────────────────┘
-```
+<MigrationArchitecture />
 
 ### Phase Details
 
@@ -67,33 +52,7 @@ Implement a **phased migration** with shadow validation, targeting Q4 2026 for f
 
 During Phase 2, both implementations run in parallel:
 
-```
-┌────────────────────────────────────────────────────────────────┐
-│                    Request Flow                                 │
-│                                                                  │
-│  ┌──────────┐                                                   │
-│  │ Request  │                                                   │
-│  └────┬─────┘                                                   │
-│       │                                                          │
-│       ▼                                                          │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │                   Load Balancer                           │  │
-│  │                                                           │  │
-│  │  ┌─────────────┐              ┌─────────────┐            │  │
-│  │  │   Python    │    mirror    │    Rust     │            │  │
-│  │  │ (primary)   │──────────────│  (shadow)   │            │  │
-│  │  │             │              │             │            │  │
-│  │  │  Response   │              │  Response   │            │  │
-│  │  │  returned   │              │  compared   │            │  │
-│  │  └─────────────┘              └─────────────┘            │  │
-│  └──────────────────────────────────────────────────────────┘  │
-│                                                                  │
-│  Comparison metrics:                                            │
-│  - Response body diff                                           │
-│  - Latency delta                                                │
-│  - Error rate                                                   │
-└────────────────────────────────────────────────────────────────┘
-```
+*See the interactive **Shadow Validation** tab above for the full request flow and comparison metrics.*
 
 ## Feature Parity Checklist
 
