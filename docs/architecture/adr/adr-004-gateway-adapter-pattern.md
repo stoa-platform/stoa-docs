@@ -45,36 +45,33 @@ Adopt the **Gateway Adapter Pattern** — an abstract interface defining all ope
 
 ### Architecture
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                       STOA Control Plane                          │
-│                                                                    │
-│  ┌─────────────────┐    ┌──────────────────────────────────────┐ │
-│  │  Reconciliation │────│         Adapter Registry              │ │
-│  │    Pipeline     │    │                                        │ │
-│  └─────────────────┘    │  ┌──────────────────────────────────┐ │ │
-│                         │  │   GatewayAdapterInterface        │ │ │
-│                         │  │   - sync_api()                   │ │ │
-│                         │  │   - upsert_policy()              │ │ │
-│                         │  │   - provision_application()      │ │ │
-│                         │  │   - ...18 total methods          │ │ │
-│                         │  └──────────────────────────────────┘ │ │
-│                         │              ▲                         │ │
-│                         │              │ implements              │ │
-│                         │  ┌──────────┼──────────┬────────────┐ │ │
-│                         │  │          │          │            │ │ │
-│                         │  ▼          ▼          ▼            │ │ │
-│                         │ ┌────────┐ ┌────────┐ ┌──────────┐  │ │
-│                         │ │webMeth.│ │  stoa  │ │ template │  │ │
-│                         │ │Adapter │ │Adapter │ │ Adapter  │  │ │
-│                         │ └───┬────┘ └───┬────┘ └────┬─────┘  │ │
-│                         └─────┼──────────┼───────────┼────────┘ │
-└───────────────────────────────┼──────────┼───────────┼──────────┘
-                                ▼          ▼           ▼
-                           ┌────────┐ ┌────────┐  ┌────────┐
-                           │webMeth.│ │  stoa  │  │ (new)  │
-                           │Gateway │ │Gateway │  │Gateway │
-                           └────────┘ └────────┘  └────────┘
+```mermaid
+flowchart TD
+    subgraph CP["**STOA Control Plane**"]
+        RECON["Reconciliation<br/>Pipeline"]
+        RECON --> REG
+
+        subgraph REG["Adapter Registry"]
+            IF["**GatewayAdapterInterface**<br/>sync_api · upsert_policy<br/>provision_application<br/>_...18 total methods_"]
+            IF --> WA["WebMethods<br/>Adapter"]
+            IF --> SA["Stoa<br/>Adapter"]
+            IF --> KA["Kong<br/>Adapter"]
+            IF --> TA["Template<br/>Adapter"]
+        end
+    end
+
+    WA --> WG["webMethods<br/>Gateway"]
+    SA --> SG["STOA<br/>Gateway"]
+    KA --> KG["Kong<br/>Gateway"]
+    TA --> NG["_(new)_<br/>Gateway"]
+
+    style CP fill:#eff6ff,stroke:#3b82f6,color:#000
+    style REG fill:#dbeafe,stroke:#2563eb,color:#000
+    style IF fill:#bfdbfe,stroke:#1d4ed8,color:#000
+    style WA fill:#fef3c7,stroke:#f59e0b,color:#000
+    style SA fill:#d1fae5,stroke:#059669,color:#000
+    style KA fill:#fce7f3,stroke:#db2777,color:#000
+    style TA fill:#f3f4f6,stroke:#6b7280,color:#000
 ```
 
 ### Interface Contract
