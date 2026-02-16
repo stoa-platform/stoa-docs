@@ -13,17 +13,11 @@ STOA's MCP Gateway is a **purpose-built MCP-native API Gateway**, enabling AI ag
 
 The MCP Gateway acts as the bridge between AI agents and your API ecosystem. It handles authentication, rate limiting, subscription validation, and multi-tenant isolation—all while speaking the native MCP protocol.
 
-```
-┌─────────────┐      MCP Protocol       ┌──────────────┐      REST/gRPC      ┌─────────────┐
-│  AI Agent   │ ◄─────────────────────► │ MCP Gateway  │ ◄─────────────────► │  Your APIs  │
-│  (Claude)   │    tools/call, etc.     │  (FastAPI)   │                     │             │
-└─────────────┘                         └──────────────┘                     └─────────────┘
-                                               │
-                                               ▼
-                                        ┌──────────────┐
-                                        │ Control Plane│
-                                        │  (FastAPI)   │
-                                        └──────────────┘
+```mermaid
+flowchart LR
+    AI["AI Agent<br/>(Claude, GPT)"] <-->|"MCP Protocol<br/>tools/call, SSE"| GW["MCP Gateway<br/>(Rust/axum)"]
+    GW <-->|"REST / gRPC"| APIs["Your APIs"]
+    GW -.->|"sync"| CP["Control Plane<br/>(FastAPI)"]
 ```
 
 ## Current Implementation

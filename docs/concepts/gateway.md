@@ -18,22 +18,23 @@ See [ADR-024](../architecture/adr/adr-024-gateway-unified-modes) for the archite
 
 ## Architecture Vision
 
-```
-                    ┌─────────────────────────────────────────┐
-                    │           stoa-gateway                   │
-                    │         (single binary)                  │
-                    ├─────────────────────────────────────────┤
-                    │  --mode=edge-mcp   │  --mode=sidecar    │
-                    │  --mode=proxy      │  --mode=shadow     │
-                    └─────────────────────────────────────────┘
-                                       │
-        ┌──────────────────────────────┼──────────────────────────────┐
-        │                              │                              │
-        ▼                              ▼                              ▼
-┌───────────────┐            ┌───────────────┐            ┌───────────────┐
-│  AI Agents    │            │ Legacy APIs   │            │  3rd Party    │
-│  (Claude,GPT) │            │ (ERP, CRM)    │            │  Gateways     │
-└───────────────┘            └───────────────┘            └───────────────┘
+```mermaid
+flowchart TB
+    GW["<b>stoa-gateway</b><br/>(single binary)"]
+
+    subgraph modes[" "]
+        direction LR
+        EM["--mode=edge-mcp<br/>✅ Production"]
+        SC["--mode=sidecar<br/>📋 Q2 2026"]
+        PX["--mode=proxy<br/>📋 Q3 2026"]
+        SH["--mode=shadow<br/>⏸️ Deferred"]
+    end
+
+    GW --- modes
+    EM --> AI["AI Agents<br/>(Claude, GPT)"]
+    SC --> LG["Legacy Gateways<br/>(Kong, Envoy)"]
+    PX --> BE["Backend APIs<br/>(ERP, CRM)"]
+    SH --> DI["3rd Party APIs<br/>(traffic discovery)"]
 ```
 
 ## Deployment Modes
@@ -98,12 +99,13 @@ stoa-gateway --mode=sidecar \
 ```
 
 **Architecture**:
-```
-Client → Kong → stoa-gateway (sidecar) → Backend
-                      │
-                      ▼
-                  Kafka (metering)
-                  OpenTelemetry (traces)
+```mermaid
+flowchart LR
+    C[Client] --> K[Kong]
+    K --> S["stoa-gateway<br/>(sidecar)"]
+    S --> B[Backend]
+    S -.-> KF["Kafka<br/>(metering)"]
+    S -.-> OT["OpenTelemetry<br/>(traces)"]
 ```
 
 ---
