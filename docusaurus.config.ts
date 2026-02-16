@@ -228,7 +228,7 @@ const config: Config = {
     algolia: {
       appId: 'GIWP67WK7V',
       apiKey: '6f5bb332c047a35c99fd3a151c44cc7f',
-      indexName: 'stoa-docs',
+      indexName: 'Stoa Blog',
     },
     navbar: {
       title: 'STOA',
