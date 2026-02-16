@@ -4,6 +4,8 @@ description: "Architecture decision for connecting Kafka event backbone to MCP G
 keywords: [ADR, Kafka, MCP, SSE, event-driven, notifications, AI agents, Redpanda, bridge, CQRS]
 ---
 
+import KafkaMCPArchitecture from '@site/src/components/KafkaMCPArchitecture';
+
 # ADR-043: Kafka → MCP Event Bridge Architecture
 
 ## Metadata
@@ -73,28 +75,7 @@ Implement a **Kafka → MCP Event Bridge** in 4 phases, transforming STOA into t
 
 ### Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    STOA Event Flow                               │
-│                                                                  │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐       │
-│  │ Control Plane │    │    Kafka     │    │  SSE Bridge  │       │
-│  │  (Producers)  │───▶│  (Redpanda)  │───▶│  (Consumer)  │       │
-│  └──────────────┘    └──────┬───────┘    └──────┬───────┘       │
-│                             │                    │               │
-│                    ┌────────┤              ┌─────▼──────┐       │
-│                    │        │              │ MCP Gateway │       │
-│                    ▼        ▼              │ notifications│      │
-│              ┌──────┐ ┌──────┐            │   /send     │       │
-│              │Audit │ │Prom. │            └──────┬───────┘       │
-│              │Sink  │ │Bridge│                   │               │
-│              └──────┘ └──────┘                   ▼               │
-│                                          ┌──────────────┐       │
-│                                          │  AI Agents    │       │
-│                                          │  (connected)  │       │
-│                                          └──────────────┘       │
-└─────────────────────────────────────────────────────────────────┘
-```
+<KafkaMCPArchitecture />
 
 ### Kafka Topics — 8 Families (Central Nervous System)
 
@@ -225,13 +206,15 @@ Concrete example — webMethods billed per transaction:
 
 ### Solution: Kafka as Free Fan-Out
 
-```
-API Request → webMethods (1 transaction) → Kafka event (fire & forget)
-                                              ├── Portal (catalog refresh)
-                                              ├── Grafana (metrics)
-                                              ├── Audit trail (PostgreSQL)
-                                              ├── MCP Agent notification
-                                              └── Billing metering
+```mermaid
+flowchart LR
+    R["API Request"] --> WM["webMethods<br/>(1 transaction)"]
+    WM --> K["Kafka event<br/>(fire & forget)"]
+    K --> P["Portal<br/>(catalog refresh)"]
+    K --> G["Grafana<br/>(metrics)"]
+    K --> A["Audit trail<br/>(PostgreSQL)"]
+    K --> M["MCP Agent<br/>(notification)"]
+    K --> B["Billing<br/>(metering)"]
 ```
 
 1 Kafka event → N independent consumers. Zero additional transactions on the paid gateway.
