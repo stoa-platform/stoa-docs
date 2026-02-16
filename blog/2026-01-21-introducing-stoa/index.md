@@ -106,7 +106,7 @@ STOA is the first open-source gateway with native MCP support — the protocol t
 
 ### How do I get started?
 
-The fastest way to try STOA is with our Docker Compose quick start. You can have a running instance with the gateway, portal, and console in under 15 minutes. Check out the [Quick Start Guide](https://docs.gostoa.dev/docs/guides/quick-start) for step-by-step instructions.
+The fastest way to try STOA is with our Docker Compose quick start. You can have a running instance with the gateway, portal, and console in under 15 minutes. Check out the [Quick Start Guide](/docs/guides/quickstart) for step-by-step instructions.
 
 ---
 

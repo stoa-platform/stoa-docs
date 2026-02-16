@@ -267,7 +267,7 @@ gitleaks protect --install
 
 If gitleaks finds something: **rotate the secret immediately**, then clean the history.
 
-If you want to go further — automatic rotation, mTLS, audit trails, policy-as-code — [try STOA](https://docs.gostoa.dev/docs/guides/quick-start). It's free, open source, and takes 5 minutes to set up.
+If you want to go further — automatic rotation, mTLS, audit trails, policy-as-code — [try STOA](/docs/guides/quickstart). It's free, open source, and takes 5 minutes to set up.
 
 ## FAQ
 
@@ -289,6 +289,6 @@ Exposed secrets map to OWASP API8:2023 — Security Misconfiguration. Our [API S
 
 ---
 
-**Related**: [Open Source API Gateway Guide](/blog/open-source-api-gateway-2026) | [API Security Checklist](/blog/api-security-checklist-solo-dev) | [Quick Start](https://docs.gostoa.dev/docs/guides/quick-start)
+**Related**: [Open Source API Gateway Guide](/blog/open-source-api-gateway-2026) | [API Security Checklist](/blog/api-security-checklist-solo-dev) | [Quick Start](/docs/guides/quickstart)
 
 *Found this useful? Star us on [GitHub](https://github.com/stoa-platform/stoa) and join the conversation on [Discord](https://discord.gostoa.dev).*

@@ -256,6 +256,6 @@ Yes. Some organizations choose to keep webMethods for legacy integrations that r
 
 ---
 
-*Planning a webMethods migration? [Start with the quickstart guide](https://docs.gostoa.dev/docs/guides/quick-start) to see STOA in action, or read the [complete API gateway migration guide](/blog/api-gateway-migration-guide-2026) for a vendor-neutral decision framework.*
+*Planning a webMethods migration? [Start with the quickstart guide](/docs/guides/quickstart) to see STOA in action, or read the [complete API gateway migration guide](/blog/api-gateway-migration-guide-2026) for a vendor-neutral decision framework.*
 
 > This guide describes technical migration steps and does not imply any deficiency in the source platform. Migration decisions depend on specific organizational requirements. All trademarks belong to their respective owners. See [trademarks](/docs/trademarks).

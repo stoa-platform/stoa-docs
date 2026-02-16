@@ -528,4 +528,4 @@ For regulated industries (financial services, healthcare, defense) requiring com
 
 ---
 
-*Ready to secure your AI agents? [Try STOA's MCP Gateway](https://docs.gostoa.dev/docs/guides/quick-start) or explore the [security documentation](https://docs.gostoa.dev/docs/enterprise/security-compliance).*
+*Ready to secure your AI agents? [Try STOA's MCP Gateway](/docs/guides/quickstart) or explore the [security documentation](https://docs.gostoa.dev/docs/enterprise/security-compliance).*

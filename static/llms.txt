@@ -41,7 +41,7 @@ CONTROL PLANE (Cloud)                    DATA PLANE (On-Premise/Hybrid)
 - Website: https://gostoa.dev
 - Documentation: https://docs.gostoa.dev
 - Getting Started: https://docs.gostoa.dev/docs/intro
-- Quick Start: https://docs.gostoa.dev/docs/guides/quick-start
+- Quick Start: https://docs.gostoa.dev/docs/guides/quickstart
 - Architecture: https://docs.gostoa.dev/docs/concepts/architecture
 - MCP Gateway: https://docs.gostoa.dev/docs/concepts/mcp-gateway
 - API Reference: https://docs.gostoa.dev/docs/api/control-plane
