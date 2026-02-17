@@ -117,7 +117,7 @@ This directory contains important architectural decisions for STOA Platform.
 | **Auth** | Keycloak | Auth0, Okta | Self-hosted, full OIDC |
 | **Observability** | Prometheus + Grafana + Loki | Datadog, ELK | Open source, K8s-native |
 | **GitOps** | ArgoCD | Flux, Jenkins | UI, multi-cluster |
-| **Automation** | AWX (Ansible) | Terraform | Idempotent, auditable |
+| **Automation** | ArgoCD + Gateway Adapters | Terraform | Idempotent, auditable |
 | **Gateway v1** | webMethods | Kong, APISIX | Legacy expertise |
 | **Gateway v2** | Rust + eBPF | Go, C++ | Performance, safety |
 | **Search** | OpenSearch | Elasticsearch | Apache 2.0, AWS-free |

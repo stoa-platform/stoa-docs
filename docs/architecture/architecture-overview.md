@@ -65,8 +65,7 @@ flowchart TB
     end
 
     subgraph Auto["🤖 Automation"]
-        AWX["AWX (Ansible)<br/>reconcile-webmethods"]
-        GitLab["GitLab (gitlab.com)<br/>stoa-gitops/"]
+        GitHub["GitHub<br/>stoa-platform/stoa"]
         Argo["ArgoCD<br/>GitOps sync"]
     end
 
@@ -78,7 +77,8 @@ flowchart TB
     wM --> Data
     API --> KB
     KB --> Kafka --> MinIO
-    GitLab --> Argo --> AWX --> wM
+    GitHub --> Argo --> K8s
+    API -->|"Gateway Adapters"| wM
     Core --> Prom --> Graf
     Core --> Loki
 ```
@@ -104,7 +104,7 @@ flowchart TB
 - ✅ **Subscriptions**: Tool → User → Tenant with API Keys (Vault-backed)
 - ✅ **MCP Gateway**: `list_tools`, `call_tool`, `list_resources` — Claude.ai integration fixed (JSON-RPC bugs resolved)
 - ✅ **Multi-Tenant Tool Discovery**: Tenant-scoped tools with JWT context injection
-- ✅ **GitOps webMethods**: YAML → AWX → Gateway reconciliation
+- ✅ **GitOps Multi-Gateway**: ArgoCD + Gateway Adapter Pattern (STOA, Kong, Gravitee, webMethods)
 - ✅ **ArgoCD Foundation**: GitOps continuous deployment for `stoa-system`
 - ✅ **Error Snapshots**: Capture → Kafka → MinIO → API retrieve (CAB-397 + CAB-485)
 - ✅ **Observability**: Prometheus + Grafana + Loki centralized
@@ -129,24 +129,22 @@ flowchart TB
 ```mermaid
 sequenceDiagram
     participant Dev as Developer
-    participant GL as GitLab (gitlab.com)
+    participant GH as GitHub
     participant Argo as ArgoCD
-    participant AWX as AWX (Ansible)
-    participant wM as webMethods Gateway
-    participant K8s as Kubernetes (EKS)
+    participant CP as Control Plane API
+    participant GW as Gateway (STOA/Kong/Gravitee/wM)
+    participant K8s as Kubernetes
 
-    Dev->>GL: Push to stoa-gitops/
-    GL->>Argo: Webhook notify
+    Dev->>GH: Push to main
+    GH->>Argo: Webhook notify
     Argo->>K8s: Sync stoa-system resources
-    Argo->>AWX: Trigger webhook (API configs)
-    AWX->>wM: reconcile-webmethods playbook
-    wM-->>AWX: Reconciliation complete
+    CP->>GW: Gateway Adapter sync_api()
+    GW-->>CP: AdapterResult (success/error)
     Note over Argo,K8s: Self-healing enabled<br/>Drift detection active
 ```
 
 :::caution Important
-The deployment flow is **NOT** Kafka-driven. The actual pipeline is:
-`GitLab → ArgoCD → AWX webhook → webMethods`
+The deployment flow is **NOT** Kafka-driven. The Control Plane API orchestrates gateway synchronization directly via the Gateway Adapter Pattern ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern)).
 
 Kafka is used exclusively for internal event streaming (error snapshots, metering), never for deployment orchestration. See ADR-017: Kafka Internal-Only.
 :::
@@ -231,7 +229,7 @@ flowchart TB
 | **Control Plane** | FastAPI (Python) | stoa-api (Go) | Cycle 15 |
 | **CLI** | — | stoa-cli (Go) | Cycle 15 |
 | **Operator** | — | stoa-operator (Go) | Cycle 15 |
-| **GitOps** | AWX + GitLab CI | Argo CD + Rollouts | CAB-483 |
+| **GitOps** | ArgoCD + Gateway Adapters | Argo CD + Rollouts | CAB-483 |
 | **Cache** | In-memory | Redis distributed | CAB-306 |
 | **B2B Protocols** | REST only | EDI/SWIFT/Euro Num. | Cycle 13 |
 | **AI Gateway** | Basic MCP | Semantic cache + routing | Cycle 17 |
@@ -308,7 +306,7 @@ Jan 2026       Feb 2026       Mar 2026       Q2 2026        Q3 2026
 | Auth | Keycloak | Keycloak |
 | Secrets | HashiCorp Vault | HashiCorp Vault |
 | Observability | Prometheus, Grafana, Loki | Prometheus, Grafana, Loki |
-| GitOps | ArgoCD + AWX | ArgoCD + Argo Rollouts |
+| GitOps | ArgoCD + Gateway Adapters | ArgoCD + Argo Rollouts |
 | Infrastructure | Kubernetes (EKS), Helm | Kubernetes, Helm, Terraform |
 
 ---
