@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Configuration Reference"
-description: "Complete configuration reference for STOA Platform — environment variables, Helm values, and runtime settings."
+description: "Complete configuration reference for STOA Platform — environment variables, Helm values, and runtime settings for all components."
 keywords: [configuration, reference, environment variables, Helm, settings]
 ---
 
@@ -9,7 +9,7 @@ keywords: [configuration, reference, environment variables, Helm, settings]
 
 Complete configuration reference for STOA Platform.
 
-## Control Plane Configuration
+## Control Plane API
 
 ### Environment Variables
 
@@ -32,15 +32,10 @@ STOA_KEYCLOAK_ADMIN_USER=admin
 STOA_KEYCLOAK_ADMIN_PASSWORD=secret
 STOA_KEYCLOAK_REALM=master
 
-# ArgoCD
+# ArgoCD (optional — for GitOps integration)
 STOA_ARGOCD_URL=https://argocd.<YOUR_DOMAIN>
 STOA_ARGOCD_TOKEN=secret
 STOA_ARGOCD_NAMESPACE=argocd
-
-# Kong
-STOA_KONG_ADMIN_URL=http://kong-admin:8001
-STOA_KONG_ADMIN_TOKEN=secret
-STOA_KONG_GATEWAY_URL=https://gateway.<YOUR_DOMAIN>
 
 # Logging
 STOA_LOG_LEVEL=info
@@ -49,6 +44,12 @@ STOA_LOG_FORMAT=json
 # Metrics
 STOA_METRICS_ENABLED=true
 STOA_METRICS_PORT=9090
+
+# OpenSearch (audit trail)
+OPENSEARCH_URL=https://opensearch:9200
+OPENSEARCH_USERNAME=admin
+OPENSEARCH_PASSWORD=secret
+OPENSEARCH_VERIFY_CERTS=false
 ```
 
 ### Helm Values
@@ -59,8 +60,8 @@ controlPlane:
   replicas: 3
 
   image:
-    repository: stoaplatform/control-plane
-    tag: v0.1.0
+    repository: ghcr.io/stoa-platform/control-plane-api
+    tag: latest
     pullPolicy: IfNotPresent
 
   resources:
@@ -116,12 +117,100 @@ argocd:
     ingress:
       enabled: true
       hostname: argocd.<YOUR_DOMAIN>
+```
 
-kafka:
-  enabled: true
-  replicas: 3
-  storage:
-    size: 20Gi
+## STOA Gateway (Rust)
+
+### Environment Variables
+
+```bash
+# Server
+STOA_GATEWAY_HOST=0.0.0.0
+STOA_GATEWAY_PORT=8080
+STOA_GATEWAY_MODE=edge-mcp     # edge-mcp | sidecar | proxy | shadow
+
+# Control Plane connection
+CONTROL_PLANE_URL=https://api.<YOUR_DOMAIN>
+CONTROL_PLANE_API_KEY=secret
+
+# Authentication
+STOA_AUTH_ISSUER=https://auth.<YOUR_DOMAIN>/realms/stoa
+STOA_AUTH_AUDIENCE=stoa-mcp-gateway
+
+# Admin API
+STOA_ADMIN_ENABLED=true
+STOA_ADMIN_API_TOKEN=secret
+
+# Rate limiting
+STOA_RATE_LIMIT_DEFAULT=100     # Requests per minute per consumer
+STOA_QUOTA_ENABLED=true
+
+# mTLS (RFC 8705)
+STOA_MTLS_ENABLED=false
+STOA_MTLS_REQUIRE_BINDING=true
+STOA_MTLS_TRUSTED_PROXIES=      # Comma-separated CIDRs
+STOA_MTLS_ALLOWED_ISSUERS=      # Comma-separated issuer DNs
+
+# Circuit breaker
+STOA_CB_FAILURE_THRESHOLD=5
+STOA_CB_RECOVERY_TIMEOUT=30     # Seconds
+
+# Logging
+RUST_LOG=info                    # trace | debug | info | warn | error
+STOA_ACCESS_LOG_ENABLED=true
+
+# Kafka (optional — for metering)
+KAFKA_BROKERS=redpanda:9092
+KAFKA_TOPIC=stoa-events
+```
+
+### Helm Values
+
+```yaml
+stoaGateway:
+  replicas: 2
+
+  image:
+    repository: ghcr.io/stoa-platform/stoa-gateway
+    tag: latest
+    pullPolicy: Always
+
+  mode: edge-mcp
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: mcp.<YOUR_DOMAIN>
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: gateway-tls
+        hosts:
+          - mcp.<YOUR_DOMAIN>
+
+  serviceMonitor:
+    enabled: true
+    interval: 15s
+
+  admin:
+    enabled: true
+
+  sidecar:
+    enabled: false
+    mode: log-only
+    decisionFormat: opa-v1
 ```
 
 ## Tenant Configuration
@@ -129,7 +218,7 @@ kafka:
 ### Tenant Spec
 
 ```yaml
-apiVersion: stoa.io/v1
+apiVersion: gostoa.dev/v1alpha1
 kind: Tenant
 metadata:
   name: acme
@@ -137,8 +226,6 @@ spec:
   tier: starter
 
   adminEmail: admin@acme.com
-
-  region: us-east-1
 
   resources:
     requests:
@@ -190,7 +277,7 @@ spec:
 ### API Spec
 
 ```yaml
-apiVersion: stoa.io/v1
+apiVersion: gostoa.dev/v1alpha1
 kind: API
 metadata:
   name: payment-api
@@ -230,67 +317,6 @@ spec:
     allowOrigins: ["*"]
     allowMethods: [GET, POST, PATCH, DELETE]
     allowHeaders: [Authorization, Content-Type]
-
-  caching:
-    enabled: true
-    ttl: 300
-    methods: [GET]
-
-  plugins:
-    - name: request-transformer
-      config:
-        add:
-          headers:
-            - X-Tenant-ID:acme
-
-    - name: response-transformer
-      config:
-        remove:
-          headers:
-            - X-Internal-Secret
-```
-
-## Kong Configuration
-
-### Kong Gateway Settings
-
-```yaml
-# Kong Helm values per tenant
-kong:
-  replicas: 2
-
-  image:
-    repository: kong
-    tag: "3.5"
-
-  env:
-    database: "off"
-    declarative_config: /kong/declarative/kong.yaml
-    plugins: bundled,oidc,rate-limiting
-
-    # Proxy
-    proxy_listen: 0.0.0.0:8000
-    proxy_access_log: /dev/stdout
-    proxy_error_log: /dev/stderr
-
-    # Admin API
-    admin_listen: 127.0.0.1:8001
-    admin_access_log: /dev/stdout
-    admin_error_log: /dev/stderr
-
-  resources:
-    requests:
-      cpu: 500m
-      memory: 512Mi
-    limits:
-      cpu: 2000m
-      memory: 2Gi
-
-  autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 70
 ```
 
 ## Security Configuration
@@ -313,18 +339,20 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          stoa.io/tenant-id: acme
+          kubernetes.io/metadata.name: stoa-system
     - namespaceSelector:
         matchLabels:
-          name: ingress-nginx
+          kubernetes.io/metadata.name: ingress-nginx
 
   egress:
   - to:
     - namespaceSelector:
         matchLabels:
-          name: kube-system
+          kubernetes.io/metadata.name: kube-system
     ports:
     - protocol: TCP
+      port: 53
+    - protocol: UDP
       port: 53
   - to:
     - podSelector: {}
@@ -336,9 +364,8 @@ spec:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: tenant-acme
+  name: stoa-system
   labels:
-    stoa.io/tenant-id: acme
     pod-security.kubernetes.io/enforce: restricted
     pod-security.kubernetes.io/audit: restricted
     pod-security.kubernetes.io/warn: restricted
@@ -375,7 +402,7 @@ spec:
         "title": "API Request Rate",
         "targets": [
           {
-            "expr": "rate(stoa_api_requests_total{tenant=\"acme\"}[5m])"
+            "expr": "rate(stoa_http_requests_total{tenant=\"acme\"}[5m])"
           }
         ]
       },
@@ -383,7 +410,7 @@ spec:
         "title": "Error Rate",
         "targets": [
           {
-            "expr": "rate(stoa_api_errors_total{tenant=\"acme\"}[5m])"
+            "expr": "rate(stoa_http_requests_total{status=~\"5..\",tenant=\"acme\"}[5m])"
           }
         ]
       }
@@ -394,39 +421,64 @@ spec:
 
 ## Logging Configuration
 
-### Fluentd Configuration
+### Fluent Bit DaemonSet
 
 ```yaml
-apiVersion: v1
-kind: ConfigMap
+apiVersion: apps/v1
+kind: DaemonSet
 metadata:
-  name: fluentd-config
-  namespace: stoa-system
-data:
-  fluent.conf: |
-    <source>
-      @type tail
-      path /var/log/containers/tenant-*.log
-      pos_file /var/log/fluentd-containers.log.pos
-      tag kubernetes.*
-      format json
-    </source>
-
-    <filter kubernetes.**>
-      @type record_transformer
-      <record>
-        tenant ${record["kubernetes"]["namespace_name"].split("-")[1]}
-      </record>
-    </filter>
-
-    <match kubernetes.**>
-      @type elasticsearch
-      host elasticsearch
-      port 9200
-      index_name stoa-logs
-    </match>
+  name: fluent-bit
+  namespace: logging
+spec:
+  selector:
+    matchLabels:
+      app: fluent-bit
+  template:
+    spec:
+      containers:
+        - name: fluent-bit
+          image: fluent/fluent-bit:3.2
+          volumeMounts:
+            - name: varlog
+              mountPath: /var/log
+              readOnly: true
+      volumes:
+        - name: varlog
+          hostPath:
+            path: /var/log
 ```
 
----
+### Fluent Bit Configuration
 
-🚧 **Coming Soon**: Backup configuration, disaster recovery setup, and performance tuning guides.
+```ini
+[INPUT]
+    Name              tail
+    Path              /var/log/containers/stoa-*.log
+    Parser            cri
+    Tag               kube.*
+    Refresh_Interval  5
+
+[FILTER]
+    Name              kubernetes
+    Match             kube.*
+    Merge_Log         On
+
+[OUTPUT]
+    Name              opensearch
+    Match             kube.*
+    Host              opensearch
+    Port              9200
+    Index             stoa-logs
+    HTTP_User         admin
+    HTTP_Passwd       ${OPENSEARCH_PASSWORD}
+    tls               Off
+    Suppress_Type_Name On
+```
+
+## Related
+
+- [Installation Guide](/docs/admin/installation) -- Helm chart deployment
+- [Security Configuration](/docs/reference/security-configuration) -- JWT, CORS, SSE limits
+- [Monitoring & Alerting](/docs/admin/monitoring) -- Prometheus setup
+- [mTLS Configuration](/docs/guides/mtls-configuration) -- Certificate-bound tokens
+- [Backup & Recovery](/docs/admin/backup-recovery) -- Backup procedures

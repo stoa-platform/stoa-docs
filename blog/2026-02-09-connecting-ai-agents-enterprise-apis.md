@@ -288,6 +288,7 @@ Connecting AI agents to enterprise APIs securely is not optional — it is the f
 
 ## Further Reading
 
+- [How We Built an AI Factory That Ships 72 Story Points Per Day](/blog/how-we-built-ai-factory-ships-72-points-per-day) — The coordination protocols behind STOA's multi-instance AI development workflow
 - [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
 - [MCP Gateway Concepts](https://docs.gostoa.dev/docs/concepts/mcp-gateway) — Deep dive into Model Context Protocol
 - [API Gateway Patterns](https://docs.gostoa.dev/docs/guides/fiches/api-gateway-patterns) — Architecture patterns for AI-native gateways

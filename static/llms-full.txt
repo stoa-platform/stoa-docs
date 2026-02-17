@@ -18,7 +18,7 @@
 - /docs/concepts/implementation-status — Implementation Status
 
 ### Guides
-- /docs/guides/quick-start — Quick Start (5 minutes)
+- /docs/guides/quickstart — Quick Start (5 minutes)
 - /docs/guides/authentication — Authentication with Keycloak
 - /docs/guides/subscriptions — API Subscriptions
 - /docs/guides/console — Console Admin Guide

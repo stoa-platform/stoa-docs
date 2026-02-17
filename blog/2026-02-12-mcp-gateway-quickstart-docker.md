@@ -339,7 +339,7 @@ You'll see:
 }
 ```
 
-For production observability, integrate with Grafana and Loki. See [ADR-028: Observability Stack](https://docs.gostoa.dev/architecture/adr/adr-028-observability) for details.
+For production observability, integrate with Grafana and Loki. See [ADR-023: Zero Blind Spot Observability](/docs/architecture/adr/adr-023-zero-blind-spot-observability) for details.
 
 ## What You've Learned
 
@@ -391,11 +391,11 @@ For the latest versions, check the [STOA releases page](https://github.com/stoa-
 
 ### What are the minimum Docker requirements for running an MCP gateway?
 
-You need Docker 20.10+ and Docker Compose 2.x. For development/testing, allocate at least 4GB RAM to Docker Desktop. For production, deploy on a Linux server with 8GB+ RAM and persistent volumes for PostgreSQL data. The gateway itself is lightweight (Rust binary, ~50MB RAM under load), but Keycloak and PostgreSQL require more resources. See the [quickstart guide](https://docs.gostoa.dev/docs/guides/quick-start) for Kubernetes deployment options.
+You need Docker 20.10+ and Docker Compose 2.x. For development/testing, allocate at least 4GB RAM to Docker Desktop. For production, deploy on a Linux server with 8GB+ RAM and persistent volumes for PostgreSQL data. The gateway itself is lightweight (Rust binary, ~50MB RAM under load), but Keycloak and PostgreSQL require more resources. See the [quickstart guide](/docs/guides/quickstart) for Kubernetes deployment options.
 
 ### Is this setup production-ready?
 
-The Docker Compose setup is suitable for development, testing, and low-traffic production deployments. Before production use, replace all `changeme` passwords with secrets from a vault, enable TLS for all services, configure log aggregation, and set up Prometheus alerts. For high-availability production deployments with multiple replicas, use the [Helm chart](https://docs.gostoa.dev/docs/guides/quick-start) on Kubernetes.
+The Docker Compose setup is suitable for development, testing, and low-traffic production deployments. Before production use, replace all `changeme` passwords with secrets from a vault, enable TLS for all services, configure log aggregation, and set up Prometheus alerts. For high-availability production deployments with multiple replicas, use the [Helm chart](/docs/guides/quickstart) on Kubernetes.
 
 ### What's the next step after completing this quickstart?
 
@@ -403,7 +403,7 @@ After the quickstart, add more tools by registering additional REST API endpoint
 
 ---
 
-**About STOA Platform**: STOA is the open-source API gateway built for AI agents. Define your API contract once with the Universal API Contract (UAC), and expose it everywhere: MCP, REST, GraphQL, gRPC. Apache 2.0 licensed. [Get started today](https://docs.gostoa.dev/docs/guides/quick-start).
+**About STOA Platform**: STOA is the open-source API gateway built for AI agents. Define your API contract once with the Universal API Contract (UAC), and expose it everywhere: MCP, REST, GraphQL, gRPC. Apache 2.0 licensed. [Get started today](/docs/guides/quickstart).
 
 **Need help?** Join our [Discord community](https://discord.gostoa.dev) or check the [troubleshooting guide](/docs/reference/troubleshooting).
 

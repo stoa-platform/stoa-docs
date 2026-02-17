@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: api-security-checklist-solo-dev
 title: "API Security Checklist: 10 Things Every Solo Dev Must Do"
 authors: [christophe]
@@ -440,7 +439,7 @@ Yes. Internal APIs are often less secured than public ones, which makes them att
 
 ### How does STOA handle these automatically?
 
-STOA Platform implements all 10 items as defaults in the free tier — see the [comparison table above](#how-stoa-makes-this-automatic). The key difference: you don't configure security per-endpoint, you define it once as policy-as-code and it applies everywhere. Learn more in the [Quick Start guide](https://docs.gostoa.dev/docs/guides/quick-start).
+STOA Platform implements all 10 items as defaults in the free tier — see the [comparison table above](#how-stoa-makes-this-automatic). The key difference: you don't configure security per-endpoint, you define it once as policy-as-code and it applies everywhere. Learn more in the [Quick Start guide](/docs/guides/quickstart).
 
 ### What about GraphQL APIs?
 

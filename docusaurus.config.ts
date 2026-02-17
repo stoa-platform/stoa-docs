@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'STOA — Open-Source AI API Gateway',
   tagline: 'Modernize Your API Gateway — MCP, Multi-Tenant, European Sovereign',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   // Note: trailingSlash left undefined (Docusaurus default) because existing
   // relative links in index.md files break with both true and false.
@@ -206,6 +206,14 @@ const config: Config = {
       {name: 'twitter:site', content: '@stoaplatform'},
       {name: 'twitter:image', content: 'https://docs.gostoa.dev/img/stoa-social-card.png'},
     ],
+    announcementBar: {
+      id: 'demo-day-2026',
+      content:
+        '📣 STOA Demo Day — Feb 24, 2026. <a target="_blank" rel="noopener noreferrer" href="https://github.com/stoa-platform/stoa/discussions">Join the discussion</a>',
+      backgroundColor: '#1a1a2e',
+      textColor: '#e0e0e0',
+      isCloseable: true,
+    },
     // Social card for link previews (PNG — SVG not supported by social platforms)
     image: 'img/stoa-social-card.png',
     // Mermaid diagram theming
@@ -217,12 +225,11 @@ const config: Config = {
       disableSwitch: false,
       respectPrefersColorScheme: true,
     },
-    // Algolia search configuration (placeholder - requires setup)
-    // algolia: {
-    //   appId: 'YOUR_APP_ID',
-    //   apiKey: 'YOUR_SEARCH_API_KEY',
-    //   indexName: 'stoa-docs',
-    // },
+    algolia: {
+      appId: 'GIWP67WK7V',
+      apiKey: '6f5bb332c047a35c99fd3a151c44cc7f',
+      indexName: 'Stoa Blog',
+    },
     navbar: {
       title: 'STOA',
       logo: {

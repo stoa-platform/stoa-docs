@@ -164,4 +164,4 @@ Explore more about MCP gateways and AI agent infrastructure:
 
 ---
 
-*Ready to secure your AI agent infrastructure? [Start with the quickstart guide](https://docs.gostoa.dev/docs/guides/quick-start) or [explore the MCP gateway documentation](https://docs.gostoa.dev/docs/concepts/mcp-gateway).*
+*Ready to secure your AI agent infrastructure? [Start with the quickstart guide](/docs/guides/quickstart) or [explore the MCP gateway documentation](https://docs.gostoa.dev/docs/concepts/mcp-gateway).*

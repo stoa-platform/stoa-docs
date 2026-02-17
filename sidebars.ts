@@ -35,6 +35,19 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Administration',
+      items: [
+        'admin/installation',
+        'admin/keycloak',
+        'admin/monitoring',
+        'admin/backup-recovery',
+        'admin/upgrade',
+        'admin/security-hardening',
+        'admin/openshift',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Guides',
       items: [
         'guides/quick-start',
@@ -51,6 +64,13 @@ const sidebars: SidebarsConfig = {
         'guides/consumer-onboarding',
         'guides/api-key-rotation',
         'guides/environment-management',
+        'guides/multi-gateway-setup',
+        'guides/gateway-modes',
+        'guides/mtls-configuration',
+        'guides/webhooks',
+        'guides/service-accounts',
+        'guides/console-advanced',
+        'guides/portal-advanced',
         {
           type: 'category',
           label: 'Technical Fiches',
@@ -83,6 +103,7 @@ const sidebars: SidebarsConfig = {
         'api/control-plane',
         'api/mcp-gateway',
         'api/gateway-admin-api',
+        'api/openapi-reference',
       ],
     },
     {
@@ -98,6 +119,8 @@ const sidebars: SidebarsConfig = {
         'reference/oauth-discovery',
         'reference/quotas',
         'reference/security-configuration',
+        'reference/exit-strategy',
+        'reference/changelog',
         'reference/troubleshooting',
         {
           type: 'category',
@@ -133,6 +156,13 @@ const sidebars: SidebarsConfig = {
         'community/philosophy',
         'community/rewards',
         'community/faq',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Legal',
+      items: [
+        'legal/terms',
       ],
     },
     'faq/index',

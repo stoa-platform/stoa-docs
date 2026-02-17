@@ -22,7 +22,7 @@
 | Q3 (Jul-Sep) | Back-to-school / new projects | Getting started guides, onboarding tutorials |
 | Q4 (Oct-Dec) | Year-in-review, planning season | Recap posts, roadmap previews, trend analysis |
 
-## Published Articles (21 total)
+## Published Articles (37 total)
 
 ### Pillar 1: API Gateway Migration
 | Date | Slug | Type | Words | Status |
@@ -72,7 +72,7 @@
 | M3 | Layer7 / CA API Gateway migration | layer7 api gateway migration open source | Comparison | P2 | TODO |
 | M4 | AWS API Gateway to self-hosted migration | aws api gateway self hosted alternative | Comparison | P2 | TODO |
 | M5 | Azure APIM to open source migration | azure api management alternative open source | Comparison | P2 | TODO |
-| M6 | API gateway migration checklist (generic) | api gateway migration checklist 2026 | Tutorial | P1 | TODO |
+| M6 | API gateway migration checklist (generic) | api gateway migration checklist 2026 | Tutorial | P1 | Published (api-gateway-migration-checklist) |
 | M7 | Zero-downtime API gateway migration | zero downtime api migration strategy | Tutorial | P2 | TODO |
 
 ### Pillar 2: MCP & AI Agents (TODO spokes)
@@ -80,10 +80,10 @@
 | # | Topic | Target Keyword | Type | Priority | Status |
 |---|-------|---------------|------|----------|--------|
 | A1 | MCP protocol deep-dive: architecture & spec | mcp protocol architecture explained | Tutorial | P1 | TODO |
-| A2 | AI agent security: authentication patterns | ai agent api authentication security | Tutorial | P1 | TODO |
-| A3 | Building custom MCP tools with STOA | build custom mcp tools tutorial | Tutorial | P1 | TODO |
+| A2 | AI agent security: authentication patterns | ai agent api authentication security | Tutorial | P1 | Published (ai-agent-security-authentication-patterns) |
+| A3 | Building custom MCP tools with STOA | build custom mcp tools tutorial | Tutorial | P1 | Published (building-custom-mcp-tools-stoa) |
 | A4 | MCP vs OpenAI function calling vs LangChain | mcp vs openai function calling comparison | Comparison | P1 | TODO |
-| A5 | AI gateway rate limiting and quota management | ai gateway rate limiting best practices | Tutorial | P2 | TODO |
+| A5 | AI gateway rate limiting and quota management | ai gateway rate limiting best practices | Tutorial | P2 | Published (ai-gateway-rate-limiting-best-practices) |
 | A6 | Enterprise AI agent governance patterns | enterprise ai agent governance api | Tutorial | P2 | TODO |
 | A7 | From REST API to MCP tool: conversion guide | convert rest api to mcp tool | Tutorial | P1 | TODO |
 | A8 | AI agent observability: tracing MCP calls | ai agent observability tracing mcp | Tutorial | P2 | TODO |
@@ -94,13 +94,13 @@
 | # | Topic | Target Keyword | Type | Priority | Status |
 |---|-------|---------------|------|----------|--------|
 | O1 | API gateway performance benchmarks 2026 | api gateway performance comparison 2026 | Comparison | P2 | TODO |
-| O2 | Kubernetes-native API gateway patterns | kubernetes native api gateway patterns | Tutorial | P1 | TODO |
+| O2 | Kubernetes-native API gateway patterns | kubernetes native api gateway patterns | Tutorial | P1 | Published (kubernetes-native-api-gateway-patterns) |
 | O3 | API versioning strategies for enterprises | api versioning strategy enterprise | Tutorial | P2 | TODO |
-| O4 | Open source API gateway security hardening | open source api gateway security hardening | Tutorial | P1 | TODO |
+| O4 | Open source API gateway security hardening | open source api gateway security hardening | Tutorial | P1 | Published (api-gateway-security-hardening-guide) |
 | O5 | Multi-cloud API management with GitOps | multi cloud api management gitops | Tutorial | P2 | TODO |
 | O6 | API gateway observability: logs, metrics, traces | api gateway observability setup | Tutorial | P2 | TODO |
 | O7 | RBAC for API gateways: design patterns | api gateway rbac design patterns | Tutorial | P2 | TODO |
-| O8 | API gateway circuit breaker patterns explained | api gateway circuit breaker pattern | Tutorial | P1 | TODO |
+| O8 | API gateway circuit breaker patterns explained | api gateway circuit breaker pattern | Tutorial | P1 | Published (api-gateway-circuit-breaker-patterns) |
 
 ### Community & Thought Leadership
 
@@ -117,9 +117,9 @@
 
 | # | Topic | Target Keyword | Type | Priority | Status |
 |---|-------|---------------|------|----------|--------|
-| D1 | STOA quick start: your first API in 5 minutes | stoa platform quick start tutorial | Tutorial | P1 | TODO |
-| D2 | stoactl CLI: manage APIs from your terminal | stoactl cli api management terminal | Tutorial | P1 | TODO |
-| D3 | Docker Compose: full STOA stack locally | stoa docker compose local development | Tutorial | P1 | TODO |
+| D1 | STOA quick start: your first API in 5 minutes | stoa platform quick start tutorial | Tutorial | P1 | Published (stoa-quickstart-first-api-5-minutes) |
+| D2 | stoactl CLI: manage APIs from your terminal | stoactl cli api management terminal | Tutorial | P1 | Published (stoactl-cli-manage-apis-terminal) |
+| D3 | Docker Compose: full STOA stack locally | stoa docker compose local development | Tutorial | P1 | Published (stoa-docker-compose-local-development) |
 | D4 | STOA developer portal: publish your first API | api developer portal publish api | Tutorial | P2 | TODO |
 | D5 | GitOps for API management: ArgoCD + STOA | gitops api management argocd | Tutorial | P2 | TODO |
 
@@ -127,26 +127,28 @@
 
 Based on pillar gaps, keyword opportunity, and seasonal relevance:
 
-1. **A7** — REST to MCP conversion (Pillar 2 needs more tutorials, high search intent)
-2. **M1** — Axway migration (Pillar 1 gap, Axway users searching for alternatives)
-3. **A1** — MCP protocol deep-dive (foundational, supports all Pillar 2 spokes)
-4. **M2** — WSO2 migration (Pillar 1 gap, strong enterprise keyword)
-5. **O2** — K8s-native API gateway patterns (Pillar 3, KubeCon Q2 hook)
-6. **A4** — MCP vs OpenAI vs LangChain (high-traffic comparison keyword)
-7. **D1** — Quick start tutorial (onboarding, always-green content)
-8. **O4** — Security hardening guide (Pillar 3 gap, security is evergreen)
-9. **A2** — AI agent security patterns (Pillar 2 gap, enterprise demand)
-10. **M6** — Generic migration checklist (Pillar 1, captures broad search intent)
+1. ~~**A7** — REST to MCP conversion~~ ✅ Published
+2. ~~**M1** — Axway migration~~ ✅ Published
+3. ~~**A1** — MCP protocol deep-dive~~ ✅ Published
+4. ~~**M2** — WSO2 migration~~ ✅ Published
+5. ~~**O2** — K8s-native API gateway patterns~~ ✅ Published (batch 6)
+6. ~~**A4** — MCP vs OpenAI vs LangChain~~ ✅ Published
+7. ~~**D1** — Quick start tutorial~~ ✅ Published (batch 6)
+8. ~~**O4** — Security hardening guide~~ ✅ Published (batch 6)
+9. ~~**A2** — AI agent security patterns~~ ✅ Published (batch 6)
+10. ~~**M6** — Generic migration checklist~~ ✅ Published (batch 6)
+
+**All 10 recommended articles are now published.** Batch 7 added: A3, A5, O8, D2, D3. Next priorities: A6, A8, O1, O3, D4.
 
 ## Hub Health Dashboard
 
 | Pillar | Hub Article | Published Spokes | TODO Spokes | Health |
 |--------|------------|------------------|-------------|--------|
-| Migration | `api-gateway-migration-guide-2026` | 5 | 7 | Good (5+) |
-| MCP & AI | `what-is-mcp-gateway` + `connecting-ai-agents-enterprise-apis` | 3 | 9 | Needs spokes |
-| Open Source | `open-source-api-gateway-2026` | 7 | 8 | Good (7+) |
+| Migration | `api-gateway-migration-guide-2026` | 7 | 5 | Excellent (7+) |
+| MCP & AI | `what-is-mcp-gateway` + `connecting-ai-agents-enterprise-apis` | 9 | 3 | Excellent (9+) |
+| Open Source | `open-source-api-gateway-2026` | 10 | 5 | Excellent (10+) |
 
-**Priority**: Pillar 2 (MCP & AI) has the fewest spokes relative to its importance. Focus new content here.
+**All 3 pillars now have 7+ published spokes.** Batch 7 added 5 articles (A3, A5, O8, D2, D3). Focus on remaining depth topics (A6, A8, O1, O3) and Dev Experience (D4, D5).
 
 ## Content Templates
 

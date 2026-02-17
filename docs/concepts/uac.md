@@ -70,26 +70,13 @@ portal:
 
 The UAC is the artifact that flows through the GitOps pipeline:
 
-```
-Console UI / CLI / API
-        │
-        ▼
-  Control Plane API
-        │ (writes UAC)
-        ▼
-  GitLab Repository
-        │
-        ▼
-  ArgoCD (detects change)
-        │
-        ▼
-  Control Plane API
-        │ (reads UAC)
-        ▼
-  Gateway Adapter
-        │ (translates UAC → native format)
-        ▼
-  Target Gateway (webMethods, Kong, ...)
+```mermaid
+flowchart TB
+    UI["Console UI / CLI / API"] --> CP["Control Plane API"]
+    CP -->|"writes UAC"| Git["Git Repository"]
+    Git --> Argo["ArgoCD<br/>(detects change)"]
+    Argo --> Adapter["Gateway Adapter<br/>(translates UAC → native format)"]
+    Adapter --> Target["Target Gateway<br/>(webMethods, Kong, Apigee, ...)"]
 ```
 
 ## UAC Components

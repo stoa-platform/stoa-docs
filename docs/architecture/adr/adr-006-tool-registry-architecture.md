@@ -41,35 +41,28 @@ Refactor the tool registry into a **modular mixin-based architecture** with sing
 
 ### Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                          ToolRegistry                                │
-│        (Composition of 8 mixins via multiple inheritance)           │
-│                                                                      │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │
-│  │ Registration │  │   Lookup     │  │ Deprecation  │              │
-│  │    Mixin     │  │   Mixin      │  │    Mixin     │              │
-│  │              │  │              │  │              │              │
-│  │ - register() │  │ - get()      │  │ - aliases    │              │
-│  │ - unregister │  │ - list()     │  │ - resolve()  │              │
-│  └──────────────┘  └──────────────┘  └──────────────┘              │
-│                                                                      │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │
-│  │  Invocation  │  │ CoreRouting  │  │   Action     │              │
-│  │    Mixin     │  │   Mixin      │  │  Handlers    │              │
-│  │              │  │              │  │    Mixin     │              │
-│  │ - invoke()   │  │ - route to   │  │ - handle_*   │              │
-│  │              │  │   core tool  │  │   actions    │              │
-│  └──────────────┘  └──────────────┘  └──────────────┘              │
-│                                                                      │
-│  ┌──────────────┐  ┌──────────────┐                                │
-│  │   Proxied    │  │   External   │                                │
-│  │    Mixin     │  │    Mixin     │                                │
-│  │              │  │              │                                │
-│  │ - invoke     │  │ - Linear,    │                                │
-│  │   proxied    │  │   GitHub...  │                                │
-│  └──────────────┘  └──────────────┘                                │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    TR["**ToolRegistry**<br/>_Composition of 8 mixins via multiple inheritance_"]
+
+    TR --> REG["**RegistrationMixin**<br/>register · unregister"]
+    TR --> LK["**LookupMixin**<br/>get · list · search"]
+    TR --> DEP["**DeprecationMixin**<br/>aliases · resolve"]
+    TR --> INV["**InvocationMixin**<br/>invoke"]
+    TR --> CR["**CoreRoutingMixin**<br/>route to core tool"]
+    TR --> AH["**ActionHandlersMixin**<br/>handle_* actions"]
+    TR --> PR["**ProxiedMixin**<br/>invoke proxied tenant tools"]
+    TR --> EX["**ExternalMixin**<br/>Linear, GitHub..."]
+
+    style TR fill:#7c3aed,stroke:#5b21b6,color:#fff
+    style REG fill:#dbeafe,stroke:#2563eb,color:#000
+    style LK fill:#dbeafe,stroke:#2563eb,color:#000
+    style DEP fill:#fef3c7,stroke:#f59e0b,color:#000
+    style INV fill:#d1fae5,stroke:#059669,color:#000
+    style CR fill:#d1fae5,stroke:#059669,color:#000
+    style AH fill:#d1fae5,stroke:#059669,color:#000
+    style PR fill:#fce7f3,stroke:#db2777,color:#000
+    style EX fill:#fce7f3,stroke:#db2777,color:#000
 ```
 
 ### File Structure

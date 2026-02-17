@@ -397,4 +397,4 @@ This pattern is not raw Keycloak federation — it is federation **composed with
 - [Keycloak Identity Brokering](https://www.keycloak.org/docs/latest/server_admin/#_identity_broker)
 - [GDPR Article 28 — Processor](https://gdpr-info.eu/art-28-gdpr/)
 - [GDPR Article 17 — Right to Erasure](https://gdpr-info.eu/art-17-gdpr/)
-- [ADR-024 — Gateway Unified Modes](https://docs.gostoa.dev/architecture/adr/adr-024-gateway-unified-modes)
+- [ADR-024 — Gateway Unified Modes](/docs/architecture/adr/adr-024-gateway-unified-modes)

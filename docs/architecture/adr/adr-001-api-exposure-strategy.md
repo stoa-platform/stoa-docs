@@ -46,37 +46,35 @@ Adopt a **Control Plane / Data Plane** architecture with Core API as central hub
 
 ### Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                       CONTROL PLANE                                  │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌────────┐ ┌────────┐ ┌────────┐                                   │
-│  │ Portal │ │Console │ │  MCP   │   ← UI Layer (optional)           │
-│  │  (SPA) │ │  (SPA) │ │ Server │                                   │
-│  └───┬────┘ └───┬────┘ └───┬────┘                                   │
-│      │          │          │                                         │
-│      └──────────┼──────────┘                                         │
-│                 │                                                    │
-│          ┌──────▼──────┐                                             │
-│          │  STOA Core  │   ← Central hub (required)                  │
-│          │     API     │                                             │
-│          └──────┬──────┘                                             │
-│                 │                                                    │
-│    ┌────────────┼────────────┐                                       │
-│    │            │            │                                       │
-│ PostgreSQL    GitLab     Keycloak                                    │
-│ (runtime)   (source)      (IAM)                                      │
-└─────────────────────────────────────────────────────────────────────┘
-                  │
-                  │ GitOps Sync
-                  ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                      DATA PLANE                                      │
-│  ┌───────────────────────────────────────────────────────────────┐  │
-│  │              webMethods Gateway                                │  │
-│  │   Routing │ Rate Limit │ Auth │ Transform                     │  │
-│  └───────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph CP["CONTROL PLANE"]
+        Portal["Portal<br/><small>SPA</small>"]
+        Console["Console<br/><small>SPA</small>"]
+        MCP["MCP Server"]
+        CoreAPI["STOA Core API<br/><small>Central hub</small>"]
+        PG[("PostgreSQL<br/><small>runtime</small>")]
+        GL[("GitLab<br/><small>source</small>")]
+        KC[("Keycloak<br/><small>IAM</small>")]
+
+        Portal --> CoreAPI
+        Console --> CoreAPI
+        MCP --> CoreAPI
+        CoreAPI --> PG
+        CoreAPI --> GL
+        CoreAPI --> KC
+    end
+
+    subgraph DP["DATA PLANE"]
+        GW["webMethods Gateway<br/><small>Routing · Rate Limit · Auth · Transform</small>"]
+    end
+
+    CoreAPI -- "GitOps Sync" --> GW
+
+    style CP fill:#1a1a2e,stroke:#3b82f6,color:#e2e8f0
+    style DP fill:#1a1a2e,stroke:#10b981,color:#e2e8f0
+    style CoreAPI fill:#3b82f6,stroke:#3b82f6,color:#fff
+    style GW fill:#10b981,stroke:#10b981,color:#fff
 ```
 
 ### Components
@@ -93,11 +91,16 @@ Adopt a **Control Plane / Data Plane** architecture with Core API as central hub
 
 #### Rule 1: Unidirectional Dependencies
 
-```
-Portal ──────┐
-Console ─────┼──► Core API ──► PostgreSQL
-MCP Server ──┘              ──► GitLab
-                            ──► Keycloak
+```mermaid
+graph LR
+    Portal --> CoreAPI["Core API"]
+    Console --> CoreAPI
+    MCP["MCP Server"] --> CoreAPI
+    CoreAPI --> PG["PostgreSQL"]
+    CoreAPI --> GL["GitLab"]
+    CoreAPI --> KC["Keycloak"]
+
+    style CoreAPI fill:#3b82f6,stroke:#3b82f6,color:#fff
 ```
 
 **Forbidden:** Portal → PostgreSQL (direct), MCP Server → GitLab (direct)
@@ -125,23 +128,26 @@ stoa-catalog/
 
 ### Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                       CONTROL PLANE                                  │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌────────────────────────────────────────────────────────────────┐ │
-│  │                      INTERNAL                                   │ │
-│  │  Portal ─────┐                                                  │ │
-│  │  Console ────┼──► Core API ──► PostgreSQL / GitLab / Keycloak  │ │
-│  │  MCP Server ─┘       ▲                                          │ │
-│  └──────────────────────┼─────────────────────────────────────────┘ │
-│                         │                                            │
-│  ┌──────────────────────┼─────────────────────────────────────────┐ │
-│  │                 EXTERNAL (third-party)                          │ │
-│  │  Third-party ──► webMethods ──► Public API ──┘                 │ │
-│  │                  (rate limit)   (façade)                        │ │
-│  └─────────────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph LR
+    subgraph Internal["INTERNAL"]
+        Portal --> CoreAPI["Core API"]
+        Console --> CoreAPI
+        MCP["MCP Server"] --> CoreAPI
+        CoreAPI --> DB["PostgreSQL / GitLab / Keycloak"]
+    end
+
+    subgraph External["EXTERNAL (third-party)"]
+        TP["Third-party"] --> WM["webMethods<br/><small>rate limit</small>"]
+        WM --> Facade["Public API<br/><small>façade</small>"]
+    end
+
+    Facade --> CoreAPI
+
+    style Internal fill:#1a1a2e,stroke:#3b82f6,color:#e2e8f0
+    style External fill:#1a1a2e,stroke:#f59e0b,color:#e2e8f0
+    style CoreAPI fill:#3b82f6,stroke:#3b82f6,color:#fff
+    style Facade fill:#f59e0b,stroke:#f59e0b,color:#fff
 ```
 
 ### Endpoints Exposed to Third Parties
