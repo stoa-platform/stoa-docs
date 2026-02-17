@@ -376,5 +376,5 @@ STOA uses a single Anthropic API key for all tenants, with internal metering.
 - [MCP Specification 2025-03-26](https://spec.modelcontextprotocol.io/)
 - [ADR-024: Gateway Unified Modes](/docs/architecture/adr/adr-024-gateway-unified-modes)
 - [ADR-043: Kafka MCP Event Bridge](/docs/architecture/adr/adr-043-kafka-mcp-event-bridge)
-- [ADR-046: MCP Federation Architecture](/docs/architecture/adr/adr-046-mcp-federation-architecture)
-- [ADR-047: MCP Skills System](/docs/architecture/adr/adr-047-mcp-skills-system)
+- ADR-046: MCP Federation Architecture (planned)
+- ADR-047: MCP Skills System (planned)
