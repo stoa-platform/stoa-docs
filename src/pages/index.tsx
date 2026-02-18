@@ -317,8 +317,8 @@ export default function Home(): JSX.Element {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title="Open-Source AI API Gateway — Docs, Guides & Migration"
-      description="STOA Platform documentation — modernize your API gateway with MCP support, multi-tenant isolation, and migration guides from webMethods, Apigee, Kong.">
+      title="STOA Platform Docs — The European Agent Gateway | Define Once, Expose Everywhere"
+      description="STOA Platform documentation — the open-source AI-native API gateway with MCP support, multi-tenant isolation, and migration guides from webMethods, Apigee, Kong.">
       <HomepageHeader />
       <main>
         <QuickStartSection />
