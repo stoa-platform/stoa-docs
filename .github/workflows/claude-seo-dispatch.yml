@@ -1,0 +1,114 @@
+# CAB-1385 — AI Factory SEO Automation: On-Demand Article Dispatch
+# Triggered by repository_dispatch from n8n or manual API call.
+# Generates an article from a Linear ticket brief, creates a PR.
+# Kill-switch: set DISABLE_SEO_DISPATCH=true in repo variables.
+#
+# Dispatch payload schema:
+#   ticket_id: "CAB-XXXX" (required)
+#   title: "Article title" (required)
+#   description: "Brief / requirements" (required)
+#   keywords: "comma,separated,keywords" (optional)
+#   content_type: "tutorial|comparison|glossary|news" (optional, default: tutorial)
+
+name: Claude SEO Dispatch
+
+on:
+  repository_dispatch:
+    types: [seo-content-requested]
+
+concurrency:
+  group: seo-dispatch-${{ github.event.client_payload.ticket_id }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate:
+    if: vars.DISABLE_SEO_DISPATCH != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci
+
+      - name: Generate article
+        uses: anthropics/claude-code-action@beta
+        with:
+          prompt: |
+            Generate a blog article for ticket ${{ github.event.client_payload.ticket_id }}:
+            Title: ${{ github.event.client_payload.title }}
+            Brief: ${{ github.event.client_payload.description }}
+            Keywords: ${{ github.event.client_payload.keywords }}
+            Content type: ${{ github.event.client_payload.content_type || 'tutorial' }}
+
+            Read .claude/rules/seo-content.md for templates, word counts, and rules.
+            Read .claude/rules/content-compliance.md for disclaimer templates.
+            Follow all front-matter requirements (slug, title, description, tags, keywords).
+            Add `unlisted: true` in frontmatter.
+            Filename: blog/YYYY-MM-DD-<slug>.md with today's date.
+            Ensure hub-spoke linking per seo-content.md pillar structure.
+          model: claude-sonnet-4-5-20250514
+          max_turns: 20
+          allowed_tools: "Read,Glob,Grep,Write"
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Validate build
+        run: npm run build
+
+      - name: Create PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TICKET: ${{ github.event.client_payload.ticket_id }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BRANCH="seo/${TICKET}-$(date +%Y%m%d)"
+          git checkout -b "$BRANCH"
+          git add blog/
+          if git diff --cached --quiet; then
+            echo "No article generated, skipping PR creation"
+            exit 0
+          fi
+          git commit -m "docs(blog): ${TICKET} SEO article"
+          git push -u origin "$BRANCH"
+          gh pr create --title "docs(blog): ${TICKET} article" \
+            --body "$(cat <<EOF
+          ## Summary
+          Generated from Linear ticket ${TICKET} via AI Factory SEO pipeline (CAB-1385).
+
+          ## Review checklist
+          - [ ] Article quality and accuracy verified
+          - [ ] Internal links resolve correctly
+          - [ ] Disclaimer present (if comparative)
+          - [ ] \`unlisted: true\` set (remove when ready to publish)
+
+          **Requires human review before merge.**
+          EOF
+          )"
+
+      - name: Notify Slack
+        if: always()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TICKET: ${{ github.event.client_payload.ticket_id }}
+        run: |
+          [ -z "$SLACK_WEBHOOK" ] && exit 0
+          STATUS="${{ job.status }}"
+          if [ "$STATUS" = "success" ]; then
+            MSG=":rocket: SEO Dispatch: ${TICKET} — PR created, pending review"
+          else
+            MSG=":warning: SEO Dispatch: ${TICKET} — workflow $STATUS — check logs"
+          fi
+          curl -s -X POST "$SLACK_WEBHOOK" -H 'Content-Type: application/json' \
+            -d "{\"text\":\"$MSG\"}"
