@@ -1,0 +1,64 @@
+# CAB-1385 — AI Factory SEO Automation: Weekly Content Audit
+# Scans blog/ for stale "last verified" dates, missing hub-spoke links,
+# and missing disclaimers. Creates a GitHub issue with findings.
+# Kill-switch: set DISABLE_SEO_AUDIT=true in repo variables.
+
+name: Claude SEO Audit
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Monday 09:00 UTC
+  workflow_dispatch: {}
+
+concurrency:
+  group: seo-audit
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    if: vars.DISABLE_SEO_AUDIT != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run SEO audit
+        uses: anthropics/claude-code-action@beta
+        with:
+          prompt: |
+            Audit all blog/ files for SEO health:
+            1. Find `<!-- last verified -->` dates older than 6 months — list as STALE
+            2. Check hub-spoke links: every spoke must link to its hub (see .claude/rules/seo-content.md pillars)
+            3. Flag comparison articles missing disclaimer footer
+            4. Check PLAN-SEO.md for topics marked TODO older than 3 months
+            5. Check all articles have required front-matter: slug, title, description, tags, keywords
+
+            Output a markdown report with sections for each check.
+            If findings exist, create a GitHub issue titled "SEO Audit — YYYY-MM-DD"
+            with label "seo-audit" and the report as body.
+            If no findings, output "All clear — no SEO issues found."
+          model: claude-haiku-4-5-20251001
+          max_turns: 10
+          allowed_tools: "Read,Glob,Grep,Bash"
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Notify Slack
+        if: always()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          [ -z "$SLACK_WEBHOOK" ] && exit 0
+          STATUS="${{ job.status }}"
+          if [ "$STATUS" = "success" ]; then
+            MSG=":mag: SEO Audit complete — check GitHub issues for findings"
+          else
+            MSG=":warning: SEO Audit: workflow $STATUS — check logs"
+          fi
+          curl -s -X POST "$SLACK_WEBHOOK" -H 'Content-Type: application/json' \
+            -d "{\"text\":\"$MSG\"}"
