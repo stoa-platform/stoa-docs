@@ -4,7 +4,6 @@ title: "How We Built an AI Factory That Ships 72 Story Points Per Day"
 description: "How a solo developer used Claude Code, MCP integrations, and multi-instance coordination to ship 505 story points in 7 days — the architecture behind STOA's AI Factory."
 authors: [christophe]
 tags: [ai, architecture, open-source, tutorial]
-unlisted: true
 keywords:
   - ai factory software development
   - claude code productivity

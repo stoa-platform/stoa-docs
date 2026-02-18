@@ -4,7 +4,6 @@ title: "Kubernetes-Native API Gateway Patterns: From Ingress to MCP (2026 Guide)
 description: "Learn the 4 key Kubernetes-native API gateway patterns — Ingress, Gateway API, sidecar, and MCP gateway. Architecture diagrams and implementation guide."
 authors: [stoa-team]
 tags: [tutorial, api-gateway, architecture]
-unlisted: true
 keywords:
   - kubernetes native api gateway patterns
   - kubernetes api gateway architecture
