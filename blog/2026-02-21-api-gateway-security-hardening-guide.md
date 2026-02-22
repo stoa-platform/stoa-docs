@@ -4,7 +4,6 @@ title: "API Gateway Security Hardening: 10-Step Checklist for Production (2026)"
 description: "Harden your API gateway for production with this 10-step security checklist. Covers TLS, CORS, rate limiting, SSRF protection, headers, and audit logging."
 authors: [stoa-team]
 tags: [tutorial, security, api-gateway]
-unlisted: true
 keywords:
   - open source api gateway security hardening
   - api gateway security checklist production

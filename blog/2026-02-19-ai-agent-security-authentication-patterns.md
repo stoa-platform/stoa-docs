@@ -4,7 +4,6 @@ title: "AI Agent Security: 5 Authentication Patterns for Enterprise API Access"
 description: "Secure AI agent API access with OAuth2, mTLS, API keys, token exchange, and certificate binding. Enterprise patterns with implementation examples."
 authors: [stoa-team]
 tags: [tutorial, security, ai, mcp]
-unlisted: true
 keywords:
   - ai agent api authentication security
   - ai agent oauth2 authentication
