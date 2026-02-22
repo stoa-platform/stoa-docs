@@ -1,13 +1,13 @@
 ---
 sidebar_position: 2
 title: "CLI Reference (stoactl)"
-description: "stoactl CLI reference — kubectl-style command-line interface for managing STOA Platform resources, bridging APIs to MCP, and local development"
-keywords: [CLI, command line, stoactl, reference, MCP, bridge, OpenAPI]
+description: "stoactl CLI reference — kubectl-style command-line interface for managing STOA Platform resources, deploying APIs, and bridging to MCP."
+keywords: [CLI, command line, stoactl, reference, deploy, rollback, logs, MCP, bridge, OpenAPI]
 ---
 
 # CLI Reference (stoactl)
 
-`stoactl` is a kubectl-style CLI for managing STOA Platform resources. It provides project scaffolding, API-to-MCP bridging, diagnostics, and resource management.
+`stoactl` is a kubectl-style CLI for managing STOA Platform resources. It provides API deployment, project scaffolding, API-to-MCP bridging, diagnostics, and resource management.
 
 ## Installation
 
@@ -44,6 +44,8 @@ go install github.com/stoa-platform/stoactl@latest
 
 | Command | Description |
 |---------|-------------|
+| `stoactl deploy` | Deploy an API from a stoa.yaml file |
+| `stoactl logs` | Show deployment history for an API |
 | `stoactl init` | Initialize a new STOA project |
 | `stoactl bridge` | Convert OpenAPI spec to MCP Tool CRDs |
 | `stoactl doctor` | Run diagnostic checks |
@@ -54,6 +56,162 @@ go install github.com/stoa-platform/stoactl@latest
 | `stoactl config` | Manage CLI contexts |
 | `stoactl token-usage` | View API token usage statistics |
 | `stoactl version` | Print version information |
+
+---
+
+## Deployment Commands
+
+### `stoactl deploy`
+
+Deploy an API to a target environment from a [`stoa.yaml`](/docs/reference/stoa-yaml) file, or use sub-commands to manage deployments imperatively.
+
+```bash
+stoactl deploy [stoa.yaml] [flags]
+stoactl deploy <subcommand>
+```
+
+**File-based deploy (recommended):**
+
+```bash
+stoactl deploy ./stoa.yaml --env production
+stoactl deploy ./api.yaml --env dev --watch
+```
+
+**Flags (file-based deploy):**
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--env` | — | Target environment: `dev`, `staging`, `production` (**required**) |
+| `--watch`, `-w` | `false` | Poll deployment status until completion (success or failure) |
+| `--output`, `-o` | `table` | Output format: `table`, `wide`, `yaml`, `json` |
+
+---
+
+#### `stoactl deploy create`
+
+Create a deployment imperatively (without a stoa.yaml file).
+
+```bash
+stoactl deploy create --api-id <id> --env <env> --version <version> [flags]
+```
+
+**Flags:**
+
+| Flag | Required | Description |
+|------|----------|-------------|
+| `--api-id` | **Yes** | API ID to deploy |
+| `--env` | **Yes** | Target environment |
+| `--version` | **Yes** | Version to deploy (e.g. `2.0.0`) |
+| `--gateway` | No | Target gateway ID |
+| `--commit` | No | Git commit SHA (for traceability) |
+| `--watch`, `-w` | No | Watch deployment until completion |
+
+**Example:**
+
+```bash
+stoactl deploy create --api-id customer-api --env production --version 2.0.0 --watch
+```
+
+---
+
+#### `stoactl deploy list`
+
+List recent deployments with optional filters.
+
+```bash
+stoactl deploy list [flags]
+stoactl deploy ls [flags]
+```
+
+**Flags:**
+
+| Flag | Description |
+|------|-------------|
+| `--api-id` | Filter by API ID |
+| `--env` | Filter by environment |
+| `--status` | Filter by status: `pending`, `in_progress`, `success`, `failed`, `rolled_back` |
+| `--page` | Page number (default: `1`) |
+| `--page-size` | Items per page (default: `20`) |
+| `-o` | Output format: `table`, `wide`, `yaml`, `json` |
+
+**Example:**
+
+```bash
+stoactl deploy list --env production --status success -o wide
+```
+
+---
+
+#### `stoactl deploy get`
+
+Get detailed information about a specific deployment.
+
+```bash
+stoactl deploy get <deployment-id>
+```
+
+**Example:**
+
+```bash
+stoactl deploy get deploy-abc12345
+stoactl deploy get deploy-abc12345 -o json
+```
+
+---
+
+#### `stoactl deploy rollback`
+
+Rollback a deployment to its previous version.
+
+```bash
+stoactl deploy rollback <deployment-id>
+```
+
+**Example:**
+
+```bash
+# Find the deployment to roll back
+stoactl deploy list --api-id customer-api --env production
+
+# Roll back
+stoactl deploy rollback deploy-abc12345
+```
+
+---
+
+### `stoactl logs`
+
+Show deployment history for an API — recent deployments, statuses, and error messages.
+
+```bash
+stoactl logs <api-name> [flags]
+```
+
+**Flags:**
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--env` | — | Filter by environment (dev, staging, production) |
+| `--limit` | `10` | Number of recent deployments to show |
+
+**Example:**
+
+```bash
+stoactl logs customer-api
+stoactl logs customer-api --env production --limit 5
+```
+
+**Output columns:** `ID`, `ENV`, `VERSION`, `STATUS`, `BY`, `STARTED`, `MESSAGE`
+
+**Status values:**
+
+| Status | Meaning |
+|--------|---------|
+| `OK` | Deployment succeeded |
+| `FAIL` | Deployment failed (see MESSAGE column) |
+| `...` | Deployment in progress |
+| `WAIT` | Deployment queued |
+| `<<<` | Deployment was rolled back |
 
 ---
 
@@ -326,7 +484,50 @@ stoactl version
 
 ---
 
-## End-to-End Workflow
+## Workflows
+
+### Deploy an API (stoa.yaml)
+
+```bash
+# 1. Authenticate
+stoactl auth login
+
+# 2. Create stoa.yaml (or export from Console)
+cat > stoa.yaml <<EOF
+name: customer-api
+version: 2.0.0
+rate_limit:
+  requests_per_minute: 1000
+auth:
+  type: oauth2
+  issuer: ${STOA_AUTH_URL}/realms/acme
+  required: true
+EOF
+
+# 3. Deploy to staging first
+stoactl deploy ./stoa.yaml --env staging --watch
+
+# 4. Check logs
+stoactl logs customer-api --env staging
+
+# 5. Deploy to production
+stoactl deploy ./stoa.yaml --env production --watch
+```
+
+### Rollback a failed deployment
+
+```bash
+# 1. Find the failed deployment
+stoactl deploy list --api-id customer-api --env production
+
+# 2. Roll back
+stoactl deploy rollback deploy-abc12345
+
+# 3. Confirm rollback succeeded
+stoactl logs customer-api --env production --limit 3
+```
+
+### Bridge an API to MCP
 
 ```bash
 # 1. Set up project
@@ -351,3 +552,11 @@ for f in tools/*.yaml; do stoactl apply -f "$f"; done
 # 7. Verify
 stoactl get tools
 ```
+
+---
+
+## Related
+
+- [stoa.yaml Reference](/docs/reference/stoa-yaml) — Full field reference for the deployment spec
+- [ADR-045: stoa.yaml Declarative API Spec](/docs/architecture/adr/adr-045-stoa-yaml-declarative-spec) — Design decisions
+- [Environment Management Guide](/docs/guides/environment-management) — Managing dev, staging, production

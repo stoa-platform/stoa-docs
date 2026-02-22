@@ -115,6 +115,7 @@ const sidebars: SidebarsConfig = {
         'reference/configuration',
         'reference/mcp-tools',
         'reference/cli',
+        'reference/stoa-yaml',
         'reference/rbac-permissions',
         'reference/oauth-discovery',
         'reference/quotas',
