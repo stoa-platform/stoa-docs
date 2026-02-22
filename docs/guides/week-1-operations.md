@@ -84,7 +84,7 @@ Save this as `check-stoa.sh` and run it via cron:
 #!/bin/bash
 # check-stoa.sh — run every 5 minutes via cron
 
-GATEWAY_URL="${STOA_GATEWAY_URL:-http://localhost:3001}"
+GATEWAY_URL="${STOA_GATEWAY_URL:-http://localhost:8080}"
 ALERT_EMAIL="you@example.com"
 
 response=$(curl -s -o /dev/null -w "%{http_code}" "$GATEWAY_URL/health")

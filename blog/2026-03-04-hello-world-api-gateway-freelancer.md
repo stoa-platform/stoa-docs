@@ -62,7 +62,7 @@ docker compose up -d
 Wait ~30 seconds for all services to start, then verify:
 
 ```bash
-curl -s http://localhost:3001/health | jq .
+curl -s http://localhost:8080/health | jq .
 # {"status":"ok","version":"0.1.0"}
 ```
 
@@ -105,7 +105,7 @@ TOKEN=$(curl -s -X POST http://localhost:8080/realms/stoa/protocol/openid-connec
   | jq -r .access_token)
 
 # Create tenant
-curl -s -X POST http://localhost:8000/v1/tenants \
+curl -s -X POST http://localhost:8080/v1/tenants \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -126,7 +126,7 @@ Your "backend API" can be anything — your Flask app, a Node.js service, an exi
 ```bash
 TENANT_ID="<your-tenant-id>"
 
-curl -s -X POST http://localhost:8000/v1/tenants/$TENANT_ID/apis \
+curl -s -X POST http://localhost:8080/v1/tenants/$TENANT_ID/apis \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -156,7 +156,7 @@ Let's add a 100 requests/minute limit:
 API_ID="<your-api-id>"
 
 # Step 1: Create the rate limit policy
-POLICY_ID=$(curl -s -X POST http://localhost:8000/v1/admin/policies \
+POLICY_ID=$(curl -s -X POST http://localhost:8080/v1/admin/policies \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -171,7 +171,7 @@ POLICY_ID=$(curl -s -X POST http://localhost:8000/v1/admin/policies \
   }' | jq -r .id)
 
 # Step 2: Bind the policy to your API
-curl -s -X POST http://localhost:8000/v1/admin/policies/bindings \
+curl -s -X POST http://localhost:8080/v1/admin/policies/bindings \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -190,7 +190,7 @@ Policies are reusable: the same rate limit policy can be bound to multiple APIs.
 A **consumer** is anyone calling your API — a client, a service, yourself. Each consumer gets an API key.
 
 ```bash
-curl -s -X POST http://localhost:8000/v1/consumers/$TENANT_ID \
+curl -s -X POST http://localhost:8080/v1/consumers/$TENANT_ID \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -205,7 +205,7 @@ The response includes a `consumer_id`. To get the API key for this consumer, cre
 ```bash
 CONSUMER_ID="<consumer-id-from-above>"
 
-curl -s -X POST http://localhost:8000/v1/subscriptions \
+curl -s -X POST http://localhost:8080/v1/subscriptions \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -227,7 +227,7 @@ Time for the actual Hello World moment:
 API_KEY="<your-api-key>"
 
 # Call through the gateway
-curl -s http://localhost:3001/echo-api/get \
+curl -s http://localhost:8080/echo-api/get \
   -H "X-API-Key: $API_KEY" | jq .
 ```
 
@@ -242,7 +242,7 @@ You should see a response from httpbin.org, routed through STOA's gateway:
     "X-Forwarded-For": "172.19.0.1"
   },
   "origin": "172.19.0.1",
-  "url": "http://localhost:3001/echo-api/get"
+  "url": "http://localhost:8080/echo-api/get"
 }
 ```
 
@@ -253,7 +253,7 @@ Notice the injected headers — STOA automatically adds `X-Consumer-Id` and `X-R
 ```bash
 # Hammer the API 110 times
 for i in $(seq 1 110); do
-  curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3001/echo-api/get \
+  curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/echo-api/get \
     -H "X-API-Key: $API_KEY"
 done
 ```
@@ -269,7 +269,7 @@ STOA logs every request with consumer identity, timestamp, response code, and la
 Or query via API:
 
 ```bash
-curl -s "http://localhost:8000/v1/audit/$TENANT_ID?limit=10" \
+curl -s "http://localhost:8080/v1/audit/$TENANT_ID?limit=10" \
   -H "Authorization: Bearer $TOKEN" | jq '.logs[] | {consumer, path, status, latency_ms}'
 ```
 
