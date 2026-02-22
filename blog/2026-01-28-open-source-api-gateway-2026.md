@@ -69,7 +69,7 @@ STOA is the newest entrant, purpose-built for the AI era. It combines a Rust-bas
 |---|:---:|:---:|:---:|:---:|:---:|
 | **License** | Apache 2.0 | Apache 2.0 | Apache 2.0 | MPL 2.0 | Apache 2.0 |
 | **Language** | Lua / Go | C++ | Lua / Go | Go | Rust / Python |
-| **MCP Support** | Plugin (since 3.12) | No | No | No | Native (core) |
+| **MCP Support** | Plugin (since 3.12, Enterprise only) | No | No | No | Native (core) |
 | **Multi-Tenancy (OSS)** | No | No | No | Yes | Yes |
 | **Developer Portal (OSS)** | No | No | No | Yes | Yes |
 | **Admin Console (OSS)** | No | No | Dashboard | Yes | Yes |

@@ -60,7 +60,7 @@ Layer 0 — Proxy Baseline (existing)
   Measures: raw HTTP throughput, burst, availability
 
 Layer 1 — Enterprise AI Readiness (new)
-  STOA ~95  |  Kong ~5
+  STOA ~78  |  Gravitee ~TBD  |  Kong ~10
   Measures: MCP, auth, guardrails, governance
 ```
 
@@ -68,9 +68,11 @@ Why not merge them? Because they measure different things. A gateway scoring 90 
 
 ## What Scoring 0 Means
 
-Kong and Gravitee score near-zero on Layer 1. This isn't a bug — it reflects the current state of their public documentation. As of 2026-02, neither Kong's nor Gravitee's documentation describes native MCP endpoint support, OPA-based tool call policies, or built-in PII detection in agent payloads.
+Kong scores near-zero on Layer 1 because its MCP support (`ai-mcp-proxy` plugin, added in Gateway 3.12) requires an Enterprise license — the open-source edition does not include the plugin. In our arena, Kong runs at OSS 3.9.1, the latest community version.
 
-**Score 0 means "not implemented," not "broken."**
+Gravitee 4.8 community edition includes an MCP entrypoint (Apache 2.0, no license required). We've added Gravitee to the enterprise benchmark with Streamable HTTP (JSON-RPC 2.0) protocol support — its scores will appear in future runs.
+
+**Score 0 means "not implemented in the tested edition," not "broken."**
 
 And here's the important part: it's an invitation. The benchmark spec is open ([ADR-049](/docs/architecture/adr/adr-049-enterprise-ai-native-benchmark)). The [k6 scripts are open source](https://github.com/stoa-platform/stoa/tree/main/scripts/traffic/arena/). Any gateway can:
 
@@ -175,7 +177,7 @@ A composite score (0-100) measuring 8 enterprise dimensions: MCP support, auth c
 
 ### Why does Kong score 0 on Layer 1?
 
-As of 2026-02, Kong's public documentation does not describe native MCP endpoints, OPA-based tool call policies, or built-in PII guardrails. Score 0 means "not implemented" — Kong can implement these features and re-run the benchmark to improve their score. The spec is open.
+Kong's MCP support (`ai-mcp-proxy`, `ai-mcp-oauth2` plugins) was added in Gateway 3.12 but requires an Enterprise license. The arena runs Kong OSS 3.9.1, which does not include MCP plugins. Score 0 means "not available in the tested edition." Kong Enterprise users with MCP enabled can add their gateway to the config and re-run the benchmark.
 
 ### Can other gateways participate?
 
