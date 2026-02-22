@@ -23,13 +23,13 @@ Proxy throughput benchmarks tell you how fast a gateway can forward HTTP request
 
 Every API gateway benchmark you'll find online measures the same thing: how many requests per second can the gateway proxy from A to B. Latency percentiles, burst capacity, connection handling — all variations of the same question: "how fast is your reverse proxy?"
 
-For traditional API gateways, this is the right question. Kong, Envoy, and APISIX are fundamentally reverse proxies with plugin systems. Their value proposition is throughput, and their benchmarks prove it.
+For traditional API gateways, this is the right question. Kong, Envoy, and APISIX are optimized for high-throughput HTTP proxying — a design strength reflected in their architectures and benchmarks.
 
 But 2026 is not 2020. AI agents are making tool calls through MCP. Enterprises need guardrails that detect PII in agent payloads. Security teams need OAuth 2.1 chains that validate JWT tokens on every tool invocation. Platform teams need governance over agent sessions that can run autonomously for hours.
 
 **None of this is measured by a proxy throughput benchmark.**
 
-Our own [Gateway Arena](/blog/stoa-gateway-performance-benchmarks) runs 7 scenarios measuring raw HTTP performance. Kong scores ~87. STOA scores ~73. Kong wins — because the test measures what Kong does best: optimized nginx proxying.
+Our own [Gateway Arena](https://github.com/stoa-platform/stoa/tree/main/scripts/traffic/arena/) runs 7 scenarios measuring raw HTTP performance using [open-source k6 scripts](https://github.com/stoa-platform/stoa/blob/main/scripts/traffic/arena/benchmark.js). In our tests, Kong scores ~87 and STOA scores ~73 — Kong leads on proxy throughput because the test measures what Kong excels at.
 
 But ask the benchmark whether either gateway can serve MCP tools, evaluate OPA policies on tool calls, or block PII in agent payloads — and the answer is silence. The benchmark doesn't know. It wasn't designed to.
 
@@ -64,11 +64,11 @@ Layer 1 — Enterprise AI Readiness (new)
   Measures: MCP, auth, guardrails, governance
 ```
 
-Why not merge them? Because they measure different things. A gateway scoring 90 on a combined index — is it fast, AI-ready, or both? You can't tell. Two separate scores give clarity: Kong is a better proxy, STOA is a better AI gateway. Both statements are true.
+Why not merge them? Because they measure different things. A gateway scoring 90 on a combined index — is it fast, AI-ready, or both? You can't tell. Two separate scores give clarity: Kong leads on proxy throughput, STOA leads on AI-native capabilities.
 
 ## What Scoring 0 Means
 
-Kong and Gravitee score near-zero on Layer 1. This isn't a bug — it's a factual observation. These gateways don't implement MCP endpoints. They don't have OPA-based tool call policies. They don't detect PII in agent payloads.
+Kong and Gravitee score near-zero on Layer 1. This isn't a bug — it reflects the current state of their public documentation. As of 2026-02, neither Kong's nor Gravitee's documentation describes native MCP endpoint support, OPA-based tool call policies, or built-in PII detection in agent payloads.
 
 **Score 0 means "not implemented," not "broken."**
 
@@ -158,7 +158,7 @@ Results are pushed to Prometheus Pushgateway and visualized in a dedicated Grafa
 
 ## What This Means for the Industry
 
-We're not claiming STOA is "better" than Kong. Kong is a faster proxy — Layer 0 proves it. What we are claiming is that **proxy throughput is an incomplete metric for 2026**. The industry needs a benchmark that measures AI readiness, and we're publishing the first one.
+We're not claiming STOA outperforms Kong overall — Kong leads on proxy throughput, as Layer 0 demonstrates. What we are claiming is that **proxy throughput is an incomplete metric for 2026**. The industry needs a benchmark that measures AI readiness, and we're publishing the first one.
 
 The spec is open. The code is open source. The invitation stands: implement MCP, run the benchmark, publish your score.
 
@@ -175,7 +175,7 @@ A composite score (0-100) measuring 8 enterprise dimensions: MCP support, auth c
 
 ### Why does Kong score 0 on Layer 1?
 
-Kong does not implement MCP endpoints, OPA-based tool call policies, or PII guardrails. Score 0 means "not implemented" — Kong can implement these features and re-run the benchmark to improve their score. The spec is open.
+As of 2026-02, Kong's public documentation does not describe native MCP endpoints, OPA-based tool call policies, or built-in PII guardrails. Score 0 means "not implemented" — Kong can implement these features and re-run the benchmark to improve their score. The spec is open.
 
 ### Can other gateways participate?
 
@@ -187,4 +187,4 @@ Traditional benchmarks (like the [TechEmpower Framework Benchmark](https://www.t
 
 ### Is the benchmark biased toward STOA?
 
-STOA designed the benchmark, so the dimensions reflect what we believe matters for AI-native gateways. However: the scoring formula is transparent, the code is open source, and Layer 0 (where Kong outscores STOA) remains unchanged. Readers can judge whether the 8 dimensions are the right ones.
+STOA designed the benchmark, so the dimensions reflect what we believe matters for AI-native gateways. However: the scoring formula is transparent, the code is open source, and Layer 0 (where Kong outscores STOA) remains unchanged. We welcome peer review and challenge on the dimension choices. Readers can judge whether the 8 dimensions are the right ones.
