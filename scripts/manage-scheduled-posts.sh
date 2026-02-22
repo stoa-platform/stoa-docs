@@ -52,6 +52,14 @@ has_unlisted() {
     | grep -q '^unlisted:[[:space:]]*true' 2>/dev/null
 }
 
+# Check if frontmatter explicitly sets unlisted: false (force-publish override)
+# When set, the script skips auto-scheduling for this post regardless of date
+has_force_published() {
+  local file="$1"
+  awk 'BEGIN{fm=0} /^---$/{fm++; next} fm==1{print} fm>=2{exit}' "$file" \
+    | grep -q '^unlisted:[[:space:]]*false' 2>/dev/null
+}
+
 # Add unlisted: true to frontmatter (after line 1, which is always ---)
 add_unlisted() {
   local file="$1"
@@ -151,6 +159,15 @@ for entry in "$BLOG_DIR"/2*; do
     ((skipped++)) || true
     if [[ "$MODE" != "--apply" ]] || [[ "${VERBOSE:-}" == "1" ]]; then
       log_action "$BLUE" "SKIP" "$filename" "has manual draft: true"
+    fi
+    continue
+  fi
+
+  # Skip posts with unlisted: false (force-publish override — author wants post live now)
+  if has_force_published "$file"; then
+    ((skipped++)) || true
+    if [[ "$MODE" != "--apply" ]] || [[ "${VERBOSE:-}" == "1" ]]; then
+      log_action "$GREEN" "SKIP" "$filename" "force-published (unlisted: false)"
     fi
     continue
   fi
