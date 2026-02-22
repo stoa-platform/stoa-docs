@@ -1,0 +1,58 @@
+{
+  "version.label": {
+    "message": "Actuel",
+    "description": "The label for version current"
+  },
+  "sidebar.docs.category.Concepts": {
+    "message": "Concepts",
+    "description": "The label for category 'Concepts' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Enterprise": {
+    "message": "Entreprise",
+    "description": "The label for category 'Enterprise' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Deployment": {
+    "message": "Déploiement",
+    "description": "The label for category 'Deployment' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Administration": {
+    "message": "Administration",
+    "description": "The label for category 'Administration' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Guides": {
+    "message": "Guides",
+    "description": "The label for category 'Guides' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Technical Fiches": {
+    "message": "Fiches techniques",
+    "description": "The label for category 'Technical Fiches' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Migration": {
+    "message": "Migration",
+    "description": "The label for category 'Migration' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.API Reference": {
+    "message": "Référence API",
+    "description": "The label for category 'API Reference' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Reference": {
+    "message": "Référence",
+    "description": "The label for category 'Reference' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Kubernetes CRDs": {
+    "message": "CRDs Kubernetes",
+    "description": "The label for category 'Kubernetes CRDs' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Architecture Decisions": {
+    "message": "Décisions d'architecture",
+    "description": "The label for category 'Architecture Decisions' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Community": {
+    "message": "Communauté",
+    "description": "The label for category 'Community' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Legal": {
+    "message": "Mentions légales",
+    "description": "The label for category 'Legal' in sidebar 'docs'"
+  }
+}
