@@ -154,6 +154,7 @@ If your use case involves AI agents, multi-tenancy, or European compliance, STOA
 - [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
 - [API Gateway Patterns](/docs/guides/fiches/api-gateway-patterns) — Architecture patterns for modern API gateways
 - [MCP Gateway Concepts](/docs/concepts/mcp-gateway) — Understanding AI-native gateway architecture
+- [Enterprise AI-Native Gateway Benchmark](/blog/enterprise-ai-native-gateway-benchmark) — Why proxy throughput is the wrong metric for AI gateways
 
 ---
 
