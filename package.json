@@ -50,16 +50,7 @@
   "overrides": {
     "lodash": "^4.17.23",
     "lodash-es": "^4.17.23",
-    "qs": "^6.14.2",
-    "url-loader": {
-      "ajv": "^6.14.0"
-    },
-    "file-loader": {
-      "ajv": "^6.14.0"
-    },
-    "null-loader": {
-      "ajv": "^6.14.0"
-    }
+    "qs": "^6.14.2"
   },
   "license": "Apache-2.0"
 }
