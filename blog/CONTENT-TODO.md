@@ -2,18 +2,22 @@
 
 Links referenced in published/scheduled articles that point to articles or pages not yet created.
 
+## ✅ Resolved (2026-02-22)
+
+### Phase 3 Examples — stoa-quickstart (CAB-1393) — DONE
+
+All 5 examples created in stoa-quickstart repo — PR #2:
+- `examples/stripe-api-proxy` ✅
+- `examples/notion-mcp-bridge` ✅
+- `examples/multi-tenant-saas` ✅
+- `examples/jwt-auth-gateway` ✅
+- `examples/openai-proxy` ✅
+
+---
+
 ## Broken Internal Links (as of 2026-02-22)
 
-### Phase 3 Examples — stoa-quickstart (CAB-1393)
-
-Referenced in Phase 2 articles but not yet created in stoa-quickstart repo:
-- `stripe-api-proxy` — Stripe API behind STOA with rate limiting
-- `notion-mcp-bridge` — Notion API exposed as MCP tool
-- `multi-tenant-saas` — Multi-tenant API gateway setup
-- `jwt-auth-gateway` — JWT validation + RBAC
-- `openai-proxy` — OpenAI API proxy with token budgets
-
-**Ticket**: CAB-1393 Phase 3 | **Target**: stoa-quickstart repo
+*None currently known.*
 
 ---
 
@@ -37,7 +41,7 @@ Referenced in Phase 2 articles but not yet created in stoa-quickstart repo:
 - `/docs/guides/consumer-onboarding` ✅
 - `/docs/guides/authentication` ✅
 - `/docs/guides/observability` ✅
-- `/docs/deployment/hybrid-deployment` ✅
+- `/docs/deployment/hybrid` ✅ (slug is `hybrid`, not `hybrid-deployment`)
 - `/docs/guides/week-1-operations` — 2026-02-22 ✅ created (CAB-1393 Phase 1)
 
 ---
