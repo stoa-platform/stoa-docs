@@ -85,8 +85,18 @@ ERI = sum(weight_i * dimension_score_i)
 
 The benchmark spec is public (this ADR). Any gateway can participate:
 
-1. Implement the MCP endpoints listed above
-2. Add a gateway entry to the GATEWAYS JSON with `mcp_base` pointing to the MCP root
+1. Implement MCP endpoints (either STOA REST or Streamable HTTP JSON-RPC 2.0)
+2. Add a gateway entry to the GATEWAYS JSON:
+   ```json
+   {
+     "name": "my-gw",
+     "target": "http://my-gateway:8080",
+     "mcp_base": "http://my-gateway:8080/mcp",
+     "mcp_protocol": "streamable-http",
+     "health": "http://my-gateway:8080/health"
+   }
+   ```
+   `mcp_protocol` values: `"stoa"` (REST paths) or `"streamable-http"` (JSON-RPC 2.0 on single endpoint). Default: `"stoa"`.
 3. Run the benchmark
 4. Submit results (or run it yourself — the k6 scripts are open source)
 
@@ -127,7 +137,8 @@ We define the category, but we don't lock the door.
 
 ### Neutral
 
-- Kong and Gravitee start at 0 but can improve. If Kong implements MCP, their score rises automatically — no code changes needed on our side.
+- Kong's MCP support (`ai-mcp-proxy` plugin, since 3.12) requires an Enterprise license; the OSS edition tested in the arena does not include MCP. Kong Enterprise users can add their gateway to the config.
+- Gravitee 4.8 community edition includes an MCP entrypoint (Apache 2.0). The arena tests Gravitee via Streamable HTTP (JSON-RPC 2.0) protocol using the `mcp_protocol: "streamable-http"` config field.
 
 ## Implementation
 
