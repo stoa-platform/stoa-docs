@@ -1,332 +1,339 @@
 ---
 slug: api-gateway-migration-guide-2026
-title: "API Gateway Migration Guide 2026: From Legacy to AI-Native"
+title: "API Gateway Migration Guide 2026: From Legacy Platforms to AI-Ready Infrastructure"
 authors: [stoa-team]
-tags: [migration, architecture, ai]
-description: "Compare migration paths from legacy API gateways to AI-native platforms. Decision framework, risk assessment, and phased migration strategy for 2026."
-keywords: [API gateway migration, API gateway modernization, webMethods migration, Kong migration, Apigee migration, MuleSoft migration, DataPower migration, Oracle OAM migration, MCP gateway, AI gateway, API management migration 2026, legacy API gateway, enterprise API modernization]
+tags: [migration, api-gateway, ai, mcp]
+description: "Complete guide to migrating from legacy API gateways (Layer7, webMethods, Axway, Apigee) to modern open-source platforms in 2026. Covers assessment, policy translation, phased traffic migration, and AI agent readiness."
+keywords:
+  - api gateway migration
+  - api gateway migration guide 2026
+  - legacy api gateway replacement
+  - layer7 migration
+  - webmethods migration
+  - axway migration
+  - apigee migration
+  - api gateway modernization
+  - open source api gateway
+  - enterprise api gateway
+  - api gateway ai agents
+  - mcp api gateway
+  - european api gateway
 ---
+
 <!-- last verified: 2026-02 -->
 
-# API Gateway Migration Guide 2026: From Legacy to AI-Native
+# API Gateway Migration Guide 2026: From Legacy Platforms to AI-Ready Infrastructure
 
-Enterprise API gateways face a 2026 inflection point. AI agents need MCP, regulators demand NIS2/DORA, and Kubernetes is the new runtime. This guide provides a vendor-neutral framework for migrating from legacy gateways using a zero-downtime augment-first strategy.
+Migrating from a legacy API gateway is one of the highest-stakes infrastructure projects an enterprise platform team can undertake. Done well, it eliminates years of accumulated technical debt, reduces licensing costs, and opens the door to AI agent integration. Done poorly, it disrupts production APIs and erodes trust with every team that depends on the platform.
 
-Enterprise API gateways are at an inflection point. The rise of AI agents that consume APIs programmatically — combined with European sovereignty requirements (NIS2, DORA) and the shift to Kubernetes-native infrastructure — is forcing organizations to rethink their API management stack.
-
-This guide provides a vendor-neutral framework for evaluating and executing an API gateway migration, whether you're running webMethods, Kong, Apigee, DataPower, Oracle OAM, or MuleSoft.
+This guide provides a vendor-neutral framework for planning and executing an API gateway migration in 2026 — covering assessment, policy translation, phased traffic migration, and the new requirements introduced by AI agents. Specific guidance for individual platforms (Broadcom Layer7, Software AG webMethods, Axway, Apigee) is linked throughout.
 
 <!-- truncate -->
 
-## Why 2026 Is the Migration Tipping Point
+## Why 2026 Is the Right Moment to Migrate
 
-Three converging forces make 2026 the year that legacy API gateway migration moves from "nice to have" to "strategic priority":
+Three forces have converged to make 2026 the natural migration window for enterprise teams that have been deferring this decision.
 
-### 1. AI Agents Need API Gateways
+### The Legacy Licensing Inflection Point
 
-AI agents (Claude, GPT, custom LLM-based agents) are increasingly consuming enterprise APIs. But traditional API gateways were designed for human developers who read documentation and manually configure API calls. AI agents need:
+Broadcom's 2023 acquisition of VMware — and the subsequent restructuring of enterprise software licensing agreements — has accelerated the timelines of teams that might otherwise have delayed. Similar pricing pressure is emerging from Software AG's transition and the ongoing consolidation of the Axway portfolio. Organizations that previously accepted high maintenance costs as a known quantity are now facing renegotiated contracts with materially different economics. This has created budget and executive appetite for migrations that stalled for years.
 
-- **Automatic API discovery** — agents can't read PDF documentation
-- **Machine-readable schemas** — tool definitions, not Swagger pages
-- **Token-level governance** — track which agent called what, with what cost
-- **Real-time streaming** — Server-Sent Events (SSE) for long-running operations
+### Kubernetes-Native Infrastructure Is Now the Standard
 
-The **Model Context Protocol (MCP)** addresses this gap. Gateways that support MCP natively let AI agents discover, authenticate, and call APIs without human intervention. Gateways that don't support MCP require custom glue code for every agent integration.
+In 2019, running a legacy API gateway on VMs alongside a nascent Kubernetes environment was a reasonable interim posture. By 2026, Kubernetes is the operational standard for enterprise platform teams, and the friction of adapting legacy gateway deployments to GitOps workflows, Helm-based deployment, and Kubernetes-native scaling has become a continuous engineering tax. Platforms designed from the ground up for Kubernetes deliver significantly lower operational overhead for teams that have made the platform investment.
 
-### 2. European Sovereignty Is Non-Negotiable
+### AI Agents Have Become First-Class API Consumers
 
-NIS2 (effective October 2024) and DORA (effective January 2025) impose strict requirements on critical infrastructure and financial services:
+The emergence of AI agents as API consumers is not a future trend — it is happening in production today. AI agents have fundamentally different interaction patterns from human-driven applications: they discover APIs dynamically, invoke multiple tools in sequence, require streaming responses for long-running tasks, and generate new metering and governance requirements (token-level accounting, per-agent quotas, audit trails for regulatory compliance). Legacy gateways were not designed for these patterns. Adding MCP (Model Context Protocol) support, tool discovery, and agent metering as extensions to an assertion-based policy engine designed for human-driven REST and SOAP traffic creates architectural debt from the first day of deployment.
 
-- **Data residency** — API traffic metadata must stay within EU jurisdictions
-- **Incident reporting** — 24-hour notification for significant incidents
-- **Supply chain security** — third-party risk assessment for cloud dependencies
-- **Business continuity** — demonstrated resilience and failover capabilities
+Organizations that migrate now can build AI agent infrastructure on the same platform as their API management — rather than running two parallel systems.
 
-Organizations running API gateways on US-headquartered cloud platforms face increasing scrutiny about data sovereignty. Self-hosted, open-source alternatives provide the control needed for compliance.
+## The Four Migration Drivers — And How to Use Them
 
-### 3. Kubernetes Changed the Game
+Before writing a migration plan, identify which drivers apply to your organization. Each driver changes the scope, sequencing, and success metrics of the migration.
 
-The shift from VM-based to container-based infrastructure means API gateways must be:
+**Licensing cost reduction** drives migrations where the primary goal is eliminating per-gateway, per-API, or per-call fees. Success is measured in reduced annual spend. This driver justifies broad scope (migrate everything) but requires careful timeline management to avoid licensing penalties during the transition.
 
-- **Cloud-native** — Kubernetes Deployments, not JVM installations
-- **GitOps-compatible** — declarative configuration in Git, not GUI wizards
-- **Observable** — Prometheus metrics, not proprietary dashboards
-- **Multi-tenant** — namespace-level isolation, not shared instances
+**Platform consolidation** drives migrations where multiple gateway products have accumulated across the organization — often through acquisitions, departmental initiatives, or historical vendor relationships. Success is measured in reduced platform count and operational simplification. This driver often requires a policy normalization effort before technical migration.
 
-Legacy gateways designed for the pre-Kubernetes era often require significant adaptation to fit modern infrastructure patterns.
+**AI agent readiness** drives migrations where the primary goal is enabling new capabilities rather than replacing existing ones. Success is measured in time-to-first-AI-agent-deployment and quality of agent observability. This driver justifies a sidecar deployment model: the new gateway handles AI agent traffic from day one while legacy traffic migrates in phases.
 
----
+**Regulatory compliance** drives migrations where European sovereignty requirements (NIS2, DORA), data residency mandates, or supply chain auditability requirements cannot be met by a commercial SaaS gateway. Success is measured in documented compliance posture. This driver requires on-premises or private cloud deployment of the new gateway control plane.
 
-## The Decision Framework
+Most migrations involve more than one driver. Prioritize them explicitly — the primary driver determines which phase of the migration must succeed first.
 
-Before choosing a migration target, assess your current state:
+## Platform Assessment: Understanding What You Have
 
-### Step 1: Inventory Your APIs
+A migration can only go as fast as your understanding of the existing system. Incomplete inventories are the most common cause of migration delays and production incidents.
 
-| Question | Impact on Migration |
-|----------|-------------------|
-| How many APIs are in production? | Determines migration waves and timeline |
-| What protocols do they use? | REST, SOAP, GraphQL, gRPC, WebSocket |
-| What authentication patterns? | API key, OAuth2, mTLS, SAML, custom |
-| What transformations are applied? | Simple routing vs. complex mediation |
-| How many consumers per API? | Affects identity migration complexity |
+### API Inventory
 
-### Step 2: Assess Your Pain Points
+Build a complete inventory of every API currently managed by the gateway. For each API, document:
 
-| Pain Point | Migration Driver | Priority |
-|------------|-----------------|----------|
-| License costs exceeding budget | Cost optimization | High |
-| Talent pool shrinking | Operational risk | High |
-| No AI agent support | Innovation gap | Medium-High |
-| Single-cloud dependency | Strategic risk | Medium |
-| No GitOps integration | DevOps friction | Medium |
-| Missing observability | Operational visibility | Medium |
-| Compliance gaps (NIS2/DORA) | Regulatory risk | High |
+- **Protocol**: REST, SOAP, XML-RPC, GraphQL, gRPC, WebSocket
+- **Authentication method**: OAuth2, SAML, API key, mTLS, Kerberos, NTLM, Basic
+- **Traffic volume**: Requests per day, peak TPS, SLA tier
+- **Business criticality**: Revenue-generating, internal tooling, partner-facing, regulatory
+- **Policy complexity**: Simple (auth + routing) versus complex (transformation, orchestration, WS-Security, custom assertions)
+- **Dependencies**: Which applications consume this API, which backend services it calls
 
-### Step 3: Evaluate Migration Paths
+The output of this inventory determines the sequencing of your migration. APIs with simple REST/OAuth2 profiles migrate first. APIs with complex SOAP/WS-Security, Kerberos, or custom assertion chains migrate last — or run in parallel indefinitely if the business case for migration does not justify the translation effort.
 
-Not all migrations are equal. The right approach depends on your source platform:
+### Infrastructure Assessment
 
-| Source Platform | Migration Complexity | Key Challenge |
-|----------------|---------------------|---------------|
-| Kong OSS/Enterprise | Low | Plugin translation |
-| webMethods / DataPower | Medium | Proprietary configuration export |
-| Oracle OAM / API Platform | Medium | Identity federation |
-| Google Apigee | Medium | Custom policy translation |
-| MuleSoft Anypoint | Medium-High | Tight Salesforce ecosystem coupling |
-| TIBCO | Medium | Legacy protocol support |
-| Axway | Medium | Policy Studio translation |
-| WSO2 API Manager | Medium | Synapse mediation migration |
-| AWS API Gateway | Low-Medium | Cloud service dependency mapping |
+| Component | What to Document |
+|-----------|-----------------|
+| Gateway instances | Count, location, version, clustering mode, VM vs container |
+| Policy engine | Total service count, policy fragment library, custom extensions |
+| Identity integration | LDAP/AD structure, SSO federation (SAML, Kerberos, OIDC) |
+| Certificate inventory | CA-signed, self-signed, HSM-managed, expiry dates |
+| Monitoring | Current observability stack, alerting configuration, SLA dashboards |
+| Traffic patterns | Peak TPS by service, geographic distribution, batch vs real-time |
 
----
+### Migration Complexity Classification
 
-## The Augment-First Migration Strategy
+Classify each API into one of three migration tracks:
 
-The biggest risk in API gateway migration is the "big bang" approach: rip out the old, install the new, hope everything works. This approach fails for enterprise-scale deployments.
+**Green (migrate in Phase 3-4):** REST APIs with OAuth2 or API key authentication, no custom policy logic, no SOAP/WS-Security dependencies. These APIs represent the majority of traffic in most modern estates and can be migrated with low risk.
 
-Instead, use the **augment-first** strategy:
+**Yellow (migrate in Phase 4-5):** REST APIs with complex policy logic (multi-step orchestration, response transformation, complex routing rules), SAML-authenticated APIs, or APIs with LDAP/AD group-based authorization. These require policy translation work but no protocol conversion.
+
+**Red (migrate in Phase 5-6 or maintain in parallel):** SOAP/WS-Security APIs, Kerberos/NTLM-authenticated APIs, APIs with custom assertions or proprietary extensions, APIs with HSM-managed cryptographic operations. These require significant translation effort and extended parallel operation.
+
+## The Six-Phase Migration Framework
+
+This framework applies to all legacy gateway platforms. Phase duration scales with estate size and complexity — a 50-service estate may complete in 4 months; a 500-service enterprise estate may require 12-18 months.
+
+### Phase 1: Assessment and Stakeholder Alignment (Weeks 1-6)
+
+The first phase is predominantly organizational, not technical. The technical assessment (API inventory, infrastructure documentation) is straightforward; the hard work is aligning stakeholders on scope, sequencing, and success criteria.
+
+Key deliverables for Phase 1:
+
+The **migration scope document** defines which APIs are in scope for this migration, which are out of scope (and why), and what the go-forward decision criteria are for each out-of-scope API. This document prevents scope creep and provides a reference when individual teams lobby for exceptions.
+
+The **risk register** identifies the specific failure modes that matter for your organization: production traffic disruption, authentication outages, SLA violations, and compliance gaps. Each risk should have an identified owner and a documented mitigation plan.
+
+The **success metrics framework** defines how you will know the migration succeeded. Typical metrics include: reduction in gateway licensing cost (measured at the end of migration), reduction in time-to-onboard for new APIs (measured 90 days post-migration), and P99 latency parity between the old and new gateway (measured at each traffic migration checkpoint).
+
+Stakeholder alignment is non-negotiable at this phase. Platform teams that attempt to execute gateway migrations as purely technical projects — without executive sponsorship and product team buy-in — consistently encounter resistance during the traffic migration phase when individual teams are asked to update their applications.
+
+### Phase 2: Parallel Deployment (Weeks 7-10)
+
+Deploy the new gateway alongside the existing system without touching production traffic. At this phase, the goal is operational familiarity, not migration.
 
 ```
-Phase 1: AUGMENT          Phase 2: COEXIST         Phase 3: MIGRATE
-┌──────────────┐         ┌──────────────┐         ┌──────────────┐
-│ Legacy GW    │         │ Legacy GW    │         │              │
-│ (unchanged)  │   →     │ (90% traffic)│   →     │ New GW       │
-│              │         │              │         │ (100%)       │
-│ + New GW     │         │ New GW       │         │              │
-│   (shadow)   │         │ (10% canary) │         │              │
-└──────────────┘         └──────────────┘         └──────────────┘
- Zero risk               Validated at scale       When ready
+Existing flow (unchanged):
+  All consumers → Legacy Gateway → Backend APIs
+
+New flow (added in parallel):
+  AI Agents    → New Gateway (MCP) → Backend APIs
+  New APIs     → New Gateway       → Backend APIs
+  Shadow       → New Gateway       → /dev/null (for validation)
 ```
 
-### Phase 1: Augment (2-4 weeks)
+The parallel deployment phase establishes three things that are critical for later phases:
 
-Deploy the new gateway alongside your existing one. The new gateway receives shadow traffic (copies of requests) but does not serve production responses.
+**Operational runbooks**: Your team needs to know how to deploy, scale, restart, and debug the new gateway before it carries production traffic. Build this knowledge during parallel deployment.
 
-**What you gain immediately:**
-- Unified API catalog across all gateways
-- Centralized observability (Prometheus + Grafana)
-- Identity federation (Keycloak bridging to existing IdP)
-- Validation that your APIs work through the new gateway
+**Monitoring baselines**: Establish what normal looks like for the new gateway under no load, then under shadow traffic. You need these baselines to distinguish "gateway issue" from "backend issue" during traffic migration.
 
-**What doesn't change:**
-- Production traffic still flows through the legacy gateway
-- No impact on existing consumers
-- Rollback is trivial (remove the shadow)
+**The new API rule**: From the moment the new gateway is deployed, all new APIs go through it. This creates immediate operational value, generates real traffic for monitoring validation, and ensures the platform team gains confidence before the migration begins.
 
-### Phase 2: Coexist (2-4 weeks)
+### Phase 3: Identity Federation (Weeks 8-12, overlaps Phase 2)
 
-Start routing a small percentage of production traffic through the new gateway using canary deployments:
+Identity federation is the highest-risk component of most gateway migrations and benefits from early attention. The goal is to configure the new gateway's identity infrastructure (typically Keycloak or a similar OIDC provider) to federate with the existing identity provider — without replacing it.
 
-1. **1-5% canary** — Validate latency, error rates, response correctness
-2. **25% split** — Confirm under moderate load
-3. **50% split** — Sustained parallel operation
-4. **75% split** — Legacy gateway becomes the fallback
+The federation pattern looks like this:
 
-At every step, you can roll back to 0% in under a minute.
+```
+Applications → New Gateway → Keycloak (OIDC) → Existing IdP (SAML/LDAP/Kerberos)
+```
 
-### Phase 3: Migrate (1-2 weeks)
+Keycloak acts as an OIDC broker that translates between the modern OIDC protocol used by the new gateway and the legacy identity protocols used by the existing IdP. This means:
 
-When confident, shift to 100% through the new gateway:
+- Oracle OAM / CA SiteMinder installations can be federated via SAML 2.0 without migration
+- Active Directory / LDAP installations can be federated via Keycloak's LDAP provider
+- Kerberos environments can be federated via Keycloak's SPNEGO/Kerberos provider
 
-1. Route all traffic through new gateway
-2. Keep legacy gateway running (cold standby) for 2 weeks
-3. Decommission legacy gateway
-4. Archive legacy configuration in Git
+The key principle: **identity migration and gateway migration are independent work streams**. You do not need to migrate your identity provider to migrate your gateway. Federation lets both systems coexist.
 
----
+Validate each authentication pattern in a non-production environment before it carries production traffic. Specifically test: token exchange flows (RFC 8693), claim mapping from legacy SAML attributes to OIDC claims, group membership propagation for authorization, and token expiry and refresh handling.
+
+### Phase 4: Policy Translation (Weeks 11-18)
+
+Policy translation is the most technically demanding phase of most migrations. The goal is to implement equivalent behavior on the new gateway for each policy in the legacy system.
+
+The translation methodology:
+
+**Document before translating.** For each policy or assertion chain, write a plain-language description of what it does: inputs, conditions, outputs, and side effects. This documentation has two benefits: it forces you to understand the policy deeply enough to translate it correctly, and it creates durable documentation of business rules that have often been implicit in policy configuration for years.
+
+**Translate to intent, not implementation.** Many legacy policies contain accumulated workarounds — workarounds for limitations of the original platform, for bugs in specific versions, for edge cases in particular consumer applications. When translating, implement the intent (what business rule should this policy enforce?) rather than the implementation (what steps does the current policy execute?). This often produces simpler, more maintainable policies on the new platform.
+
+**Test with shadow traffic before production.** Mirror production traffic to the new gateway and compare responses. Behavioral differences in response format, error codes, header values, or timing may be invisible in unit tests but surface immediately under real traffic.
+
+The following table maps common legacy policy patterns to their modern equivalents:
+
+| Legacy Pattern | Modern Equivalent | Notes |
+|---------------|-------------------|-------|
+| OAuth2 token validation | JWT validation (built-in) | Standard OIDC flow |
+| SAML assertion handling | Keycloak SAML bridge | Map SAML attributes to OIDC claims |
+| Kerberos/NTLM auth | Keycloak Kerberos federation | SPNEGO → OIDC bridge |
+| Rate limiting / quota | Per-tenant quota policy | Configurable per API, per consumer |
+| XML/SOAP transformation | XSLT proxy or service layer | Move transforms closer to the service |
+| Custom extension code | OPA/Rego policy | More auditable, version-controlled |
+| LDAP group lookup | Keycloak LDAP federation | Groups surfaced as OIDC claims |
+| WS-Security signing | SOAP proxy + mTLS | WS-Security boundary at service layer |
+| IP allow/deny | Kubernetes NetworkPolicy + gateway | Native Kubernetes networking |
+| Audit logging | OpenTelemetry + structured logs | Gateway-native, standards-based |
+
+### Phase 5: Canary Traffic Migration (Weeks 16-24)
+
+Canary traffic migration shifts production load from the legacy gateway to the new gateway in controlled increments. Each increment is held for a defined observation period before the next increment.
+
+A standard canary sequence:
+
+| Stage | Traffic on New Gateway | Observation Period | Rollback Time |
+|-------|----------------------|-------------------|---------------|
+| Canary | 5% | 48 hours | < 1 minute |
+| Early majority | 25% | 1 week | < 1 minute |
+| Split | 50% | 1 week | < 1 minute |
+| Late majority | 90% | 2 weeks | < 1 minute |
+| Full cutover | 100% | — | Legacy on standby |
+
+**At every stage, rollback is one DNS or ingress change away.** The legacy gateway continues running in parallel throughout Phase 5. This is non-negotiable: the ability to roll back in under a minute is what makes canary migration safe.
+
+Metrics to monitor at each stage:
+
+- P50, P95, P99 latency per API — compare between old and new gateway
+- Error rate (4xx, 5xx) per API — any increase requires investigation before proceeding
+- Authentication success rate — watch for token validation failures at scale
+- Throughput (requests per second) — validate the new gateway scales under production load
+- Consumer error reports — actively monitor for teams reporting behavioral changes
+
+Green light criteria before advancing to the next stage: all metrics within 5% of legacy gateway values, no unexplained error rate increase, no consumer escalations.
+
+### Phase 6: Decommission (Weeks 22-30)
+
+The legacy gateway should only be decommissioned after two conditions are met: zero production traffic for at least two weeks, and documented archival of all policy configuration.
+
+Decommission checklist:
+
+- Verify zero traffic on all legacy gateway instances (check access logs, not just routing configuration)
+- Export and archive all policy bundles, service configurations, and certificates
+- Update vendor license agreements per contractual terms
+- Update DNS records, firewall rules, and network policies to remove legacy gateway references
+- Notify all dependent teams of the cutover completion
+- Update runbooks, architecture diagrams, and monitoring dashboards
 
 ## Platform-Specific Migration Guides
 
 For detailed, hands-on guidance for your specific platform:
 
-| Source Platform | Blog Guide | Documentation |
-|----------------|-----------|---------------|
-| Software AG webMethods | [webMethods Migration Guide](/blog/webmethods-migration-guide) | [Docs: webMethods Migration](/docs/guides/migration/ibm-webmethods) |
-| MuleSoft Anypoint | [MuleSoft Migration Guide](/blog/mulesoft-migration-open-source-gateway) | — |
-| Google Apigee | [Apigee Migration Guide](/blog/apigee-alternative-open-source) | [Docs: Apigee Migration](/docs/guides/migration/apigee) |
-| IBM DataPower / TIBCO | [DataPower & TIBCO Guide](/blog/datapower-tibco-migration-guide) | — |
-| Axway | [Axway Migration Guide](/blog/axway-api-gateway-migration-open-source) | — |
-| WSO2 API Manager | [WSO2 Alternative Guide](/blog/wso2-api-manager-open-source-alternative) | — |
-| Kong OSS/Enterprise | — | [Docs: Kong Migration](/docs/guides/migration/kong) |
-| Oracle OAM | — | [Docs: Oracle OAM Migration](/docs/guides/migration/oracle-oam) |
+- **[Broadcom Layer7 API Gateway Migration →](/blog/layer7-ca-api-gateway-migration-stoa)** — Assertion-based policy translation, WS-Security workloads, CA SiteMinder federation
+- **[Software AG webMethods Migration →](/blog/webmethods-migration-guide)** — IS Flow language, IS dependency mapping, IBM licensing, Designer workflow replacement
+- **[Axway API Gateway Migration →](/blog/axway-api-gateway-migration-open-source)** — Policy Studio translation, B2B/EDI workloads, AMPLIFY ecosystem dependencies
+- **[Google Apigee Migration →](/blog/apigee-alternative-open-source)** — GCP dependency decoupling, proxy bundle translation, European data residency
+- **[WSO2 API Manager Migration →](/blog/wso2-api-manager-open-source-alternative)** — Traffic manager, API gateway component separation, open-source to open-source path
+- **[MuleSoft Anypoint Migration →](/blog/mulesoft-migration-open-source-gateway)** — DataWeave translation, Salesforce dependency decoupling, CloudHub migration
+- **[IBM DataPower / TIBCO Migration →](/blog/datapower-tibco-migration-guide)** — WS-Security appliance replacement, SOAP mediation, TIBCO API Manager policies
+- **[Kong OSS / Enterprise →](/docs/guides/migration/kong)** *(docs)* — Declarative config, Lua plugin migration, Kong Enterprise workspace mapping
+- **[Oracle OAM / API Platform →](/docs/guides/migration/oracle-oam)** *(docs)* — WebGate replacement, OIM entitlement migration, Oracle LDAP federation
 
-Each legacy platform has unique migration challenges:
+## AI Agent Readiness: The New Migration Destination
 
-### IBM webMethods / DataPower
+In 2020, a successful API gateway migration meant: your APIs are accessible, secured, monitored, and your developers can self-serve. In 2026, that baseline is necessary but not sufficient.
 
-The most common enterprise migration. webMethods uses proprietary configuration formats and complex mediation flows.
+AI agents are now API consumers, and they have requirements your gateway must be able to meet:
 
-**Key challenges:**
-- Proprietary Flow language in Integration Server
-- No standard export format for API definitions
-- Complex SOAP-to-REST transformations
-- ESB-style mediation patterns
+### Model Context Protocol (MCP) Support
 
-**Migration approach:** Sidecar pattern — deploy new gateway alongside webMethods, federate identity, migrate traffic gradually.
+MCP is an emerging standard that allows AI agents to discover and invoke API tools dynamically. Rather than requiring each AI application to hardcode API client logic, MCP-compatible gateways expose a discovery endpoint that agents can query to understand what APIs are available, what parameters they accept, and what responses they return.
 
-Read the full guide: **[Migrating from webMethods to a Modern API Gateway](/blog/webmethods-migration-guide)**
+Practically, this means your gateway needs to be able to: expose existing REST and SOAP APIs as MCP tools without requiring changes to the backends, provide structured tool descriptions that AI agents can interpret, and handle the session management patterns that agentic workloads require.
 
-See also: **[IBM webMethods / DataPower Migration](/docs/guides/migration/ibm-webmethods)**
+### Agent-Level Metering and Governance
 
-### Kong OSS / Enterprise
+Traditional API metering tracks requests per application or per user. AI agents introduce a new accountability requirement: which agent, running on behalf of which user, for which AI application, consumed which APIs, at what cost?
 
-Kong's declarative configuration model makes it one of the easiest migrations.
+This requires per-agent quota enforcement, per-agent audit trails (for regulatory compliance in finance and healthcare), and token-level accounting for LLM-backed agents that generate API calls proportional to context window size.
 
-**Key challenges:**
-- Custom Lua plugins require rewriting
-- Kong Enterprise features (Workspaces, Vitals) need equivalent solutions
-- Consumer group migration to multi-tenant namespaces
+### Streaming and Long-Running Request Support
 
-**Migration approach:** Export declarative config, map plugins to policies, canary traffic migration.
+AI agents frequently need streaming responses — either for real-time generation (SSE, WebSocket) or for long-running tasks that exceed the timeout constraints of traditional request-response APIs. Legacy gateways optimized for sub-second REST requests handle these patterns poorly.
 
-Read the full guide: **[Kong OSS / Enterprise Migration](/docs/guides/migration/kong)**
+### European Sovereignty for AI Workloads
 
-### Google Apigee
+For European enterprises subject to NIS2 and DORA, routing AI agent traffic through third-party cloud-hosted gateways creates data residency and audit trail challenges. On-premises or private cloud gateway deployment ensures that AI agent interactions — including the prompts and responses that flow through the gateway — remain under organizational control.
 
-Apigee migrations are often motivated by European data sovereignty requirements.
+## Common Migration Failure Modes
 
-**Key challenges:**
-- Custom JavaScript policies in API proxies
-- Shared flows and flow hooks
-- Monetization features
-- Tight Google Cloud integration
+Understanding the most frequent failure modes allows teams to build explicit mitigations into their plans.
 
-**Migration approach:** Export proxy bundles, translate policies, federate developer identities, gradual traffic shift.
+**Incomplete inventory:** The single most common cause of production incidents during traffic migration is an API that was not in the inventory — a legacy endpoint still in use by a system that was not included in the stakeholder communication. Mitigation: validate the inventory by analyzing gateway access logs for the prior 90 days, not just the service registry or documentation.
 
-Read the full guide: **[Google Apigee Migration](/docs/guides/migration/apigee)**
+**Identity translation errors at scale:** Token validation and claim mapping edge cases that pass unit tests often surface under production load. Mitigation: shadow traffic testing during Phase 4 with active comparison of authentication responses.
 
-See also: **[Open-Source Apigee Alternative](/blog/apigee-alternative-open-source)**
+**SOAP/WS-Security underestimation:** Organizations consistently underestimate the translation effort for WS-Security workloads. A service that looks like a simple API may depend on XML signature, XML encryption, or WS-Trust token exchange that requires significant policy work. Mitigation: Red-track classification in Phase 1, extended timeline for SOAP services.
 
-### Oracle OAM / API Platform
+**Stakeholder resistance during traffic migration:** When individual product teams are asked to validate their applications against the new gateway, they often surface issues that had been masked by the legacy gateway's behavior — workarounds, undocumented features, non-standard error handling. This resistance is legitimate and must be planned for. Mitigation: dedicated migration support resources for each product team during their traffic migration window.
 
-Oracle stack migrations center on identity federation — moving from Oracle Access Manager to modern OIDC.
+**Rollback plan not tested:** A rollback plan that has never been executed is not a rollback plan. Mitigation: execute a full rollback drill in a pre-production environment before the first production canary deployment.
 
-**Key challenges:**
-- WebGate agent replacement
-- OIM entitlement model translation
-- Custom SAML assertion handling
-- Oracle LDAP directory migration
+## Measuring Migration Success
 
-**Migration approach:** Keycloak federation with Oracle LDAP, phased WebGate-to-OIDC migration.
+Define success metrics before the migration begins, not after. The metrics that matter depend on your primary migration driver, but the following are broadly applicable:
 
-Read the full guide: **[Oracle OAM / API Platform Migration](/docs/guides/migration/oracle-oam)**
+**Operational metrics (measured continuously during migration):**
+- Gateway P99 latency: new gateway within 5% of legacy at each traffic stage
+- Error rate: no unexplained increase above baseline at any traffic stage
+- Availability: new gateway uptime equal to or better than legacy during migration window
 
-### MuleSoft Anypoint
+**Business metrics (measured 90 days post-migration):**
+- API onboarding time: reduction in time from API development complete to production-accessible
+- Self-service adoption: percentage of API subscriptions completed without manual intervention
+- Licensing cost: actual spend reduction against pre-migration baseline
 
-MuleSoft migrations involve untangling from the broader Salesforce ecosystem.
-
-**Key challenges:**
-- Tight coupling with Salesforce CRM data
-- Anypoint Exchange marketplace dependencies
-- DataWeave transformation language
-- CloudHub deployment model
-
-**Migration approach:** API-by-API extraction, starting with APIs that don't depend on Salesforce connectors.
-
-*Full migration guide: coming Q2 2026.*
-
-### AWS API Gateway / Azure APIM
-
-Cloud-native gateway migrations are typically driven by multi-cloud strategy or cost optimization.
-
-**Key challenges:**
-- Cloud-specific IAM integration
-- Serverless (Lambda/Functions) backend coupling
-- Usage plan and API key migration
-
-**Migration approach:** OpenAPI import, identity bridging, DNS-level traffic routing.
-
-*Full migration guides: coming Q3 2026.*
-
----
-
-## Risk Mitigation Checklist
-
-Every migration phase should include these safeguards:
-
-| Risk | Mitigation |
-|------|-----------|
-| Data loss during cutover | Shadow mode validates before live traffic |
-| Consumer authentication breaks | Identity federation runs parallel for 2+ weeks |
-| Latency regression | Baseline measurements before and during migration |
-| Missing API functionality | Shadow traffic comparison catches discrepancies |
-| Compliance gap | Audit trail maintained throughout migration |
-| Rollback needed | DNS or ingress-level fallback in < 1 minute |
-
----
-
-## What to Look for in a Migration Target
-
-When evaluating a new API gateway, prioritize these capabilities:
-
-| Capability | Why It Matters |
-|------------|---------------|
-| MCP Protocol support | AI agents are the next wave of API consumers |
-| Multi-tenant isolation | Enterprise-grade separation, not just logical groups |
-| GitOps-first configuration | Declarative, auditable, reproducible |
-| Open source | No vendor lock-in, full source code access |
-| Kubernetes-native | Helm charts, CRDs, Prometheus metrics |
-| European hosting option | NIS2/DORA compliance support |
-| Gateway adapter pattern | Orchestrate multiple gateway vendors from one control plane |
-| mTLS and certificate management | Zero-trust security model |
-
----
-
-## Getting Started
-
-If you're evaluating an API gateway migration:
-
-1. **Start with inventory** — Know what you have before deciding what you need
-2. **Identify your top pain point** — Cost, talent, AI support, compliance, or DevOps friction
-3. **Choose augment-first** — Never rip-and-replace; always augment, validate, then migrate
-4. **Pick your first migration wave** — Start with 3-5 non-critical APIs to build confidence
-5. **Measure everything** — Latency, error rates, developer satisfaction, time-to-first-call
-
-For a hands-on walkthrough, see the [STOA Quick Start Guide](/docs/guides/quickstart) — deploy a full API management stack in minutes.
-
----
+**Platform capability metrics (measured at migration completion):**
+- AI agent readiness: number of APIs exposed as MCP tools on day one post-migration
+- Observability coverage: percentage of APIs with P99 latency, error rate, and consumer dashboards
+- Policy-as-code coverage: percentage of gateway policies defined in version-controlled YAML or Rego
 
 ## Frequently Asked Questions
 
-### When should I start an API gateway migration?
+### How long does an API gateway migration take?
 
-Start when you face a clear pain point: license costs exceeding budget, compliance gaps (NIS2/DORA), AI agent support needed, or talent shortages. Don't migrate just because a technology is old — migrate when the cost of staying outweighs the cost of moving. Use the augment-first strategy to validate the new gateway with zero risk before committing to full migration.
+For a small estate (under 50 services), expect 3-4 months. For a mid-size estate (50-150 services), expect 4-6 months. For a large estate (150+ services, multiple legacy platforms, SOAP/WS-Security workloads), expect 9-18 months. The primary variable is policy translation complexity — SOAP/WS-Security and Kerberos services require significantly more time than REST/OAuth2 services.
 
-### How long does a typical migration take?
+### Can I keep running my legacy gateway for some services indefinitely?
 
-Phase 1 (Augment) takes 2-4 weeks and has zero business risk. Phase 2 (Coexist) takes another 2-4 weeks of gradual traffic shifting. Phase 3 (Migrate) is 1-2 weeks of final cutover and decommissioning. Total: 6-10 weeks for a typical enterprise deployment with 50-100 APIs. Large deployments (500+ APIs) may take 6-12 months in staged waves.
+Yes. The sidecar deployment pattern supports indefinite hybrid operation. Many organizations keep their legacy gateway for SOAP/WS-Security workloads while routing all REST, AI agent, and new API traffic through the new gateway. The economics of hybrid operation (two sets of operational overhead) eventually motivate full migration, but there is no technical reason the hybrid state cannot be maintained.
 
-### Can I run the old and new gateways in parallel indefinitely?
+### Do I need to migrate my identity provider at the same time?
 
-Yes. Many organizations run legacy gateways for years in "maintenance mode" while routing new APIs exclusively through modern gateways. This is often the lowest-risk approach. Keep the legacy gateway for APIs that are complex to migrate (heavy SOAP transformations, B2B protocols) and use the new gateway for REST/JSON and AI agent workloads.
+No. Identity migration and gateway migration are independent work streams. Keycloak (or equivalent) can federate with Oracle OAM, CA SiteMinder, Active Directory, and Kerberos without requiring those systems to be replaced. Many organizations complete gateway migration while their legacy IdP continues operating unchanged for years.
 
-### What if my vendor-specific features don't have open-source equivalents?
+### What if my legacy gateway has custom extensions or plugins?
 
-Focus on separating the gateway layer (routing, auth, rate limiting) from integration logic (complex transformations, connectors). Gateway functions have excellent open-source equivalents. Integration-heavy workloads may justify keeping the legacy platform. See the platform-specific guides: [webMethods](/blog/webmethods-migration-guide), [MuleSoft](/blog/mulesoft-migration-open-source-gateway), [DataPower/TIBCO](/blog/datapower-tibco-migration-guide), [Apigee](/blog/apigee-alternative-open-source).
+Custom extensions (Java-based assertions in Layer7, IS services in webMethods, custom filters in Axway) represent the highest-risk migration component. For each extension, document the business purpose (not the implementation), then evaluate three options: implement equivalent logic as an OPA/Rego policy, move the logic to the service layer (a microservice that performs the same function), or maintain the legacy gateway in parallel for services that depend on the extension. The third option is valid — not every custom extension is worth the translation effort.
+
+### What about SOAP APIs — should I modernize them or migrate them?
+
+Treat SOAP modernization as a separate project from gateway migration. For the purposes of migration planning, treat each SOAP API as a Red-track item: keep the legacy gateway handling it until a separate modernization decision has been made. Attempting to modernize SOAP APIs and migrate the gateway simultaneously doubles project risk.
+
+### How do I handle the migration in a regulated industry?
+
+Regulated industries (banking, healthcare, insurance) introduce additional requirements: dual-run periods for audit trail continuity, change management processes that require advance notice, and documentation requirements for each configuration change. Build these into your timeline. The phased migration approach is particularly well-suited to regulated environments because it produces a clear audit trail of what changed, when, and with what validation.
+
+## Next Steps
+
+- **[Broadcom Layer7 Migration Guide →](/blog/layer7-ca-api-gateway-migration-stoa)** — Detailed guidance for teams migrating from Broadcom Layer7 API Gateway™
+- **[Open-Source API Gateway Comparison 2026 →](/blog/open-source-api-gateway-2026)** — Compare STOA, Kong, Gravitee, Tyk, and others
+- **[STOA Quickstart →](/docs/guides/quickstart)** — Deploy in 15 minutes to evaluate
+- **[Hybrid Deployment Guide →](/docs/deployment/hybrid)** — Architecture reference for cloud control plane + on-premises gateway
 
 ---
 
-> Product names mentioned in this article are trademarks of their respective owners. STOA Platform is not affiliated with or endorsed by any mentioned vendor. Feature comparisons are based on publicly available documentation as of 2026-02. See [trademarks](/docs/trademarks) for details.
+> This guide is vendor-neutral and describes general migration patterns applicable to any API gateway platform. It does not imply any deficiency in the platforms mentioned. Migration decisions depend on specific organizational requirements. All trademarks belong to their respective owners.
 
-> STOA Platform provides technical capabilities that support regulatory compliance efforts. This does not constitute legal advice or a guarantee of compliance. Organizations should consult qualified legal counsel for compliance requirements.
+> Feature comparisons and timeline estimates reflect publicly available documentation and field experience as of 2026-02. Capabilities and pricing change frequently — verify current information directly with each vendor.

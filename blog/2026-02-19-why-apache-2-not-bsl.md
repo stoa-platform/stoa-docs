@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: why-apache-2-not-bsl
 title: "Why We Chose Apache 2.0 (And What We Think About BSL)"
 authors: [christophe]
