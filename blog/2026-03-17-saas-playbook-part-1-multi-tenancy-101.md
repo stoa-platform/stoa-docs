@@ -293,7 +293,13 @@ Multi-tenancy is the foundation. Building a production SaaS product on top of it
 - **Scaling to thousands of tenants** — Part 4 covers horizontal scaling, connection pooling, and caching strategies
 - **Production readiness** — Part 5 is a 20-point go-live checklist
 
-Continue with [Part 2: Rate Limiting Strategies for SaaS](/blog/saas-playbook-2-rate-limiting-saas).
+**Complete SaaS Playbook:**
+1. **Part 1: Multi-Tenancy 101** — This article
+2. [Part 2: Rate Limiting Strategies](/blog/saas-playbook-2-rate-limiting-saas) — Per-tenant quotas and burst handling
+3. [Part 3: Audit & Compliance](/blog/saas-playbook-3-audit-compliance) — Immutable logs and GDPR readiness
+4. [Part 4: Scaling Multi-Tenant APIs](/blog/saas-playbook-4-scaling-multi-tenant) — From 50 to 5000 tenants
+5. [Part 5: Production Checklist](/blog/saas-playbook-5-production-checklist) — 20-point go-live gate
+6. [Build vs Buy: API Gateway Cost Analysis](/blog/saas-playbook-build-vs-buy-api-gateway) — TCO analysis for your decision
 
 ## FAQ
 

@@ -330,9 +330,13 @@ This test simulates realistic multi-tenant load: random tenant distribution, rea
 
 With scaling covered, you have the four fundamental pillars of a production-ready multi-tenant SaaS API. The final part of this series brings it all together in a production checklist you can use as a go-live gate.
 
-Continue with [Part 5: Production Checklist](/blog/saas-playbook-5-production-checklist) *(coming April 2)*.
-
-Return to [Part 3: Audit & Compliance](/blog/saas-playbook-3-audit-compliance).
+**Complete SaaS Playbook:**
+1. [Part 1: Multi-Tenancy 101](/blog/saas-playbook-1-multi-tenancy-101) — Isolating your tenants
+2. [Part 2: Rate Limiting Strategies](/blog/saas-playbook-2-rate-limiting-saas) — Per-tenant quotas and burst handling
+3. [Part 3: Audit & Compliance](/blog/saas-playbook-3-audit-compliance) — Immutable logs and GDPR readiness
+4. **Part 4: Scaling Multi-Tenant APIs** — This article
+5. [Part 5: Production Checklist](/blog/saas-playbook-5-production-checklist) — 20-point go-live gate
+6. [Build vs Buy: API Gateway Cost Analysis](/blog/saas-playbook-build-vs-buy-api-gateway) — TCO analysis for your decision
 
 ## FAQ
 

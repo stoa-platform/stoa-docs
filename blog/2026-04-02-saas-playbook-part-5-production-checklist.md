@@ -354,6 +354,7 @@ Congratulations on making it through the SaaS Playbook:
 3. [Part 3: Audit & Compliance](/blog/saas-playbook-3-audit-compliance) — Immutable logs and GDPR readiness
 4. [Part 4: Scaling Multi-Tenant APIs](/blog/saas-playbook-4-scaling-multi-tenant) — From 50 to 5000 tenants
 5. **Part 5: Production Checklist** — This article
+6. [Build vs Buy: API Gateway Cost Analysis](/blog/saas-playbook-build-vs-buy-api-gateway) — TCO analysis for your decision
 
 For decision support on which API gateway to use for your SaaS: [SMB API Gateway Buying Guide 2026](/blog/smb-api-gateway-buying-guide-2026).
 
