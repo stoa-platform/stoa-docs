@@ -4,7 +4,7 @@ name: Scheduled Publish
 # The prebuild script (manage-scheduled-posts.sh) handles:
 #   - Adding unlisted: true to future-dated posts
 #   - Removing unlisted: true from posts whose date has arrived
-# Vercel auto-deploys on push to main, so we just need to commit the changes.
+# Creates a PR and auto-merges it (branch protection blocks direct push to main).
 
 on:
   schedule:
@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   publish-scheduled:
@@ -37,11 +38,27 @@ jobs:
             git diff --name-only blog/
           fi
 
-      - name: Commit and push
+      - name: Create PR and auto-merge
         if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          DATE=$(date +%Y-%m-%d)
+          BRANCH="chore/publish-scheduled-${DATE}"
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
           git add blog/
-          git commit -m "chore(blog): publish scheduled posts for $(date +%Y-%m-%d)"
-          git push
+          git commit -m "chore(blog): publish scheduled posts for ${DATE}"
+          git push origin "$BRANCH"
+
+          PR_URL=$(gh pr create \
+            --title "chore(blog): publish scheduled posts for ${DATE}" \
+            --body "Automated: removes \`unlisted: true\` from blog posts whose publish date has arrived." \
+            --base main \
+            --head "$BRANCH")
+
+          echo "PR created: $PR_URL"
+          gh pr merge "$PR_URL" --squash --auto --delete-branch
+          echo "Auto-merge enabled"
