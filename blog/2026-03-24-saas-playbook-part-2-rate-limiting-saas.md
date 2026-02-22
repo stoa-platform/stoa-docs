@@ -292,11 +292,15 @@ k6 run --env TENANT=acme --env TARGET_RPS=10000 scripts/load-test.js
 
 With multi-tenancy and rate limiting in place, your SaaS API has two of its three fundamental safety mechanisms. The third is **audit logging and compliance**. Part 3 covers how to build immutable audit trails, satisfy GDPR requests, and prepare for compliance audits without rebuilding your logging infrastructure.
 
-Continue with Part 3: Audit & Compliance for SaaS *(coming March 26)*.
+**Complete SaaS Playbook:**
+1. [Part 1: Multi-Tenancy 101](/blog/saas-playbook-1-multi-tenancy-101) — Isolating your tenants
+2. **Part 2: Rate Limiting Strategies** — This article
+3. [Part 3: Audit & Compliance](/blog/saas-playbook-3-audit-compliance) — Immutable logs and GDPR readiness
+4. [Part 4: Scaling Multi-Tenant APIs](/blog/saas-playbook-4-scaling-multi-tenant) — From 50 to 5000 tenants
+5. [Part 5: Production Checklist](/blog/saas-playbook-5-production-checklist) — 20-point go-live gate
+6. [Build vs Buy: API Gateway Cost Analysis](/blog/saas-playbook-build-vs-buy-api-gateway) — TCO analysis for your decision
 
 For comparison of how different API gateways handle rate limiting for SMB use cases, see our [SMB API Gateway Buying Guide](/blog/smb-api-gateway-buying-guide-2026).
-
-Return to [Part 1: Multi-Tenancy 101](/blog/saas-playbook-1-multi-tenancy-101).
 
 ## FAQ
 

@@ -323,9 +323,13 @@ stoactl tenants audit query \
 
 With multi-tenancy (Part 1), rate limiting (Part 2), and audit logging (Part 3) in place, your SaaS API has the three pillars of enterprise readiness. The next challenge: keeping all of this working as you scale from 50 tenants to 5000.
 
-Continue with Part 4: Scaling Multi-Tenant APIs *(coming March 31)*.
-
-Return to [Part 2: Rate Limiting Strategies](/blog/saas-playbook-2-rate-limiting-saas) or [Part 1: Multi-Tenancy 101](/blog/saas-playbook-1-multi-tenancy-101).
+**Complete SaaS Playbook:**
+1. [Part 1: Multi-Tenancy 101](/blog/saas-playbook-1-multi-tenancy-101) — Isolating your tenants
+2. [Part 2: Rate Limiting Strategies](/blog/saas-playbook-2-rate-limiting-saas) — Per-tenant quotas and burst handling
+3. **Part 3: Audit & Compliance** — This article
+4. [Part 4: Scaling Multi-Tenant APIs](/blog/saas-playbook-4-scaling-multi-tenant) — From 50 to 5000 tenants
+5. [Part 5: Production Checklist](/blog/saas-playbook-5-production-checklist) — 20-point go-live gate
+6. [Build vs Buy: API Gateway Cost Analysis](/blog/saas-playbook-build-vs-buy-api-gateway) — TCO analysis for your decision
 
 ## FAQ
 
