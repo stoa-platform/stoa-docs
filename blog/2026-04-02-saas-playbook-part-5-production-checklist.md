@@ -1,10 +1,10 @@
 ---
+unlisted: true
 slug: saas-playbook-5-production-checklist
 title: "SaaS Playbook Part 5: Production Checklist — 20 Gates Before You Go Live"
 description: "Your complete production readiness checklist for multi-tenant SaaS APIs. 20 gate checks covering security, performance, compliance, observability, and incident response."
 authors: [stoa-team]
 tags: [tutorial, architecture, api-gateway]
-unlisted: true
 keywords:
   - SaaS API production checklist
   - API gateway production readiness

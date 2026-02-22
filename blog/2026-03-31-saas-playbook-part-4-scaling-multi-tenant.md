@@ -1,10 +1,10 @@
 ---
+unlisted: true
 slug: saas-playbook-4-scaling-multi-tenant
 title: "SaaS Playbook Part 4: Scaling Multi-Tenant APIs from 50 to 5000 Tenants"
 description: "Scale your multi-tenant SaaS API without rebuilding it. Covers HPA, connection pooling, caching strategies, tenant shard routing, and STOA scaling patterns."
 authors: [stoa-team]
 tags: [tutorial, architecture, api-gateway]
-unlisted: true
 keywords:
   - scaling multi-tenant API
   - SaaS API scaling 5000 tenants
