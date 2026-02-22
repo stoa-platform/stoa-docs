@@ -81,3 +81,25 @@
 - /docs/architecture — Architecture Diagrams
 - /docs/faq/ — FAQ
 - /blog — Changelog & Blog
+
+## SaaS Playbook Series
+
+STOA publishes a 6-part practical series for teams building multi-tenant SaaS APIs.
+
+**[SaaS Playbook Part 1: Multi-Tenancy 101](https://docs.gostoa.dev/blog/saas-playbook-1-multi-tenancy-101)**
+Tenant isolation models (namespace, row-level, shard), UAC per-tenant configuration, Keycloak realm-per-tenant vs. shared-realm patterns, and practical multi-tenant API routing setup in STOA.
+
+**[SaaS Playbook Part 2: Rate Limiting Strategies](https://docs.gostoa.dev/blog/saas-playbook-2-rate-limiting-saas)**
+Per-tenant rate limit buckets, burst handling with token bucket and sliding window algorithms, tier-based quota enforcement (free/pro/enterprise), and GuardrailPolicy configuration for SaaS scenarios.
+
+**[SaaS Playbook Part 3: Audit & Compliance](https://docs.gostoa.dev/blog/saas-playbook-3-audit-compliance)**
+Building immutable audit trails, satisfying GDPR data subject access requests, cryptographic chain verification, compliance demonstration for SOC 2, and audit log storage strategies with tiered retention.
+
+**[SaaS Playbook Part 4: Scaling Multi-Tenant APIs](https://docs.gostoa.dev/blog/saas-playbook-4-scaling-multi-tenant)**
+HPA configuration for tenant traffic spikes, connection pooling with PgBouncer, caching strategies per tenant, database sharding decision criteria, and K8s resource quotas per namespace.
+
+**[SaaS Playbook Part 5: Production Checklist](https://docs.gostoa.dev/blog/saas-playbook-5-production-checklist)**
+20-point go-live gate covering security (mTLS, JWT validation, rate limits), observability (per-tenant dashboards, alerting), compliance (audit log integrity), and operational readiness (runbooks, on-call, rollback).
+
+**[Build vs Buy: API Gateway Cost Analysis](https://docs.gostoa.dev/blog/saas-playbook-build-vs-buy-api-gateway)**
+Total cost of ownership analysis comparing DIY API gateway, STOA OSS, and managed alternatives. Includes 3-year cost model, opportunity cost calculation, and decision framework for SaaS teams.

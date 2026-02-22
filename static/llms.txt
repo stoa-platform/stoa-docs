@@ -56,3 +56,14 @@ CONTROL PLANE (Cloud)                    DATA PLANE (On-Premise/Hybrid)
 
 - Email: contact@gostoa.dev
 - Discord: https://discord.gostoa.dev
+
+## SaaS Playbook Series
+
+Practical guides for teams building multi-tenant SaaS APIs with STOA:
+
+- SaaS Playbook Part 1: Multi-Tenancy 101 — https://docs.gostoa.dev/blog/saas-playbook-1-multi-tenancy-101
+- SaaS Playbook Part 2: Rate Limiting Strategies — https://docs.gostoa.dev/blog/saas-playbook-2-rate-limiting-saas
+- SaaS Playbook Part 3: Audit & Compliance — https://docs.gostoa.dev/blog/saas-playbook-3-audit-compliance
+- SaaS Playbook Part 4: Scaling Multi-Tenant APIs — https://docs.gostoa.dev/blog/saas-playbook-4-scaling-multi-tenant
+- SaaS Playbook Part 5: Production Checklist (20 gates) — https://docs.gostoa.dev/blog/saas-playbook-5-production-checklist
+- Build vs Buy: API Gateway Cost Analysis — https://docs.gostoa.dev/blog/saas-playbook-build-vs-buy-api-gateway
