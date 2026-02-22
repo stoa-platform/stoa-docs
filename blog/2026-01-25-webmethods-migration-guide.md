@@ -1,261 +1,349 @@
 ---
 slug: webmethods-migration-guide
-title: "webMethods Migration Guide: Move to Cloud-Native API Gateway Without Downtime"
+title: "Software AG webMethods API Gateway Migration: Moving to Open Source in 2026"
 authors: [stoa-team]
-tags: [migration, architecture]
-description: "Step-by-step webMethods migration to cloud-native API gateways. Sidecar approach, phased strategy, and zero-disruption techniques for enterprise platforms."
-keywords: [webMethods migration, webMethods alternative, webMethods end of life, API gateway migration, Software AG migration, Software AG webMethods, integration platform modernization]
+tags: [migration, comparison, api-gateway]
+description: "Migrate from Software AG webMethods API Gateway to an open-source alternative. Feature comparison, phased migration roadmap, IS service dependencies, and IBM licensing cost analysis for enterprise teams."
+keywords:
+  - webmethods migration
+  - software ag webmethods alternative
+  - webmethods api gateway replacement
+  - webmethods to open source
+  - software ag migration 2026
+  - webmethods integration server migration
+  - webmethods ibm licensing
+  - api gateway migration webmethods
+  - webmethods open source alternative
+  - enterprise api gateway modernization
 ---
 
 <!-- last verified: 2026-02 -->
 
-# Migrating from webMethods to a Modern API Gateway: A Practical Guide
+# Software AG webMethods API Gateway Migration: Moving to Open Source in 2026
 
-**webMethods migration** is one of the most common — and most dreaded — modernization projects in enterprise IT. Software AG's webMethods Integration Server has been a cornerstone of enterprise integration for over two decades, but rising license costs, shrinking talent pools, and the inability to handle AI agent traffic are pushing organizations to look for alternatives. This guide provides a practical, non-disruptive path forward.
+Migrating from Software AG webMethods API Gateway™ to an open-source alternative is achievable in 4-6 months using a phased, zero-downtime approach. This guide covers what makes webMethods migrations distinct — the Integration Server (IS) dependency, the Designer-based policy model, the IBM licensing entanglement — and provides a concrete roadmap for platform teams ready to act.
 
 <!-- truncate -->
 
 :::info Part of the API Gateway Migration Series
-This article is part of our [complete API gateway migration guide](/blog/api-gateway-migration-guide-2026). Whether you're coming from webMethods, MuleSoft, Apigee, or DataPower, the core migration principles are the same.
+This article is part of our [complete API gateway migration guide](/blog/api-gateway-migration-guide-2026). Whether you're coming from webMethods, Layer7, Axway, or Apigee, the core migration principles are the same — but the platform-specific challenges differ significantly.
 :::
 
-## Why Organizations Are Leaving webMethods
+## Why Teams Are Evaluating webMethods Alternatives in 2026
 
-Before discussing the how, it is worth understanding the why. We have spoken with dozens of enterprises currently evaluating their webMethods position, and the same pain points come up repeatedly:
+Software AG webMethods API Gateway has been a fixture in financial services, telecommunications, and public sector API management for well over a decade. Its tight integration with the webMethods Integration Server, its robust service registry, and its deep XML/EDI handling made it the default choice for enterprises building on SOA infrastructure in the 2000s and 2010s. Several forces are now prompting serious evaluation of alternatives.
 
-### License Cost Escalation
+### The IBM Licensing Inflection Point
 
-Software AG's pricing model has shifted toward subscription-based licensing. Organizations that bought perpetual licenses years ago are finding that maintenance renewals can approach the cost of a full subscription. For large deployments with multiple Integration Server instances, total cost of ownership can become a significant budget line item. Contact Software AG directly for current pricing details.
+The elephant in the room for most webMethods customers is IBM licensing. webMethods installations in large enterprises frequently co-exist with — or depend upon — IBM middleware (MQ, DataPower, WebSphere), and licensing costs for these stacks have been a persistent pain point. As enterprises renegotiate software agreements in 2025-2026, the combined cost of webMethods runtime licensing plus IBM middleware integration is increasingly difficult to justify against open-source alternatives that provide comparable functionality at infrastructure cost only.
 
-### Talent Scarcity
+This is not an abstract concern. Platform teams in financial services that have been running webMethods for 10+ years are now being asked by their CFOs to quantify the cost of continuing versus the cost of migrating. In many cases, the migration pays for itself within 18-24 months on licensing savings alone.
 
-webMethods developers are a shrinking pool. The platform uses proprietary languages (Flow, Java services within a proprietary framework) and proprietary tools (Designer, Integration Console) that are not taught in universities or bootcamps. As experienced webMethods developers retire or move on, replacing them becomes increasingly difficult and expensive.
+### Integration Server as a Liability
 
-### Architectural Mismatch
+The webMethods Integration Server is both webMethods' greatest strength and its primary migration obstacle. IS handles the heavy lifting for enterprise integration — complex message transformation, EDI processing, trading partner management, B2B protocols — and is deeply intertwined with the API Gateway layer. APIs managed by webMethods API Gateway often depend on IS services for authentication, transformation, or routing logic that cannot be cleanly separated.
 
-webMethods was designed for the SOA era: centralized integration server, heavyweight message mediation, SOAP/JMS-centric. Modern architectures are built on:
+For teams whose webMethods deployment is primarily API Gateway (REST APIs, OAuth2/API key authentication, developer portal), this dependency is manageable. For teams whose webMethods deployment is a full ESB implementation with IS at the center, the gateway migration must be sequenced carefully to avoid disrupting IS-dependent services before a replacement integration layer is in place.
 
-- Lightweight REST/GraphQL APIs
-- Event-driven microservices
-- Container-native deployments (Kubernetes)
-- AI agent integration via MCP
+The key insight: **webMethods API Gateway migration and webMethods Integration Server migration are different projects with different timelines and risk profiles.** This guide covers API Gateway migration specifically.
 
-Bridging this gap within webMethods requires increasing amounts of custom code and workarounds, defeating the purpose of an integration platform.
+### Kubernetes and GitOps Friction
 
-### Vendor Lock-In Depth
+webMethods was designed for VM and JEE application server deployments. Containerized deployment (via Docker) is supported, but the operational model — Designer-based policy configuration, proprietary deployment packages, centralized Administrator UI — does not map naturally to GitOps workflows, Helm-based deployment, or Kubernetes-native autoscaling. Teams that have invested in Kubernetes infrastructure find that operating webMethods on it requires ongoing adaptation work rather than native integration.
 
-The deeper concern is how deeply webMethods embeds itself in an organization's integration fabric. Typical dependencies include:
+### Zombie APIs and Catalogue Invisibility
 
-- **Flow services** — proprietary visual programming language with no standard equivalent.
-- **Adapter connections** — database, SAP, JMS adapters configured through webMethods-specific UIs.
-- **Trading Networks** — B2B/EDI processing tightly coupled to the Integration Server.
-- **API Gateway** — Software AG's API Gateway is a separate product that integrates with webMethods.
+A pattern encountered consistently in mature webMethods deployments is what practitioners call "zombie APIs": services registered in the webMethods Service Registry that are no longer actively maintained, whose owners have changed, whose consumer base is unknown, and whose documentation is outdated or absent. The Service Registry was designed to solve catalogue problems, but without active governance it becomes a historical archive rather than a living catalogue.
 
-Migrating is not just about replacing one product. It is about untangling years of accumulated integration logic.
+Modern API portal solutions — self-service subscription, automated onboarding, consumer analytics — make zombie API identification and remediation a byproduct of normal operations rather than a dedicated governance project.
 
-## The STOA Sidecar Approach
+### AI Agent Integration Requirements
 
-The single biggest risk in any webMethods migration is disruption to existing integrations. STOA's approach eliminates this risk entirely through sidecar deployment.
+webMethods was not designed for AI agents as API consumers. MCP (Model Context Protocol) support, tool discovery for agentic workloads, streaming response handling, and per-agent metering require capabilities that are not available in the webMethods API Gateway architecture and cannot be added as extensions without significant custom development.
 
-### What Is Sidecar Deployment?
+## Feature Comparison
 
-Instead of replacing webMethods on day one, you deploy STOA alongside it. Both systems run in parallel:
+The following table maps webMethods API Gateway capabilities to their open-source equivalents. Feature availability is based on publicly available documentation.
+
+| Capability | Software AG webMethods API Gateway™ | Open-Source Alternative (STOA) |
+|---|---|---|
+| **API Routing** | Flow-based routing via IS services | Route matching, path normalization, URL rewriting |
+| **Authentication** | OAuth2, API key, Basic, SAML, LDAP, JWT | OAuth2/OIDC (Keycloak), API key, mTLS, JWT |
+| **Authorization** | Role-based, LDAP groups, IS-based custom | OPA policy engine (ABAC), per-tenant scopes |
+| **Rate Limiting** | Quota policies per application, per API | Per-tenant, per-tool, per-API quotas |
+| **API Portal** | webMethods Developer Portal | Developer Portal (React, API discovery + subscriptions) |
+| **API Catalogue** | webMethods Service Registry | Control Plane API + Console UI |
+| **Traffic Monitoring** | webMethods Mediator + API Analytics | Prometheus metrics, Grafana dashboards, OpenTelemetry |
+| **Policy Engine** | Designer-based flow services (IS) | OPA/Rego policies (code-as-policy, GitOps) |
+| **Protocol Support** | REST, SOAP, XML, EDI, JMS, JDBC | REST, MCP, SSE, WebSocket |
+| **Deployment** | VM, JEE, Docker (limited Kubernetes) | Kubernetes-native (Helm), Docker Compose |
+| **Multi-Tenancy** | Multi-stage environments, IS tenant isolation | Namespace-level tenant isolation (CRDs) |
+| **AI Agent Support** | Not natively supported | Native MCP gateway, tool discovery, agent metering |
+| **Configuration** | Designer GUI + deployment packages | Declarative YAML/CRDs, GitOps, CLI |
+| **SSO/Federation** | SAML federation, IS LDAP integration | Keycloak (SAML IdP bridge, OIDC native) |
+| **Certificate Management** | webMethods keystore, IS truststore | cert-manager + mTLS module |
+| **High Availability** | IS clustering, API Gateway HA | Kubernetes replicas + HPA |
+| **B2B/EDI** | Trading Networks, EDI processing via IS | Out of scope — keep IS for B2B workloads |
+| **Licensing** | Commercial (Software AG subscription) | Apache 2.0 (fully open source) |
+
+### Where webMethods Has Strengths
+
+webMethods' platform reflects 20+ years of enterprise integration expertise:
+
+- **Integration Server depth**: IS handles complex message transformation, protocol mediation, and B2B processing at a level of maturity that open-source alternatives have not fully replicated. For B2B workloads, EDI processing, and trading partner management, IS remains the appropriate tool.
+- **Designer tooling**: The webMethods Designer provides a visual flow-based development environment that many enterprise teams find productive for complex integration logic. Teams that have standardized on Designer workflows have significant institutional knowledge invested.
+- **Service Registry governance**: The webMethods Service Registry, when actively governed, provides a single source of truth for enterprise API and service catalogue that integrates with the IS deployment pipeline.
+- **Mediator observability**: webMethods Mediator provides detailed API traffic analytics including payload logging (with masking), consumer tracking, and SLA monitoring — capabilities that enterprise compliance teams rely on.
+
+### Where Open Source Has Advantages
+
+- **AI agent support**: Native MCP protocol, tool discovery, and agent metering — designed for the current API consumer landscape.
+- **GitOps-first operations**: All configuration is declarative YAML in Git. No Designer dependency, no package deployment pipeline, no proprietary format.
+- **Kubernetes-native**: Helm deployment, Kubernetes-native scaling, service mesh integration.
+- **Cost transparency**: Apache 2.0 licensing with no per-core, per-API, or per-transaction fees.
+- **Developer self-service**: Modern portal UX that reduces API onboarding from days to minutes.
+
+## Understanding the webMethods Architecture Before You Migrate
+
+A successful migration requires understanding which components of your webMethods deployment are in scope and which are not. webMethods is not a single product — it is a suite, and the migration scope depends on which components you are actually using.
+
+**In scope for API Gateway migration:**
+
+- webMethods API Gateway (the gateway runtime handling inbound API traffic)
+- webMethods Developer Portal (the consumer-facing API catalogue and subscription management)
+- webMethods API Analytics (traffic monitoring and reporting)
+- Gateway-level policy configuration (OAuth2, rate limiting, routing, transformation at the gateway boundary)
+
+**Out of scope — maintain IS for these:**
+
+- webMethods Integration Server flows that implement business logic
+- Trading Networks (B2B/EDI processing)
+- webMethods Broker / Universal Messaging (event streaming)
+- IS-based adapter framework (SAP, Salesforce, database adapters)
+
+The boundary between "gateway" and "IS" is not always clean in mature webMethods deployments. APIs that appear to be simple REST proxies may actually route through IS flow services that perform transformation, enrichment, or orchestration. The IS dependency mapping in Phase 1 of the migration is critical precisely because of this blurring.
+
+## Migration Roadmap
+
+### Phase 1: Assessment and IS Dependency Mapping (Weeks 1-5)
+
+The webMethods-specific risk in Phase 1 is IS dependency discovery. Before you can classify any API as a migration candidate, you need to know whether it routes through IS and, if so, what the IS flow service does.
+
+**IS dependency mapping:**
+
+For each API registered in the API Gateway, document:
+- Does it proxy directly to a backend, or does it route through an IS flow service?
+- If through IS: what does the flow service do? (Transform only? Orchestrate multiple backends? Apply business rules?)
+- Can that IS logic be replaced by an OPA policy on the new gateway, moved to the backend service, or does it require IS to remain in the path?
+
+The output of this mapping determines which APIs can migrate independently and which require a parallel IS migration project.
+
+**Service Registry export:**
+
+Export a full snapshot of the webMethods Service Registry. This is your starting inventory. For each registered service, document: version, owner team, consumer list (from API Analytics), last deployment date, SLA tier, and authentication method.
+
+Flag services with no consumer activity in the prior 90 days as zombie API candidates — these can be deprecated rather than migrated, which reduces migration scope.
+
+**Infrastructure assessment:**
+
+| Component | What to Document |
+|-----------|-----------------|
+| IS instances | Count, version, clustering mode, package list |
+| API Gateway instances | Count, version, staging environments |
+| Developer Portal | Version, customizations, SSO integration |
+| Identity integration | LDAP structure, OAuth2 provider, SAML federation points |
+| IBM MQ integration | Queue bindings that API flows depend on |
+| Certificates | API Gateway keystore, IS truststore contents |
+| Traffic patterns | TPS per API, peak load, SLA thresholds |
+
+### Phase 2: Sidecar Deployment (Weeks 6-9)
+
+Deploy the new gateway alongside webMethods without touching production traffic. The new gateway handles only new APIs and AI agent traffic at this stage.
 
 ```
-Existing Traffic Flow (unchanged):
-  Clients ──→ webMethods Integration Server ──→ Backend Systems
+Existing flow (unchanged):
+  All consumers → webMethods API Gateway → IS → Backend APIs
 
-New Traffic Flow (added):
-  AI Agents ──→ STOA MCP Gateway ──→ Backend Systems
-  New APIs  ──→ STOA API Gateway  ──→ Backend Systems
+New flow (added in parallel):
+  AI Agents   → STOA MCP Gateway  → Backend APIs
+  New APIs    → STOA API Gateway  → Backend APIs
 ```
 
-webMethods continues handling all existing integrations. STOA handles new integrations and AI agent traffic. There is no cutover, no migration deadline, no risk of breaking existing flows.
+**Rule established in Phase 2**: All new APIs go through STOA from this point forward. webMethods receives no new services after this date. This is the moment the migration becomes real for the organization — enforce it explicitly.
 
-### Why Sidecar Works
+Configure Keycloak to federate with your existing identity provider. If your webMethods deployment uses LDAP for API consumer authentication, configure Keycloak's LDAP provider. If it uses a SAML federation point, configure Keycloak as a SAML SP. The goal is identity continuity — API consumers should not need to re-authenticate or receive new credentials during the migration.
 
-The sidecar pattern works for webMethods migration because:
+### Phase 3: Cockpit and Observability Activation (Weeks 8-11, overlaps Phase 2)
 
-1. **Zero disruption.** Existing webMethods flows are untouched. If STOA has an issue, webMethods is unaffected.
-2. **Gradual adoption.** Teams migrate integrations at their own pace, not on a platform-wide schedule.
-3. **Skill transfer.** Teams learn STOA on new integrations before migrating existing ones.
-4. **Rollback safety.** Any migrated integration can be switched back to webMethods with a routing change.
+One of the immediate value captures of the migration is replacing webMethods' siloed analytics with unified observability across the old and new gateway. Deploy the observability stack (Prometheus, Grafana, Loki) and configure it to collect metrics from both the new STOA gateway and — where possible — from webMethods Mediator via JMX or Prometheus JMX exporter.
 
-## The Five-Phase Migration
+The outcome is a single Grafana dashboard showing traffic across both gateways during the migration period. This gives platform teams immediate visibility into the migration progress and gives compliance teams a continuous audit trail.
 
-Based on our experience with enterprise migrations, we recommend a five-phase approach:
+Activate the STOA Control Plane for the APIs already running on the new gateway. The Control Plane provides self-service subscription management that replaces the manual email-and-meeting workflow typically used for webMethods API access requests. This is an immediate productivity win that builds stakeholder confidence in the migration.
 
-### Phase 1: Assessment and Inventory (Weeks 1-4)
+### Phase 4: Policy Translation (Weeks 10-17)
 
-Before migrating anything, you need a complete picture of what webMethods is doing:
+webMethods policy translation has two tracks: gateway-level policies (which translate cleanly) and IS-dependent policies (which require a separate decision).
 
-**Integration Inventory:**
-- List all Flow services, their triggers (HTTP, JMS, scheduler, adapter), and their consumers.
-- Identify which integrations are actively used vs. dormant.
-- Map dependencies between services (orchestration chains, pub/sub topics).
+**Gateway-level policy translation:**
 
-**Classification:**
-| Category | Criteria | Migration Priority |
+| webMethods Policy | Open-Source Equivalent | Notes |
 |---|---|---|
-| Simple pass-through | HTTP trigger, minimal transformation, REST backend | High (easy wins) |
-| Data transformation | Complex Flow mapping, multiple format conversions | Medium |
-| Orchestration | Multi-step workflows, compensation logic | Low (migrate last) |
-| B2B/EDI | Trading Networks, partner profiles | Deferred (specialized) |
-| Adapter-dependent | SAP, database, JMS adapters | Medium (needs equivalent) |
+| OAuth2 token validation | JWT validation (built-in) | Standard OIDC flow |
+| API key authentication | API key policy | Direct equivalent |
+| LDAP group authorization | Keycloak LDAP + OPA policy | Groups surfaced as OIDC claims |
+| Rate limiting per application | Per-tenant quota policy | Configurable per API, per consumer |
+| Request/response transformation (gateway-level) | Gateway transformation policy | Simple transforms only |
+| IP allowlist/denylist | Kubernetes NetworkPolicy + gateway | Native Kubernetes networking |
+| SSL/TLS termination | cert-manager + Kubernetes ingress | Standard Kubernetes pattern |
+| Audit logging | OpenTelemetry + structured logs | Standards-based audit trail |
+| CORS policy | Gateway CORS policy | Direct equivalent |
 
-**Risk Assessment:**
-- Which integrations are business-critical (payment processing, order management)?
-- Which have SLA requirements?
-- Which have compliance/audit requirements?
+**IS-dependent policy decisions:**
 
-### Phase 2: Sidecar Deployment (Weeks 5-8)
+For each API with IS flow service dependencies, you have three options:
 
-Deploy STOA alongside your existing webMethods infrastructure:
+*Option A: Absorb into gateway.* If the IS flow service performs only simple transformation (field mapping, format conversion) with no orchestration or business logic, implement the equivalent as a gateway transformation policy. Remove the IS dependency.
 
-1. **Install STOA** on your Kubernetes cluster using the [Helm chart](/docs/deployment/hybrid) or [Docker Compose quickstart](/docs/guides/quickstart).
-2. **Configure the MCP Gateway** with OPA policies matching your organization's security requirements.
-3. **Set up the Developer Portal** so teams can discover and subscribe to APIs and tools.
-4. **Route new integrations** through STOA from day one. No new integration should be built on webMethods.
+*Option B: Move to service layer.* If the IS flow service performs orchestration or business logic, move that logic to a microservice in the backend tier. The gateway becomes a pure proxy; the business logic moves to where it belongs.
 
-The key rule for Phase 2: **all new development goes through STOA.** webMethods enters maintenance-only mode for existing integrations.
+*Option C: Maintain IS in the path.* If the IS flow service is complex, business-critical, and not worth the translation effort, keep IS running and proxy to it from the new gateway. The new gateway handles consumer-facing policy (auth, rate limiting, routing) while IS continues to handle the integration logic. This is a valid long-term architecture for many organizations.
 
-### Phase 3: Facade and Wrap (Weeks 9-16)
+Option C is particularly relevant for organizations with large IS estates: you can migrate the API Gateway layer and defer the IS modernization decision indefinitely.
 
-For integrations that must be migrated but whose backends cannot change, create API facades:
+### Phase 5: Traffic Migration (Weeks 15-22)
 
-1. **Identify the webMethods service contract** (input/output schemas, error codes).
-2. **Create a lightweight REST API** that implements the same contract, backed by the same backend system.
-3. **Register the API as a tool** in STOA's MCP Gateway for AI agent access.
-4. **Route new consumers** to the STOA-hosted API. Existing consumers continue using webMethods.
-5. **Validate** that the new API produces identical results for the same inputs.
+Canary traffic migration follows the standard sequence. For webMethods, pay particular attention to:
 
-This phase is where most of the engineering effort concentrates. The webMethods-specific transformation logic (Flow services, document types, maps) needs to be reimplemented in standard code — Python, TypeScript, Go, or whatever your team prefers.
+**Consumer credential continuity.** If your webMethods deployment issued API keys or OAuth2 client credentials to consumers, those credentials must remain valid during the transition. Configure the new gateway to honor existing credentials (by importing them or by maintaining a bridge through Keycloak) or coordinate a credential rotation with consumers before their traffic migrates.
 
-### Phase 4: Traffic Migration (Weeks 17-24)
+**Mediator analytics continuity.** If compliance or audit teams depend on webMethods Mediator analytics for regulatory reporting, ensure that equivalent data is available in the new observability stack before migrating traffic. Do not create a gap in the audit trail.
 
-Once facades are validated, gradually migrate traffic from webMethods to STOA:
+**IS-in-path APIs.** For Option C APIs (IS in the path), the traffic migration is simpler: the new gateway becomes the consumer-facing entry point, IS remains as the backend. Validate that the gateway-to-IS connection (typically REST or SOAP) is correctly configured and tested before migrating production traffic.
 
-1. **Start with low-risk integrations** (internal tools, non-critical dashboards).
-2. **Use percentage-based routing** to shift traffic gradually (10%, 25%, 50%, 100%).
-3. **Monitor key metrics** at each step: latency, error rate, throughput.
-4. **Keep webMethods running** as a fallback. Do not decommission until Phase 5.
+Standard canary sequence:
 
-### Phase 5: Decommission (Weeks 25-30)
+| Stage | New Gateway Traffic | Observation |
+|-------|-------------------|-------------|
+| Canary | 5% | 48 hours, monitor latency + errors |
+| Early | 25% | 1 week |
+| Split | 50% | 1 week |
+| Late | 90% | 2 weeks |
+| Full | 100% | webMethods on standby |
 
-When webMethods handles no production traffic:
+### Phase 6: Developer Portal Migration (Weeks 18-24, parallel track)
 
-1. **Verify zero traffic** on all webMethods Integration Server instances for at least 2 weeks.
-2. **Archive configurations** (Flow services, adapter connections, IS packages) for compliance.
-3. **Decommission servers** and terminate license agreements.
-4. **Update documentation** and runbooks to reflect the new architecture.
+The webMethods Developer Portal migration can run in parallel with traffic migration. The new portal (STOA) should be operational and populated with API documentation before consumers are asked to use it.
 
-## Mapping webMethods Concepts to STOA
+Key steps:
 
-For teams familiar with webMethods, here is how concepts map:
+- Import API specifications from the Service Registry (OpenAPI/Swagger format)
+- Configure self-service subscription workflows to replace manual access request processes
+- Migrate existing consumer application registrations to the new portal
+- Redirect the developer portal DNS to the new portal
+- Communicate the transition to all registered consumers with adequate notice
 
-| webMethods Concept | STOA Equivalent |
-|---|---|
-| Integration Server | MCP Gateway + API Gateway |
-| Flow Service | API endpoint or MCP tool |
-| Document Type | JSON Schema / Pydantic model |
-| Trigger (HTTP) | API route or MCP tool endpoint |
-| Trigger (JMS) | Kafka consumer |
-| Adapter (DB, SAP) | Service-level integration code |
-| Package | Tenant namespace |
-| IS Cluster | Kubernetes replicas + HPA |
-| webMethods API Gateway | STOA Gateway (Rust, high-performance) |
-| API Portal | STOA Developer Portal |
-| Integration Console | STOA Admin Console |
-| ACL/User Management | Keycloak SSO + RBAC (6 personas, 12 scopes) |
+The new portal's self-service subscription capability — request access, auto-approve or owner-approve, receive credentials instantly — is typically the most visible improvement for API consumers and generates the clearest positive feedback during the migration.
 
-## Common Pitfalls to Avoid
+### Phase 7: Decommission (Weeks 22-30)
 
-Having guided multiple webMethods migrations, here are the mistakes we see most often:
+webMethods decommission requires specific attention to IS dependencies. Even if API Gateway traffic has been fully migrated, IS may still be running and serving Option C APIs (IS in the path from the new gateway). The decommission plan must distinguish between:
 
-### 1. Big-Bang Migration
+- **API Gateway decommission**: Remove webMethods API Gateway instances, update ingress rules, archive gateway configuration packages.
+- **Developer Portal decommission**: Archive portal content, decommission portal servers, remove DNS entries.
+- **IS continued operation**: IS instances that serve Option C APIs remain running. These are maintained under a separate IS operations model, not decommissioned.
+- **Service Registry archival**: Export Service Registry contents for archival before decommission. This is the historical record of every API that was ever managed by webMethods.
 
-Attempting to migrate everything at once is the highest-risk approach. It requires all teams to be ready simultaneously, leaves no fallback, and compresses all risk into a single cutover window.
+## Common Challenges and Solutions
 
-**Instead:** Use the phased approach above. Migrate one integration category at a time.
+### Challenge 1: IS Dependency Entanglement
 
-### 2. Replicating webMethods Architecture
+The most common source of migration delays is discovering IS dependencies that were not visible in the initial inventory. A REST API that appears to proxy directly to a backend may actually route through an IS flow service for authentication, enrichment, or logging — and that IS service may depend on other IS services, IS adapters, or IBM MQ queues.
 
-Some teams try to build a "webMethods equivalent" on the new platform — recreating the centralized transformation layer, the heavyweight orchestration engine, the visual Flow editor.
+**Solution:** Instrument IS before starting the migration. Add logging to IS flow services that records which API Gateway services invoke them. Run this instrumentation for 30 days to build a complete picture of the IS invocation graph. The result is a dependency map that makes Option A/B/C decisions straightforward.
 
-**Instead:** Embrace the new architecture. Transformations belong in service code, not middleware. Orchestration belongs in workflow engines (Temporal, Step Functions), not in the gateway.
+### Challenge 2: Zombie API Remediation
 
-### 3. Ignoring the AI Opportunity
+Mature webMethods deployments typically contain a significant percentage of registered services with zero or near-zero traffic. Migrating these services consumes time and resources without delivering value.
 
-A migration is the perfect time to unlock AI agent access to your enterprise services. Every backend system you expose through STOA automatically becomes available to AI agents via MCP — with full security and governance.
+**Solution:** Before migration begins, publish a zombie API list to service owners and request confirmation within 30 days. Services with no confirmed owner and no traffic are candidates for deprecation. Reducing migration scope by even 20% through deprecation has significant impact on overall timeline and cost.
 
-**Instead:** For every migrated integration, ask: "Should AI agents also have access to this?" If yes, register it as an MCP tool.
+### Challenge 3: IBM MQ Integration
 
-### 4. Underestimating Flow Service Complexity
+APIs that depend on IBM MQ for message delivery (via IS adapter or direct MQ binding) require special handling. The new gateway does not have native IBM MQ integration.
 
-Some webMethods Flow services contain thousands of steps with complex branching, error handling, and compensation logic. These are not trivial to migrate.
+**Solution:** This is an Option C scenario. Keep IS in the path for MQ-dependent APIs. The new gateway handles consumer-facing authentication and rate limiting; IS continues to handle MQ interaction. This is a valid long-term architecture — IBM MQ integration is not a dependency that needs to be eliminated on the gateway migration timeline.
 
-**Instead:** Identify complex flows early in Phase 1. Budget extra time for them. Consider whether the complexity is still necessary — many complex flows accumulated logic over years that may no longer be needed.
+### Challenge 4: Designer Workflow Replacement
 
-## Real-World Timeline
+Platform teams that have standardized on webMethods Designer for API development and deployment have a workflow change challenge as significant as the technical migration. Designer provides a visual development environment that teams find productive; replacing it with YAML-based GitOps requires training and tooling.
 
-For a mid-size webMethods deployment (50-200 Flow services, 3-5 Integration Server instances), expect:
+**Solution:** Invest in GitOps tooling and training alongside the technical migration. The investment pays off over time in auditability, reproducibility, and CI/CD integration — but it requires explicit change management, not just a tool swap.
 
-| Phase | Duration | Team Size |
-|---|---|---|
-| Assessment | 4 weeks | 2 architects |
-| Sidecar deployment | 4 weeks | 1-2 platform engineers |
-| Facade and wrap | 8-12 weeks | 3-5 developers |
-| Traffic migration | 6-8 weeks | 2-3 engineers |
-| Decommission | 4-6 weeks | 1-2 engineers |
-| **Total** | **6-8 months** | **Peak: 5 people** |
+### Challenge 5: webMethods Analytics Replacement
 
-This is significantly faster and lower-risk than a traditional rip-and-replace migration, which typically takes 12-18 months and requires a larger team.
+Compliance teams that depend on webMethods Mediator analytics for regulatory reporting need assurance that equivalent data is available in the new observability stack before the migration completes.
 
-## Next Steps
+**Solution:** Run the new observability stack (Prometheus, Grafana, Loki) in parallel with webMethods Mediator during the traffic migration phase. Demonstrate equivalence to compliance teams before migrating high-criticality APIs. Export Mediator historical data for archival before decommission.
 
-If you are considering a webMethods migration, start here:
+### Challenge 6: Hybrid Cloud Complexity
 
-- **[API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Comprehensive guide covering all legacy gateway migrations with decision framework.
-- **[webMethods Migration Guide](/docs/guides/migration/ibm-webmethods)** — Detailed technical documentation with code examples, phase-by-phase.
-- **[Quickstart](/docs/guides/quickstart)** — Deploy STOA in 15 minutes to evaluate it against your use case.
-- **[API Gateway Patterns — STOA vs Kong vs Apigee](/docs/guides/fiches/api-gateway-patterns)** — Understand how STOA complements existing gateways.
-- **[Console](https://console.gostoa.dev)** — Explore the admin console that replaces Integration Console.
+Many enterprises run webMethods in a hybrid configuration — some gateway instances on-premises, some in cloud. This complicates migration sequencing and network connectivity planning.
 
-### Also Migrating from Other Platforms?
+**Solution:** STOA's hybrid architecture — cloud control plane, on-premises gateway runtime — is designed for exactly this pattern. The control plane (portal, API catalogue, observability) runs in cloud; the gateway runtime that handles traffic runs on-premises. This preserves data residency for on-premises APIs while providing cloud-managed operational simplicity. See the [hybrid deployment guide](/docs/deployment/hybrid).
 
-- **[Kong Migration Guide](/docs/guides/migration/kong)** — Declarative config mapping, plugin translation
-- **[Apigee Migration Guide](/docs/guides/migration/apigee)** — Proxy export, European sovereignty angle
-- **[Oracle OAM Migration Guide](/docs/guides/migration/oracle-oam)** — Identity federation with Keycloak
+## Timeline Summary
 
----
+For a mid-size webMethods deployment (50-150 APIs, 2-3 IS instances, modest IS integration complexity):
 
-## Related Migration Guides
+| Phase | Duration | Team | Risk |
+|-------|----------|------|------|
+| Assessment + IS mapping | 5 weeks | 2 architects | None |
+| Sidecar deployment | 4 weeks | 1-2 platform engineers | Low |
+| Observability activation | 3 weeks (parallel) | 1 engineer | Low |
+| Policy translation | 7 weeks | 2-4 engineers | Low-Medium |
+| Traffic migration | 7 weeks | 2-3 engineers | Medium (canary) |
+| Portal migration | 6 weeks (parallel) | 1-2 engineers | Low |
+| Decommission | 4-6 weeks | 1-2 engineers | Low |
+| **Total** | **5-7 months** | **Peak: 4-6 people** | |
 
-This article is part of our API gateway migration series. Explore guides for other platforms:
-
-- **[Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Vendor-neutral decision framework and phased migration strategy
-- **[MuleSoft Migration Guide](/blog/mulesoft-migration-open-source-gateway)** — Decouple gateway from iPaaS, migrate to open source
-- **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Escape vendor lock-in, move to self-hosted gateways
-- **[DataPower & TIBCO Migration Guide](/blog/datapower-tibco-migration-guide)** — Protocol translation and identity migration
-
-For detailed technical walkthroughs, see our [migration documentation](https://docs.gostoa.dev/docs/guides/migration/).
+IS integration complexity is the primary variable. Add 2-4 weeks for each significant IS dependency track that requires Option B (move to service layer) rather than Option C (keep IS in path).
 
 ## Frequently Asked Questions
 
-### How risky is a webMethods migration?
+### Do I need to migrate webMethods Integration Server at the same time?
 
-With the sidecar approach described in this guide, migration risk is minimal. webMethods continues handling existing integrations while STOA takes on new traffic. There's no cutover deadline, and you can rollback any migrated integration with a routing change. The biggest risk is underestimating the complexity of Flow services — many contain years of accumulated business logic that requires careful analysis during Phase 1. Start with simple pass-through integrations to build confidence before tackling complex orchestrations.
+No. IS migration and API Gateway migration are independent projects. Most organizations migrate API Gateway first (3-6 months) and make a separate decision about IS modernization on a longer timeline. Option C (keep IS in the path from the new gateway) is a supported long-term architecture.
 
-### How long does a typical webMethods migration take?
+### What happens to my webMethods API Gateway policies during migration?
 
-For a mid-size deployment (50-200 Flow services), expect 6-8 months with a team of 3-5 engineers. Assessment takes 4 weeks, sidecar deployment 4 weeks, facade development 8-12 weeks, traffic migration 6-8 weeks, and decommission 4-6 weeks. This is significantly faster than a rip-and-replace migration (typically 12-18 months) because the phased approach reduces risk and allows parallel work. See the [complete migration guide](/blog/api-gateway-migration-guide-2026) for timeline frameworks applicable to all legacy platforms.
+Gateway-level policies (OAuth2, rate limiting, routing, CORS) translate to equivalent policies on the new gateway. IS-dependent policies require a separate decision (absorb, move to service layer, or maintain IS). Policy bundles can be exported from the Administrator UI for archival.
 
-### Can webMethods and STOA run side-by-side indefinitely?
+### Can the new gateway coexist with webMethods during migration?
 
-Yes. Some organizations choose to keep webMethods for legacy integrations that rarely change while routing all new development through STOA. This is a valid long-term strategy, especially if the webMethods license is already paid for. However, you'll still pay maintenance fees and carry the operational overhead of two platforms. Most teams prefer to complete the migration within 12-18 months to eliminate dual-platform complexity. See [migration best practices](https://docs.gostoa.dev/docs/guides/migration/) for coexistence patterns.
+Yes. The sidecar deployment pattern keeps webMethods running in parallel throughout the migration. Traffic can be switched back to webMethods with a DNS or ingress change in under a minute at any stage.
+
+### What about webMethods Trading Networks and B2B workloads?
+
+Out of scope for API Gateway migration. Trading Networks is an IS-tier capability for EDI and B2B processing — it has no equivalent in modern API gateways and should be maintained on IS. A separate B2B platform modernization project (if needed) would address Trading Networks independently.
+
+### How does this affect my Software AG licensing agreement?
+
+Consult your Software AG licensing agreement regarding the terms for reducing licensed capacity or decommissioning instances. In most enterprise agreements, webMethods licensing is tied to processor cores or named user counts on specific server instances. Decommissioning gateway instances reduces the licensed footprint — coordinate with Software AG at Phase 6 (decommission), not before.
+
+### Is STOA available as an on-premises deployment for regulated environments?
+
+Yes. STOA is designed for on-premises deployment in regulated environments. The control plane (portal, catalogue, observability) can run on-premises or in a private cloud; the gateway runtime runs on-premises by default. This architecture meets European data residency requirements under NIS2 and DORA. See the [hybrid deployment guide](/docs/deployment/hybrid).
+
+## Next Steps
+
+- **[API Gateway Migration Guide 2026 →](/blog/api-gateway-migration-guide-2026)** — Vendor-neutral migration framework applicable to all legacy platforms
+- **[Broadcom Layer7 Migration Guide →](/blog/layer7-ca-api-gateway-migration-stoa)** — Detailed guidance for teams migrating from Layer7
+- **[STOA Hybrid Deployment Guide →](/docs/deployment/hybrid)** — Architecture reference for cloud control plane + on-premises gateway runtime
+- **[STOA Quickstart →](/docs/guides/quickstart)** — Deploy in 15 minutes to evaluate
 
 ---
 
-*Planning a webMethods migration? [Start with the quickstart guide](/docs/guides/quickstart) to see STOA in action, or read the [complete API gateway migration guide](/blog/api-gateway-migration-guide-2026) for a vendor-neutral decision framework.*
+> This guide describes technical migration steps and does not imply any deficiency in the source platform. Migration decisions depend on specific organizational requirements. All trademarks (Software AG, webMethods, IBM, IBM MQ) belong to their respective owners.
 
-> This guide describes technical migration steps and does not imply any deficiency in the source platform. Migration decisions depend on specific organizational requirements. All trademarks belong to their respective owners. See [trademarks](/docs/trademarks).
+> Feature comparisons are based on publicly available documentation as of 2026-02. Product capabilities change frequently — verify current features directly with each vendor. See [trademarks](/docs/trademarks) for details.

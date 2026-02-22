@@ -231,7 +231,7 @@ Decommission checklist:
 For detailed, hands-on guidance for your specific platform:
 
 - **[Broadcom Layer7 API Gateway Migration →](/blog/layer7-ca-api-gateway-migration-stoa)** — Assertion-based policy translation, WS-Security workloads, CA SiteMinder federation
-- **[Software AG webMethods Migration →](/blog/webmethods-migration-guide)** — IS Flow language, proprietary mediation patterns, service registry migration
+- **[Software AG webMethods Migration →](/blog/webmethods-migration-guide)** — IS Flow language, IS dependency mapping, IBM licensing, Designer workflow replacement
 - **[Axway API Gateway Migration →](/blog/axway-api-gateway-migration-open-source)** — Policy Studio translation, B2B/EDI workloads, AMPLIFY ecosystem dependencies
 - **[Google Apigee Migration →](/blog/apigee-alternative-open-source)** — GCP dependency decoupling, proxy bundle translation, European data residency
 - **[WSO2 API Manager Migration →](/blog/wso2-api-manager-open-source-alternative)** — Traffic manager, API gateway component separation, open-source to open-source path
