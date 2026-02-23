@@ -123,12 +123,14 @@ const config: Config = {
   onBrokenLinks: 'throw',
   onBrokenAnchors: 'throw',
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
+  // Internationalization — FR + EN with locale dropdown (CAB-1383)
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en', 'fr'],
+    localeConfigs: {
+      en: {label: 'English', htmlLang: 'en-US'},
+      fr: {label: 'Français', htmlLang: 'fr-FR'},
+    },
   },
 
   presets: [
@@ -247,6 +249,10 @@ const config: Config = {
         {
           href: 'https://github.com/stoa-platform',
           label: 'GitHub',
+          position: 'right',
+        },
+        {
+          type: 'localeDropdown',
           position: 'right',
         },
       ],

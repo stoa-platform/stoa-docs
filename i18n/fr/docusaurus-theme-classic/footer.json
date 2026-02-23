@@ -1,0 +1,50 @@
+{
+  "link.title.Docs": {
+    "message": "Documentation",
+    "description": "The title of the footer links column with title=Docs in the footer"
+  },
+  "link.title.Community": {
+    "message": "Communauté",
+    "description": "The title of the footer links column with title=Community in the footer"
+  },
+  "link.title.More": {
+    "message": "Plus",
+    "description": "The title of the footer links column with title=More in the footer"
+  },
+  "link.item.label.Getting Started": {
+    "message": "Démarrage rapide",
+    "description": "The label of footer link with label=Getting Started linking to /docs/intro"
+  },
+  "link.item.label.Guides": {
+    "message": "Guides",
+    "description": "The label of footer link with label=Guides linking to /docs/guides/quickstart"
+  },
+  "link.item.label.API Reference": {
+    "message": "Référence API",
+    "description": "The label of footer link with label=API Reference linking to /docs/api/control-plane"
+  },
+  "link.item.label.GitHub": {
+    "message": "GitHub",
+    "description": "The label of footer link with label=GitHub linking to https://github.com/stoa-platform"
+  },
+  "link.item.label.Discord": {
+    "message": "Discord",
+    "description": "The label of footer link with label=Discord linking to https://discord.gostoa.dev"
+  },
+  "link.item.label.Blog": {
+    "message": "Blog",
+    "description": "The label of footer link with label=Blog linking to /blog"
+  },
+  "link.item.label.Main Website": {
+    "message": "Site principal",
+    "description": "The label of footer link with label=Main Website linking to https://gostoa.dev"
+  },
+  "link.item.label.Trademark Notice": {
+    "message": "Mentions légales",
+    "description": "The label of footer link with label=Trademark Notice linking to /docs/trademarks"
+  },
+  "copyright": {
+    "message": "Copyright © 2026 STOA Platform. Créé avec Docusaurus. Toutes les marques tierces sont la propriété de leurs détenteurs respectifs.",
+    "description": "The footer copyright"
+  }
+}
