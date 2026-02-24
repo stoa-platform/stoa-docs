@@ -186,6 +186,7 @@ If European data sovereignty is a priority for your organization:
 - [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
 - [DORA and NIS2 Compliance](/blog/dora-nis2-api-gateway-compliance) — Technical requirements for regulated industries
 - [Enterprise Security Compliance](/docs/enterprise/security-compliance) — How STOA addresses European regulations
+- [Zero Trust for API Gateways (Part 1)](/blog/zero-trust-api-gateways-part-1) — Zero Trust principles that support NIS2 access management requirements
 
 ---
 

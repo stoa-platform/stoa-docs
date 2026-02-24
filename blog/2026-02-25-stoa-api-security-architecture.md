@@ -94,7 +94,7 @@ This addresses credential theft and replay attacks, because the attacker would n
 
 ### Layer 2: OAuth 2.1 + PKCE
 
-STOA implements the [MCP OAuth 2.1 flow](/blog/mcp-protocol-architecture-deep-dive) with Proof Key for Code Exchange (PKCE). Key properties:
+STOA implements [OAuth 2.1 with PKCE](/blog/oauth-pkce-mcp-gateway) for MCP client authentication. Key properties:
 
 - **Public client support**: AI agents (Claude, GPT) are public clients — they cannot store client secrets. PKCE enables secure authorization without secrets.
 - **Scope enforcement**: each access token carries a scope (`stoa:read`, `stoa:write`, `stoa:admin`). The gateway enforces that the requested operation matches the token's scope.

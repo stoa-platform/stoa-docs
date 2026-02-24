@@ -4,7 +4,6 @@ title: API Gateway Circuit Breaker Patterns Explained
 description: How circuit breaker patterns prevent cascading failures in API gateways. State diagrams, configuration, and monitoring.
 authors: [stoa-team]
 tags: [tutorial, api-gateway, architecture]
-unlisted: true
 keywords:
   - api gateway circuit breaker
   - circuit breaker pattern

@@ -72,7 +72,7 @@ This article discusses OWASP API Security Top 10 (2023 edition). Feature compari
 - **Short-lived tokens**: 15-minute access tokens minimize the stolen-token window
 - **Keycloak-backed identity**: Keycloak manages identity with MFA, brute-force protection, and credential policies
 
-For AI agents (public clients), the combination of OAuth 2.1 PKCE + mTLS certificate binding addresses OWASP API2 at the gateway layer. See [AI Agent Security: 5 Authentication Patterns](/blog/ai-agent-security-authentication-patterns) for implementation details.
+For AI agents (public clients), the combination of OAuth 2.1 PKCE + mTLS certificate binding addresses OWASP API2 at the gateway layer. See [OAuth 2.1 + PKCE for MCP Gateways](/blog/oauth-pkce-mcp-gateway) for the complete flow, and [AI Agent Security: 5 Authentication Patterns](/blog/ai-agent-security-authentication-patterns) for broader patterns.
 
 **What requires additional configuration**: Authentication mechanisms only work if properly configured. Weak credential policies, missing MFA for admin accounts, or improperly configured token lifetimes undermine authentication.
 

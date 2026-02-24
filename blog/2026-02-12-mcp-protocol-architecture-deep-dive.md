@@ -518,6 +518,7 @@ MCP adds minimal overhead to tool invocations — the JSON-RPC envelope is a few
 ## Further Reading
 
 - [What is an MCP Gateway?](/blog/what-is-mcp-gateway) — Why AI agents need a gateway layer
+- [OAuth 2.1 + PKCE for MCP Gateways](/blog/oauth-pkce-mcp-gateway) — Complete OAuth flow for MCP clients
 - [Convert REST APIs to MCP Tools](/blog/convert-rest-api-to-mcp-tools) — Practical guide to exposing your APIs
 - [Connecting AI Agents to Enterprise APIs](/blog/connecting-ai-agents-enterprise-apis) — Enterprise integration patterns
 - [ESB is Dead, Long Live MCP](/blog/esb-is-dead-long-live-mcp) — How MCP replaces traditional integration middleware

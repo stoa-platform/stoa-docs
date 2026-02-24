@@ -217,6 +217,9 @@ Structured audit logging for solo developers: what to capture (actor, action, re
 **[MCP Protocol Architecture Deep Dive](https://docs.gostoa.dev/blog/mcp-protocol-architecture-deep-dive)**
 Technical deep dive into the Model Context Protocol: protocol layers, JSON-RPC 2.0 message format, SSE and WebSocket transports, OAuth 2.1 flow, tool discovery, and comparison to gRPC/GraphQL. For engineers building production MCP deployments.
 
+**[OAuth 2.1 + PKCE for MCP Gateways](https://docs.gostoa.dev/blog/oauth-pkce-mcp-gateway)**
+Complete OAuth 2.1 PKCE flow for MCP clients: RFC 9728 discovery chain, Dynamic Client Registration with scope stripping, mTLS bypass for OAuth endpoints, public client PKCE patching. Battle-tested patterns from production with Keycloak.
+
 **[AI Agent Security: 5 Authentication Patterns](https://docs.gostoa.dev/blog/ai-agent-security-authentication-patterns)**
 Enterprise authentication patterns for AI agents: API keys (with rotation), OAuth 2.1 PKCE (for public clients), mTLS certificate binding (RFC 8705), token exchange, and hybrid patterns. Implementation examples for each.
 

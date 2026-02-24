@@ -121,6 +121,7 @@ Practical guides for teams building multi-tenant SaaS APIs with STOA:
 ## Security Deep-Dive Series
 
 - MCP Protocol Architecture Deep Dive — https://docs.gostoa.dev/blog/mcp-protocol-architecture-deep-dive
+- OAuth 2.1 + PKCE for MCP Gateways — https://docs.gostoa.dev/blog/oauth-pkce-mcp-gateway
 - AI Agent Security: 5 Authentication Patterns — https://docs.gostoa.dev/blog/ai-agent-security-authentication-patterns
 - STOA Security Architecture: Defense-in-Depth — https://docs.gostoa.dev/blog/stoa-api-security-architecture
 - OWASP API Security Top 10 & STOA Coverage — https://docs.gostoa.dev/blog/owasp-api-security-top-10-stoa

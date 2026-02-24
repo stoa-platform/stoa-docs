@@ -171,6 +171,10 @@ If you are evaluating API gateway platforms for regulated industries, STOA provi
 - [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
 - [API Management in Europe: Data Sovereignty](/blog/api-management-europe-sovereignty) — How gateway jurisdiction impacts compliance
 - [Enterprise Security Compliance](/docs/enterprise/security-compliance) — Detailed regulatory mapping
+- [STOA Security Architecture: Defense-in-Depth](/blog/stoa-api-security-architecture) — Five-layer security model supporting DORA resilience requirements
+- [OAuth 2.1 + PKCE for MCP Gateways](/blog/oauth-pkce-mcp-gateway) — Standards-based authentication supporting NIS2 access control requirements
+- [OWASP API Security Top 10 & STOA](/blog/owasp-api-security-top-10-stoa) — OWASP risk mapping complementing regulatory compliance
+- [Zero Trust for API Gateways (Part 1)](/blog/zero-trust-api-gateways-part-1) — Zero Trust architecture aligns with DORA/NIS2 access management controls
 
 ---
 
