@@ -516,6 +516,7 @@ For regulated industries (financial services, healthcare, defense) requiring com
 ## Further Reading
 
 - [What is an MCP Gateway](/blog/what-is-mcp-gateway) — Why AI agents need specialized infrastructure
+- [OAuth 2.1 + PKCE for MCP Gateways](/blog/oauth-pkce-mcp-gateway) — Complete OAuth flow for MCP public clients
 - [Connecting AI Agents to Enterprise APIs](/blog/connecting-ai-agents-enterprise-apis) — Practical patterns for secure integration
 - [Your API Keys Are in Your Git History](/blog/api-keys-in-git-history) — How to detect and prevent credential leaks
 - [API Security Checklist for Solo Developers](/blog/api-security-checklist-solo-dev) — Practical security measures for small teams
