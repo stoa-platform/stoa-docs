@@ -1,10 +1,11 @@
 name: Scheduled Publish
 
-# Runs daily at 06:00 UTC to publish scheduled blog posts
+# Runs daily at 06:00 UTC to publish scheduled blog posts.
 # The prebuild script (manage-scheduled-posts.sh) handles:
 #   - Adding unlisted: true to future-dated posts
 #   - Removing unlisted: true from posts whose date has arrived
 # Creates a PR and auto-merges it (branch protection blocks direct push to main).
+# After merge: notifies Slack and triggers Google Indexing API via n8n webhook.
 
 on:
   schedule:
@@ -18,6 +19,7 @@ permissions:
 jobs:
   publish-scheduled:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,20 +28,41 @@ jobs:
       - name: Run scheduled posts manager
         run: bash scripts/manage-scheduled-posts.sh --apply
 
-      - name: Check for changes
-        id: changes
+      - name: Detect changes and published posts
+        id: detect
         run: |
           if git diff --quiet blog/; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No scheduled posts to publish today"
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "Posts to publish:"
-            git diff --name-only blog/
+            echo "No scheduled post changes today"
+            exit 0
+          fi
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+          # Detect posts being PUBLISHED (unlisted: true removed)
+          > /tmp/published-slugs.txt
+          PUBLISH_COUNT=0
+
+          for file in $(git diff --name-only blog/); do
+            if git diff "$file" | grep -q '^-unlisted: true'; then
+              BASENAME=$(basename "$file" .md)
+              BASENAME="${BASENAME%.mdx}"
+              [[ "$BASENAME" == "index" ]] && BASENAME=$(basename "$(dirname "$file")")
+              SLUG=$(echo "$BASENAME" | sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}-//')
+              echo "$SLUG" >> /tmp/published-slugs.txt
+              PUBLISH_COUNT=$((PUBLISH_COUNT + 1))
+            fi
+          done
+
+          echo "publish_count=$PUBLISH_COUNT" >> "$GITHUB_OUTPUT"
+          echo "Changes detected. $PUBLISH_COUNT post(s) being published."
+          if [[ $PUBLISH_COUNT -gt 0 ]]; then
+            echo "Published slugs:"
+            cat /tmp/published-slugs.txt
           fi
 
       - name: Create PR and auto-merge
-        if: steps.changes.outputs.changed == 'true'
+        if: steps.detect.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -53,12 +76,73 @@ jobs:
           git commit -m "chore(blog): publish scheduled posts for ${DATE}"
           git push origin "$BRANCH"
 
+          COUNT=${{ steps.detect.outputs.publish_count }}
+          BODY="Automated: removes \`unlisted: true\` from blog posts whose publish date has arrived."
+          if [[ "$COUNT" -gt 0 ]]; then
+            BODY="${BODY}\n\n**Published**: ${COUNT} post(s)"
+          fi
+
           PR_URL=$(gh pr create \
             --title "chore(blog): publish scheduled posts for ${DATE}" \
-            --body "Automated: removes \`unlisted: true\` from blog posts whose publish date has arrived." \
+            --body "$(echo -e "$BODY")" \
             --base main \
             --head "$BRANCH")
 
           echo "PR created: $PR_URL"
           gh pr merge "$PR_URL" --squash --auto --delete-branch
           echo "Auto-merge enabled"
+
+      - name: Notify Slack
+        if: steps.detect.outputs.changed == 'true' && steps.detect.outputs.publish_count != '0'
+        continue-on-error: true
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [[ -z "${SLACK_WEBHOOK:-}" ]]; then
+            echo "SLACK_WEBHOOK_URL not configured, skipping"
+            exit 0
+          fi
+
+          COUNT=${{ steps.detect.outputs.publish_count }}
+
+          # Build article links
+          LINKS=""
+          while IFS= read -r slug; do
+            [[ -z "$slug" ]] && continue
+            LINKS="${LINKS}\n• <https://docs.gostoa.dev/blog/${slug}|${slug}>"
+          done < /tmp/published-slugs.txt
+
+          TEXT=":pencil: *${COUNT} Blog Post(s) Published*${LINKS}\n\n_<https://github.com/stoa-platform/stoa-docs/actions/runs/${{ github.run_id }}|Scheduled Pipeline>_"
+
+          curl -sf -X POST "$SLACK_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg text "$(echo -e "$TEXT")" '{text: $text}')" \
+          || echo "Slack notification failed (non-blocking)"
+
+      - name: Submit to Google Indexing API via n8n
+        if: steps.detect.outputs.changed == 'true' && steps.detect.outputs.publish_count != '0'
+        continue-on-error: true
+        env:
+          N8N_BLOG_WEBHOOK: ${{ vars.N8N_BLOG_PUBLISH_WEBHOOK }}
+        run: |
+          if [[ -z "${N8N_BLOG_WEBHOOK:-}" ]]; then
+            echo "N8N_BLOG_PUBLISH_WEBHOOK not configured, skipping Google Indexing"
+            exit 0
+          fi
+
+          # Build JSON array of published URLs
+          URLS=$(while IFS= read -r slug; do
+            [[ -z "$slug" ]] && continue
+            echo "https://docs.gostoa.dev/blog/${slug}"
+          done < /tmp/published-slugs.txt | jq -R . | jq -s .)
+
+          PAYLOAD=$(jq -n \
+            --argjson urls "$URLS" \
+            --arg source "scheduled-publish" \
+            --arg run_id "${{ github.run_id }}" \
+            '{urls: $urls, source: $source, run_id: $run_id}')
+
+          curl -sf -X POST "$N8N_BLOG_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+          || echo "n8n webhook trigger failed (non-blocking)"
