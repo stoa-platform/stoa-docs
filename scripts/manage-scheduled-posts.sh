@@ -52,29 +52,42 @@ has_unlisted() {
     | grep -q '^unlisted:[[:space:]]*true' 2>/dev/null
 }
 
-# Check if frontmatter explicitly sets unlisted: false (force-publish override)
-# When set, the script skips auto-scheduling for this post regardless of date
-has_force_published() {
+# Check if frontmatter has any unlisted: line (true or false)
+has_any_unlisted() {
   local file="$1"
   awk 'BEGIN{fm=0} /^---$/{fm++; next} fm==1{print} fm>=2{exit}' "$file" \
-    | grep -q '^unlisted:[[:space:]]*false' 2>/dev/null
+    | grep -q '^unlisted:' 2>/dev/null
 }
 
-# Add unlisted: true to frontmatter (after line 1, which is always ---)
-add_unlisted() {
+# Ensure frontmatter has unlisted: true (add if missing, replace false→true if wrong)
+ensure_unlisted_true() {
   local file="$1"
   if [[ "$MODE" == "--check" ]]; then
     return
   fi
-  if [[ "$(uname)" == "Darwin" ]]; then
-    sed -i '' '1 a\
-unlisted: true' "$file"
+  if has_any_unlisted "$file"; then
+    # Replace any unlisted: value with true (within frontmatter only)
+    local end_line
+    end_line=$(awk '/^---$/{n++; if(n==2){print NR; exit}}' "$file")
+    if [[ -n "$end_line" ]]; then
+      if [[ "$(uname)" == "Darwin" ]]; then
+        sed -i '' "2,${end_line}{s/^unlisted:[[:space:]]*.*/unlisted: true/;}" "$file"
+      else
+        sed -i "2,${end_line}{s/^unlisted:[[:space:]]*.*/unlisted: true/;}" "$file"
+      fi
+    fi
   else
-    sed -i '1 a\unlisted: true' "$file"
+    # No unlisted line exists — add one after the opening ---
+    if [[ "$(uname)" == "Darwin" ]]; then
+      sed -i '' '1 a\
+unlisted: true' "$file"
+    else
+      sed -i '1 a\unlisted: true' "$file"
+    fi
   fi
 }
 
-# Remove unlisted: true from frontmatter only (not from body)
+# Remove any unlisted: line from frontmatter (publishes the post)
 remove_unlisted() {
   local file="$1"
   if [[ "$MODE" == "--check" ]]; then
@@ -84,9 +97,9 @@ remove_unlisted() {
   end_line=$(awk '/^---$/{n++; if(n==2){print NR; exit}}' "$file")
   if [[ -n "$end_line" ]]; then
     if [[ "$(uname)" == "Darwin" ]]; then
-      sed -i '' "2,${end_line}{/^unlisted:[[:space:]]*true$/d;}" "$file"
+      sed -i '' "2,${end_line}{/^unlisted:/d;}" "$file"
     else
-      sed -i "2,${end_line}{/^unlisted:[[:space:]]*true$/d;}" "$file"
+      sed -i "2,${end_line}{/^unlisted:/d;}" "$file"
     fi
   fi
 }
@@ -163,18 +176,9 @@ for entry in "$BLOG_DIR"/2*; do
     continue
   fi
 
-  # Skip posts with unlisted: false (force-publish override — author wants post live now)
-  if has_force_published "$file"; then
-    ((skipped++)) || true
-    if [[ "$MODE" != "--apply" ]] || [[ "${VERBOSE:-}" == "1" ]]; then
-      log_action "$GREEN" "SKIP" "$filename" "force-published (unlisted: false)"
-    fi
-    continue
-  fi
-
-  # Future post without unlisted → add unlisted
+  # Future post without unlisted:true → ensure unlisted:true (adds or fixes false→true)
   if $is_future && ! $is_unlisted; then
-    add_unlisted "$file"
+    ensure_unlisted_true "$file"
     ((drafted++)) || true
     log_action "$YELLOW" "UNLISTED" "$filename" "future ($post_date > $TODAY)"
 
