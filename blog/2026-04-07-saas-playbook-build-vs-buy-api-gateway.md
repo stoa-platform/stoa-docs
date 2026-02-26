@@ -1,5 +1,5 @@
 ---
-unlisted: false
+unlisted: true
 slug: saas-playbook-build-vs-buy-api-gateway
 title: "Build vs Buy: The True Cost of Your API Gateway Decision"
 description: "Honest cost analysis of building vs buying an API gateway for SaaS. Compares engineering cost, maintenance burden, and hidden costs of DIY vs STOA vs managed solutions."

@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: week-1-with-stoa-operations-runbook
 title: "Week 1 with STOA: From Install to Production-Ready"
 description: "Your first 7 days operating STOA Platform. Day-by-day runbook covering monitoring, policies, consumers, and production hardening."

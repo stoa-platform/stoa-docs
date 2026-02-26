@@ -4,7 +4,6 @@ title: "STOA Security Architecture: Defense-in-Depth for AI-Native API Gateways"
 description: "How STOA Platform implements multi-layer security for AI agent API access: mTLS, OAuth 2.1, OPA policy engine, guardrails, and audit logging."
 authors: [stoa-team]
 tags: [security, architecture, tutorial, ai]
-unlisted: true
 keywords:
   - API gateway security architecture
   - AI agent API security
