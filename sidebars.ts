@@ -112,6 +112,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'reference/hardware-requirements',
         'reference/performance-benchmarks',
+        'reference/benchmark-methodology',
         'reference/configuration',
         'reference/mcp-tools',
         'reference/cli',
