@@ -71,11 +71,14 @@ Every contribution matters. We track impact across four dimensions:
 
 ## Quick Links
 
-- 📜 [Philosophy & Principles](/docs/community/philosophy) — Why we do what we do
-- 💰 [Contributor Rewards](/docs/community/rewards) — How contributions are valued
-- ❓ [FAQ](/docs/community/faq) — Common questions from OSS skeptics
-- 💬 [Discord](https://discord.gostoa.dev) — Join the conversation
-- 🐙 [GitHub](https://github.com/stoa-platform) — Contribute code
+| Resource | Description |
+|----------|-------------|
+| [Philosophy & Principles](/docs/community/philosophy) | Why we do what we do |
+| [Contributor Rewards](/docs/community/rewards) | How contributions are valued |
+| [Contributing Guide](/docs/community/contributing) | Development setup and PR workflow |
+| [FAQ](/docs/community/faq) | Common questions from OSS skeptics |
+| [Discord](https://discord.gostoa.dev) | Join the conversation |
+| [GitHub](https://github.com/stoa-platform) | Contribute code |
 
 ---
 
@@ -83,21 +86,34 @@ Every contribution matters. We track impact across four dimensions:
 
 ### Start Contributing
 
-1. **Join Discord** — Introduce yourself in `#introductions`
-2. **Pick an issue** — Look for `good-first-issue` labels
-3. **Submit a PR** — Follow our [contribution guide](https://github.com/stoa-platform/stoa/blob/main/CONTRIBUTING.md)
-4. **Earn points** — Track your impact on the contributor dashboard
+1. **Pick an issue** — Browse our [good-first-issues](https://github.com/stoa-platform/stoa/issues?q=is%3Aopen+label%3A%22good+first+issue%22) — curated, well-described, beginner-friendly
+2. **Read the guide** — Follow our [Contributing Guide](/docs/community/contributing) for setup and PR workflow
+3. **Submit a PR** — Fork, code, test, submit
+4. **Earn points** — Every contribution counts toward [Rewards](/docs/community/rewards)
+
+:::info Good First Issues
+We maintain [10+ beginner-friendly issues](https://github.com/stoa-platform/stoa/issues?q=is%3Aopen+label%3A%22good+first+issue%22) across all components — docs, UI, API, tests, and DX improvements. Each has a clear description, expected outcome, and difficulty rating.
+:::
+
+### Other Ways to Contribute
+
+Not ready for code? You can still help:
+
+- **Report bugs** — [Open an issue](https://github.com/stoa-platform/stoa/issues/new) with reproduction steps
+- **Improve docs** — Fix typos, add examples, translate content
+- **Answer questions** — Help newcomers in Discord `#help`
+- **Share STOA** — Write about it, talk about it, star the repo
 
 ### Become a Design Partner
 
 Testing STOA in your organization? We offer:
 
 - Early access to features
-- Direct line to maintainers  
+- Direct line to maintainers
 - Co-marketing opportunities
 - Influence on roadmap
 
-📧 Contact: [hello@gostoa.dev](mailto:hello@gostoa.dev)
+Contact: [hello@gostoa.dev](mailto:hello@gostoa.dev)
 
 ---
 
