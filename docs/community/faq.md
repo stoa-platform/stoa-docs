@@ -162,6 +162,56 @@ Plus: all changes go through gradual transition periods. No sudden rug pulls.
 
 ---
 
+## Technical
+
+### What is MCP and why does STOA support it?
+
+MCP (Model Context Protocol) is an open standard by Anthropic that lets AI agents discover and call tools. STOA acts as an MCP gateway — it exposes your existing APIs as MCP tools so AI agents can use them securely, with authentication, rate limiting, and audit trails.
+
+In short: **MCP is how AI agents talk to APIs. STOA makes that conversation secure and governed.**
+
+See our [MCP Gateway guide](/docs/guides/mcp-getting-started) for more details.
+
+### What is UAC (Universal API Contract)?
+
+UAC is STOA's "Define Once, Expose Everywhere" approach. You write one API contract and STOA automatically generates:
+
+- REST/OpenAPI bindings
+- MCP tool definitions
+- GraphQL schemas (planned)
+- gRPC service definitions (planned)
+
+This means you define your API surface once and expose it through any protocol. See the [UAC concept page](/docs/concepts/uac).
+
+### Can I run STOA on-premises?
+
+Yes. STOA is designed for hybrid deployment:
+
+- **Control Plane** can run in the cloud or on-premises
+- **Data Plane** (STOA Gateway) runs wherever your APIs are — on-prem, cloud, or edge
+- **No phone-home** — the gateway operates independently
+
+See the [deployment guide](/docs/deployment/hybrid) for architecture details.
+
+### What API gateways can STOA replace or complement?
+
+STOA works alongside existing gateways (Kong, Gravitee, Apigee, webMethods, AWS API Gateway, Azure APIM) through its adapter system. You don't need to rip and replace — STOA orchestrates your existing gateways from a single control plane.
+
+See our [migration guides](/docs/guides/migration/) for specific gateway transitions.
+
+### What's the tech stack?
+
+| Component | Technology |
+|-----------|-----------|
+| Control Plane API | Python 3.11, FastAPI, SQLAlchemy |
+| Console UI | React 18, TypeScript, Vite |
+| Developer Portal | React 18, TypeScript, Vite |
+| STOA Gateway | Rust (Tokio, axum) |
+| Auth | Keycloak (OIDC/OAuth 2.1) |
+| Observability | OpenTelemetry, Prometheus, Grafana |
+
+---
+
 ## Still Skeptical?
 
 Good. Skepticism is healthy.
@@ -171,7 +221,7 @@ Here's what we ask:
 1. **Watch us** — Follow our quarterly reports
 2. **Challenge us** — Ask hard questions in Discord
 3. **Verify us** — The dashboard will be public
-4. **Judge us by results** — First distributions Q2 2026
+4. **Judge us by results** — First distributions when enterprise revenue arrives
 
 We'd rather earn your trust than demand it.
 

@@ -157,6 +157,7 @@ const sidebars: SidebarsConfig = {
         'community/index',
         'community/philosophy',
         'community/rewards',
+        'community/contributing',
         'community/faq',
       ],
     },
