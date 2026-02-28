@@ -40,7 +40,7 @@ As STOA moves toward MCP Federation (ADR-046), the gateway must discover capabil
 
 ### Constraints
 
-- Gateway startup must remain fast (<2s) — blocking discovery at startup is unacceptable
+- Gateway startup must remain fast (&lt;2s) — blocking discovery at startup is unacceptable
 - Upstream MCP servers may be temporarily unavailable
 - Discovery responses are relatively stable (change infrequently)
 - Gateway handles 100+ concurrent requests; discovery must not become a bottleneck
