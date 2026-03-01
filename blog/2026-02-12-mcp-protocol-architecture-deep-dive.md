@@ -1,6 +1,6 @@
 ---
 slug: mcp-protocol-architecture-deep-dive
-title: "MCP Protocol Architecture: Message Flow and Transport Layers"
+title: "MCP Protocol Deep Dive: Message Flow and Transports"
 authors: [stoa-team]
 tags: [tutorial, mcp, architecture, ai]
 description: "How MCP actually works under the hood. Protocol layers, JSON-RPC message flow, SSE vs stdio transport, and how it compares to gRPC and GraphQL."
