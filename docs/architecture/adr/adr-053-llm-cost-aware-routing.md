@@ -40,7 +40,7 @@ Multi-provider tenants can achieve 30-85% cost savings through intelligent routi
 
 ### Constraints
 
-- Routing decision must add <5ms latency (no external calls in hot path)
+- Routing decision must add less than 5ms latency (no external calls in hot path)
 - Budget lookup must not block every request (cache with bounded staleness acceptable)
 - Cost tracking must not lose data on gateway restart (Prometheus scraping provides durability)
 - Must support per-request provider override via header (for A/B testing, debugging)
@@ -59,7 +59,7 @@ Request arrives → Extract model from payload
   → Extract tokens from response → Record cost metrics
 ```
 
-- **Decision latency**: <1ms (in-memory sort of 2-6 providers)
+- **Decision latency**: under 1ms (in-memory sort of 2-6 providers)
 - **Override**: `X-Stoa-Provider` header bypasses routing, sends to specific provider
 - **Fallback**: if cheapest provider fails, circuit breaker marks it unhealthy, next request goes to second-cheapest
 
