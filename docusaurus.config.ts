@@ -207,13 +207,13 @@ const config: Config = {
       {property: 'og:site_name', content: 'STOA Documentation'},
       {property: 'og:image', content: 'https://docs.gostoa.dev/img/stoa-social-card.png'},
       {name: 'twitter:card', content: 'summary_large_image'},
-      {name: 'twitter:site', content: '@stoaplatform'},
+      {name: 'twitter:site', content: '@stoagateway'},
       {name: 'twitter:image', content: 'https://docs.gostoa.dev/img/stoa-social-card.png'},
     ],
     announcementBar: {
-      id: 'demo-day-2026',
+      id: 'oss-launch-2026',
       content:
-        '📣 STOA Demo Day — Feb 24, 2026. <a target="_blank" rel="noopener noreferrer" href="https://github.com/stoa-platform/stoa/discussions">Join the discussion</a>',
+        '🚀 STOA is open source — Apache 2.0. <a target="_blank" rel="noopener noreferrer" href="https://github.com/stoa-platform/stoa">Star us on GitHub</a>',
       backgroundColor: '#1a1a2e',
       textColor: '#e0e0e0',
       isCloseable: true,
