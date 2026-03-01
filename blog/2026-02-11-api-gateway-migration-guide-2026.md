@@ -1,9 +1,9 @@
 ---
 slug: api-gateway-migration-guide-2026
-title: "API Gateway Migration Guide 2026: From Legacy Platforms to AI-Ready Infrastructure"
+title: "API Gateway Migration Guide 2026: Legacy to AI-Ready"
 authors: [stoa-team]
 tags: [migration, api-gateway, ai, mcp]
-description: "Complete guide to migrating from legacy API gateways (Layer7, webMethods, Axway, Apigee) to modern open-source platforms in 2026. Covers assessment, policy translation, phased traffic migration, and AI agent readiness."
+description: "Migrating from Layer7, webMethods, or Apigee? Assessment framework, policy translation patterns, and phased traffic migration for zero downtime."
 keywords:
   - api gateway migration
   - api gateway migration guide 2026

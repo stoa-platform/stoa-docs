@@ -1,9 +1,9 @@
 ---
 slug: why-apache-2-not-bsl
-title: "Why We Chose Apache 2.0 (And What We Think About BSL)"
+title: "Apache 2.0 vs BSL: Why True Open Source Wins"
 authors: [christophe]
 tags: [open-source, community, education]
-description: "The business case for true open source. Why STOA chose Apache 2.0 over BSL, SSPL, or dual-licensing — and why it matters for your stack decisions."
+description: "BSL, SSPL, and dual-licensing create hidden lock-in. The business case for choosing Apache 2.0 and why it matters for your tech stack decisions."
 keywords: [apache 2.0 license, BSL license, open source license comparison, SSPL vs Apache, open core, open source business model, vendor lock-in, source available, true open source]
 ---
 <!-- last verified: 2026-02 -->

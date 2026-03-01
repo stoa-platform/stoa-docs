@@ -1,9 +1,9 @@
 ---
 slug: introducing-stoa
-title: Introducing STOA Platform
+title: "Introducing STOA: Open-Source AI-Native API Gateway"
 authors: [christophe, stoa-team]
 tags: [announcement, mcp]
-description: "Introducing STOA Platform — an open-source, AI-native API gateway combining MCP support, multi-tenant isolation, and a developer portal for the enterprise AI era."
+description: "MCP support, multi-tenant isolation, and a developer portal for the enterprise AI era. Why we built STOA Platform and what makes it different."
 keywords:
   - STOA platform
   - open source API gateway

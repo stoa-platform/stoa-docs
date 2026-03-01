@@ -1,7 +1,7 @@
 ---
 slug: ci-security-pipeline-open-source-api-gateway
-title: "9-Job CI Security Pipeline: How STOA Scans Every PR"
-description: "How STOA's 9-job GitHub Actions security pipeline catches secrets, SAST issues, CVEs, and license violations on every PR — polyglot Python, Rust, TypeScript."
+title: "9-Job CI Security Pipeline: Scanning Every PR Automatically"
+description: "Gitleaks, Bandit, Clippy SAST, Trivy, and license checks in one GitHub Actions pipeline. How we catch secrets and CVEs on every PR across 3 languages."
 authors: [christophe]
 tags: [security, architecture, open-source, tutorial]
 keywords:

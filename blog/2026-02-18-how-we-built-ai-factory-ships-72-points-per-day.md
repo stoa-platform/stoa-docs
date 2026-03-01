@@ -1,7 +1,7 @@
 ---
 slug: how-we-built-ai-factory-ships-72-points-per-day
-title: "How We Built an AI Factory That Ships 72 Story Points Per Day"
-description: "How a solo developer used Claude Code, MCP integrations, and multi-instance coordination to ship 505 story points in 7 days — the architecture behind STOA's AI Factory."
+title: "AI Factory: How One Developer Ships 72 Story Points/Day"
+description: "505 story points in 7 days with Claude Code, MCP integrations, and multi-instance coordination. The architecture behind our AI-powered dev workflow."
 authors: [christophe]
 tags: [ai, architecture, open-source, tutorial]
 keywords:

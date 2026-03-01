@@ -1,10 +1,9 @@
 ---
 slug: stoa-docker-compose-local-development
-title: "Docker Compose: Run the Full STOA Stack Locally"
-description: "Run STOA Platform locally with Docker Compose. Step-by-step setup for API, Console, Portal, Gateway, and Keycloak."
+title: "Run the Full Stack Locally with Docker Compose"
+description: "API, Console, Portal, Gateway, and Keycloak running on your laptop. Step-by-step Docker Compose setup for local development and testing."
 authors: [stoa-team]
 tags: [tutorial, docker, quickstart]
-unlisted: true
 keywords:
   - docker compose api gateway
   - stoa platform local development

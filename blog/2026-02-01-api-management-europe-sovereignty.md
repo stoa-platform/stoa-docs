@@ -1,9 +1,9 @@
 ---
 slug: api-management-europe-sovereignty
-title: "API Management in Europe: Data Sovereignty and NIS2 Compliance"
+title: "API Management in Europe: Sovereignty and NIS2 Compliance"
 authors: [christophe]
 tags: [compliance, open-source]
-description: "NIS2, DORA, and GDPR require European API management to prioritize data sovereignty. Learn why gateway jurisdiction matters and how to ensure compliance."
+description: "NIS2 and GDPR require knowing where your API traffic flows. Why gateway jurisdiction matters and how to build a sovereign API management stack."
 keywords: [European API management, sovereign API gateway, API management GDPR, data sovereignty, CLOUD Act, NIS2, DORA, European API gateway, sovereign cloud]
 ---
 

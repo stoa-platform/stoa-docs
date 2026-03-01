@@ -1,7 +1,7 @@
 ---
 slug: freelancer-api-security-part-3-audit-trails
-title: "Audit Trails for When Things Go Wrong (Freelancer Security Series, Part 3)"
-description: "Structured logging for solo developers: what to capture, how to query it, incident response without an ops team, and how to answer 'what was the API doing at 3am?'"
+title: "Audit Trails When Things Go Wrong (Freelancer Part 3)"
+description: "What was your API doing at 3am? Structured logging, incident response without an ops team, and queryable audit trails for solo developers."
 authors: [stoa-team]
 tags: [security, tutorial, api-gateway, compliance]
 unlisted: true

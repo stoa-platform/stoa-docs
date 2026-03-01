@@ -1,10 +1,9 @@
 ---
 slug: owasp-api-security-top-10-stoa
-title: "OWASP API Security Top 10 (2023): How STOA Addresses Each Risk"
-description: "OWASP API Security Top 10 mapped to STOA Platform controls. See which risks STOA helps mitigate and what requires application-level attention."
+title: "OWASP API Security Top 10: Gateway Controls That Help"
+description: "Map each OWASP API risk to gateway-level controls. Which risks a gateway mitigates, which need app-level fixes, and where gaps remain."
 authors: [stoa-team]
 tags: [security, comparison, tutorial, api-gateway]
-unlisted: true
 keywords:
   - OWASP API security top 10 2023
   - OWASP API1 broken object level authorization

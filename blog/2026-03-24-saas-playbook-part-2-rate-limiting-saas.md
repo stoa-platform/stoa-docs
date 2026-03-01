@@ -1,8 +1,8 @@
 ---
 unlisted: true
 slug: saas-playbook-2-rate-limiting-saas
-title: "SaaS Playbook Part 2: Rate Limiting Strategies for Multi-Tenant APIs"
-description: "Master per-tenant rate limiting for SaaS APIs. Covers token bucket vs sliding window, API key tiers, burst handling, and GuardrailPolicy configuration with STOA."
+title: "SaaS Rate Limiting: Per-Tenant Strategies That Scale"
+description: "Token bucket vs sliding window for multi-tenant APIs. Configure API key tiers, burst handling, and per-tenant quotas without custom code."
 authors: [stoa-team]
 tags: [tutorial, architecture, api-gateway]
 keywords:

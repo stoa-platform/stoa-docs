@@ -1,9 +1,9 @@
 ---
 slug: layer7-ca-api-gateway-migration-stoa
-title: "Broadcom Layer7 API Gateway Migration: Moving to Open Source in 2026"
+title: "Broadcom Layer7 Migration to Open Source (2026 Guide)"
 authors: [stoa-team]
 tags: [migration, comparison, api-gateway]
-description: "Migrate from Broadcom Layer7 API Gateway to an open-source alternative. Feature comparison, phased migration roadmap, and guidance on translating assertion-based policies for enterprise teams."
+description: "Layer7 assertion-based policies don't translate 1:1. Learn how to map them to modern gateways with this phased enterprise migration plan."
 keywords:
   - layer7 migration
   - ca api gateway alternative

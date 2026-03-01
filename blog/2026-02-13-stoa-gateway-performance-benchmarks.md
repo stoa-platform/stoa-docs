@@ -1,9 +1,9 @@
 ---
 slug: stoa-gateway-performance-benchmarks
-title: "STOA Gateway Performance: Sub-Millisecond Overhead, Fully Reproducible"
+title: "Sub-Millisecond Gateway: Reproducible Performance Benchmarks"
 authors: [stoa-team]
 tags: [architecture, open-source, comparison]
-description: "STOA Gateway benchmarks: sub-microsecond auth, nanosecond rate limiting, and a reproducible comparison framework. All scripts published."
+description: "Sub-microsecond auth, nanosecond rate limiting, and a fully reproducible benchmark framework. All k6 scripts and scoring methodology published."
 keywords:
   - api gateway benchmarks
   - gateway performance

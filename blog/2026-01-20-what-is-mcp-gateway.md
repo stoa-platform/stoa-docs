@@ -1,9 +1,9 @@
 ---
 slug: what-is-mcp-gateway
-title: "What is an MCP Gateway? The Missing Piece for AI Agent Security"
+title: "What Is an MCP Gateway? Security for AI Agents Explained"
 authors: [christophe]
 tags: [mcp, ai, architecture]
-description: "Discover what an MCP gateway is and why AI agents need one. Security, governance, audit trails, and production deployment for enterprise AI."
+description: "AI agents calling your APIs need guardrails. An MCP gateway adds authentication, rate limiting, audit trails, and governance in one layer."
 keywords: [MCP gateway, Model Context Protocol, AI API gateway, MCP server, AI agent security, API gateway for AI, AI governance, enterprise AI]
 ---
 

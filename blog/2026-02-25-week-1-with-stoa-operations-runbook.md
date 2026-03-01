@@ -1,7 +1,7 @@
 ---
 slug: week-1-with-stoa-operations-runbook
-title: "Week 1 with STOA: From Install to Production-Ready"
-description: "Your first 7 days operating STOA Platform. Day-by-day runbook covering monitoring, policies, consumers, and production hardening."
+title: "Week 1 Operations Runbook: Install to Production-Ready"
+description: "Day-by-day operations guide for your first week. Monitoring, policies, consumers, and production hardening steps in the right order."
 authors: [stoa-team]
 tags: [tutorial, education, api-gateway]
 keywords:

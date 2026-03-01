@@ -1,7 +1,7 @@
 ---
 slug: freelancer-api-security-part-1-vulnerabilities
-title: "Your APIs Are More Vulnerable Than You Think (Freelancer Security Series, Part 1)"
-description: "The threat landscape for solo developers building APIs. Real attack patterns, what breaks first, and how an API gateway fixes the 80% without adding complexity."
+title: "Your APIs Are More Vulnerable Than You Think (Part 1)"
+description: "Real attack patterns targeting solo developer APIs. What breaks first, how attackers find you, and the 80% fix that doesn't add complexity."
 authors: [stoa-team]
 tags: [security, tutorial, api-gateway, education]
 unlisted: true
