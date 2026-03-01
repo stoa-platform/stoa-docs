@@ -1,0 +1,8 @@
+{
+  "label": "API Reference",
+  "position": 7,
+  "link": {
+    "type": "generated-index",
+    "description": "REST API reference for STOA Platform — Control Plane API, MCP Gateway API, and Gateway Admin API"
+  }
+}

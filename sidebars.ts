@@ -20,6 +20,10 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Enterprise',
+      link: {
+        type: 'generated-index',
+        description: 'Enterprise features, security, compliance, and support for STOA Platform.',
+      },
       items: [
         'enterprise/use-cases',
         'enterprise/security-compliance',
@@ -99,6 +103,10 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'API Reference',
+      link: {
+        type: 'generated-index',
+        description: 'REST API reference for STOA Platform — Control Plane, MCP Gateway, and Gateway Admin APIs.',
+      },
       items: [
         'api/control-plane',
         'api/mcp-gateway',
@@ -166,6 +174,7 @@ const sidebars: SidebarsConfig = {
       label: 'Legal',
       items: [
         'legal/terms',
+        'legal/trademarks',
       ],
     },
     'faq/index',

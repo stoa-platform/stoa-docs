@@ -22,7 +22,7 @@ This buying guide is written for **SMB teams**: typically 5-30 engineers, a prod
 
 <!-- truncate -->
 
-> Feature comparisons in this guide are based on publicly available documentation as of February 2026. Product capabilities change frequently. Verify current features directly with each vendor. All trademarks belong to their respective owners. See our [trademark notice](/docs/trademarks) for details.
+> Feature comparisons in this guide are based on publicly available documentation as of February 2026. Product capabilities change frequently. Verify current features directly with each vendor. All trademarks belong to their respective owners. See our [trademark notice](/docs/legal/trademarks) for details.
 
 ## Who This Guide Is For
 

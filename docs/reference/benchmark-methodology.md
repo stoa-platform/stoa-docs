@@ -475,4 +475,4 @@ kubectl delete job arena-manual arena-ent-manual -n stoa-system
 - **MCP scoring bias** — Layer 1 inherently favors gateways with MCP support. This is by design: the benchmark measures AI-native capabilities. Layer 0 provides the complementary proxy baseline.
 - **Echo backend assumes GET** — All proxy scenarios use HTTP GET against the echo backend. POST/PUT patterns with request body parsing are not benchmarked.
 
-> Feature comparisons are based on tests run under identical conditions as of the date noted above. Gateway capabilities change frequently. We encourage readers to verify current performance with their own workloads. All trademarks belong to their respective owners. See [trademarks](/docs/trademarks).
+> Feature comparisons are based on tests run under identical conditions as of the date noted above. Gateway capabilities change frequently. We encourage readers to verify current performance with their own workloads. All trademarks belong to their respective owners. See [trademarks](/docs/legal/trademarks).

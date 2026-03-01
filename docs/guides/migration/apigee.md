@@ -269,7 +269,7 @@ kubectl annotate ingress api-canary \
 
 ---
 
-> Feature comparisons are based on publicly available documentation as of 2026-02. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners. See [trademarks](/docs/trademarks).
+> Feature comparisons are based on publicly available documentation as of 2026-02. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners. See [trademarks](/docs/legal/trademarks).
 
 ---
 

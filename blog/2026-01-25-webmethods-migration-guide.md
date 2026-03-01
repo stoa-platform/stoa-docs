@@ -346,4 +346,4 @@ Yes. STOA is designed for on-premises deployment in regulated environments. The 
 
 > This guide describes technical migration steps and does not imply any deficiency in the source platform. Migration decisions depend on specific organizational requirements. All trademarks (Software AG, webMethods, IBM, IBM MQ) belong to their respective owners.
 
-> Feature comparisons are based on publicly available documentation as of 2026-02. Product capabilities change frequently — verify current features directly with each vendor. See [trademarks](/docs/trademarks) for details.
+> Feature comparisons are based on publicly available documentation as of 2026-02. Product capabilities change frequently — verify current features directly with each vendor. See [trademarks](/docs/legal/trademarks) for details.

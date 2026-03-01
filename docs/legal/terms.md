@@ -42,7 +42,7 @@ STOA Platform is open-source software licensed under the [Apache License 2.0](ht
 
 Content you create, upload, or configure through the platform (API definitions, tool configurations, policies) remains yours. By using the platform, you grant STOA the limited right to process and store this content as necessary to provide the service.
 
-The STOA name, logo, and branding are trademarks of CAB Ingenierie. See our [Trademark Notice](/docs/trademarks) for details.
+The STOA name, logo, and branding are trademarks of CAB Ingenierie. See our [Trademark Notice](/docs/legal/trademarks) for details.
 
 ## 4. Service Availability
 

@@ -266,7 +266,7 @@ keywords:
 > Feature comparisons are based on publicly available documentation as of
 > [YYYY-MM]. Product capabilities change frequently. We encourage readers
 > to verify current features directly with each vendor. All trademarks
-> belong to their respective owners. See [trademarks](/docs/trademarks).
+> belong to their respective owners. See [trademarks](/docs/legal/trademarks).
 
 **Related**: [Migration Hub](/blog/api-gateway-migration-guide-2026) | [Open Source Gateway Guide](/blog/open-source-api-gateway-2026)
 ```
