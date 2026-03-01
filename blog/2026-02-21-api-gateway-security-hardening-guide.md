@@ -1,6 +1,6 @@
 ---
 slug: api-gateway-security-hardening-guide
-title: "API Gateway Security Hardening: 10-Step Production Checklist"
+title: "API Gateway Hardening: 10-Step Production Checklist"
 description: "Going to production? TLS termination, CORS lockdown, rate limiting, SSRF protection, and audit logging in a battle-tested 10-step hardening guide."
 authors: [stoa-team]
 tags: [tutorial, security, api-gateway]
