@@ -35,7 +35,7 @@ function HomepageHeader() {
           </Link>
           <Link
             className="button button--outline button--lg"
-            href="https://github.com/stoa-platform/stoa">
+            href="https://github.com/stoa-platform">
             ⭐ GitHub
           </Link>
         </div>

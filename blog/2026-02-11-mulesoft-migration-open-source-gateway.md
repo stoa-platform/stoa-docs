@@ -218,6 +218,6 @@ Cost savings depend on your license structure, infrastructure, and usage. Organi
 
 ---
 
-> This guide describes technical migration steps and does not imply any deficiency in the source platform. Migration decisions depend on specific organizational requirements. All trademarks belong to their respective owners. See [trademarks](/docs/trademarks).
+> This guide describes technical migration steps and does not imply any deficiency in the source platform. Migration decisions depend on specific organizational requirements. All trademarks belong to their respective owners. See [trademarks](/docs/legal/trademarks).
 
 > STOA Platform provides technical capabilities that support regulatory compliance efforts. This does not constitute legal advice or a guarantee of compliance.

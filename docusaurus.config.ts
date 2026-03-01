@@ -213,7 +213,7 @@ const config: Config = {
     announcementBar: {
       id: 'oss-launch-2026',
       content:
-        '🚀 STOA is open source — Apache 2.0. <a target="_blank" rel="noopener noreferrer" href="https://github.com/stoa-platform/stoa">Star us on GitHub</a>',
+        '🚀 STOA is open source — Apache 2.0. <a target="_blank" rel="noopener noreferrer" href="https://github.com/stoa-platform">Star us on GitHub</a>',
       backgroundColor: '#1a1a2e',
       textColor: '#e0e0e0',
       isCloseable: true,
@@ -305,7 +305,7 @@ const config: Config = {
             },
             {
               label: 'Trademark Notice',
-              to: '/docs/trademarks',
+              to: '/docs/legal/trademarks',
             },
           ],
         },

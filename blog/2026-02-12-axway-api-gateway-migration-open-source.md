@@ -255,4 +255,4 @@ Yes, at every phase. During Phases 2-4, Axway continues running in parallel. Tra
 
 > This guide describes technical migration steps and does not imply any deficiency in the source platform. Migration decisions depend on specific organizational requirements. All trademarks belong to their respective owners.
 
-> Feature comparisons are based on publicly available documentation as of 2026-02. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. See [trademarks](/docs/trademarks) for details.
+> Feature comparisons are based on publicly available documentation as of 2026-02. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. See [trademarks](/docs/legal/trademarks) for details.

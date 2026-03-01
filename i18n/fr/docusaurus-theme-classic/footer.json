@@ -41,7 +41,7 @@
   },
   "link.item.label.Trademark Notice": {
     "message": "Mentions légales",
-    "description": "The label of footer link with label=Trademark Notice linking to /docs/trademarks"
+    "description": "The label of footer link with label=Trademark Notice linking to /docs/legal/trademarks"
   },
   "copyright": {
     "message": "Copyright © 2026 STOA Platform. Créé avec Docusaurus. Toutes les marques tierces sont la propriété de leurs détenteurs respectifs.",

@@ -22,7 +22,7 @@ This is the final installment of the **SaaS Playbook** series. We have covered [
 
 <!-- truncate -->
 
-> This analysis uses publicly available information about software development costs, engineering salaries, and infrastructure pricing. All named product comparisons are based on publicly available documentation as of February 2026. Costs are illustrative ranges — actual costs depend heavily on your specific situation. See our [trademark notice](/docs/trademarks) for details on third-party product references.
+> This analysis uses publicly available information about software development costs, engineering salaries, and infrastructure pricing. All named product comparisons are based on publicly available documentation as of February 2026. Costs are illustrative ranges — actual costs depend heavily on your specific situation. See our [trademark notice](/docs/legal/trademarks) for details on third-party product references.
 
 ## The Build vs Buy Decision Framework
 

@@ -295,6 +295,6 @@ Yes. The most common path is: start with OpenAI Function Calling or LangChain fo
 
 ---
 
-> Feature comparisons are based on publicly available documentation as of 2026-02. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners. See [trademarks](/docs/trademarks) for details.
+> Feature comparisons are based on publicly available documentation as of 2026-02. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners. See [trademarks](/docs/legal/trademarks) for details.
 
 > *Evaluating AI agent architectures? [Start with the MCP Gateway quickstart](/blog/mcp-gateway-quickstart-docker) to see the protocol in action, or explore the [MCP gateway documentation](/docs/concepts/mcp-gateway) for architecture details.*

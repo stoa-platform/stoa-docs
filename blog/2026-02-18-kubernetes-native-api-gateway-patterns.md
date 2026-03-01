@@ -884,4 +884,4 @@ For migration from proprietary API gateways, see the [Open Source API Gateway 20
 
 ---
 
-> **About pattern comparisons**: Information in this guide is based on Kubernetes SIG Network specifications (Gateway API), CNCF projects (Istio, Linkerd), and STOA Platform's open-source implementation as of February 2026. Gateway capabilities evolve frequently — consult each project's documentation for current features. All trademarks belong to their respective owners. See [trademarks](/docs/trademarks) for details.
+> **About pattern comparisons**: Information in this guide is based on Kubernetes SIG Network specifications (Gateway API), CNCF projects (Istio, Linkerd), and STOA Platform's open-source implementation as of February 2026. Gateway capabilities evolve frequently — consult each project's documentation for current features. All trademarks belong to their respective owners. See [trademarks](/docs/legal/trademarks) for details.
