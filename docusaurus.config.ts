@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'STOA — Open-Source AI API Gateway',
+  title: 'STOA Docs',
   tagline: 'Modernize Your API Gateway — MCP, Multi-Tenant, European Sovereign',
   favicon: 'img/favicon.svg',
 
@@ -145,6 +145,8 @@ const config: Config = {
             'https://github.com/stoa-platform/stoa-docs/tree/main/',
         },
         blog: {
+          blogTitle: 'STOA Blog — AI Gateway, MCP & Migration Guides',
+          blogDescription: 'Tutorials, comparisons, and migration guides for MCP gateways, AI agent architecture, and open-source API management.',
           showReadingTime: true,
           feedOptions: {
             type: ['rss', 'atom'],

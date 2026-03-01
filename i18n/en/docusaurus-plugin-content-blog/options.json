@@ -1,0 +1,14 @@
+{
+  "title": {
+    "message": "STOA Blog — AI Gateway, MCP & Migration Guides",
+    "description": "The title for the blog used in SEO"
+  },
+  "description": {
+    "message": "Tutorials, comparisons, and migration guides for MCP gateways, AI agent architecture, and open-source API management.",
+    "description": "The description for the blog used in SEO"
+  },
+  "sidebar.title": {
+    "message": "Recent posts",
+    "description": "The label for the left sidebar"
+  }
+}

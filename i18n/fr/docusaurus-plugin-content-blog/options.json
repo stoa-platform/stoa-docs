@@ -1,10 +1,10 @@
 {
   "title": {
-    "message": "Blog",
+    "message": "Blog STOA — Passerelle AI, MCP & Guides de Migration",
     "description": "The title for the blog used in SEO"
   },
   "description": {
-    "message": "Blog",
+    "message": "Tutoriels, comparatifs et guides de migration pour les passerelles MCP, l'architecture d'agents IA et la gestion d'API open source.",
     "description": "The description for the blog used in SEO"
   },
   "sidebar.title": {

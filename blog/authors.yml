@@ -4,7 +4,7 @@ stoa-team:
   name: STOA Team
   title: The STOA Platform Team
   url: https://gostoa.dev
-  image_url: https://gostoa.dev/img/logo.svg
+  image_url: https://docs.gostoa.dev/img/logo.svg
   socials:
     github: stoa-platform
 
