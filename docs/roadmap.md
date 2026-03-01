@@ -1,8 +1,8 @@
 ---
 sidebar_position: 5
 title: "STOA Platform Roadmap: Features & Milestones"
-description: "STOA Platform public roadmap — upcoming features for the open-source AI-native API gateway with MCP support, sidecar mode, CLI, and performance improvements"
-keywords: [roadmap, features, release plan, MCP gateway, API management, STOA, open source]
+description: "STOA Platform public roadmap — upcoming features for the open-source AI-native API gateway with MCP support, LLM proxy, sidecar mode, CLI, and multi-vendor adapters"
+keywords: [roadmap, features, release plan, MCP gateway, API management, STOA, open source, LLM proxy]
 ---
 
 # Roadmap
@@ -13,38 +13,59 @@ Our vision for STOA Platform — building the gateway for the AI era.
 This roadmap reflects our current priorities and may evolve based on community feedback and market needs. Have ideas? [Join the discussion on Discord](https://discord.gostoa.dev).
 :::
 
+:::tip Latest Release
+**[v2.2.0](/blog/release-v2.2.0)** (March 2026) — LLM Proxy, Self-Service Signup, Skills System, MCP 2025-11-25, OAuth 2.1 DPoP, and 12 new API endpoints.
+:::
+
 ---
 
 ## Available Today
 
-**Core Platform, MCP Gateway & Multi-Vendor Support**
+**Core Platform, MCP Gateway, LLM Proxy & Multi-Vendor Support**
 
-| Feature | Status |
-|---------|--------|
-| Control Plane API (Python/FastAPI) | Done |
-| STOA Gateway (Rust/Tokio/axum) | Done |
-| MCP Protocol — tool discovery, invocation, SSE | Done |
-| Developer Portal — self-service API discovery | Done |
-| Admin Console — API catalog, observability, tenant ops | Done |
-| Multi-tenant Architecture — namespace-level isolation | Done |
-| Keycloak SSO — OIDC, LDAP federation, multi-realm | Done |
-| Rate Limiting — per-consumer quotas | Done |
-| Circuit Breaker — per-upstream with zombie reaper | Done |
-| mTLS — certificate-bound tokens (RFC 8705) | Done |
-| Security Headers — OWASP best practices, SSRF blocklist | Done |
-| Gateway Adapters — webMethods, Kong, Gravitee | Done |
-| Gateway Auto-Registration — zero-config heartbeat | Done |
-| Observability — Prometheus, Grafana, OpenSearch | Done |
-| Helm Charts — full platform deployment | Done |
-| OPA Policy Engine | Done |
-| Consumer Onboarding — data model, Keycloak sync, quotas | Done |
-| Born GitOps — declarative API lifecycle (ADR-040) | Done |
-| Gateway Arena — continuous benchmark lab (STOA vs Kong vs Gravitee) | Done |
-| Audit Trail — OpenSearch data pipeline, Fluent Bit | Done |
-| ArgoCD Integration — GitOps deployment on OVH + Hetzner | Done |
-| CRDs — Tool, ToolSet, GatewayInstance, GatewayBinding | Done |
-| SLO Dashboard — APDEX, error budget, availability tracking | Done |
-| Documentation v1.0 — 30+ guides, references, and API docs | Done |
+| Feature | Status | Since |
+|---------|--------|-------|
+| Control Plane API (Python/FastAPI) | Done | v0.1.0 |
+| STOA Gateway (Rust/Tokio/axum) | Done | v0.2.0 |
+| MCP Protocol 2025-11-25 — tool discovery, resources, prompts, completion | Done | v2.2.0 |
+| Developer Portal — self-service API discovery + signup | Done | v0.1.0 |
+| Admin Console — API catalog, observability, tenant ops | Done | v0.1.0 |
+| Multi-tenant Architecture — namespace-level isolation | Done | v0.1.0 |
+| Keycloak SSO — OIDC, LDAP federation, multi-realm | Done | v0.1.0 |
+| LLM Proxy — multi-provider routing (OpenAI, Azure, Mistral) | Done | v2.2.0 |
+| LLM Cost Management — per-tenant budgets, enforcement, dashboard | Done | v2.2.0 |
+| Self-Service Signup — tenant provisioning, trial limits | Done | v2.2.0 |
+| Skills System — gateway-native CRUD with circuit breaker | Done | v2.2.0 |
+| UAC (Universal API Contract) — JSON Schema validator, OpenAPI transform | Done | v2.2.0 |
+| OAuth 2.1 — DPoP binding, RFC 7592 DCR management | Done | v2.2.0 |
+| Rate Limiting — per-consumer quotas | Done | v0.2.0 |
+| Circuit Breaker — per-upstream with zombie reaper | Done | v0.2.0 |
+| mTLS — certificate-bound tokens (RFC 8705) | Done | v0.2.0 |
+| Security Headers — OWASP best practices, SSRF blocklist | Done | v0.2.0 |
+| PII Masking — middleware + admin endpoints | Done | v2.2.0 |
+| Security Posture Scanner | Done | v2.2.0 |
+| Gateway Adapters — webMethods, Kong, Gravitee, Apigee, AWS, Azure APIM | Done | v2.2.0 |
+| Gateway Auto-Registration — zero-config heartbeat | Done | v0.2.0 |
+| Observability — Prometheus, Grafana, OpenSearch | Done | v0.1.0 |
+| Gateway Arena — continuous benchmark lab (20 enterprise dimensions) | Done | v2.2.0 |
+| Platform Continuous Verification — 3 CUJs every 15 min | Done | v2.2.0 |
+| W3C Traceparent — distributed tracing propagation | Done | v2.2.0 |
+| Helm Charts — full platform deployment | Done | v0.1.0 |
+| OPA Policy Engine | Done | v0.1.0 |
+| Consumer Onboarding — data model, Keycloak sync, quotas | Done | v0.2.0 |
+| Born GitOps — declarative API lifecycle (ADR-040) | Done | v0.2.0 |
+| Audit Trail — PG dual-write + OpenSearch pipeline | Done | v2.2.0 |
+| ArgoCD Integration — GitOps deployment on OVH + Hetzner | Done | v0.2.0 |
+| CRDs — Tool, ToolSet, GatewayInstance, GatewayBinding | Done | v0.2.0 |
+| Usage Metering Pipeline | Done | v2.2.0 |
+| Billing — budgets, consumers, models API | Done | v2.2.0 |
+| Contract Lifecycle Management | Done | v2.2.0 |
+| Data Governance Endpoints | Done | v2.2.0 |
+| SCIM-to-Gateway Reconciliation | Done | v2.2.0 |
+| i18n Framework (Console) | Done | v2.2.0 |
+| Integrated AI Chat Assistant | Done | v2.2.0 |
+| Tenant Export/Import (Disaster Recovery) | Done | v2.2.0 |
+| Documentation — 100+ guides, references, ADRs, and API docs | Done | v2.2.0 |
 
 ---
 
@@ -55,7 +76,7 @@ This roadmap reflects our current priorities and may evolve based on community f
 | Feature | Status |
 |---------|--------|
 | GitOps Reconciliation Operator — K8s operator replacing AWX (ADR-042) | In Progress |
-| Gateway Sidecar Mode — coexist with Kong, Envoy, etc. | In Progress |
+| Gateway Sidecar Mode — coexist with Kong, Envoy, etc. (ADR-024) | In Progress |
 | CLI Tool (`stoactl`) — kubectl-style management (Go/Cobra) | In Progress |
 | Landing Page & Pricing (gostoa.dev) | In Progress |
 
@@ -83,11 +104,10 @@ This roadmap reflects our current priorities and may evolve based on community f
 
 ## Under Consideration
 
-- **AI Cost Management** — Token metering per team/project
-- **Agent Observability** — Trace AI agent workflows end-to-end
 - **Policy as Code** — Define access policies in natural language
 - **Marketplace** — Discover and share MCP tool configurations
 - **Multi-Cloud Native** — Provider-specific optimizations
+- **Agent Observability** — End-to-end AI agent workflow tracing
 
 ---
 
