@@ -1,7 +1,7 @@
 ---
 slug: detecting-attacks-stoa-part-3
-title: "Zero Trust for API Gateways (Part 3): Detecting Attacks with STOA"
-description: "How to detect API attacks using STOA's audit logs, guardrail triggers, and Prometheus metrics. Covers credential abuse, prompt injection, and DDoS detection."
+title: "Detecting API Attacks: Audit Logs, Guardrails, Metrics"
+description: "Credential abuse, prompt injection, and DDoS patterns in your gateway logs. How to detect attacks using audit trails, guardrails, and Prometheus."
 authors: [stoa-team]
 tags: [security, tutorial, api-gateway]
 unlisted: true

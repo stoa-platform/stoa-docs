@@ -1,8 +1,8 @@
 ---
 unlisted: true
 slug: saas-playbook-3-audit-compliance
-title: "SaaS Playbook Part 3: Audit Logging and Compliance for Multi-Tenant APIs"
-description: "Build audit-ready multi-tenant SaaS APIs. Covers immutable audit logs, GDPR data subject requests, SOC 2 evidence, per-tenant log isolation, and STOA configuration."
+title: "SaaS Audit Logging: GDPR, SOC 2, and Per-Tenant Isolation"
+description: "Build audit-ready multi-tenant APIs. Immutable logs, GDPR data subject requests, SOC 2 evidence collection, and per-tenant log isolation."
 authors: [stoa-team]
 tags: [tutorial, compliance, architecture]
 keywords:

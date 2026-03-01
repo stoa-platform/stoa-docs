@@ -1,9 +1,9 @@
 ---
 slug: wso2-api-manager-open-source-alternative
-title: "WSO2 API Manager: Evaluating Open-Source Alternatives in 2026"
+title: "WSO2 API Manager Alternatives: Open-Source Options in 2026"
 authors: [stoa-team]
 tags: [migration, comparison, open-source, api-gateway]
-description: "Compare WSO2 API Manager with open-source alternatives. Feature mapping, migration approach, and key differences for enterprise teams evaluating their options."
+description: "Evaluating WSO2 alternatives? Feature-by-feature comparison with Kong, Gravitee, and STOA for enterprise teams ready to switch."
 keywords:
   - WSO2 API Manager alternative
   - WSO2 migration

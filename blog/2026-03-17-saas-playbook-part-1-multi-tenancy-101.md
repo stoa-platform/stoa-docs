@@ -1,8 +1,8 @@
 ---
 unlisted: true
 slug: saas-playbook-1-multi-tenancy-101
-title: "SaaS Playbook Part 1: Multi-Tenancy 101 — Isolate Your Tenants Without Losing Your Mind"
-description: "Learn how to build a multi-tenant SaaS API with STOA. Covers tenant isolation models, namespace patterns, UAC per-tenant config, and practical setup steps."
+title: "Multi-Tenancy 101: Isolate SaaS Tenants Without Losing Sleep"
+description: "Namespace-per-tenant or shared cluster? Compare isolation models, Keycloak RBAC, and OPA policies for multi-tenant SaaS APIs."
 authors: [stoa-team]
 tags: [tutorial, architecture, api-gateway]
 keywords:

@@ -1,7 +1,7 @@
 ---
 slug: oauth-pkce-mcp-gateway
 title: "OAuth 2.1 + PKCE for MCP Gateways: The Complete Flow"
-description: "How MCP clients authenticate with OAuth 2.1 PKCE via RFC 9728 discovery, Dynamic Client Registration, and scope handling. Battle-tested patterns from production."
+description: "MCP clients need OAuth 2.1 with PKCE. RFC 9728 discovery, Dynamic Client Registration, and scope handling patterns from production deployments."
 authors: [stoa-team]
 tags: [tutorial, security, mcp, architecture]
 keywords:

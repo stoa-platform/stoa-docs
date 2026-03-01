@@ -1,9 +1,9 @@
 ---
 slug: convert-rest-api-to-mcp-tools
-title: "How to Convert REST APIs to MCP Tools: A Step-by-Step Guide"
+title: "Convert REST APIs to MCP Tools: Step-by-Step Guide"
 authors: [stoa-team]
 tags: [tutorial, mcp, ai, api-gateway]
-description: "Learn how to convert your existing REST APIs into MCP tools that AI agents can discover and invoke. Step-by-step guide with OpenAPI mapping examples."
+description: "Your existing REST APIs can become AI agent tools in minutes. Map OpenAPI specs to MCP tool definitions with practical code examples."
 keywords:
   - convert REST API to MCP tool
   - REST to MCP migration

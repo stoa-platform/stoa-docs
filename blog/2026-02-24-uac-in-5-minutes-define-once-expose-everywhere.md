@@ -1,7 +1,7 @@
 ---
 slug: uac-in-5-minutes-define-once-expose-everywhere
-title: "UAC in 5 Minutes: Define Once, Expose Everywhere"
-description: "Create one API contract and expose it as REST and MCP simultaneously. Hands-on tutorial with STOA's Universal API Contract."
+title: "Universal API Contract: Define Once, Expose as REST + MCP"
+description: "One API contract, two protocols. Create a UAC definition and expose it as both REST and MCP simultaneously with a 5-minute hands-on tutorial."
 authors: [stoa-team]
 tags: [tutorial, quickstart, mcp, api-gateway]
 keywords:

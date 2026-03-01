@@ -1,7 +1,7 @@
 ---
 slug: mcp-gateway-quickstart-docker
-title: How to Deploy an MCP Gateway with Docker Compose (Step-by-Step Guide)
-description: Learn how to deploy a production-ready MCP gateway using Docker Compose in under 10 minutes. Complete tutorial with examples.
+title: "Deploy an MCP Gateway with Docker Compose in 10 Minutes"
+description: "Production-ready MCP gateway running locally in under 10 minutes. Docker Compose setup with auth, rate limiting, and tool registration included."
 authors: [stoa-team]
 tags: [tutorial, mcp, docker, quickstart, api-gateway]
 keywords:

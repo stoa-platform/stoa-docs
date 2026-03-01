@@ -1,7 +1,7 @@
 ---
 slug: hello-world-api-gateway-freelancer
-title: "Hello World: Your First Protected API with STOA (Freelancer Edition)"
-description: "Build your first production-ready API gateway in 15 minutes. Rate limiting, auth, and monitoring included. A practical Hello World for freelancers and indie hackers."
+title: "First Protected API in 15 Minutes (Freelancer Edition)"
+description: "Rate limiting, auth, and monitoring from line one. Build a production-ready API gateway as a freelancer or indie hacker in 15 minutes flat."
 authors: [stoa-team]
 tags: [tutorial, quickstart, api-gateway, security]
 unlisted: true

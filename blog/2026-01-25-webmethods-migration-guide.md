@@ -1,9 +1,9 @@
 ---
 slug: webmethods-migration-guide
-title: "Software AG webMethods API Gateway Migration: Moving to Open Source in 2026"
+title: "webMethods API Gateway Migration to Open Source (2026)"
 authors: [stoa-team]
 tags: [migration, comparison, api-gateway]
-description: "Migrate from Software AG webMethods API Gateway to an open-source alternative. Feature comparison, phased migration roadmap, IS service dependencies, and IBM licensing cost analysis for enterprise teams."
+description: "Software AG licensing costs rising? Migrate webMethods policies, IS services, and aliases to an open-source gateway with this phased roadmap."
 keywords:
   - webmethods migration
   - software ag webmethods alternative

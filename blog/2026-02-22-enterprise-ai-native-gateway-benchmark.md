@@ -1,7 +1,7 @@
 ---
 slug: enterprise-ai-native-gateway-benchmark
-title: "Why Proxy Throughput Is the Wrong Benchmark for AI Gateways"
-description: "Introducing the Enterprise AI Readiness Index — an open benchmark measuring what actually matters for AI-native API gateways: MCP support, guardrails, governance, and more."
+title: "AI Gateway Benchmark: Why Proxy Throughput Is Wrong"
+description: "Proxy throughput tells you nothing about AI readiness. We built an open 20-dimension benchmark measuring what actually matters for AI gateways."
 authors: [christophe]
 tags: [architecture, comparison, ai, open-source, api-gateway]
 keywords:

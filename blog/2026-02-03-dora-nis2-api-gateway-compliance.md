@@ -1,9 +1,9 @@
 ---
 slug: dora-nis2-api-gateway-compliance
-title: "DORA and NIS2 Compliance for API Gateways: What You Need to Know"
+title: "DORA and NIS2 for API Gateways: What You Must Know"
 authors: [christophe]
 tags: [compliance, architecture]
-description: "DORA and NIS2 requirements for API gateways: audit trails, encryption, resilience testing, and third-party risk for financial and critical sectors."
+description: "Financial and critical sectors face new API requirements. Audit trails, encryption, resilience testing, and third-party risk mandated by DORA and NIS2."
 keywords:
   - DORA compliance API
   - NIS2 API gateway

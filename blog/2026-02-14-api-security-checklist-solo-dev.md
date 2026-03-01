@@ -1,9 +1,9 @@
 ---
 slug: api-security-checklist-solo-dev
-title: "API Security Checklist: 10 Things Every Solo Dev Must Do"
+title: "API Security Checklist: 10 Must-Dos for Solo Developers"
 authors: [christophe]
 tags: [security, education, tutorial, api-gateway]
-description: "A practical, no-budget security checklist for freelancers, indie hackers, and small teams building APIs. No enterprise tools required."
+description: "No budget, no security team. 10 practical steps every freelancer and indie hacker must take to protect their APIs from real-world attacks."
 keywords: [api security checklist, developer security, api authentication, rate limiting, OWASP API, freelancer security, api best practices, secure api development, api key management, solo developer]
 ---
 <!-- last verified: 2026-02 -->

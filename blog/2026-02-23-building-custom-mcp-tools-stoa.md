@@ -1,7 +1,7 @@
 ---
 slug: building-custom-mcp-tools-stoa
-title: Building Custom MCP Tools with STOA — Step-by-Step Tutorial
-description: Learn how to create, register, and expose custom MCP tools through STOA gateway with this hands-on tutorial featuring code examples and best practices.
+title: "Build Custom MCP Tools: Hands-On Tutorial with Code"
+description: "Create, register, and expose custom MCP tools through a gateway. Practical tutorial with Python examples and best practices for production."
 authors: [stoa-team]
 tags: [tutorial, mcp, ai, api-gateway]
 keywords:

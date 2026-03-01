@@ -1,7 +1,7 @@
 ---
 slug: api-gateway-migration-checklist
-title: "API Gateway Migration Checklist: 15 Steps to Zero-Downtime Transition (2026)"
-description: "Complete API gateway migration checklist with 15 steps. Covers inventory, testing, traffic shifting, rollback, and post-migration validation."
+title: "API Gateway Migration Checklist: 15 Zero-Downtime Steps"
+description: "Don't migrate blind. 15 battle-tested steps covering API inventory, policy translation, traffic shifting, rollback, and post-migration validation."
 authors: [stoa-team]
 tags: [tutorial, migration, api-gateway]
 keywords:

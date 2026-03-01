@@ -1,10 +1,9 @@
 ---
 slug: ai-gateway-rate-limiting-best-practices
-title: "AI Gateway Rate Limiting: Token-Aware Quota Management"
-description: "Implement rate limiting for AI/MCP gateways with token-aware strategies, per-tenant quotas, and streaming support."
+title: "AI Gateway Rate Limiting: Token-Aware Quota Strategies"
+description: "Traditional rate limiting breaks with LLM tokens. Per-tenant quotas, token-aware counting, and streaming support for AI/MCP gateways."
 authors: [stoa-team]
 tags: [tutorial, ai, mcp, api-gateway]
-unlisted: true
 keywords:
   - AI gateway rate limiting
   - token-based rate limiting

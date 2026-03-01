@@ -1,9 +1,9 @@
 ---
 slug: gitops-in-10-minutes
-title: "GitOps in 10 Minutes: Why Your Infrastructure Should Be a Git Repo"
+title: "GitOps in 10 Minutes: Infrastructure as a Git Repo"
 authors: [christophe]
 tags: [education, tutorial, architecture]
-description: "GitOps explained for developers who have never touched infrastructure. What it is, why it matters, and how to start — no Kubernetes PhD required."
+description: "Never SSH into a server again. GitOps explained for developers who have never touched infrastructure. What it is, why it matters, how to start."
 keywords: [gitops tutorial, gitops beginner, infrastructure as code, argocd, kubernetes gitops, config as code, git infrastructure, devops for developers, gitops explained]
 ---
 

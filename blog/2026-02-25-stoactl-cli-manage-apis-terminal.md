@@ -1,7 +1,7 @@
 ---
 slug: stoactl-cli-manage-apis-terminal
-title: "stoactl CLI: Manage Your APIs from the Terminal"
-description: "Use stoactl to manage APIs, subscriptions, and MCP tools from your terminal. Installation, commands, and CI/CD integration."
+title: "stoactl: Manage APIs, Subscriptions, and MCP from Terminal"
+description: "kubectl for your API gateway. Install stoactl, manage APIs and subscriptions, and integrate with CI/CD pipelines from the command line."
 authors: [stoa-team]
 tags: [tutorial, quickstart, api-gateway]
 keywords:

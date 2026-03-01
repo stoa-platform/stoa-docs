@@ -1,7 +1,7 @@
 ---
 slug: stoa-quickstart-first-api-5-minutes
-title: "STOA Quick Start: Publish Your First API in 5 Minutes"
-description: "Get started with STOA Platform in 5 minutes. Deploy with Docker Compose, create an API, and expose it through the MCP Gateway. Step-by-step tutorial."
+title: "Publish Your First API in 5 Minutes (Quick Start)"
+description: "Docker Compose up, create an API, expose it through the MCP Gateway. Your first API published in 5 minutes with step-by-step instructions."
 authors: [stoa-team]
 tags: [tutorial, quickstart, docker]
 keywords:

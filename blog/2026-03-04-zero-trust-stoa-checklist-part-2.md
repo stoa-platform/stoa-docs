@@ -1,7 +1,7 @@
 ---
 slug: zero-trust-stoa-checklist-part-2
-title: "Zero Trust for API Gateways (Part 2): 10-Step STOA Checklist"
-description: "Actionable 10-step checklist to implement Zero Trust with STOA Platform. Covers mTLS, OAuth scopes, OPA policies, guardrails, audit logging, and incident response."
+title: "Zero Trust Checklist: 10 Steps for API Gateways"
+description: "Actionable 10-step checklist: mTLS, OAuth scopes, OPA policies, guardrails, audit logging, and incident response for Zero Trust API gateways."
 authors: [stoa-team]
 tags: [security, tutorial, api-gateway]
 unlisted: true

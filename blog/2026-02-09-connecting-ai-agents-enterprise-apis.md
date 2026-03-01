@@ -1,9 +1,9 @@
 ---
 slug: connecting-ai-agents-enterprise-apis
-title: "How to Connect AI Agents to Enterprise APIs Securely with MCP"
+title: "Connect AI Agents to Enterprise APIs Securely with MCP"
 authors: [stoa-team]
 tags: [ai, mcp, feature]
-description: "Securely connect Claude and GPT to enterprise APIs using MCP. Learn why direct API access fails and how an MCP gateway enforces security and governance."
+description: "Direct API access for Claude and GPT is a security nightmare. An MCP gateway enforces auth, rate limits, and audit trails between agents and your APIs."
 keywords:
   - AI agents enterprise API
   - connect AI agents to APIs

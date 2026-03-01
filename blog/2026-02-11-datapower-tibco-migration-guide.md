@@ -1,9 +1,9 @@
 ---
 slug: datapower-tibco-migration-guide
-title: "Migrating from DataPower and TIBCO to a Modern API Gateway"
+title: "DataPower and TIBCO Migration to Modern API Gateways"
 authors: [stoa-team]
 tags: [migration, architecture]
-description: "Migrate from IBM DataPower and TIBCO to modern gateways. Protocol translation, identity migration, and sidecar approach for zero disruption."
+description: "Still on DataPower or TIBCO? Protocol translation, identity migration, and the sidecar approach that avoids a risky big-bang cutover."
 keywords: [DataPower migration, TIBCO migration, IBM DataPower alternative, TIBCO BusinessWorks migration, API gateway modernization, legacy gateway migration, enterprise integration migration]
 ---
 <!-- last verified: 2026-02 -->

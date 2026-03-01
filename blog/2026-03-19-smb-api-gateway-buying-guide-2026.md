@@ -1,7 +1,7 @@
 ---
 slug: smb-api-gateway-buying-guide-2026
-title: "SMB API Gateway Buying Guide 2026: Find the Right Fit for Your Team"
-description: "Compare API gateways for small and medium businesses in 2026. Feature tables, pricing models, and a decision framework for teams evaluating STOA, Kong, Gravitee, and cloud options."
+title: "SMB API Gateway Guide 2026: Find the Right Fit"
+description: "Small team, big choices. Feature tables, pricing models, and a decision framework for SMBs evaluating Kong, Gravitee, STOA, and cloud options."
 authors: [stoa-team]
 tags: [comparison, tutorial, api-gateway]
 unlisted: true

@@ -1,9 +1,9 @@
 ---
 slug: axway-api-gateway-migration-open-source
-title: "Axway API Gateway Migration: Moving to Open Source in 2026"
+title: "Axway API Gateway Migration to Open Source (2026 Guide)"
 authors: [stoa-team]
 tags: [migration, comparison, open-source, api-gateway]
-description: "Migrate from Axway API Gateway to an open-source alternative. Feature comparison, phased migration roadmap, and common challenges for enterprise teams."
+description: "Axway renewal coming up? Map every policy, certificate, and API to open-source equivalents with this phased migration roadmap."
 keywords:
   - Axway API gateway migration
   - Axway alternative
