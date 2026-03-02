@@ -142,7 +142,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/stoa-platform/stoa-docs/tree/main/',
+            'https://github.com/stoa-platform/stoa-docs/tree/main/docs/',
         },
         blog: {
           showReadingTime: true,
@@ -153,7 +153,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/stoa-platform/stoa-docs/tree/main/',
+            'https://github.com/stoa-platform/stoa-docs/tree/main/blog/',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
