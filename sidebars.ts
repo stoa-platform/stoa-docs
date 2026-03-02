@@ -131,6 +131,7 @@ const sidebars: SidebarsConfig = {
         'reference/security-configuration',
         'reference/exit-strategy',
         'reference/changelog',
+        'reference/glossary',
         'reference/troubleshooting',
         {
           type: 'category',
