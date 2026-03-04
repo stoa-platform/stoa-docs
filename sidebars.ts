@@ -35,6 +35,7 @@ const sidebars: SidebarsConfig = {
       label: 'Deployment',
       items: [
         'deployment/hybrid',
+        'deployment/prerequisites',
       ],
     },
     {
