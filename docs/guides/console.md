@@ -7,7 +7,11 @@ keywords: [STOA, console, admin, API management, tenant management, guide, tutor
 
 # Console
 
-The Console is the API provider's administration interface. Platform admins and tenant managers use it to control the entire API lifecycle.
+The Console is the **API provider and admin** interface. Platform admins and tenant managers use it to control the entire API lifecycle.
+
+:::info Governance (ADR-055)
+The Console follows the **Stripe Model**: Console = Provider + Admin (Create & Manage). Consumer features (API discovery, subscriptions, testing) are on the [Portal](/docs/guides/portal).
+:::
 
 **URL**: [console.gostoa.dev](https://console.gostoa.dev)
 
@@ -114,6 +118,41 @@ Managed through Keycloak integration:
 2. Enter email address
 3. Select tenant and role
 4. The user receives an invitation via Keycloak
+
+## Webhooks
+
+Manage webhook endpoints for event-driven integrations.
+
+1. Navigate to **Webhooks** in the sidebar
+2. Click **Create Webhook**
+3. Enter the target URL, select event types, and set a signing secret
+4. Use **Test** to send a synthetic event and verify delivery
+
+View delivery history, retry failed deliveries, and inspect request/response details.
+
+See [Console Advanced Features](/docs/guides/console-advanced#webhook-management) for detailed webhook configuration.
+
+## Credential Mappings
+
+Map consumer credentials to backend authentication schemes.
+
+1. Navigate to **Credentials** in the sidebar
+2. Click **Create Mapping**
+3. Select the auth type (`api_key`, `bearer`, or `basic`)
+4. Configure source (consumer credential) and target (backend credential)
+
+Credential mappings enable the gateway to translate consumer API keys into backend-specific authentication.
+
+## Contracts / UAC
+
+Manage Universal API Contracts that define multi-protocol API bindings.
+
+1. Navigate to **Contracts** in the sidebar
+2. Click **Create Contract** to define a new API contract
+3. Add protocol bindings (REST, MCP, GraphQL, gRPC, Kafka)
+4. Publish the contract to make it available for consumers
+
+Contracts are the foundation of STOA's "Define Once, Expose Everywhere" approach. See [UAC Concepts](/docs/concepts/uac) for details.
 
 ## Gateway Adapters
 

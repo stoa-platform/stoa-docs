@@ -158,6 +158,102 @@ The Console embeds Grafana dashboards for deep-dive monitoring:
 - Access pre-built STOA dashboards (request rates, latency histograms, error breakdowns)
 - Requires Grafana OIDC integration with Keycloak (see [Monitoring](/docs/admin/monitoring))
 
+## Webhook Management
+
+Manage webhook endpoints for event-driven integrations between STOA and external systems.
+
+### Creating a Webhook
+
+1. Navigate to **Webhooks** in the Console sidebar
+2. Click **Create Webhook**
+3. Enter the target URL (HTTPS required in production)
+4. Select event types to subscribe to
+5. Enter a signing secret (minimum 32 characters)
+6. Click **Save**
+
+### Delivery History
+
+View the delivery status of each webhook event:
+
+| Status | Badge | Meaning |
+|--------|-------|---------|
+| `success` | Green | Endpoint returned 2xx |
+| `pending` | Yellow | Delivery in progress or scheduled retry |
+| `failed` | Red | All retry attempts exhausted |
+
+Click a delivery to see full request/response details including headers and body.
+
+### Testing & Retry
+
+- Click **Test** on any webhook to send a synthetic event (payload includes `"test": true`)
+- Click **Retry** on a failed delivery to re-send immediately
+
+See [Webhooks](/docs/guides/webhooks) for the webhook API reference and signature verification examples.
+
+## Credential Mappings
+
+Map consumer credentials to backend authentication schemes. This enables the gateway to translate consumer API keys into backend-specific authentication without exposing internal credentials.
+
+### Supported Auth Types
+
+| Type | Use Case |
+|------|----------|
+| `api_key` | Backend expects an API key in header or query param |
+| `bearer` | Backend expects a Bearer token |
+| `basic` | Backend expects Basic auth (username:password) |
+
+### Creating a Mapping
+
+1. Navigate to **Credentials** in the Console sidebar
+2. Click **Create Mapping**
+3. Select the auth type
+4. Configure source (consumer credential) and target (backend credential)
+5. Click **Save**
+
+### Managing Mappings
+
+- **Edit**: Update target credentials when backend rotates keys
+- **Delete**: Remove the mapping (consumers lose backend access)
+- **Test**: Verify the mapping works with a dry-run request
+
+## Contracts / UAC Management
+
+Universal API Contracts (UAC) define multi-protocol API bindings — the foundation of STOA's "Define Once, Expose Everywhere" approach.
+
+### Contract List
+
+View all contracts with their protocol bindings and status:
+
+| Column | Description |
+|--------|-------------|
+| Name | Contract display name |
+| Protocols | Active bindings (REST, MCP, GraphQL, gRPC, Kafka) |
+| Status | Draft, Published, Deprecated |
+| APIs bound | Number of APIs using this contract |
+
+### Creating a Contract
+
+1. Navigate to **Contracts** in the Console sidebar
+2. Click **Create Contract**
+3. Enter name, description, and version
+4. Add protocol bindings:
+   - **REST**: OpenAPI spec URL or upload
+   - **MCP**: Tool definitions and capabilities
+   - **GraphQL**: Schema definition
+   - **gRPC**: Proto file upload
+   - **Kafka**: Topic and schema registry config
+5. Click **Save as Draft** or **Publish**
+
+### Contract Detail
+
+View and manage a single contract:
+
+- **Bindings**: Add, edit, or remove protocol bindings
+- **History**: Version history with diff viewer
+- **Consumers**: APIs and subscriptions using this contract
+
+See [UAC Concepts](/docs/concepts/uac) for the architectural rationale.
+
 ## RBAC Visibility
 
 | Feature | cpi-admin | tenant-admin | devops | viewer |
@@ -165,6 +261,9 @@ The Console embeds Grafana dashboards for deep-dive monitoring:
 | Tenant Dashboard | All tenants | Own tenant | Own tenant | Own tenant |
 | Operations Dashboard | Yes | No | No | No |
 | Gateway Management | Yes | No | No | No |
+| Webhooks | All tenants | Own tenant | No | No |
+| Credential Mappings | All tenants | Own tenant | No | No |
+| Contracts / UAC | All tenants | Own tenant | Own tenant (read) | Own tenant (read) |
 | Error Snapshots | All tenants | Own tenant | Own tenant | Own tenant (read) |
 | Request Explorer | All tenants | Own tenant | Own tenant | No |
 

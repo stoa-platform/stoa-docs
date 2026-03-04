@@ -7,7 +7,11 @@ keywords: [STOA, developer portal, API catalog, API discovery, subscriptions, gu
 
 # Developer Portal
 
-The Developer Portal is the API consumer's interface. Developers use it to discover APIs, manage subscriptions, and test endpoints.
+The Developer Portal is the **API consumer's** interface. Developers use it to discover APIs, manage subscriptions, and test endpoints.
+
+:::info Governance (ADR-055)
+The Portal follows the **Stripe Model**: Portal = Consumer ONLY (Discover & Use). Provider and admin features (API publishing, webhooks, credential mappings, contracts) are managed in the [Console](/docs/guides/console).
+:::
 
 **URL**: [portal.gostoa.dev](https://portal.gostoa.dev)
 

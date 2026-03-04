@@ -58,40 +58,9 @@ The sandbox automatically injects credentials based on your subscription:
 - **Bearer token**: Uses your current session token
 - **API key**: Uses the key from your active subscription
 
-## Webhook Management
-
-Manage webhook endpoints for subscription event notifications.
-
-### Creating a Webhook
-
-1. Navigate to **Webhooks** in the Portal sidebar
-2. Click **Create Webhook**
-3. Enter the target URL (HTTPS required in production)
-4. Select event types to subscribe to
-5. Enter a signing secret (minimum 32 characters)
-6. Click **Save**
-
-### Delivery History
-
-View the delivery status of each webhook event:
-
-| Status | Badge | Meaning |
-|--------|-------|---------|
-| `success` | Green | Endpoint returned 2xx |
-| `pending` | Yellow | Delivery in progress or scheduled retry |
-| `failed` | Red | All retry attempts exhausted |
-
-Click a delivery to see the full request/response details including response body and headers.
-
-### Testing
-
-Click **Test** on any webhook to send a synthetic event. The test payload includes `"test": true` for identification.
-
-### Retry Failed Deliveries
-
-Click **Retry** on a failed delivery to re-send the event immediately.
-
-See [Webhooks](/docs/guides/webhooks) for the full webhook API reference and signature verification examples.
+:::tip Webhook Management
+Webhook management has moved to the **Console**. See [Console Advanced Features](/docs/guides/console-advanced#webhook-management).
+:::
 
 ## Service Account Management
 
@@ -152,16 +121,6 @@ Browse available MCP servers and AI tools:
 2. Browse available MCP servers by category
 3. View server details: tools offered, authentication requirements, pricing tier
 4. Click **Subscribe** to request access to a server's tools
-
-## Consumer Registration
-
-Self-service registration for new API consumers:
-
-1. Navigate to **Register** from the Portal home page
-2. Fill in organization details and use case
-3. Submit the registration request
-4. Wait for admin approval (notification sent via email)
-5. Once approved, access the API catalog and create subscriptions
 
 ## Related
 
