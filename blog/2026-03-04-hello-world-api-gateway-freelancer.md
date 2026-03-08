@@ -4,7 +4,6 @@ title: "First Protected API in 15 Minutes (Freelancer Edition)"
 description: "Rate limiting, auth, and monitoring from line one. Build a production-ready API gateway as a freelancer or indie hacker in 15 minutes flat."
 authors: [stoa-team]
 tags: [tutorial, quickstart, api-gateway, security]
-unlisted: true
 keywords:
   - hello world api gateway tutorial
   - freelancer api gateway setup

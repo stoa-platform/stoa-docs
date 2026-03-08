@@ -4,7 +4,6 @@ title: "Detecting API Attacks: Audit Logs, Guardrails, Metrics"
 description: "Credential abuse, prompt injection, and DDoS patterns in your gateway logs. How to detect attacks using audit trails, guardrails, and Prometheus."
 authors: [stoa-team]
 tags: [security, tutorial, api-gateway]
-unlisted: true
 keywords:
   - API attack detection gateway
   - API security monitoring
