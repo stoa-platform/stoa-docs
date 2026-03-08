@@ -1,7 +1,7 @@
 ---
 slug: ai-agent-security-authentication-patterns
-title: "AI Agent Authentication: 5 Patterns for Enterprise APIs"
-description: "AI agents need more than API keys. OAuth2, mTLS, token exchange, and certificate binding patterns tested in production environments."
+title: "AI Agent Auth: OAuth, mTLS, JWT — 5 Production Patterns"
+description: "API keys won't secure AI agents. 5 auth patterns (OAuth 2.1, mTLS, token exchange) with code examples and real-world attack scenarios."
 authors: [stoa-team]
 tags: [tutorial, security, ai, mcp]
 keywords:

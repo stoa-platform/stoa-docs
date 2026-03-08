@@ -1,9 +1,9 @@
 ---
 slug: kong-vs-stoa-mcp-gateway
-title: "Kong vs STOA: MCP Gateway Comparison for AI Agents"
+title: "Kong MCP Gateway Support: What's Missing for AI Agents"
 authors: [stoa-team]
 tags: [comparison, mcp, ai, api-gateway]
-description: "Kong lacks native MCP support. We benchmark both gateways on tool discovery, OAuth 2.1 PKCE, SSE transport, and AI agent governance."
+description: "Kong has no native MCP support in 2026. Benchmark data on tool discovery, OAuth 2.1, and SSE transport — plus open-source alternatives."
 keywords:
   - Kong MCP gateway
   - Kong vs STOA MCP
