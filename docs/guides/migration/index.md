@@ -43,8 +43,8 @@ flowchart TB
 
 | Platform | Migration Guide | Complexity | Timeline |
 |----------|-----------------|------------|----------|
-| [IBM webMethods / DataPower](./ibm-webmethods) | Available | Medium | 4-8 weeks |
-| [Oracle OAM / API Platform](./oracle-oam) | Available | Medium | 4-8 weeks |
+| [IBM webMethods / DataPower](/docs/guides/migration/ibm-webmethods) | Available | Medium | 4-8 weeks |
+| [Oracle OAM / API Platform](/docs/guides/migration/oracle-oam) | Available | Medium | 4-8 weeks |
 | Kong OSS / Enterprise | Coming Soon | Low | 2-4 weeks |
 | Google Apigee | Coming Soon | Medium | 4-6 weeks |
 | AWS API Gateway | Planned | Low | 2-4 weeks |
@@ -164,9 +164,9 @@ Track these KPIs during migration:
 
 Choose your source platform guide:
 
-- [IBM webMethods / DataPower](./ibm-webmethods) — Software AG gateway migration
-- [Oracle OAM / API Platform](./oracle-oam) — Oracle stack migration
-- [Kong OSS / Enterprise](./kong) — Kong to STOA (coming soon)
-- [Google Apigee](./apigee) — Apigee migration (coming soon)
+- [IBM webMethods / DataPower](/docs/guides/migration/ibm-webmethods) — Software AG gateway migration
+- [Oracle OAM / API Platform](/docs/guides/migration/oracle-oam) — Oracle stack migration
+- [Kong OSS / Enterprise](/docs/guides/migration/kong) — Kong to STOA (coming soon)
+- [Google Apigee](/docs/guides/migration/apigee) — Apigee migration (coming soon)
 
 Or [contact us](mailto:contact@gostoa.dev) for a custom migration assessment.

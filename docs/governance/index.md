@@ -22,7 +22,7 @@ STOA aims to be the **European Agent Gateway** — a sovereign, enterprise-grade
 
 ### Implementation Review Loop
 
-The [Implementation Review Loop](./review-loop) (Standard Marchemalo) ensures every significant code change passes rigorous validation before reaching production.
+The [Implementation Review Loop](/docs/governance/review-loop) (Standard Marchemalo) ensures every significant code change passes rigorous validation before reaching production.
 
 **Key principles:**
 - Multi-persona review (Architecture, Security, Business)
@@ -32,7 +32,7 @@ The [Implementation Review Loop](./review-loop) (Standard Marchemalo) ensures ev
 
 ### Architecture Decision Records (ADRs)
 
-All significant architectural decisions are documented in [ADRs](../architecture/adr/adr-001-api-exposure-strategy). These provide:
+All significant architectural decisions are documented in [ADRs](/docs/architecture/adr/adr-001-api-exposure-strategy). These provide:
 
 - Context and problem statement
 - Considered options
@@ -127,7 +127,7 @@ As the community grows, governance will evolve toward a distributed model with:
 
 ## Related Documents
 
-- [Implementation Review Loop](./review-loop) — Quality validation process
-- [ADRs](../architecture/adr/adr-001-api-exposure-strategy) — Architecture Decision Records
-- [Community](../community/) — Community resources
-- [FAQ](../community/faq) — Frequently asked questions
+- [Implementation Review Loop](/docs/governance/review-loop) — Quality validation process
+- [ADRs](/docs/architecture/adr/adr-001-api-exposure-strategy) — Architecture Decision Records
+- [Community](/docs/community) — Community resources
+- [FAQ](/docs/community/faq) — Frequently asked questions

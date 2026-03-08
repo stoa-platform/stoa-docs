@@ -9,9 +9,7 @@ const config: Config = {
   tagline: 'Modernize Your API Gateway — MCP, Multi-Tenant, European Sovereign',
   favicon: 'img/favicon.svg',
 
-  // Note: trailingSlash left undefined (Docusaurus default) because existing
-  // relative links in index.md files break with both true and false.
-  // TODO: fix all relative links then set trailingSlash: false for SEO.
+  trailingSlash: false,
 
   // SEO & Head Tags
   headTags: [
