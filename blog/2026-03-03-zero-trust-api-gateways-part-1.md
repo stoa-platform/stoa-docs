@@ -4,7 +4,6 @@ title: "Zero Trust for API Gateways: What It Actually Means"
 description: "Zero Trust is an architecture, not a product. How verify-every-request, least privilege, and assume-breach principles apply to API gateways."
 authors: [stoa-team]
 tags: [security, tutorial, architecture, api-gateway]
-unlisted: true
 keywords:
   - zero trust API gateway
   - zero trust architecture API
