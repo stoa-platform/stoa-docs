@@ -18,7 +18,7 @@ Lors de la traduction de la documentation STOA en français, utilisez toujours l
 | Terme FR | Terme EN | Définition |
 |----------|----------|------------|
 | **Abonnement** | Subscription | Lien entre une application consommatrice et une API, accordant l'accès avec des quotas spécifiques. |
-| **Adaptateur** | Adapter | Composant qui traduit les définitions UAC dans le format natif d'une passerelle spécifique (Kong YAML, Apigee proxy, etc.). Voir [Adaptateurs de passerelle](/docs/guides/console#gateway-adapters). |
+| **Adaptateur** | Adapter | Composant qui traduit les définitions UAC dans le format natif d'une passerelle spécifique (Kong YAML, Apigee proxy, etc.). Voir [Adaptateurs de passerelle](/docs/guides/console#adaptateurs-de-gateway). |
 | **Agent (IA)** | Agent | Système d'IA (ex. Claude, GPT) qui invoque des outils via MCP pour effectuer des tâches de manière autonome. |
 | **Application** | Application | Entité consommatrice enregistrée sur la plateforme qui détient des identifiants et des abonnements. |
 | **ArgoCD** | ArgoCD | Outil de livraison continue GitOps. Synchronise les manifestes Kubernetes depuis Git vers le cluster. |
