@@ -20,25 +20,17 @@ flowchart LR
     GW -.->|"sync"| CP["Control Plane<br/>(FastAPI)"]
 ```
 
-## Current Implementation
+## Implementation
 
-The MCP Gateway is built with **Python** and **FastAPI** for rapid development and flexibility.
+The MCP Gateway is built with **Rust**, **Tokio**, and **axum** — in production since February 2026. It replaced the earlier Python/FastAPI prototype (now archived).
 
 | Aspect | Details |
 |--------|---------|
-| Language | Python 3.12+ |
-| Framework | FastAPI (async) |
+| Language | Rust (stable) |
+| Framework | Tokio + axum |
 | Policy Engine | OPA (Open Policy Agent) |
-| Protocol | MCP 2024-11-05 |
-
-:::info Future Roadmap
-A high-performance **Rust + Tokio + Hyper** implementation is planned for **Q4 2026**, bringing:
-- Kernel-level eBPF acceleration
-- Sub-millisecond latency overhead
-- Significantly reduced memory footprint
-
-See our [Roadmap](/docs/roadmap) for details.
-:::
+| Protocol | MCP 2025-03-26 |
+| Status | Production |
 
 ## Key Features
 
@@ -58,14 +50,14 @@ See our [Roadmap](/docs/roadmap) for details.
 - Usage analytics per subscription
 
 ### ⚡ Production Ready
-- Async request handling with FastAPI
+- High-performance async request handling (Rust/Tokio)
 - Kafka/Redpanda-based metering pipeline
 - Connection pooling and request batching
 - OPA-based policy enforcement
 
 ## MCP Protocol Support
 
-STOA implements the full [MCP specification](https://modelcontextprotocol.io/) (version `2024-11-05`) with enterprise extensions.
+STOA implements the full [MCP specification](https://modelcontextprotocol.io/) (version `2025-03-26`) with enterprise extensions.
 
 ### Supported Methods
 

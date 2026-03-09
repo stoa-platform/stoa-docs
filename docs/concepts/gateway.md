@@ -11,8 +11,7 @@ keywords: [STOA, gateway, deployment modes, edge-mcp, sidecar, proxy, concepts, 
 
 STOA Gateway is the unified API gateway component of the STOA Platform. It provides AI-native API management with 4 deployment modes to fit different use cases.
 
-**Current Implementation**: Python/FastAPI (`mcp-gateway/`)
-**Target Implementation**: Rust/Tokio (`stoa-gateway/`) — Q4 2026
+**Implementation**: Rust/Tokio/axum (`stoa-gateway/`) — in production since February 2026
 
 See [ADR-024](../architecture/adr/adr-024-gateway-unified-modes) for the architecture decision.
 
@@ -60,10 +59,6 @@ The primary mode for AI agent integration via Model Context Protocol (MCP).
 
 **Example**:
 ```bash
-# Current Python implementation
-cd mcp-gateway && uvicorn src.main:app --port 3001
-
-# Future Rust implementation
 stoa-gateway --mode=edge-mcp --port=3001
 ```
 
@@ -201,15 +196,16 @@ spec:
 
 See [MCP Tools Reference](../reference/mcp-tools) for full schema.
 
-## Current vs Target
+## Implementation
 
-| Aspect | Current (Python) | Target (Rust) |
-|--------|------------------|---------------|
-| Directory | `mcp-gateway/` | `stoa-gateway/` |
-| Language | Python 3.11 | Rust (Tokio) |
-| Framework | FastAPI | Axum/Hyper |
-| Status | Production | Q4 2026 |
-| Modes | edge-mcp only | All 4 modes |
+| Aspect | Details |
+|--------|---------|
+| Directory | `stoa-gateway/` |
+| Language | Rust (stable) |
+| Framework | Tokio + axum |
+| Status | Production (since Feb 2026) |
+| Active Mode | edge-mcp |
+| Planned Modes | sidecar (Q2 2026), proxy (Q3 2026), shadow (deferred) |
 
 ## Related Documentation
 
