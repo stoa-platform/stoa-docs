@@ -1,7 +1,7 @@
 ---
 slug: introducing-stoa
 title: "Why We Built an AI-Native Open-Source API Gateway"
-authors: [christophe, stoa-team]
+authors: [stoa-team]
 tags: [announcement, mcp]
 description: "MCP support, multi-tenant isolation, and a developer portal for the enterprise AI era. Why we built STOA Platform and what makes it different."
 keywords:

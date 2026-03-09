@@ -1,7 +1,7 @@
 ---
 slug: esb-is-dead-long-live-mcp
 title: "The ESB Is Dead: From Service Buses to AI Gateways"
-authors: [christophe]
+authors: [stoa-team]
 tags: [architecture, ai, migration]
 description: "ESBs can't handle AI agents. The evolution from service buses to API gateways to MCP — and why enterprises are migrating now."
 keywords: [ESB replacement, ESB vs API gateway, enterprise service bus alternative, ESB migration, ESB is dead, MCP, integration platform modernization]

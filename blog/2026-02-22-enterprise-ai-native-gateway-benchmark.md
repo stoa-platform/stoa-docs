@@ -2,7 +2,7 @@
 slug: enterprise-ai-native-gateway-benchmark
 title: "AI Gateway Benchmark: Why Proxy Throughput Is Wrong"
 description: "Proxy throughput tells you nothing about AI readiness. We built an open 20-dimension benchmark measuring what actually matters for AI gateways."
-authors: [christophe]
+authors: [stoa-team]
 tags: [architecture, comparison, ai, open-source, api-gateway]
 keywords:
   - API gateway benchmark

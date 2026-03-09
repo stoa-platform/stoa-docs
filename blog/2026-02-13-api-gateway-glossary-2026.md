@@ -2,7 +2,7 @@
 slug: api-gateway-glossary-2026
 title: "API Gateway Glossary: 30 Terms Every Developer Should Know"
 description: "From API key to zero trust, 30 essential gateway terms defined. Authentication, MCP, mTLS, rate limiting, and modern concepts explained clearly."
-authors: [christophe]
+authors: [stoa-team]
 tags: [education, architecture]
 keywords: [API gateway glossary, API gateway terms, MCP glossary, API management terms, authentication glossary, authorization terms, circuit breaker, rate limiting, mTLS, API gateway vocabulary, gateway concepts, API security terms]
 ---

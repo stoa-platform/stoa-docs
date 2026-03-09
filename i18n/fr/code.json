@@ -556,5 +556,197 @@
   "theme.tags.tagsPageTitle": {
     "message": "Tags",
     "description": "The title of the tag list page"
+  },
+  "homepage.hero.title": {
+    "message": "STOA Docs"
+  },
+  "homepage.hero.tagline": {
+    "message": "Modernisez votre passerelle API — MCP, Multi-Tenant, Souveraineté européenne"
+  },
+  "homepage.hero.description": {
+    "message": "La passerelle européenne pour agents IA — gouvernez les interactions IA-vers-API avec le support MCP, l'isolation multi-tenant et la conformité NIS2/DORA."
+  },
+  "homepage.hero.btn.docs": {
+    "message": "📚 Documentation"
+  },
+  "homepage.hero.btn.getStarted": {
+    "message": "🚀 Démarrer"
+  },
+  "homepage.quickstart.title": {
+    "message": "⚡ Démarrage rapide"
+  },
+  "homepage.quickstart.subtitle": {
+    "message": "De zéro à un appel API en 3 étapes — fonctionne avec cURL, Python, TypeScript ou Claude.ai"
+  },
+  "homepage.quickstart.step1": {
+    "message": "1. Souscrire à une API"
+  },
+  "homepage.quickstart.step2": {
+    "message": "2. Appeler l'API"
+  },
+  "homepage.quickstart.step3": {
+    "message": "3. Suivre l'utilisation"
+  },
+  "homepage.quickstart.copy": {
+    "message": "📋 Copier"
+  },
+  "homepage.quickstart.copied": {
+    "message": "✓ Copié !"
+  },
+  "homepage.quickstart.btn.guide": {
+    "message": "📚 Guide de démarrage complet"
+  },
+  "homepage.quickstart.btn.try": {
+    "message": "🚀 Essayer STOA gratuitement"
+  },
+  "homepage.features.title": {
+    "message": "✨ Pourquoi STOA ?"
+  },
+  "homepage.features.subtitle": {
+    "message": "Conçu pour l'ère de l'IA — pas adapté après coup"
+  },
+  "homepage.feature.mcp.title": {
+    "message": "Passerelle MCP"
+  },
+  "homepage.feature.mcp.desc": {
+    "message": "Support natif du Model Context Protocol. Permettez aux agents IA de découvrir et d'appeler vos API automatiquement avec gouvernance complète et pistes d'audit."
+  },
+  "homepage.feature.multiTenant.title": {
+    "message": "Multi-Tenant"
+  },
+  "homepage.feature.multiTenant.desc": {
+    "message": "Isolation complète des tenants avec des namespaces Kubernetes, des realms Keycloak séparés et un schéma de base de données par tenant."
+  },
+  "homepage.feature.aiGateway.title": {
+    "message": "Passerelle IA"
+  },
+  "homepage.feature.aiGateway.desc": {
+    "message": "Comptage de tokens, cache sémantique, routage intelligent entre fournisseurs LLM. Contrôlez les coûts IA avec des quotas et tableaux de bord par équipe."
+  },
+  "homepage.feature.gitops.title": {
+    "message": "GitOps natif"
+  },
+  "homepage.feature.gitops.desc": {
+    "message": "Intégration ArgoCD pour le provisionnement déclaratif des tenants. Tout en code, tout auditable, tout reproductible."
+  },
+  "homepage.feature.sovereign.title": {
+    "message": "Souveraineté européenne"
+  },
+  "homepage.feature.sovereign.desc": {
+    "message": "Hébergement européen disponible. Fonctionnalités de support NIS2 et DORA. Hébergez dans l'UE avec un contrôle total de la résidence des données."
+  },
+  "homepage.feature.openSource.title": {
+    "message": "Open Source"
+  },
+  "homepage.feature.openSource.desc": {
+    "message": "Licence Apache 2.0. Pas de verrouillage fournisseur, pas de licence restrictive. Contribuez, forkez ou auto-hébergez librement."
+  },
+  "homepage.migration.title": {
+    "message": "Migrer depuis n'importe quelle passerelle API"
+  },
+  "homepage.migration.subtitle": {
+    "message": "Guides de migration étape par étape depuis les passerelles API legacy vers une plateforme AI-native et open source"
+  },
+  "homepage.migration.webmethods": {
+    "message": "webMethods / DataPower vers STOA"
+  },
+  "homepage.migration.apigee": {
+    "message": "Apigee X / hybrid vers STOA"
+  },
+  "homepage.migration.kong": {
+    "message": "Kong Gateway vers STOA"
+  },
+  "homepage.migration.oam": {
+    "message": "Oracle Access Manager vers STOA"
+  },
+  "homepage.migration.sidecar": {
+    "message": "STOA en parallèle de webMethods"
+  },
+  "homepage.migration.btn.guide": {
+    "message": "Guide de migration complet 2026"
+  },
+  "homepage.migration.btn.comparison": {
+    "message": "Comparatif passerelles 2026"
+  },
+  "homepage.comparison.title": {
+    "message": "⚡ Temps jusqu'au premier appel agent"
+  },
+  "homepage.comparison.subtitle": {
+    "message": "STOA optimise pour les agents IA, pas seulement pour les développeurs"
+  },
+  "homepage.comparison.col.metric": {
+    "message": "Métrique"
+  },
+  "homepage.comparison.col.traditional": {
+    "message": "Passerelle traditionnelle"
+  },
+  "homepage.comparison.row.discovery": {
+    "message": "Découverte d'API"
+  },
+  "homepage.comparison.row.discovery.traditional": {
+    "message": "📚 Lire la doc manuellement"
+  },
+  "homepage.comparison.row.discovery.stoa": {
+    "message": "🔍 Auto-découverte via MCP"
+  },
+  "homepage.comparison.row.auth": {
+    "message": "Authentification"
+  },
+  "homepage.comparison.row.auth.traditional": {
+    "message": "🔑 Gestion manuelle des clés"
+  },
+  "homepage.comparison.row.auth.stoa": {
+    "message": "⚡ Injection de contexte JWT"
+  },
+  "homepage.comparison.row.firstCall": {
+    "message": "Premier appel API"
+  },
+  "homepage.comparison.row.firstCall.traditional": {
+    "message": "⏱️ Jours à semaines"
+  },
+  "homepage.comparison.row.firstCall.stoa": {
+    "message": "⚡ Secondes"
+  },
+  "homepage.comparison.row.aiSupport": {
+    "message": "Support agents IA"
+  },
+  "homepage.comparison.row.aiSupport.traditional": {
+    "message": "❌ Non prévu"
+  },
+  "homepage.comparison.row.aiSupport.stoa": {
+    "message": "✅ MCP Gateway natif"
+  },
+  "homepage.comparison.row.metering": {
+    "message": "Comptage de tokens"
+  },
+  "homepage.comparison.row.metering.traditional": {
+    "message": "❌ Non disponible"
+  },
+  "homepage.comparison.row.metering.stoa": {
+    "message": "✅ Tableaux de bord par équipe"
+  },
+  "homepage.comparison.btn.useCases": {
+    "message": "📖 Voir les cas d'usage"
+  },
+  "homepage.cta.title": {
+    "message": "Prêt à démarrer ?"
+  },
+  "homepage.cta.subtitle": {
+    "message": "Déployez STOA dans votre infrastructure ou essayez notre cloud managé."
+  },
+  "homepage.cta.btn.quickstart": {
+    "message": "🚀 Guide de démarrage rapide"
+  },
+  "homepage.cta.btn.cloud": {
+    "message": "☁️ Essayer STOA Cloud"
+  },
+  "homepage.cta.btn.contact": {
+    "message": "📧 Contacter les ventes"
+  },
+  "homepage.layout.title": {
+    "message": "STOA Platform Docs — La passerelle européenne pour agents IA | Define Once, Expose Everywhere"
+  },
+  "homepage.layout.description": {
+    "message": "Documentation STOA Platform — la passerelle API open source AI-native avec support MCP, isolation multi-tenant et guides de migration depuis webMethods, Apigee, Kong."
   }
 }

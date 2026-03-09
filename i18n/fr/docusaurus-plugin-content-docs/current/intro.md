@@ -85,6 +85,7 @@ Consultez le [Guide de démarrage rapide](/docs/guides/quickstart) pour un parco
 
 ## Étapes suivantes
 
+- [Tutoriels](/docs/tutorials) — Guides pratiques : exposer une API REST comme outil MCP, souscription en libre-service, pont Oracle OAM
 - [Vue d'ensemble de l'architecture](/docs/concepts/architecture) — Comprendre l'architecture des composants de STOA
 - [Guide de démarrage rapide](/docs/guides/quickstart) — Déployer votre premier tenant et enregistrer une API
 - [Configuration de l'authentification](/docs/guides/authentication) — Configurer Keycloak OIDC

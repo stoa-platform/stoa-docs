@@ -1,7 +1,7 @@
 ---
 slug: dora-nis2-api-gateway-compliance
 title: "DORA & NIS2 API Gateway Compliance: Requirements Checklist"
-authors: [christophe]
+authors: [stoa-team]
 tags: [compliance, architecture]
 description: "DORA and NIS2 mandate audit trails, encryption, and resilience testing for APIs. Checklist of gateway controls for financial and critical sectors."
 keywords:

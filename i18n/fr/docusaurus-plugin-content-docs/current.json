@@ -3,6 +3,10 @@
     "message": "Actuel",
     "description": "The label for version current"
   },
+  "sidebar.docs.category.Tutorials": {
+    "message": "Tutoriels",
+    "description": "The label for category 'Tutorials' in sidebar 'docs'"
+  },
   "sidebar.docs.category.Concepts": {
     "message": "Concepts",
     "description": "The label for category 'Concepts' in sidebar 'docs'"

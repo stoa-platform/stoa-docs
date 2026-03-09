@@ -1,7 +1,7 @@
 ---
 slug: open-source-api-gateway-2026
 title: "Best Open-Source API Gateways 2026: 5 Compared (with MCP)"
-authors: [christophe]
+authors: [stoa-team]
 tags: [comparison, open-source]
 description: "Kong, Envoy, APISIX, Tyk, and STOA scored on 8 criteria: MCP support, multi-tenancy, licensing, performance, and AI readiness."
 keywords:

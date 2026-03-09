@@ -2,7 +2,7 @@
 slug: how-we-built-ai-factory-ships-72-points-per-day
 title: "AI Factory: How One Developer Ships 72 Story Points/Day"
 description: "505 story points in 7 days with Claude Code, MCP integrations, and multi-instance coordination. The architecture behind our AI-powered dev workflow."
-authors: [christophe]
+authors: [stoa-team]
 tags: [ai, architecture, open-source, tutorial]
 keywords:
   - ai factory software development

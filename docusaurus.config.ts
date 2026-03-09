@@ -245,6 +245,7 @@ const config: Config = {
           position: 'left',
           label: 'Docs',
         },
+        {to: '/docs/tutorials', label: 'Tutorials', position: 'left'},
         {to: '/blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/stoa-platform',
