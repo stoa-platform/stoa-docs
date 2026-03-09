@@ -371,4 +371,4 @@ Yes. Each step maps to specific controls in NIST SP 800-207, OWASP API Security 
 
 *Continue the series: [Part 3 — Detecting Attacks with STOA](/blog/detecting-attacks-stoa-part-3)*
 
-*STOA Platform is open-source (Apache 2.0). [Deploy STOA](https://docs.gostoa.dev/docs/guides/quickstart) or explore the [security reference](https://docs.gostoa.dev/docs/reference/security).*
+*STOA Platform is open-source (Apache 2.0). [Deploy STOA](https://docs.gostoa.dev/docs/guides/quickstart) or explore the [security reference](https://docs.gostoa.dev/docs/reference/security-configuration).*

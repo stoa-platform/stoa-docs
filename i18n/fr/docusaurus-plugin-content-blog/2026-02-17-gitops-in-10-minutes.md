@@ -232,7 +232,7 @@ ArgoCD surveille maintenant votre dépôt et applique automatiquement tout chang
 
 ## Comment STOA adopte GitOps
 
-STOA Platform a été conçu GitOps-first dès le premier jour (voir [ADR-007](https://docs.gostoa.dev/docs/architecture/adr/adr-007-argocd-gitops-deployment)) :
+STOA Platform a été conçu GitOps-first dès le premier jour (voir [ADR-007](https://docs.gostoa.dev/docs/architecture/adr/adr-007-gitops-argocd)) :
 
 - **Toute configuration est déclarative** — les contrats d'API, les politiques, les règles de routage sont en YAML/JSON dans Git
 - **Natif ArgoCD** — STOA est livré avec des manifestes ArgoCD et des charts Helm, synchronisation automatique activée

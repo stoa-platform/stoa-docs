@@ -371,4 +371,4 @@ Oui. Chaque étape correspond à des contrôles spécifiques dans le NIST SP 800
 
 *Poursuivez la série : [Partie 3 — Détecter les attaques avec STOA](/blog/detecting-attacks-stoa-part-3)*
 
-*STOA Platform est open source (Apache 2.0). [Déployez STOA](https://docs.gostoa.dev/docs/guides/quickstart) ou explorez la [référence de sécurité](https://docs.gostoa.dev/docs/reference/security).*
+*STOA Platform est open source (Apache 2.0). [Déployez STOA](https://docs.gostoa.dev/docs/guides/quickstart) ou explorez la [référence de sécurité](https://docs.gostoa.dev/docs/reference/security-configuration).*

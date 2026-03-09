@@ -233,4 +233,4 @@ STOA's audit log hashes request parameters by default, avoiding storage of perso
 
 ---
 
-*STOA Platform is open-source (Apache 2.0). [Deploy the security-hardened gateway](https://docs.gostoa.dev/docs/guides/quickstart) or explore the [security reference documentation](https://docs.gostoa.dev/docs/reference/security).*
+*STOA Platform is open-source (Apache 2.0). [Deploy the security-hardened gateway](https://docs.gostoa.dev/docs/guides/quickstart) or explore the [security reference documentation](https://docs.gostoa.dev/docs/reference/security-configuration).*
