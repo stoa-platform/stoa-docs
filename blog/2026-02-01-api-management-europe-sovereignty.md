@@ -1,7 +1,7 @@
 ---
 slug: api-management-europe-sovereignty
 title: "API Management in Europe: Sovereignty and NIS2 Compliance"
-authors: [christophe]
+authors: [stoa-team]
 tags: [compliance, open-source]
 description: "NIS2 and GDPR require knowing where your API traffic flows. Why gateway jurisdiction matters and how to build a sovereign API management stack."
 keywords: [European API management, sovereign API gateway, API management GDPR, data sovereignty, CLOUD Act, NIS2, DORA, European API gateway, sovereign cloud]

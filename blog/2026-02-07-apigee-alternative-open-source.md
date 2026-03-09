@@ -1,7 +1,7 @@
 ---
 slug: apigee-alternative-open-source
 title: "Apigee Alternative: Why Teams Switch to Open Source"
-authors: [christophe]
+authors: [stoa-team]
 tags: [comparison, open-source, migration]
 description: "Google Apigee costs add up fast. Compare open-source gateways on features, pricing, and lock-in risk with a proven migration roadmap."
 keywords:

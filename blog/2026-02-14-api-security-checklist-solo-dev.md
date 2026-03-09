@@ -1,7 +1,7 @@
 ---
 slug: api-security-checklist-solo-dev
 title: "API Security Checklist: 10 Must-Dos for Solo Developers"
-authors: [christophe]
+authors: [stoa-team]
 tags: [security, education, tutorial, api-gateway]
 description: "No budget, no security team. 10 practical steps every freelancer and indie hacker must take to protect their APIs from real-world attacks."
 keywords: [api security checklist, developer security, api authentication, rate limiting, OWASP API, freelancer security, api best practices, secure api development, api key management, solo developer]

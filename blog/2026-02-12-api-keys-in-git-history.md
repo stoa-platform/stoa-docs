@@ -1,7 +1,7 @@
 ---
 slug: api-keys-in-git-history
 title: "API Keys in Git History: How to Find and Fix Leaked Secrets"
-authors: [christophe]
+authors: [stoa-team]
 tags: [security, education, tutorial]
 description: "90% of secret leaks come from git commits. Detect exposed API keys, remove them from history, and prevent future leaks with pre-commit hooks."
 keywords: [api key security, git secrets, gitleaks, secret scanning, api key leak, git history secrets, developer security, credential rotation, secret management]
