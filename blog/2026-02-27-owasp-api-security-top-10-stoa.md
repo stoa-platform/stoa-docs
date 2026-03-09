@@ -220,4 +220,4 @@ No. The OWASP Top 10 covers web application vulnerabilities (injection, XSS, CSR
 
 ---
 
-*STOA Platform is open-source (Apache 2.0). Explore the [security documentation](https://docs.gostoa.dev/docs/reference/security) or [deploy the gateway](https://docs.gostoa.dev/docs/guides/quickstart).*
+*STOA Platform is open-source (Apache 2.0). Explore the [security documentation](https://docs.gostoa.dev/docs/reference/security-configuration) or [deploy the gateway](https://docs.gostoa.dev/docs/guides/quickstart).*

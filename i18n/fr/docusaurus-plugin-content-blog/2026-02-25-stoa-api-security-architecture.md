@@ -233,4 +233,4 @@ Le journal d'audit de STOA hache les paramètres de requête par défaut, évita
 
 ---
 
-*STOA Platform est open source (Apache 2.0). [Déployez le gateway sécurisé](https://docs.gostoa.dev/docs/guides/quickstart) ou explorez la [documentation de référence sécurité](https://docs.gostoa.dev/docs/reference/security).*
+*STOA Platform est open source (Apache 2.0). [Déployez le gateway sécurisé](https://docs.gostoa.dev/docs/guides/quickstart) ou explorez la [documentation de référence sécurité](https://docs.gostoa.dev/docs/reference/security-configuration).*

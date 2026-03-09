@@ -232,7 +232,7 @@ Now ArgoCD watches your repo and automatically applies any change you push. Push
 
 ## How STOA Embraces GitOps
 
-STOA Platform was designed GitOps-first from day one (see [ADR-007](https://docs.gostoa.dev/docs/architecture/adr/adr-007-argocd-gitops-deployment)):
+STOA Platform was designed GitOps-first from day one (see [ADR-007](https://docs.gostoa.dev/docs/architecture/adr/adr-007-gitops-argocd)):
 
 - **Every config is declarative** — API contracts, policies, routing rules are YAML/JSON in Git
 - **ArgoCD-native** — STOA ships with ArgoCD manifests and Helm charts, auto-sync enabled
