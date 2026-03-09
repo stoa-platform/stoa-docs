@@ -11,14 +11,17 @@ import QuickStartCode from '@site/src/components/QuickStartCode';
 import styles from './index.module.css';
 
 function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
         <Heading as="h1" className="hero__title">
-          {siteConfig.title}
+          <Translate id="homepage.hero.title">STOA Docs</Translate>
         </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
+        <p className="hero__subtitle">
+          <Translate id="homepage.hero.tagline">
+            Modernize Your API Gateway — MCP, Multi-Tenant, European Sovereign
+          </Translate>
+        </p>
         <p className={styles.heroDescription}>
           <Translate id="homepage.hero.description">
             The European Agent Gateway — govern AI-to-API interactions with

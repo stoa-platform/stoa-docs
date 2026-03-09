@@ -557,6 +557,12 @@
     "message": "Tags",
     "description": "The title of the tag list page"
   },
+  "homepage.hero.title": {
+    "message": "STOA Docs"
+  },
+  "homepage.hero.tagline": {
+    "message": "Modernisez votre passerelle API — MCP, Multi-Tenant, Souveraineté européenne"
+  },
   "homepage.hero.description": {
     "message": "La passerelle européenne pour agents IA — gouvernez les interactions IA-vers-API avec le support MCP, l'isolation multi-tenant et la conformité NIS2/DORA."
   },
