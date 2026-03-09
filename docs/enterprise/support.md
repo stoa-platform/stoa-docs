@@ -1,21 +1,22 @@
 ---
 sidebar_position: 3
 title: Support & Services
-description: STOA Platform support tiers, professional services, and partner ecosystem
-keywords: [support, services, enterprise, SLA, professional services, partner]
+description: "STOA support options: community resources, Early Adopter program with direct founder access, and professional services by CAB Ingénierie."
+keywords: [support, services, STOA, open source, API gateway, consulting, training, MCP]
+last_verified: 2026-03-08
 ---
 
 # Support & Services
 
-STOA Platform offers flexible support options from community self-service to dedicated enterprise partnerships.
+STOA is an open-source project backed by [CAB Ingénierie](mailto:contact@gostoa.dev), the company behind its development. Support ranges from free community resources to hands-on engagement with the core team.
 
-## Support Tiers
+## Support Overview
 
-| Tier | Channel | Response Time | Best For |
-|------|---------|---------------|----------|
-| **Community** | GitHub Issues, Discord | Best effort | Evaluation, dev/test |
-| **Professional** | Email, Ticket Portal | 24h (business hours) | Production workloads |
-| **Enterprise** | Dedicated Slack, Phone | 4h target (24/7 critical) | Mission-critical systems |
+| Tier | Channel | Best For |
+| --- | --- | --- |
+| **Community** | GitHub Issues, Discord | Evaluation, dev/test, contributions |
+| **Early Adopter** | Direct email, scheduled calls | First production deployments |
+| **Enterprise** | Custom engagement via partner | Mission-critical systems *(coming H2 2026)* |
 
 ---
 
@@ -23,188 +24,76 @@ STOA Platform offers flexible support options from community self-service to ded
 
 **Free for all users**
 
-Open-source community resources for getting started and troubleshooting.
+The fastest way to get help and contribute back.
 
-### Channels
+- 🐛 **GitHub Issues** — Bug reports, feature requests → [stoa-platform/stoa](https://github.com/stoa-platform/stoa/issues)
+- 💬 **Discord** — Real-time community chat → [Join STOA Discord](https://discord.gostoa.dev)
+- 📚 **Documentation** — Guides, API reference, architecture decisions → [docs.gostoa.dev](https://docs.gostoa.dev)
 
-- 🐛 **GitHub Issues** — Bug reports, feature requests
-  - [stoa-platform/stoa](https://github.com/stoa-platform/stoa/issues)
-- 💬 **Discord** — Real-time community chat
-  - [Join STOA Discord](https://discord.gostoa.dev)
-- 📚 **Documentation** — Guides, API reference, tutorials
-  - [docs.gostoa.dev](https://docs.gostoa.dev)
-
-### What's Included
-
-- Community forum access
-- Public documentation
-- GitHub issue tracking
-- Monthly community calls
-
-### Response Expectations
-
-| Severity | Typical Response |
-|----------|------------------|
-| Critical bug | 1-3 business days |
-| Feature request | Triaged weekly |
-| Documentation | Community contribution welcome |
+Community support operates on a best-effort basis. Critical bugs are typically triaged within a few days; feature requests are reviewed weekly.
 
 ---
 
-## Professional Support
+## Early Adopter Program
 
-**For production deployments**
+**For organizations deploying STOA in production**
 
-Target response times and access to STOA engineers through our partner network.
+As an early-stage project, STOA offers something large vendors cannot: **direct access to the platform's creator and lead architect**.
 
-### Channels
+### What You Get
 
-- 📧 **Email** — support@gostoa.dev
-- 🎫 **Ticket Portal** — Priority queue access
-- 📅 **Scheduled Calls** — Monthly check-ins
+- **Direct line to the founder** — Email and scheduled video calls with the person who designed and built STOA. No ticket queue, no L1 support wall.
+- **Integration guidance** — Hands-on help connecting STOA to your existing stack (webMethods, Axway, Oracle OAM, Keycloak, etc.).
+- **Co-construction** — Your feedback directly shapes the roadmap. Early adopters get priority on feature requests.
+- **Production readiness review** — Architecture validation before you go live.
 
-### What's Included
+### How It Works
 
-- 24-hour response time (business hours, CET)
-- Named support contact
-- Quarterly business reviews
-- Early access to new features
-- Production deployment guidance
+This is not a support contract with SLA fine print. It's a partnership: you get dedicated attention from the core team, and we get real-world validation of the platform in enterprise environments.
 
-### Target Response Times
-
-| Severity | Target Response Time | Target Resolution |
-|----------|---------------------|-------------------|
-| **P1 - Critical** | 4 hours | 24 hours |
-| **P2 - High** | 8 hours | 3 business days |
-| **P3 - Medium** | 24 hours | 10 business days |
-| **P4 - Low** | 48 hours | Best effort |
-
-*Response times are targets, not contractual commitments. Formal SLA terms are defined in individual support agreements.*
-
-### Delivery
-
-Professional support is delivered through our ESN (Enterprise Service Company) partner network with expertise in STOA deployment and enterprise integration.
-
----
-
-## Enterprise Support
-
-**For mission-critical deployments**
-
-Dedicated support with custom SLAs tailored to your organization.
-
-### Channels
-
-- 💬 **Dedicated Slack Channel** — Direct access to STOA team
-- 📞 **Phone** — 24/7 hotline for critical issues
-- 👤 **Technical Account Manager** — Named point of contact
-- 🏢 **On-site** — Available upon request
-
-### What's Included
-
-- 4-hour response time (24/7 for critical)
-- Dedicated Technical Account Manager
-- Custom SLA agreements
-- Architecture review sessions
-- Priority feature development
-- Executive business reviews
-- Training and enablement
-
-### Custom Agreements
-
-Enterprise support is tailored to your organization's needs:
-
-- Custom response time SLAs
-- Dedicated engineer allocation
-- On-premises support visits
-- Custom integration development
-- Compliance documentation assistance
+📧 **Contact:** [contact@gostoa.dev](mailto:contact@gostoa.dev)
 
 ---
 
 ## Professional Services
 
-Beyond support, our partner network offers specialized services:
+CAB Ingénierie, the company behind STOA, provides hands-on consulting for organizations that need more than self-service.
 
-### Implementation Services
+### Available Engagements
 
-| Service | Description | Duration |
-|---------|-------------|----------|
-| **Quick Start** | Basic STOA deployment | 1-2 weeks |
-| **Production Setup** | HA deployment with observability | 4-6 weeks |
-| **Enterprise Integration** | Full integration with existing systems | 8-12 weeks |
-
-### Architecture Services
-
-- **Assessment** — Evaluate current API landscape and migration path
-- **Design** — Custom architecture for your requirements
-- **Review** — Security and performance audit of existing deployment
+| Service | Description | Typical Duration |
+| --- | --- | --- |
+| **POC Workshop** | Guided proof of concept on 1-2 pilot APIs | 4 weeks |
+| **Architecture Assessment** | Evaluate your current API landscape and define a migration path | 1-2 weeks |
+| **Production Deployment** | HA setup with observability, auth federation, GitOps | 4-8 weeks |
+| **Custom Integration** | STOA Link development for your specific gateway or IdP | Scoped per project |
 
 ### Training
 
-- **Administrator Training** — 2-day workshop for ops teams
-- **Developer Training** — 1-day API consumer workshop
-- **Custom Workshops** — Tailored to your technology stack
+| Session | Audience | Format |
+| --- | --- | --- |
+| **STOA for Architects** | Solution/enterprise architects | 1-day workshop |
+| **STOA for Operators** | Platform/DevOps teams | 1-day workshop |
+| **Custom** | Tailored to your stack and constraints | Scoped together |
+
+All services are delivered by the STOA core team. For larger engagements, delivery may involve our ESN partner network.
+
+📧 **Contact:** [contact@gostoa.dev](mailto:contact@gostoa.dev)
 
 ---
 
-## Partner Ecosystem
+## Enterprise Support — Coming H2 2026
 
-STOA works with partners across Europe for local delivery:
+Structured enterprise support with formal SLAs, dedicated Technical Account Managers, and certified partner delivery is planned for the STOA v1.0 GA release (mid-2026).
 
-### Partner Types
-
-| Partner Type | Expertise | Services |
-|--------------|-----------|----------|
-| **Implementation Partners** | STOA deployment | Installation, configuration, migration |
-| **Integration Partners** | Enterprise systems | Legacy gateway, IdP, observability integration |
-| **Managed Service Partners** | Operations | 24/7 monitoring, incident response |
-
-### Become a Partner
-
-Interested in joining the STOA partner ecosystem?
-
-- Technical certification program
-- Partner portal access
-- Joint go-to-market opportunities
-- Revenue sharing model
-
-📧 Contact: [partners@gostoa.dev](mailto:partners@gostoa.dev)
-
----
-
-## Getting Started
-
-### Evaluate
-
-1. **Read the docs** — [Getting Started Guide](/docs/intro)
-2. **Join Discord** — Ask questions, meet the community
-3. **Try locally** — Docker Compose quickstart
-
-### Pilot
-
-1. **Request a demo** — [contact@gostoa.dev](mailto:contact@gostoa.dev)
-2. **POC workshop** — 4-week guided proof of concept
-3. **Architecture review** — Validate fit for your environment
-
-### Deploy
-
-1. **Select support tier** — Match your SLA requirements
-2. **Engage partner** — Local implementation support
-3. **Go live** — Production deployment with confidence
+If you need enterprise-grade support today, [get in touch](mailto:contact@gostoa.dev) — we'll find an arrangement that works for your timeline.
 
 ---
 
 ## Contact
 
 | Purpose | Contact |
-|---------|---------|
+| --- | --- |
 | General inquiries | [contact@gostoa.dev](mailto:contact@gostoa.dev) |
-| Support | [support@gostoa.dev](mailto:support@gostoa.dev) |
-| Security | [security@gostoa.dev](mailto:security@gostoa.dev) |
-| Partnerships | [partners@gostoa.dev](mailto:partners@gostoa.dev) |
-
----
-
-*Pricing is not listed here as it varies based on deployment size, support requirements, and partner engagement model. Contact us for a custom quote.*
+| Security disclosures | [security@gostoa.dev](mailto:security@gostoa.dev) |
+| Community | [Discord](https://discord.gostoa.dev) |
