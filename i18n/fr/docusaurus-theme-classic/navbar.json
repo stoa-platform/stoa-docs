@@ -11,6 +11,10 @@
     "message": "Documentation",
     "description": "Navbar item with label Docs"
   },
+  "item.label.Tutorials": {
+    "message": "Tutoriels",
+    "description": "Navbar item with label Tutorials"
+  },
   "item.label.Blog": {
     "message": "Blog",
     "description": "Navbar item with label Blog"
