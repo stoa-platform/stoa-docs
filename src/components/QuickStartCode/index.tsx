@@ -2,6 +2,7 @@
 // Copyright 2024-2026 CAB Ingénierie / Christophe ABOULICAM
 import React, { useState } from 'react';
 import CodeBlock from '@theme/CodeBlock';
+import {translate} from '@docusaurus/Translate';
 
 type Language = 'curl' | 'python' | 'typescript' | 'mcp';
 
@@ -166,7 +167,7 @@ stoa_metrics(
     subscription_id="sub-123"
 )
 
-# Response: "You've used 8,420 of 10,000 requests 
+# Response: "You've used 8,420 of 10,000 requests
 # (84%). Resets February 1st."`,
   },
 };
@@ -196,10 +197,27 @@ export default function QuickStartCode(): JSX.Element {
   };
 
   const steps = [
-    { key: 'subscribe', title: '1. Subscribe to an API', icon: '🔑' },
-    { key: 'call', title: '2. Make API Calls', icon: '🚀' },
-    { key: 'metrics', title: '3. Monitor Usage', icon: '📊' },
+    {
+      key: 'subscribe',
+      title: translate({id: 'homepage.quickstart.step1', message: '1. Subscribe to an API'}),
+      icon: '🔑',
+    },
+    {
+      key: 'call',
+      title: translate({id: 'homepage.quickstart.step2', message: '2. Make API Calls'}),
+      icon: '🚀',
+    },
+    {
+      key: 'metrics',
+      title: translate({id: 'homepage.quickstart.step3', message: '3. Monitor Usage'}),
+      icon: '📊',
+    },
   ];
+
+  const copyLabel = translate({id: 'homepage.quickstart.copy', message: '📋 Copy'});
+  const copiedLabel = translate({id: 'homepage.quickstart.copied', message: '✓ Copied!'});
+  const fullGuideLabel = translate({id: 'homepage.quickstart.btn.guide', message: '📚 Full Quick Start Guide'});
+  const tryFreeLabel = translate({id: 'homepage.quickstart.btn.try', message: '🚀 Try STOA Free'});
 
   return (
     <div className="quickstart-container">
@@ -228,7 +246,7 @@ export default function QuickStartCode(): JSX.Element {
                 className={`copy-button ${copiedStep === key ? 'copied' : ''}`}
                 onClick={() => copyToClipboard(examples[key][activeLanguage], key)}
               >
-                {copiedStep === key ? '✓ Copied!' : '📋 Copy'}
+                {copiedStep === key ? copiedLabel : copyLabel}
               </button>
             </div>
             <CodeBlock language={activeLanguage === 'mcp' ? 'python' : activeLanguage}>
@@ -241,10 +259,10 @@ export default function QuickStartCode(): JSX.Element {
       {/* CTA */}
       <div className="quickstart-cta">
         <a href="/docs/guides/quickstart" className="cta-button primary">
-          📚 Full Quick Start Guide
+          {fullGuideLabel}
         </a>
         <a href="https://console.gostoa.dev/signup" className="cta-button secondary">
-          🚀 Try STOA Free
+          {tryFreeLabel}
         </a>
       </div>
 
@@ -256,7 +274,7 @@ export default function QuickStartCode(): JSX.Element {
           overflow: hidden;
           background: var(--ifm-background-surface-color);
         }
-        
+
         .language-tabs {
           display: flex;
           gap: 0;
@@ -264,7 +282,7 @@ export default function QuickStartCode(): JSX.Element {
           border-bottom: 1px solid var(--ifm-color-emphasis-300);
           overflow-x: auto;
         }
-        
+
         .language-tab {
           display: flex;
           align-items: center;
@@ -278,31 +296,31 @@ export default function QuickStartCode(): JSX.Element {
           transition: all 0.2s ease;
           white-space: nowrap;
         }
-        
+
         .language-tab:hover {
           background: var(--ifm-color-emphasis-200);
         }
-        
+
         .language-tab.active {
           background: var(--ifm-background-surface-color);
           color: var(--ifm-color-primary);
           font-weight: 600;
           border-bottom: 2px solid var(--ifm-color-primary);
         }
-        
+
         .code-steps {
           padding: 1.5rem;
           display: flex;
           flex-direction: column;
           gap: 1.5rem;
         }
-        
+
         .code-step {
           border: 1px solid var(--ifm-color-emphasis-200);
           border-radius: 8px;
           overflow: hidden;
         }
-        
+
         .step-header {
           display: flex;
           align-items: center;
@@ -311,17 +329,17 @@ export default function QuickStartCode(): JSX.Element {
           background: var(--ifm-color-emphasis-100);
           border-bottom: 1px solid var(--ifm-color-emphasis-200);
         }
-        
+
         .step-icon {
           font-size: 1.25rem;
         }
-        
+
         .step-title {
           flex: 1;
           font-weight: 600;
           color: var(--ifm-color-emphasis-900);
         }
-        
+
         .copy-button {
           padding: 0.4rem 0.75rem;
           border: 1px solid var(--ifm-color-emphasis-300);
@@ -331,22 +349,22 @@ export default function QuickStartCode(): JSX.Element {
           font-size: 0.8rem;
           transition: all 0.2s ease;
         }
-        
+
         .copy-button:hover {
           background: var(--ifm-color-emphasis-200);
         }
-        
+
         .copy-button.copied {
           background: var(--ifm-color-success);
           color: white;
           border-color: var(--ifm-color-success);
         }
-        
+
         .code-step pre {
           margin: 0 !important;
           border-radius: 0 !important;
         }
-        
+
         .quickstart-cta {
           display: flex;
           gap: 1rem;
@@ -356,7 +374,7 @@ export default function QuickStartCode(): JSX.Element {
           justify-content: center;
           flex-wrap: wrap;
         }
-        
+
         .cta-button {
           display: inline-flex;
           align-items: center;
@@ -367,50 +385,50 @@ export default function QuickStartCode(): JSX.Element {
           text-decoration: none;
           transition: all 0.2s ease;
         }
-        
+
         .cta-button.primary {
           background: var(--ifm-color-primary);
           color: white;
         }
-        
+
         .cta-button.primary:hover {
           background: var(--ifm-color-primary-dark);
           color: white;
         }
-        
+
         .cta-button.secondary {
           background: var(--ifm-background-surface-color);
           color: var(--ifm-color-primary);
           border: 2px solid var(--ifm-color-primary);
         }
-        
+
         .cta-button.secondary:hover {
           background: var(--ifm-color-primary);
           color: white;
         }
-        
+
         @media (max-width: 768px) {
           .language-tabs {
             justify-content: flex-start;
           }
-          
+
           .language-tab {
             padding: 0.5rem 0.75rem;
             font-size: 0.8rem;
           }
-          
+
           .tab-label {
             display: none;
           }
-          
+
           .tab-icon {
             font-size: 1.25rem;
           }
-          
+
           .quickstart-cta {
             flex-direction: column;
           }
-          
+
           .cta-button {
             justify-content: center;
           }

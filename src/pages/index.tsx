@@ -3,6 +3,7 @@
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import Translate, {translate} from '@docusaurus/Translate';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import QuickStartCode from '@site/src/components/QuickStartCode';
@@ -19,19 +20,21 @@ function HomepageHeader() {
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <p className={styles.heroDescription}>
-          The European Agent Gateway — govern AI-to-API interactions with 
-          MCP support, multi-tenant isolation, and NIS2/DORA compliance.
+          <Translate id="homepage.hero.description">
+            The European Agent Gateway — govern AI-to-API interactions with
+            MCP support, multi-tenant isolation, and NIS2/DORA compliance.
+          </Translate>
         </p>
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
             to="/docs/intro">
-            📚 Documentation
+            <Translate id="homepage.hero.btn.docs">📚 Documentation</Translate>
           </Link>
           <Link
             className="button button--outline button--lg"
             to="/docs/guides/quickstart">
-            🚀 Get Started
+            <Translate id="homepage.hero.btn.getStarted">🚀 Get Started</Translate>
           </Link>
           <Link
             className="button button--outline button--lg"
@@ -49,8 +52,14 @@ function QuickStartSection() {
     <section className={styles.quickstart}>
       <div className="container">
         <div className={styles.sectionHeader}>
-          <Heading as="h2">⚡ Quick Start</Heading>
-          <p>From zero to API call in 3 steps — works with cURL, Python, TypeScript, or Claude.ai</p>
+          <Heading as="h2">
+            <Translate id="homepage.quickstart.title">⚡ Quick Start</Translate>
+          </Heading>
+          <p>
+            <Translate id="homepage.quickstart.subtitle">
+              From zero to API call in 3 steps — works with cURL, Python, TypeScript, or Claude.ai
+            </Translate>
+          </p>
         </div>
         <QuickStartCode />
       </div>
@@ -59,81 +68,75 @@ function QuickStartSection() {
 }
 
 type FeatureItem = {
-  title: string;
+  titleId: string;
+  titleDefault: string;
   icon: string;
-  description: JSX.Element;
+  descriptionId: string;
+  descriptionDefault: string;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'MCP Gateway',
+    titleId: 'homepage.feature.mcp.title',
+    titleDefault: 'MCP Gateway',
     icon: '🤖',
-    description: (
-      <>
-        Native Model Context Protocol support. Let AI agents discover and call 
-        your APIs automatically with full governance and audit trails.
-      </>
-    ),
+    descriptionId: 'homepage.feature.mcp.desc',
+    descriptionDefault:
+      'Native Model Context Protocol support. Let AI agents discover and call your APIs automatically with full governance and audit trails.',
   },
   {
-    title: 'Multi-Tenant',
+    titleId: 'homepage.feature.multiTenant.title',
+    titleDefault: 'Multi-Tenant',
     icon: '🏢',
-    description: (
-      <>
-        Complete tenant isolation with Kubernetes namespaces, separate Keycloak 
-        realms, and schema-per-tenant database design.
-      </>
-    ),
+    descriptionId: 'homepage.feature.multiTenant.desc',
+    descriptionDefault:
+      'Complete tenant isolation with Kubernetes namespaces, separate Keycloak realms, and schema-per-tenant database design.',
   },
   {
-    title: 'AI Gateway',
+    titleId: 'homepage.feature.aiGateway.title',
+    titleDefault: 'AI Gateway',
     icon: '📊',
-    description: (
-      <>
-        Token metering, semantic caching, smart routing across LLM providers. 
-        Control AI costs with per-team quotas and dashboards.
-      </>
-    ),
+    descriptionId: 'homepage.feature.aiGateway.desc',
+    descriptionDefault:
+      'Token metering, semantic caching, smart routing across LLM providers. Control AI costs with per-team quotas and dashboards.',
   },
   {
-    title: 'GitOps Native',
+    titleId: 'homepage.feature.gitops.title',
+    titleDefault: 'GitOps Native',
     icon: '🔄',
-    description: (
-      <>
-        ArgoCD integration for declarative tenant provisioning. 
-        Everything as code, everything auditable, everything reproducible.
-      </>
-    ),
+    descriptionId: 'homepage.feature.gitops.desc',
+    descriptionDefault:
+      'ArgoCD integration for declarative tenant provisioning. Everything as code, everything auditable, everything reproducible.',
   },
   {
-    title: 'European Sovereign',
+    titleId: 'homepage.feature.sovereign.title',
+    titleDefault: 'European Sovereign',
     icon: '🇪🇺',
-    description: (
-      <>
-        European hosting available. NIS2 and DORA supportive features. 
-        Host in EU with full data residency control.
-      </>
-    ),
+    descriptionId: 'homepage.feature.sovereign.desc',
+    descriptionDefault:
+      'European hosting available. NIS2 and DORA supportive features. Host in EU with full data residency control.',
   },
   {
-    title: 'Open Source',
+    titleId: 'homepage.feature.openSource.title',
+    titleDefault: 'Open Source',
     icon: '📖',
-    description: (
-      <>
-        Apache 2.0 licensed. No vendor lock-in, no restrictive licensing. 
-        Contribute, fork, or self-host freely.
-      </>
-    ),
+    descriptionId: 'homepage.feature.openSource.desc',
+    descriptionDefault:
+      'Apache 2.0 licensed. No vendor lock-in, no restrictive licensing. Contribute, fork, or self-host freely.',
   },
 ];
 
-function Feature({title, icon, description}: FeatureItem) {
+function Feature({titleId, titleDefault, icon, descriptionId, descriptionDefault}: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
       <div className={styles.featureCard}>
         <div className={styles.featureIcon}>{icon}</div>
-        <Heading as="h3">{title}</Heading>
-        <p>{description}</p>
+        <Heading as="h3">
+          <Translate id={titleId}>{titleDefault}</Translate>
+        </Heading>
+        <p>
+          <Translate id={descriptionId}>{descriptionDefault}</Translate>
+        </p>
       </div>
     </div>
   );
@@ -144,8 +147,14 @@ function FeaturesSection() {
     <section className={styles.features}>
       <div className="container">
         <div className={styles.sectionHeader}>
-          <Heading as="h2">✨ Why STOA?</Heading>
-          <p>Built for the AI era — not retrofitted</p>
+          <Heading as="h2">
+            <Translate id="homepage.features.title">✨ Why STOA?</Translate>
+          </Heading>
+          <p>
+            <Translate id="homepage.features.subtitle">
+              Built for the AI era — not retrofitted
+            </Translate>
+          </p>
         </div>
         <div className="row">
           {FeatureList.map((props, idx) => (
@@ -160,34 +169,40 @@ function FeaturesSection() {
 type MigrationGuide = {
   platform: string;
   path: string;
-  description: string;
+  descriptionId: string;
+  descriptionDefault: string;
 };
 
 const MigrationGuides: MigrationGuide[] = [
   {
     platform: 'IBM webMethods',
     path: '/docs/guides/migration/ibm-webmethods',
-    description: 'webMethods / DataPower to STOA',
+    descriptionId: 'homepage.migration.webmethods',
+    descriptionDefault: 'webMethods / DataPower to STOA',
   },
   {
     platform: 'Google Apigee',
     path: '/docs/guides/migration/apigee',
-    description: 'Apigee X / hybrid to STOA',
+    descriptionId: 'homepage.migration.apigee',
+    descriptionDefault: 'Apigee X / hybrid to STOA',
   },
   {
     platform: 'Kong',
     path: '/docs/guides/migration/kong',
-    description: 'Kong Gateway to STOA',
+    descriptionId: 'homepage.migration.kong',
+    descriptionDefault: 'Kong Gateway to STOA',
   },
   {
     platform: 'Oracle OAM',
     path: '/docs/guides/migration/oracle-oam',
-    description: 'Oracle Access Manager to STOA',
+    descriptionId: 'homepage.migration.oam',
+    descriptionDefault: 'Oracle Access Manager to STOA',
   },
   {
     platform: 'webMethods Sidecar',
     path: '/docs/guides/migration/webmethods-sidecar',
-    description: 'Run STOA alongside webMethods',
+    descriptionId: 'homepage.migration.sidecar',
+    descriptionDefault: 'Run STOA alongside webMethods',
   },
 ];
 
@@ -196,17 +211,25 @@ function MigrationSection() {
     <section className={styles.migration}>
       <div className="container">
         <div className={styles.sectionHeader}>
-          <Heading as="h2">Migrate from Any API Gateway</Heading>
+          <Heading as="h2">
+            <Translate id="homepage.migration.title">
+              Migrate from Any API Gateway
+            </Translate>
+          </Heading>
           <p>
-            Step-by-step migration guides from legacy API gateways to an
-            AI-native, open-source platform
+            <Translate id="homepage.migration.subtitle">
+              Step-by-step migration guides from legacy API gateways to an
+              AI-native, open-source platform
+            </Translate>
           </p>
         </div>
         <div className={styles.migrationGrid}>
           {MigrationGuides.map((guide) => (
             <Link key={guide.platform} to={guide.path} className={styles.migrationCard}>
               <strong>{guide.platform}</strong>
-              <span>{guide.description}</span>
+              <span>
+                <Translate id={guide.descriptionId}>{guide.descriptionDefault}</Translate>
+              </span>
             </Link>
           ))}
         </div>
@@ -214,12 +237,16 @@ function MigrationSection() {
           <Link
             className="button button--primary button--md"
             to="/blog/api-gateway-migration-guide-2026">
-            Complete Migration Guide 2026
+            <Translate id="homepage.migration.btn.guide">
+              Complete Migration Guide 2026
+            </Translate>
           </Link>
           <Link
             className="button button--outline button--md"
             to="/blog/open-source-api-gateway-2026">
-            Gateway Comparison 2026
+            <Translate id="homepage.migration.btn.comparison">
+              Gateway Comparison 2026
+            </Translate>
           </Link>
         </div>
       </div>
@@ -232,43 +259,51 @@ function ComparisonSection() {
     <section className={styles.comparison}>
       <div className="container">
         <div className={styles.sectionHeader}>
-          <Heading as="h2">⚡ Time to First Agent Call</Heading>
-          <p>STOA optimizes for AI agents, not just human developers</p>
+          <Heading as="h2">
+            <Translate id="homepage.comparison.title">
+              ⚡ Time to First Agent Call
+            </Translate>
+          </Heading>
+          <p>
+            <Translate id="homepage.comparison.subtitle">
+              STOA optimizes for AI agents, not just human developers
+            </Translate>
+          </p>
         </div>
         <div className={styles.comparisonTable}>
           <table>
             <thead>
               <tr>
-                <th>Metric</th>
-                <th>Traditional Gateway</th>
+                <th><Translate id="homepage.comparison.col.metric">Metric</Translate></th>
+                <th><Translate id="homepage.comparison.col.traditional">Traditional Gateway</Translate></th>
                 <th>STOA + MCP</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>API Discovery</td>
-                <td>📚 Read docs manually</td>
-                <td>🔍 Auto-discovery via MCP</td>
+                <td><Translate id="homepage.comparison.row.discovery">API Discovery</Translate></td>
+                <td><Translate id="homepage.comparison.row.discovery.traditional">📚 Read docs manually</Translate></td>
+                <td><Translate id="homepage.comparison.row.discovery.stoa">🔍 Auto-discovery via MCP</Translate></td>
               </tr>
               <tr>
-                <td>Authentication</td>
-                <td>🔑 Manual key management</td>
-                <td>⚡ JWT context injection</td>
+                <td><Translate id="homepage.comparison.row.auth">Authentication</Translate></td>
+                <td><Translate id="homepage.comparison.row.auth.traditional">🔑 Manual key management</Translate></td>
+                <td><Translate id="homepage.comparison.row.auth.stoa">⚡ JWT context injection</Translate></td>
               </tr>
               <tr>
-                <td>First API Call</td>
-                <td>⏱️ Days to weeks</td>
-                <td>⚡ Seconds</td>
+                <td><Translate id="homepage.comparison.row.firstCall">First API Call</Translate></td>
+                <td><Translate id="homepage.comparison.row.firstCall.traditional">⏱️ Days to weeks</Translate></td>
+                <td><Translate id="homepage.comparison.row.firstCall.stoa">⚡ Seconds</Translate></td>
               </tr>
               <tr>
-                <td>AI Agent Support</td>
-                <td>❌ Not designed for it</td>
-                <td>✅ Native MCP Gateway</td>
+                <td><Translate id="homepage.comparison.row.aiSupport">AI Agent Support</Translate></td>
+                <td><Translate id="homepage.comparison.row.aiSupport.traditional">❌ Not designed for it</Translate></td>
+                <td><Translate id="homepage.comparison.row.aiSupport.stoa">✅ Native MCP Gateway</Translate></td>
               </tr>
               <tr>
-                <td>Token Metering</td>
-                <td>❌ Not available</td>
-                <td>✅ Per-team dashboards</td>
+                <td><Translate id="homepage.comparison.row.metering">Token Metering</Translate></td>
+                <td><Translate id="homepage.comparison.row.metering.traditional">❌ Not available</Translate></td>
+                <td><Translate id="homepage.comparison.row.metering.stoa">✅ Per-team dashboards</Translate></td>
               </tr>
             </tbody>
           </table>
@@ -277,7 +312,7 @@ function ComparisonSection() {
           <Link
             className="button button--primary button--lg"
             to="/docs/use-cases">
-            📖 See Use Cases
+            <Translate id="homepage.comparison.btn.useCases">📖 See Use Cases</Translate>
           </Link>
         </div>
       </div>
@@ -289,23 +324,29 @@ function CTASection() {
   return (
     <section className={styles.cta}>
       <div className="container">
-        <Heading as="h2">Ready to get started?</Heading>
-        <p>Deploy STOA in your infrastructure or try our managed cloud.</p>
+        <Heading as="h2">
+          <Translate id="homepage.cta.title">Ready to get started?</Translate>
+        </Heading>
+        <p>
+          <Translate id="homepage.cta.subtitle">
+            Deploy STOA in your infrastructure or try our managed cloud.
+          </Translate>
+        </p>
         <div className={styles.ctaButtons}>
           <Link
             className="button button--primary button--lg"
             to="/docs/guides/quickstart">
-            🚀 Quick Start Guide
+            <Translate id="homepage.cta.btn.quickstart">🚀 Quick Start Guide</Translate>
           </Link>
           <Link
             className="button button--secondary button--lg"
             href="https://console.gostoa.dev/signup">
-            ☁️ Try STOA Cloud
+            <Translate id="homepage.cta.btn.cloud">☁️ Try STOA Cloud</Translate>
           </Link>
           <Link
             className="button button--outline button--lg"
             href="mailto:sales@gostoa.dev">
-            📧 Contact Sales
+            <Translate id="homepage.cta.btn.contact">📧 Contact Sales</Translate>
           </Link>
         </div>
       </div>
@@ -314,11 +355,16 @@ function CTASection() {
 }
 
 export default function Home(): JSX.Element {
-  const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title="STOA Platform Docs — The European Agent Gateway | Define Once, Expose Everywhere"
-      description="STOA Platform documentation — the open-source AI-native API gateway with MCP support, multi-tenant isolation, and migration guides from webMethods, Apigee, Kong.">
+      title={translate({
+        id: 'homepage.layout.title',
+        message: 'STOA Platform Docs — The European Agent Gateway | Define Once, Expose Everywhere',
+      })}
+      description={translate({
+        id: 'homepage.layout.description',
+        message: 'STOA Platform documentation — the open-source AI-native API gateway with MCP support, multi-tenant isolation, and migration guides from webMethods, Apigee, Kong.',
+      })}>
       <HomepageHeader />
       <main>
         <QuickStartSection />
