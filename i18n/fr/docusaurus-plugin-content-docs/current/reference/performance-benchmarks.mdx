@@ -1,0 +1,237 @@
+---
+sidebar_position: 7
+title: "Benchmarks de Performance"
+description: "Benchmarks de débit, latence et ressources pour STOA Gateway — micro-benchmarks, tests de charge, résultats comparatifs de l'Arena et scores Enterprise AI Readiness."
+keywords:
+  - benchmarks
+  - performance
+  - latency
+  - throughput
+  - requests per second
+  - api gateway benchmark
+  - load testing
+  - gateway comparison
+  - mcp benchmark
+  - enterprise ai readiness
+---
+
+<!-- last verified: 2026-02 -->
+
+import BenchmarkResults from '@site/src/components/BenchmarkResults';
+
+# Benchmarks de Performance
+
+STOA Gateway traite **des dizaines de milliers de requêtes par seconde** sur un seul cœur avec une **latence P99 inférieure à la milliseconde**. L'authentification par clé API ajoute moins d'1 microseconde de surcharge. Le rate limiting ajoute moins de 500 nanosecondes.
+
+Tous les benchmarks sont reproductibles en utilisant les scripts publiés dans le [dépôt stoa](https://github.com/stoa-platform/stoa/tree/main/scripts/traffic/arena).
+
+## Micro-Benchmarks (Criterion)
+
+Latence des opérations internes mesurée avec [Criterion.rs](https://github.com/bheisler/criterion.rs) sur des benchmarks isolés. Ces mesures évaluent les composants internes du Gateway sans surcharge réseau.
+
+### Opérations de Base
+
+| Opération | Cible | Notes |
+|-----------|--------|-------|
+| Accès cache clé API (hit) | < 1 us | Cache sync moka, capacité 10K, TTL 300s |
+| Accès cache clé API (miss) | < 1 us | Recherche de clé inexistante |
+| Vérification rate limit | < 500 ns | Fenêtre glissante tenant-scoped |
+| Rate limit consumer | < 500 ns | Token bucket (configurable) |
+| Normalisation chemin (statique) | < 100 ns | Remplacement regex UUID/ID |
+| Normalisation chemin (UUID) | < 100 ns | Conversion paramètre de chemin UUID |
+| Normalisation chemin (imbriqué) | < 100 ns | Chemin profond avec plusieurs UUIDs |
+| Correspondance route (50 routes) | < 1 us | Correspondance par préfixe le plus long |
+| Correspondance route (introuvable) | < 1 us | Chemin inexistant, 50 routes enregistrées |
+
+### Auth et Mise en Cache
+
+| Opération | Cible | Notes |
+|-----------|--------|-------|
+| Décodage JWT (HS256) | < 100 us | Vérification de signature complète |
+| Décodage en-tête JWT | < 100 us | En-tête uniquement, sans vérification de signature |
+| Génération clé cache sémantique | < 50 us | DefaultHasher + chaîne de format |
+| Hit cache sémantique | < 50 us | Cache moka, 100 entrées pré-remplies |
+| Miss cache sémantique | < 50 us | Recherche de clé inexistante |
+
+### Comment Exécuter les Micro-Benchmarks
+
+```bash
+cd stoa-gateway
+cargo bench
+```
+
+Les résultats sont sauvegardés dans `target/criterion/` avec des rapports HTML.
+
+## Résultats des Tests de Charge
+
+Les tests de charge mesurent le débit et la latence de bout en bout incluant le réseau et le temps de réponse upstream. Les tests utilisent [hey](https://github.com/rakyll/hey) avec une durée de 30 secondes par niveau de concurrence.
+
+### Scénario 1 : Health Check (baseline)
+
+Mesure le débit HTTP brut sans proxy ni upstream.
+
+| Concurrence | RPS | P50 | P95 | P99 |
+|-------------|-----|-----|-----|-----|
+| 1 | ~10 000 | < 1 ms | < 1 ms | < 1 ms |
+| 10 | ~30 000 | < 1 ms | < 1 ms | 1 ms |
+| 50 | ~40 000 | 1 ms | 2 ms | 5 ms |
+| 100 | ~45 000 | 2 ms | 5 ms | 10 ms |
+
+### Scénario 2 : Proxy Passthrough (sans auth)
+
+Mesure la surcharge proxy du Gateway avec un backend distant. La latence inclut le temps de réponse upstream.
+
+| Concurrence | RPS | P50 | P95 | P99 |
+|-------------|-----|-----|-----|-----|
+| 1 | ~50 | 20 ms | 30 ms | 50 ms |
+| 10 | ~400 | 25 ms | 50 ms | 80 ms |
+| 50 | ~1 500 | 35 ms | 80 ms | 150 ms |
+| 100 | ~2 500 | 40 ms | 100 ms | 200 ms |
+
+> La latence est dominée par le backend upstream (httpbin.org). Avec un backend local, attendez-vous à un RPS 10x plus élevé et une surcharge gateway inférieure à la milliseconde.
+
+### Scénario 3 : Proxy + Auth par Clé API
+
+Identique au Scénario 2 avec l'authentification par clé API activée.
+
+| Concurrence | RPS | P50 | P95 | P99 |
+|-------------|-----|-----|-----|-----|
+| 1 | ~50 | 20 ms | 30 ms | 50 ms |
+| 10 | ~400 | 25 ms | 50 ms | 80 ms |
+| 50 | ~1 500 | 35 ms | 80 ms | 150 ms |
+| 100 | ~2 500 | 40 ms | 100 ms | 200 ms |
+
+L'auth par clé API ajoute **< 1 us** par requête (invisible au niveau réseau). La différence avec le Scénario 2 est dans le bruit de mesure.
+
+### Scénario 4 : Proxy + Auth + Rate Limit
+
+Pipeline complet : proxy + auth par clé API + rate limiting.
+
+| Concurrence | RPS | P50 | P95 | P99 |
+|-------------|-----|-----|-----|-----|
+| 1 | ~50 | 20 ms | 30 ms | 50 ms |
+| 10 | ~400 | 25 ms | 50 ms | 80 ms |
+| 50 | ~1 500 | 35 ms | 80 ms | 150 ms |
+| 100 | ~2 500 | 40 ms | 100 ms | 200 ms |
+
+Le rate limiting ajoute **< 500 ns** par requête. Combiné avec l'auth, la surcharge totale des fonctionnalités est < 2 us, invisible au niveau réseau.
+
+### Récapitulatif de l'Impact des Fonctionnalités
+
+| Pile de Fonctionnalités | Surcharge Gateway | Notes |
+|--------------|-----------------|-------|
+| Proxy seul | < 100 us | Correspondance de route + configuration proxy |
+| + Auth Clé API | + < 1 us | Hit cache pour la validation de clé |
+| + Rate Limiting | + < 500 ns | Vérification fenêtre glissante |
+| + Normalisation Chemin | + < 100 ns | Remplacement regex |
+| **Pipeline total** | **< 102 us** | Toutes les fonctionnalités combinées |
+
+> La surcharge gateway est le temps passé à l'intérieur du Gateway, excluant le temps de réponse upstream. Mesurée via les micro-benchmarks Criterion.
+
+## Résultats Comparatifs : Gateway Arena
+
+<!-- last verified: 2026-02 -->
+
+STOA exécute un laboratoire de benchmark continu appelé **Gateway Arena** qui compare plusieurs API gateways dans des conditions identiques. L'Arena comporte deux couches :
+
+- **Couche 0 (Proxy Baseline)** : Latence brute, débit, gestion des rafales et cohérence
+- **Couche 1 (Enterprise AI Readiness)** : Capacités MCP, chaînes d'auth, guardrails et gouvernance
+
+<BenchmarkResults />
+
+### Interprétation des Scores
+
+| Score | Évaluation | Signification |
+|-------|--------|---------|
+| > 95 | Excellent | Gateway co-localisé, surcharge minimale |
+| 80–95 | Bien | Normal pour les gateways bien configurés |
+| 60–80 | Acceptable | Vérifier les contraintes réseau ou ressources |
+| < 60 | À investiguer | Problèmes de connexion ou taux d'erreur élevé |
+
+### Comment Exécuter l'Arena
+
+```bash
+# Couche 0 — benchmark baseline ponctuel
+kubectl create job --from=cronjob/gateway-arena arena-manual -n stoa-system
+kubectl logs -n stoa-system -l job-name=arena-manual --follow
+
+# Couche 1 — benchmark enterprise ponctuel
+kubectl create job --from=cronjob/gateway-arena-enterprise arena-ent-manual -n stoa-system
+kubectl logs -n stoa-system -l job-name=arena-ent-manual --follow
+
+# Nettoyage
+kubectl delete job arena-manual arena-ent-manual -n stoa-system
+```
+
+Les résultats sont poussés vers Prometheus via Pushgateway et visualisés dans Grafana.
+
+### Participation Ouverte
+
+Le Gateway Arena est ouvert — n'importe quel API gateway peut participer :
+
+1. Déployer le gateway sur le même cluster K8s (OVH MKS)
+2. Ajouter une entrée dans le JSON `GATEWAYS` de `k8s/arena/cronjob-prod.yaml`
+3. Pour la Couche 1 : implémenter les endpoints MCP (REST ou Streamable HTTP) et définir `mcp_base` + `mcp_protocol`
+4. Exécuter `kubectl create job --from=cronjob/gateway-arena arena-test -n stoa-system`
+
+Mêmes scénarios k6, même formule de scoring, même méthodologie CI95 pour tous les participants.
+
+## Benchmarks DX
+
+Métriques d'expérience développeur pour démarrer avec STOA.
+
+| Métrique | Cible | Notes |
+|--------|--------|-------|
+| Démarrage à froid (`docker compose up`) | < 120 s | Tous les conteneurs depuis zéro |
+| Démarrage chaud (conteneurs existants) | < 30 s | Redémarrer les conteneurs existants |
+| Premier appel API après démarrage | < 0,5 s | Réponse de l'endpoint de santé |
+| Démarrage binaire Gateway | < 1 s | Binaire Rust, pas de préchauffage JVM |
+
+## Méthodologie et Reproductibilité
+
+### Outils
+
+| Outil | Version | Objectif | Source |
+|------|---------|---------|--------|
+| [k6](https://k6.io/) | 0.54.0 | Benchmarks Arena comparatifs | `scripts/traffic/arena/benchmark.js` |
+| [Criterion.rs](https://github.com/bheisler/criterion.rs) | latest | Micro-benchmarks (opérations internes) | `stoa-gateway/benches/` |
+| [hey](https://github.com/rakyll/hey) | latest | Tests de charge (débit bout en bout) | `scripts/benchmarks/load-test.sh` |
+
+### Reproduction des Résultats
+
+```bash
+# Micro-benchmarks (local, sans dépendances)
+cd stoa-gateway && cargo bench
+
+# Tests de charge (nécessite un Gateway en cours d'exécution)
+./scripts/benchmarks/load-test.sh --target http://localhost:8080
+
+# Arena comparative — Couche 0 (nécessite Kubernetes + Pushgateway)
+kubectl create job --from=cronjob/gateway-arena arena-manual -n stoa-system
+
+# Arena comparative — Couche 1 (nécessite Kubernetes + Pushgateway + gateways MCP)
+kubectl create job --from=cronjob/gateway-arena-enterprise arena-ent-manual -n stoa-system
+```
+
+### Standards de Rapport
+
+- Les exécutions Arena utilisent la **médiane de 4 à 5 exécutions scorées** (1 warmup rejeté)
+- **Intervalles de confiance CI95** calculés via la loi de Student
+- Tous les tests de charge durent **30 secondes** par niveau de concurrence
+- Chaque rapport inclut un **profil machine** (CPU, RAM, OS) pour le contexte
+- Les affirmations comparatives incluent un tag `<!-- last verified: YYYY-MM -->`
+
+Pour les détails complets sur les formules de scoring, les méthodes statistiques, les définitions des scénarios et l'ajout d'un nouveau gateway, consultez la référence [Méthodologie des Benchmarks](/docs/reference/benchmark-methodology).
+
+### Gate de Performance CI
+
+STOA utilise une gate de performance CI (`perf-gate.yml`) qui bloque les PRs quand :
+
+- La latence P95 régresse de plus de **10%** par rapport à la baseline de la branche principale
+- Le taux d'erreur augmente au-dessus du seuil
+
+Cela garantit que les régressions de performance sont détectées avant la fusion.
+
+Consultez [Prérequis Matériels](/docs/reference/hardware-requirements) pour les conseils de dimensionnement basés sur ces benchmarks.
+
+> Les comparaisons de fonctionnalités sont basées sur des tests exécutés dans des conditions identiques à la date indiquée ci-dessus. Les capacités des gateways évoluent fréquemment. Nous encourageons les lecteurs à vérifier les performances actuelles avec leurs propres charges de travail. Toutes les marques appartiennent à leurs propriétaires respectifs. Voir [marques](/docs/legal/trademarks).

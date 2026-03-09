@@ -17,7 +17,7 @@ Les différentes passerelles API utilisent des formats de configuration différe
 - Kong utilise du YAML déclaratif avec des services, routes et plugins
 - Apigee utilise des API proxies avec des endpoints proxy et des endpoints cibles
 
-Le UAC fournit une définition unique que STOA traduit dans le format natif de chaque passerelle via le pattern [Gateway Adapter](../guides/console#gateway-adapters).
+Le UAC fournit une définition unique que STOA traduit dans le format natif de chaque passerelle via le pattern [Gateway Adapter](../guides/console#adaptateurs-de-gateway).
 
 ## Structure du UAC {#uac-structure}
 

@@ -1,0 +1,94 @@
+---
+sidebar_position: 5
+title: Architecture
+description: Diagrammes d'architecture de STOA Platform — vue d'ensemble globale avec control plane, data plane, MCP gateway, zones de sécurité et flux CI/CD
+keywords: [architecture, diagrams, security zones, CI/CD, MCP gateway]
+---
+
+import ArchitectureDiagrams from '@site/src/components/ArchitectureDiagrams';
+
+# Architecture
+
+Cette section présente les diagrammes d'architecture de STOA Platform, illustrant les différents composants, les flux de données et les décisions de sécurité.
+
+## Diagrammes Interactifs
+
+<ArchitectureDiagrams />
+
+## Vue d'Ensemble
+
+STOA Platform suit une architecture **cloud-native** déployée sur Kubernetes avec les principes suivants :
+
+### Zones de Sécurité
+
+| Zone | Niveau de Confiance | Composants |
+|------|-------------|------------|
+| **Externe** | Non fiable | Clients API, Claude.ai, Console Web |
+| **DMZ** | Semi-fiable | Nginx Ingress, API Gateway, MCP Gateway |
+| **Interne** | Fiable | Control Plane, Keycloak, Couche de Données |
+
+### Composants Principaux
+
+- **STOA Control Plane** — FastAPI, gestion des contrats UAC, APIs multi-protocoles
+- **MCP Gateway** — Intégration Claude.ai, découverte des tools, injection de contexte JWT
+- **webMethods Gateway** — Proxy API, application des politiques
+- **Keycloak** — OAuth2/OIDC, RBAC multi-tenant
+
+### Couche de Données
+
+- **PostgreSQL** — Contrats, tenants, abonnements
+- **OpenSearch** — Logs API, analytiques
+- **Redis** — Cache, sessions, rate limiting
+- **Kafka/Redpanda** — Événements, audit (🔒 Interne Uniquement)
+- **Vault** — Secrets, certificats
+
+## Architecture Decision Records (ADRs)
+
+Les décisions architecturales importantes sont documentées via des ADRs :
+
+- **[ADR-019 : Stratégie Business Model & Moat](/docs/architecture/adr/adr-019-business-model-moat-strategy)** — Trademark, Velocity, Ecosystem
+- **[ADR-018 : Durcissement de Sécurité P0](/docs/architecture/adr/adr-018-security-hardening-p0)** — Correctifs Pentest Team Coca
+- **ADR-017 : Kafka Interne Uniquement** — Zéro Exposition Externe
+- **ADR-016 : RBAC Multi-tenant** — Isolation via Contexte JWT
+- **ADR-015 : GitOps avec Argo CD** — Déploiement Continu
+
+## Pipeline CI/CD
+
+Le pipeline suit une approche **GitOps** avec :
+
+1. **Code** — GitLab avec Charts Helm
+2. **Build & Test** — Lint, Tests, Scan de Sécurité, Construction d'Image
+3. **Package** — Registre de Conteneurs (signé), Dépôt Helm
+4. **Deploy** — Argo CD avec synchronisation continue
+
+### Sécurité de la Chaîne d'Approvisionnement
+
+- **SBOM** — Software Bill of Materials généré automatiquement
+- **Cosign** — Signature des images de conteneurs
+- **SLSA** — Attestations de provenance
+
+## MCP Gateway
+
+Le MCP Gateway (Model Context Protocol) permet l'intégration avec Claude.ai :
+
+### Flux d'Exécution
+
+1. Claude.ai envoie un `tools/call` avec JWT
+2. MCP Gateway décode le JWT et extrait le tenant
+3. Keycloak valide le token et vérifie les permissions RBAC
+4. Le Control Plane exécute la logique métier et valide le contrat UAC
+5. L'API backend traite la requête
+6. La réponse est retournée avec un Trace ID
+
+### Isolation Multi-Tenant
+
+Chaque tenant ne voit que ses propres tools :
+
+- **Parzival (IOI)** — `stoa_*`, `ioi:billing:*`, `ioi:inventory:*`
+- **Sorrento (Gregarious)** — `stoa_*`, `greg:oasis:*`, `greg:sixers:*`
+- **Halliday (Admin)** — Visibilité complète inter-tenant
+
+## Ressources Complémentaires
+
+- [Guide de Démarrage Rapide](/docs/guides/quickstart)
+- [Référence API](/docs/api/control-plane)
