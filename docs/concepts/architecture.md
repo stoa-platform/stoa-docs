@@ -28,8 +28,7 @@ flowchart TB
     end
 
     subgraph DataPlane["🚀 Data Plane"]
-        MCPGateway["MCP Gateway"]
-        WMGateway["webMethods Gateway"]
+        MCPGateway["STOA Gateway<br/>(Rust)"]
     end
 
     subgraph Backend["💾 Backend Services"]
@@ -46,10 +45,10 @@ flowchart TB
     Dev & Admin --> Portal & Console
     AI --> MCPGateway
     Portal & Console --> CoreAPI
-    CoreAPI -->|"config sync"| MCPGateway & WMGateway
+    CoreAPI -->|"config sync"| MCPGateway
     MCPGateway --> Tools
     CoreAPI --> PG & Kafka & KC & Vault
-    MCPGateway & WMGateway --> KC
+    MCPGateway --> KC
 ```
 
 ### Control Plane vs Data Plane
@@ -57,7 +56,7 @@ flowchart TB
 | Aspect | Control Plane | Data Plane |
 |--------|---------------|------------|
 | **Role** | Configuration & Management | Traffic Execution |
-| **Components** | Core API, Portal, Console | MCP Gateway, webMethods |
+| **Components** | Core API, Portal, Console | STOA Gateway (Rust) |
 | **Latency** | Human-scale (ms OK) | Machine-scale (sub-ms) |
 | **Scaling** | Moderate | High (per-request) |
 
@@ -86,41 +85,23 @@ The central management API built with **Python** and **FastAPI**.
 - Usage tracking
 - Policy enforcement
 
-### MCP Gateway
+### STOA Gateway
 
-The MCP Gateway handles Model Context Protocol interactions, enabling AI agents to securely consume enterprise tools.
-
-| Aspect | Current Implementation |
-|--------|------------------------|
-| Language | Python 3.12+ |
-| Framework | FastAPI (async) |
-| Policy Engine | OPA (Open Policy Agent) |
-| Protocol | MCP (Model Context Protocol) |
-
-**Responsibilities:**
-- MCP protocol handling
-- Request routing
-- Authentication validation
-- Rate limiting
-- Metrics collection
-
-:::info Future Roadmap
-A high-performance **Rust + Tokio** implementation is planned for Q4 2026, bringing kernel-level eBPF acceleration. See our [Roadmap](/docs/roadmap) for details.
-:::
-
-### API Gateway
-
-Traditional API traffic is handled by **webMethods Gateway** (current implementation).
+The STOA Gateway is the unified data plane component, handling both MCP protocol interactions for AI agents and traditional API traffic. Built with **Rust** and **Tokio/axum**, it has been in production since February 2026.
 
 | Aspect | Details |
 |--------|---------|
-| Product | Software AG webMethods |
-| Features | Rate limiting, transformations, policies |
-| Protocol | REST, SOAP |
+| Language | Rust (stable) |
+| Framework | Tokio + axum |
+| Policy Engine | OPA (Open Policy Agent) |
+| Protocol | MCP, REST |
 
-:::info Future Roadmap
-Migration to a native Rust/eBPF gateway is planned for Phase 16+, providing improved performance and reduced operational overhead.
-:::
+**Responsibilities:**
+- MCP protocol handling (tools/list, tools/call, SSE)
+- OAuth2/OIDC authentication via Keycloak
+- Request routing and rate limiting
+- Metrics collection and observability
+- Multi-gateway adapter orchestration (Kong, Gravitee, Apigee, Azure APIM, AWS API Gateway, webMethods)
 
 ### Portal UI
 
@@ -251,8 +232,7 @@ kubectl get pods -n stoa-system
 | Layer | Technology | Notes |
 |-------|------------|-------|
 | Control Plane | Python, FastAPI | Management API |
-| MCP Gateway | Python, FastAPI, OPA | MCP protocol handling |
-| API Gateway | webMethods | Traditional API traffic |
+| STOA Gateway | Rust, Tokio, axum | MCP + API traffic |
 | Frontend | React, TypeScript, Tailwind | Portal & Console |
 | Database | PostgreSQL | Primary data store |
 | Event Streaming | Kafka/Redpanda | Internal events |
