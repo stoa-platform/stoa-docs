@@ -22,8 +22,8 @@ import GatewayModesArchitecture from '@site/src/components/GatewayModesArchitect
 
 STOA Platform has naming confusion between two gateway components:
 
-- `mcp-gateway/` (Python/FastAPI) — production, MCP protocol support
-- `stoa-gateway/` (Rust/Axum) — emerging, research
+- `mcp-gateway/` (Python/FastAPI) — original implementation, now archived (Feb 2026)
+- `stoa-gateway/` (Rust/Axum) — production since Feb 2026
 
 This creates cognitive load for contributors and users. Even the project creator forgot the distinction. This is day-0 technical debt before having a single customer.
 
@@ -66,7 +66,7 @@ Adopt a **unified gateway architecture** with 4 deployment modes, configured via
 
 ### Edge-MCP Mode
 
-**Status**: ✅ Production (Python) → Rust Q2 2026
+**Status**: ✅ Production (Rust)
 
 AI-native API gateway implementing Model Context Protocol:
 
@@ -242,61 +242,34 @@ gateway:
 
 ## Current State
 
-```
-mcp-gateway/           # Python/FastAPI — PRODUCTION
-├── src/
-│   ├── handlers/mcp_sse.py      # SSE transport
-│   ├── services/tool_registry/  # Tool management
-│   └── k8s/watcher.py           # CRD watcher
-└── Dockerfile
-
-stoa-gateway/          # Rust/Axum — EMERGING/RESEARCH
-├── src/
-│   ├── uac/enforcer.rs          # UAC enforcement
-│   ├── mcp/handlers.rs          # MCP handlers
-│   └── router/shadow.rs         # Shadow router
-└── Cargo.toml
-```
-
-## Target State (Q4 2026)
-
-Single `stoa-gateway` Rust binary with `--mode` flag:
+Single `stoa-gateway` Rust binary in production (since Feb 2026), running in `edge-mcp` mode:
 
 ```
-stoa-gateway/          # Rust/Tokio/Hyper — TARGET
+stoa-gateway/          # Rust/Tokio/axum — PRODUCTION
 ├── src/
 │   ├── main.rs                  # Entry point, --mode flag
-│   ├── modes/
-│   │   ├── mod.rs               # Mode trait
-│   │   ├── edge_mcp.rs          # MCP protocol (port from Python)
-│   │   ├── sidecar.rs           # Behind 3rd-party gateway
-│   │   ├── proxy.rs             # Inline policy enforcement
-│   │   └── shadow.rs            # Traffic capture, UAC generation
-│   ├── auth/
-│   │   └── oidc.rs              # Keycloak JWT validation
+│   ├── mcp/handlers.rs          # MCP protocol (SSE, JSON-RPC)
+│   ├── auth/                    # OAuth2/OIDC, mTLS
+│   ├── admin/                   # Admin API for CP sync
+│   ├── uac/enforcer.rs          # UAC enforcement
 │   └── observability/
 │       └── metrics.rs           # Prometheus
 ├── Cargo.toml
 └── Dockerfile
 ```
 
-Python `mcp-gateway/` deprecated after Rust reaches feature parity.
+Python `mcp-gateway/` archived in February 2026 after Rust reached feature parity.
 
-## Migration Strategy
+## Migration History
 
-1. **Keep Python mcp-gateway in production** during transition
-2. **Port mode-by-mode** to Rust (edge-mcp first, shadow last)
-3. **Shadow mirror** Python vs Rust for validation
-4. **Cut over** when Rust achieves &gt;99.9% request compatibility
+The Python-to-Rust migration completed in February 2026:
 
-### Migration Phases
-
-| Phase | Timeline | Deliverable |
-|-------|----------|-------------|
-| Phase 16 | Now | ADR + documentation (this document) |
-| Phase 17 | Q2 2026 | Rust gateway foundation + edge-mcp port |
-| Phase 18 | Q3 2026 | proxy + sidecar modes |
-| Phase 19 | Q4 2026 | shadow mode (after security review) |
+| Phase | Timeline | Deliverable | Status |
+|-------|----------|-------------|--------|
+| Phase 16 | Jan 2026 | ADR + documentation (this document) | ✅ Done |
+| Phase 17 | Feb 2026 | Rust gateway foundation + edge-mcp port | ✅ Done — in production |
+| Phase 18 | Q3 2026 | proxy + sidecar modes | 📋 Planned |
+| Phase 19 | Q4 2026 | shadow mode (after security review) | 📋 Planned |
 
 ## Configuration Reference
 
