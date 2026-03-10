@@ -198,7 +198,7 @@ const migrationSteps = [
   { week: '7+', phase: 'Full Proxy', desc: 'Full enforcement, Shadow for audit', color: 'edgeMcp' as BadgeVariant },
 ];
 
-export default function GatewayModesArchitecture(): JSX.Element {
+export default function GatewayModesArchitecture() {
   const { colorMode } = useColorMode();
   const C = colorMode === 'dark' ? darkColors : lightColors;
   const [activeTab, setActiveTab] = useState<TabId>('architecture');

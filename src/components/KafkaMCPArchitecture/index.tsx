@@ -237,7 +237,7 @@ const competitors = [
   { name: 'STOA', eventDriven: '\u2705 Native', agentPush: '\u2705 MCP', kafka: '\u2705 Core' },
 ];
 
-export default function KafkaMCPArchitecture(): JSX.Element {
+export default function KafkaMCPArchitecture() {
   const { colorMode } = useColorMode();
   const C = colorMode === 'dark' ? darkColors : lightColors;
   const [activePhase, setActivePhase] = useState<PhaseId>('p1');

@@ -201,7 +201,7 @@ const diagrams: Diagram[] = [
   },
 ];
 
-export default function ArchitectureDiagrams(): JSX.Element {
+export default function ArchitectureDiagrams() {
   const [activeDiagram, setActiveDiagram] = useState<DiagramKey>('comparison');
   
   const currentDiagram = diagrams.find(d => d.key === activeDiagram)!;

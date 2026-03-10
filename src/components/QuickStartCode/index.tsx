@@ -186,7 +186,7 @@ const languageIcons: Record<Language, string> = {
   mcp: '🤖',
 };
 
-export default function QuickStartCode(): JSX.Element {
+export default function QuickStartCode() {
   const [activeLanguage, setActiveLanguage] = useState<Language>('curl');
   const [copiedStep, setCopiedStep] = useState<string | null>(null);
 
