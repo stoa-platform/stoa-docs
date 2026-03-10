@@ -35,10 +35,10 @@ All major API gateway vendors push customers toward cloud-hosted control planes:
 
 ### Problem
 
-The initial STOA one-pager describes a "Cloud Control Plane + Gateway On-Premise" architecture (Hybrid mode). However, our primary target customers — European central banks and regulated financial institutions — often cannot accept any cloud-hosted component from a third-party vendor due to:
+The initial STOA one-pager describes a "Cloud Control Plane + Gateway On-Premise" architecture (Hybrid mode). However, our primary target customers — European banks and regulated financial institutions — often cannot accept any cloud-hosted component from a third-party vendor due to:
 
 1. **CLOUD Act**: US-headquartered cloud providers can be compelled to hand over data regardless of where it's stored
-2. **BCE/ECB requirements**: Central banking infrastructure must be fully controllable
+2. **ECB requirements**: Banking infrastructure must be fully controllable
 3. **NIS2 Directive**: Critical infrastructure must demonstrate supply chain sovereignty
 4. **DORA**: Financial entities must ensure ICT third-party risk is fully managed
 
@@ -56,11 +56,11 @@ STOA will support **three deployment modes**, shipped in phases:
 
 ### Why Sovereign First
 
-1. **Market fit**: Target customers (ECB, central banks, insurance) cannot place the Control Plane with a third party
+1. **Market fit**: Target customers (banks, insurance, regulated institutions) cannot place the Control Plane with a third party
 2. **Competitive moat**: Kong/Apigee do not offer true full on-prem without cloud dependencies
 3. **Credibility**: Proving we work in the most constrained mode makes less constrained modes trivial
 4. **EU trajectory**: NIS2, DORA, RGPD — regulation is moving toward more control, not less
-5. **Reference customer**: First beta reference is a major EU central bank → Sovereign is the only acceptable mode
+5. **Reference customer**: First beta reference is a major EU bank → Sovereign is the only acceptable mode
 
 ### Version Support Strategy
 
@@ -99,7 +99,7 @@ Sovereign mode will never require outbound network connectivity. The optional qu
 | Hybrid | $2X/month | ~60% | Cloud CP + support |
 | Sovereign | $4X/month + mandatory support | ~40% | License + dedicated support |
 
-The pricing structure naturally steers customers toward Hybrid/SaaS unless they have genuine sovereignty requirements (air-gapped, defense, healthcare, central banking).
+The pricing structure naturally steers customers toward Hybrid/SaaS unless they have genuine sovereignty requirements (air-gapped, defense, healthcare, banking).
 
 ## Consequences
 
@@ -125,7 +125,7 @@ The pricing structure naturally steers customers toward Hybrid/SaaS unless they 
 |----------|--------|
 | One-pager Hybrid (current) | **Keep as-is** for demo Feb 24 — Hybrid is simpler to pitch in 5 min |
 | Demo Feb 24 | Mention Sovereign orally as "One More Thing" for RSSI/architect audience |
-| One-pager Sovereign | Create post-demo for central banking prospects |
+| One-pager Sovereign | Create post-demo for banking prospects |
 | Architecture docs | Update to show all 3 modes with Sovereign as default |
 | Helm charts | Must work fully offline (no external image pulls in Sovereign mode) |
 
