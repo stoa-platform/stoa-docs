@@ -35,10 +35,10 @@ Tous les grands vendeurs de gateways API poussent les clients vers des plans de 
 
 ### Problème
 
-Le premier document de présentation STOA décrit une architecture « Plan de Contrôle Cloud + Gateway On-Premise » (mode Hybride). Cependant, nos clients cibles principaux — les banques centrales européennes et les institutions financières régulées — ne peuvent souvent pas accepter de composant hébergé dans le cloud auprès d'un vendeur tiers en raison de :
+Le premier document de présentation STOA décrit une architecture « Plan de Contrôle Cloud + Gateway On-Premise » (mode Hybride). Cependant, nos clients cibles principaux — les banques européennes et les institutions financières régulées — ne peuvent souvent pas accepter de composant hébergé dans le cloud auprès d'un vendeur tiers en raison de :
 
 1. **CLOUD Act** : Les fournisseurs cloud américains peuvent être contraints de remettre des données, indépendamment de l'endroit où elles sont stockées
-2. **Exigences BCE/ECB** : L'infrastructure bancaire centrale doit être entièrement contrôlable
+2. **Exigences ECB** : L'infrastructure bancaire doit être entièrement contrôlable
 3. **Directive NIS2** : L'infrastructure critique doit démontrer la souveraineté de la chaîne d'approvisionnement
 4. **DORA** : Les entités financières doivent s'assurer que le risque lié aux tiers ICT est entièrement géré
 
@@ -56,11 +56,11 @@ STOA supportera **trois modes de déploiement**, livrés par phases :
 
 ### Pourquoi la Souveraineté d'Abord
 
-1. **Adéquation marché** : Les clients cibles (BCE, banques centrales, assurances) ne peuvent pas placer le Plan de Contrôle chez un tiers
+1. **Adéquation marché** : Les clients cibles (banques, assurances, institutions régulées) ne peuvent pas placer le Plan de Contrôle chez un tiers
 2. **Avantage concurrentiel** : Kong/Apigee ne proposent pas de vrai mode entièrement on-prem sans dépendances cloud
 3. **Crédibilité** : Prouver que cela fonctionne dans le mode le plus contraint rend les modes moins contraints triviaux
 4. **Trajectoire UE** : NIS2, DORA, RGPD — la réglementation évolue vers plus de contrôle, pas moins
-5. **Client de référence** : Le premier client beta est une grande banque centrale UE → le mode Souverain est le seul mode acceptable
+5. **Client de référence** : Le premier client beta est une grande banque UE → le mode Souverain est le seul mode acceptable
 
 ### Stratégie de Support des Versions
 
@@ -99,7 +99,7 @@ Le mode Souverain ne nécessitera jamais de connectivité réseau sortante. Le r
 | Hybride | $2X/mois | ~60% | CP Cloud + support |
 | Souverain | $4X/mois + support obligatoire | ~40% | Licence + support dédié |
 
-La structure tarifaire oriente naturellement les clients vers Hybride/SaaS à moins qu'ils n'aient de véritables exigences de souveraineté (air-gapped, défense, santé, banques centrales).
+La structure tarifaire oriente naturellement les clients vers Hybride/SaaS à moins qu'ils n'aient de véritables exigences de souveraineté (air-gapped, défense, santé, banques).
 
 ## Conséquences
 
@@ -125,7 +125,7 @@ La structure tarifaire oriente naturellement les clients vers Hybride/SaaS à mo
 |----------|--------|
 | Présentation Hybride (actuelle) | **Conserver telle quelle** pour la démo du 24 fév. — Hybride est plus simple à présenter en 5 min |
 | Démo 24 fév. | Mentionner Souverain oralement comme « One More Thing » pour le public RSSI/architecte |
-| Présentation Souverain | Créer après la démo pour les prospects en banque centrale |
+| Présentation Souverain | Créer après la démo pour les prospects bancaires |
 | Docs d'architecture | Mettre à jour pour montrer les 3 modes avec Souverain comme défaut |
 | Charts Helm | Doivent fonctionner entièrement hors ligne (pas de téléchargement d'images externes en mode Souverain) |
 

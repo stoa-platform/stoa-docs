@@ -168,7 +168,7 @@ WantedBy=multi-user.target
 - Must match target OS architecture (provide `x86_64` + `aarch64` builds)
 - No built-in resource limits (must use systemd cgroups or cgroup v2 manually)
 
-**When to use:** When container runtime is prohibited by security policy. Common in central banks, defense, and highly regulated environments.
+**When to use:** When container runtime is prohibited by security policy. Common in banks, defense, and highly regulated environments.
 
 ### Strategy C: Adjacent VM (EDGE CASE)
 
