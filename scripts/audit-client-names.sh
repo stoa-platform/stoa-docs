@@ -191,7 +191,7 @@ scan_file() {
             if [[ "$FIX_MODE" == true ]]; then
                 echo "  -> Suggested: Replace '$pattern' with '[Enterprise Client]'"
             fi
-        done < <(grep -in "$pattern" "$file" 2>/dev/null || true)
+        done < <(grep -inw "$pattern" "$file" 2>/dev/null || true)
     done
 
     # Check WARNING patterns
