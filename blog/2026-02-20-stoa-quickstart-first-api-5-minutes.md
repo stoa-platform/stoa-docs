@@ -11,22 +11,21 @@ keywords:
   - open source api gateway tutorial
   - stoa first api tutorial
 ---
-<!-- last verified: 2026-02 -->
+<!-- last verified: 2026-03 -->
 
 **STOA Platform** is an open-source API gateway designed for the AI era. In this tutorial, you'll go from zero to a working API endpoint in **5 minutes**. No complex configuration, no hours reading docs — just clone, run, and publish your first API.
 
-By the end, you'll have STOA's full stack running locally: Control Plane, MCP Gateway, Developer Portal, and Console. You'll create an API, expose it through the gateway, and call it like any production endpoint.
+By the end, you'll have STOA's full stack running locally: Control Plane API, MCP Gateway, Developer Portal, Keycloak, and observability. You'll create an API, expose it through the gateway, and discover MCP capabilities.
 
 <!-- truncate -->
 
 ## What You'll Build
 
 In this quick start, you'll:
-1. Deploy STOA locally with Docker Compose (4 core services)
-2. Create a tenant and register an API
-3. Expose the API through the MCP Gateway
-4. Call your API through the gateway
-5. View it in the Developer Portal
+1. Deploy STOA locally with Docker Compose (10 services including observability)
+2. Get an auth token and register an API
+3. Discover MCP capabilities via the gateway
+4. View your API in the Developer Portal
 
 **Time**: 5 minutes
 **Difficulty**: Beginner
@@ -38,7 +37,8 @@ Before starting, ensure you have:
 
 - **Docker Desktop** (or Docker Engine + Docker Compose v2)
 - **curl** (for testing endpoints)
-- **A terminal** (bash, zsh, or PowerShell)
+- **jq** (for JSON formatting)
+- **4GB RAM minimum** (8GB recommended for full observability stack)
 
 Verify Docker is running:
 ```bash
@@ -46,7 +46,7 @@ docker --version
 docker compose version
 ```
 
-You should see version 20.10+ for Docker and 2.x for Compose.
+You should see version 24+ for Docker and 2.x for Compose.
 
 ## Step 1: Clone and Start STOA
 
@@ -63,14 +63,19 @@ Start all services:
 docker compose up -d
 ```
 
-This launches 5 containers:
-- **control-plane-api** — Backend API for managing tenants, APIs, policies
-- **control-plane-ui** — Admin Console for configuration
-- **mcp-gateway** — Runtime gateway that proxies API requests
+This launches the full STOA stack:
+- **control-plane** — FastAPI backend for managing tenants, APIs, policies
+- **stoa-gateway** — Rust MCP Gateway (edge-mcp mode)
 - **portal** — Developer Portal for API discovery
-- **keycloak** — Identity and access management (pre-configured)
+- **keycloak** — Identity and access management (pre-configured with demo users)
+- **postgres** — Primary database
+- **redis** — Cache and sessions
+- **prometheus** — Metrics collection
+- **grafana** — Dashboards and visualization
+- **loki + promtail** — Log aggregation
+- **metrics-simulator** — Demo traffic generator
 
-The first run downloads images (~2GB). Subsequent starts take **< 10 seconds**.
+The first run downloads images (~3GB). Subsequent starts take **< 30 seconds**.
 
 ## Step 2: Verify Services Are Running
 
@@ -79,171 +84,110 @@ Check that all containers are healthy:
 docker compose ps
 ```
 
-You should see all services in `Up` state. If any service is restarting, wait 30 seconds and check again.
+You should see all services in `Up` state. Keycloak can take 30-60 seconds to start.
 
-Test each service's health endpoint:
+Test the key service health endpoints:
 ```bash
 # Control Plane API
 curl -s http://localhost:8080/health | jq .
 # Expected: {"status":"healthy"}
 
 # MCP Gateway
-curl -s http://localhost:8081/health | jq .
+curl -s http://localhost:8082/health | jq .
 # Expected: {"status":"ok"}
 
-# Console UI
-curl -s http://localhost:3000
-# Expected: HTML response
-
 # Portal
-curl -s http://localhost:3001
-# Expected: HTML response
-
-# Keycloak
-curl -s http://localhost:8082/health | jq .
-# Expected: {"status":"UP"}
+curl -s -o /dev/null -w "%{http_code}" http://localhost:3000
+# Expected: 200
 ```
 
 If all endpoints respond, you're ready to configure your first API.
 
-## Step 3: Log In to the Console
+## Step 3: Register Your First API
 
-The **Console** is STOA's admin interface. Open it in your browser:
+Let's register an API using the Control Plane API. For this tutorial, we'll use **JSONPlaceholder**, a public REST API for testing.
+
+First, get an auth token from the Control Plane:
+
+```bash
+TOKEN=$(curl -s -X POST http://localhost:8080/v1/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "admin"}' | jq -r '.access_token')
+```
+
+Get the default tenant ID:
+
+```bash
+TENANT_ID=$(curl -s http://localhost:8080/v1/tenants \
+  -H "Authorization: Bearer $TOKEN" | jq -r '.[0].id')
+```
+
+Register an API in the catalog:
+
+```bash
+curl -s -X POST "http://localhost:8080/v1/tenants/$TENANT_ID/apis" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "jsonplaceholder",
+    "display_name": "JSONPlaceholder API",
+    "version": "v1",
+    "upstream_url": "https://jsonplaceholder.typicode.com",
+    "base_path": "/jsonplaceholder",
+    "description": "Free REST API for testing"
+  }' | jq
+```
+
+You should receive a `201 Created` response with the API's metadata.
+
+## Step 4: Discover MCP Capabilities
+
+STOA's MCP Gateway exposes MCP discovery endpoints. Let's explore what's available:
+
+```bash
+# MCP discovery
+curl -s http://localhost:8082/mcp | jq
+
+# MCP capabilities
+curl -s http://localhost:8082/mcp/capabilities | jq
+```
+
+You should see a response like:
+
+```json
+{
+  "tools": true,
+  "resources": true,
+  "prompts": true
+}
+```
+
+This confirms the MCP Gateway is running and ready to serve AI agent requests.
+
+## Step 5: View the API in the Developer Portal
+
+STOA includes a **Developer Portal** where API consumers discover and subscribe to APIs. Open it:
 
 ```
 http://localhost:3000
 ```
 
-**Default credentials**:
-- Username: `admin`
-- Password: `admin`
+Log in with `admin` / `admin` (or `developer` / `developer` for a consumer view). You should see the API catalog with pre-loaded OASIS-themed demo APIs and your newly registered JSONPlaceholder API.
 
-After login, you'll see the STOA dashboard. The quickstart environment includes:
-- A pre-configured **default tenant** (`default`)
-- An **MCP Gateway instance** registered and online
-- Role: `cpi-admin` (full platform access)
+## Step 6: Explore Grafana Dashboards
 
-## Step 4: Create Your First API
-
-Now let's register an API. For this tutorial, we'll use **JSONPlaceholder**, a public REST API for testing.
-
-### Option A: Via Console UI
-
-1. Navigate to **APIs** in the left sidebar
-2. Click **Create API**
-3. Fill in the form:
-   - **Name**: `jsonplaceholder-posts`
-   - **Display Name**: `JSONPlaceholder Posts API`
-   - **Backend URL**: `https://jsonplaceholder.typicode.com`
-   - **Base Path**: `/posts`
-   - **Methods**: `GET`, `POST`
-   - **Gateway**: Select `mcp-gateway`
-4. Click **Create**
-
-The Console validates your inputs and registers the API in the Control Plane.
-
-### Option B: Via API (curl)
-
-If you prefer the command line, use the Control Plane API directly:
-
-```bash
-curl -X POST http://localhost:8080/v1/apis \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer demo-token" \
-  -d '{
-    "name": "jsonplaceholder-posts",
-    "display_name": "JSONPlaceholder Posts API",
-    "base_url": "https://jsonplaceholder.typicode.com",
-    "base_path": "/posts",
-    "version": "v1",
-    "tenant_id": "default",
-    "gateway_id": "mcp-gateway"
-  }'
-```
-
-**Note**: The quickstart environment uses a simplified `demo-token` for authentication. In production, you'd use Keycloak OIDC tokens.
-
-You should receive a `201 Created` response with the API's metadata.
-
-## Step 5: Sync the API to the Gateway
-
-The API is now registered in the Control Plane, but the **MCP Gateway** doesn't know about it yet. You need to **sync** it.
-
-### Via Console
-
-1. Navigate to **Gateway Instances** in the sidebar
-2. Click on `mcp-gateway`
-3. Click **Sync APIs**
-4. Select `jsonplaceholder-posts` and click **Sync**
-
-The Console sends the API configuration to the Gateway. The Gateway now knows how to route `/posts` requests to the backend.
-
-### Via API
-
-```bash
-curl -X POST http://localhost:8080/v1/gateways/mcp-gateway/sync \
-  -H "Authorization: Bearer demo-token"
-```
-
-This triggers a full sync of all APIs to the selected gateway.
-
-## Step 6: Call Your API Through the Gateway
-
-Now for the moment of truth. The Gateway is listening on port `8081`. Let's call the API:
-
-```bash
-curl -s http://localhost:8081/posts | jq '.[0:3]'
-```
-
-You should see the first 3 posts from JSONPlaceholder:
-
-```json
-[
-  {
-    "userId": 1,
-    "id": 1,
-    "title": "sunt aut facere repellat provident...",
-    "body": "quia et suscipit..."
-  },
-  {
-    "userId": 1,
-    "id": 2,
-    "title": "qui est esse",
-    "body": "est rerum tempore vitae..."
-  },
-  {
-    "userId": 1,
-    "id": 3,
-    "title": "ea molestias quasi exercitationem...",
-    "body": "et iusto sed quo iure..."
-  }
-]
-```
-
-**What just happened?**
-1. Your curl request hit the Gateway at `http://localhost:8081/posts`
-2. The Gateway matched the `/posts` path to your registered API
-3. It proxied the request to `https://jsonplaceholder.typicode.com/posts`
-4. The backend responded with JSON
-5. The Gateway returned the response to you
-
-This is the core of STOA: **centralized API management** with decoupled routing. The Gateway doesn't care about backend URLs — the Control Plane manages that.
-
-## Step 7: View the API in the Developer Portal
-
-STOA includes a **Developer Portal** where API consumers discover and subscribe to APIs. Open it:
+The quickstart includes a full observability stack. Open Grafana:
 
 ```
 http://localhost:3001
 ```
 
-You should see `JSONPlaceholder Posts API` listed. Click on it to view:
-- API description
-- Available endpoints (`GET /posts`, `POST /posts`)
-- Example requests
-- Subscription options (if you configure API keys or rate limits)
+Log in with `admin` / `stoa-demo`. You'll find:
+- **STOA Platform Overview** — Live traffic by tenant, error rates, latency percentiles
+- **API Traffic** — Requests per API, HTTP methods breakdown
+- **System Health** — Service status, log streams
 
-The Portal is auto-generated from your API metadata. Any changes in the Console instantly reflect here.
+Metrics start generating immediately thanks to the built-in simulator.
 
 ## What You've Built
 
@@ -254,8 +198,8 @@ In 5 minutes, you've deployed a production-grade API management platform:
 │                       STOA Platform                         │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  Console (Admin)          Portal (Developers)              │
-│  localhost:3000           localhost:3001                   │
+│  Portal (Developers)    Grafana (Dashboards)               │
+│  localhost:3000          localhost:3001                     │
 │       │                          │                          │
 │       └──────────┬───────────────┘                          │
 │                  │                                          │
@@ -266,7 +210,7 @@ In 5 minutes, you've deployed a production-grade API management platform:
 │                  │ (sync)                                   │
 │                  ▼                                          │
 │           MCP Gateway                                      │
-│           localhost:8081                                   │
+│           localhost:8082                                   │
 │                  │                                          │
 │                  │ (proxy)                                  │
 │                  ▼                                          │
@@ -278,10 +222,20 @@ In 5 minutes, you've deployed a production-grade API management platform:
 
 **Key concepts you've learned**:
 - **Control Plane**: Centralized API registry and policy management
-- **MCP Gateway**: Runtime proxy that enforces policies and routes requests
+- **MCP Gateway**: Rust gateway for MCP protocol, AI agent discovery, and API proxying
 - **Tenant**: Logical isolation unit (multi-tenancy support)
-- **API Sync**: Pushing configuration from Control Plane to Gateway
 - **Developer Portal**: Self-service API catalog for consumers
+
+## Access Points
+
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| **Portal** | http://localhost:3000 | `admin` / `admin` |
+| **MCP Gateway** | http://localhost:8082 | — |
+| **Grafana** | http://localhost:3001 | `admin` / `stoa-demo` |
+| **API** | http://localhost:8080 | — |
+| **Prometheus** | http://localhost:9090 | — |
+| **Keycloak** | http://localhost:8081 | `admin` / `admin` |
 
 ## Next Steps
 
@@ -309,7 +263,7 @@ If you're evaluating STOA as a replacement for an existing gateway:
 - [Open Source API Gateway Comparison](/blog/open-source-api-gateway-2026) — Feature matrix and decision guide
 
 ### Explore Advanced Features
-- [MCP Gateway Quick Start with Docker](/blog/mcp-gateway-quickstart-docker) — Production-ready deployment
+- [MCP Gateway Quick Start with Docker](/blog/mcp-gateway-quickstart-docker) — Standalone gateway deployment
 - [CLI Reference](/docs/reference/cli) — Automate API management with `stoactl`
 - [Configuration Reference](/docs/reference/configuration) — Environment variables, feature flags, and tuning
 
@@ -321,24 +275,19 @@ If you're evaluating STOA as a replacement for an existing gateway:
 **Solution**: Another service is using ports 8080-8082 or 3000-3001. Stop conflicting services or change ports in `docker-compose.yml`.
 
 ### Gateway returns 404
-**Issue**: Calling `http://localhost:8081/posts` returns `{"error":"route not found"}`
+**Issue**: Calling the MCP Gateway returns unexpected errors
 
-**Solution**: The API wasn't synced. Go to **Gateway Instances** → `mcp-gateway` → **Sync APIs** and select your API.
+**Solution**: Ensure all services are healthy with `docker compose ps`. The gateway depends on the control-plane and keycloak being fully started.
 
 ### Keycloak login fails
-**Issue**: Console login returns "Invalid credentials"
+**Issue**: Portal login returns "Invalid credentials"
 
-**Solution**: The quickstart uses `admin/admin` by default. If you changed it, check `docker-compose.yml` for `KEYCLOAK_ADMIN` and `KEYCLOAK_ADMIN_PASSWORD` values.
+**Solution**: The quickstart uses `admin/admin` by default. Keycloak can take 30-60 seconds to start. Check: `docker compose logs keycloak | grep "started in"`
 
-### API returns 502 Bad Gateway
-**Issue**: Gateway proxies the request but the backend is unreachable
+### Not enough memory
+**Issue**: Services keep restarting
 
-**Solution**: Verify the backend URL is accessible from within Docker:
-```bash
-docker exec stoa-mcp-gateway curl -s https://jsonplaceholder.typicode.com/posts
-```
-
-If this fails, check your network configuration or use a different test API.
+**Solution**: STOA requires ~4GB RAM. Check: `docker stats --no-stream`. If running low, disable observability temporarily by commenting out prometheus, grafana, loki, promtail, and metrics-simulator services.
 
 ## FAQ
 

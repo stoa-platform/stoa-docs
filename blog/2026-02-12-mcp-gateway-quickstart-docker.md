@@ -19,7 +19,7 @@ keywords:
   - LLM API gateway
 ---
 
-<!-- last verified: 2026-02 -->
+<!-- last verified: 2026-03 -->
 
 # How to Deploy an MCP Gateway with Docker Compose (Step-by-Step Guide)
 
@@ -39,14 +39,14 @@ You'll deploy a complete MCP gateway stack with:
 - **Keycloak**: OAuth2/OIDC authentication
 - **PostgreSQL**: Metadata storage for tools, subscriptions, and policies
 
-This setup mirrors the [STOA quickstart guide](/docs/guides/quickstart) but focuses on the gateway component with hands-on examples.
+This setup focuses on the gateway component with hands-on examples. For the full platform (Portal, observability, demo data), see the [STOA quickstart guide](/docs/guides/quickstart).
 
 ## Prerequisites
 
 Before you start, make sure you have:
 
-- **Docker** 20.10+ and **Docker Compose** 2.x installed
-- **curl** or **httpie** for testing
+- **Docker** 24+ and **Docker Compose** 2.x installed
+- **curl** and **jq** for testing
 - **A REST API endpoint** to expose (we'll use JSONPlaceholder as a demo)
 - **Basic knowledge** of Docker, REST APIs, and OAuth2
 
@@ -64,11 +64,9 @@ cd mcp-gateway-demo
 Create a `docker-compose.yml` file:
 
 ```yaml
-version: '3.8'
-
 services:
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     environment:
       POSTGRES_DB: stoa
       POSTGRES_USER: stoa
@@ -82,7 +80,7 @@ services:
       retries: 5
 
   keycloak:
-    image: quay.io/keycloak/keycloak:23.0
+    image: quay.io/keycloak/keycloak:24.0
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/stoa
@@ -92,30 +90,45 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HTTP_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
+      KC_HEALTH_ENABLED: "true"
     command: start-dev
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   stoa-gateway:
     image: ghcr.io/stoa-platform/stoa-gateway:latest
     environment:
-      DATABASE_URL: postgresql://stoa:changeme@postgres:5432/stoa
-      KEYCLOAK_URL: http://keycloak:8080
-      KEYCLOAK_REALM: stoa
-      KEYCLOAK_CLIENT_ID: stoa-mcp-gateway
-      KEYCLOAK_CLIENT_SECRET: your-client-secret-here
-      LOG_LEVEL: info
-      MODE: edge-mcp
+      STOA_PORT: "8080"
+      STOA_HOST: "0.0.0.0"
+      STOA_KEYCLOAK_URL: http://keycloak:8080
+      STOA_KEYCLOAK_REALM: stoa
+      STOA_KEYCLOAK_CLIENT_ID: stoa-mcp-gateway
+      STOA_LOG_LEVEL: info
+      STOA_LOG_FORMAT: text
+      STOA_GATEWAY_MODE: edge-mcp
+      STOA_NATIVE_TOOLS_ENABLED: "true"
     ports:
-      - "3000:3000"
+      - "8082:8080"
     depends_on:
       postgres:
         condition: service_healthy
       keycloak:
-        condition: service_started
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
 volumes:
   postgres_data:
@@ -124,20 +137,38 @@ volumes:
 Launch the stack:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Verify all services are running:
 
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
-You should see three containers: `postgres`, `keycloak`, and `stoa-gateway` all in the "Up" state.
+You should see three containers: `postgres`, `keycloak`, and `stoa-gateway` all in the "Up" state. Keycloak can take 30-60 seconds to become healthy.
 
-**Access Keycloak**: Navigate to `http://localhost:8080` and log in with `admin/admin`. You'll need to create the `stoa` realm and `stoa-mcp-gateway` client manually in this quickstart. For production, use the [full Helm chart](/docs/deployment/hybrid) which includes automated realm setup.
+**Access Keycloak**: Navigate to `http://localhost:8081` and log in with `admin/admin`. You'll need to create the `stoa` realm and `stoa-mcp-gateway` client manually in this quickstart. For production, use the [full Helm chart](/docs/deployment/hybrid) which includes automated realm setup.
 
-## Step 2: Register Your First MCP Tool
+## Step 2: Verify the Gateway
+
+Once all services are healthy, verify the gateway is running:
+
+```bash
+# Health check
+curl -s http://localhost:8082/health | jq .
+# Expected: {"status":"ok"}
+
+# MCP discovery
+curl -s http://localhost:8082/mcp | jq .
+
+# MCP capabilities
+curl -s http://localhost:8082/mcp/capabilities | jq .
+```
+
+You should see MCP capabilities including tools, resources, and prompts support.
+
+## Step 3: Register Your First MCP Tool
 
 An MCP "tool" is a function that AI agents can call. Each tool maps to one of your REST API endpoints. Let's register a tool that searches contacts.
 
@@ -145,7 +176,7 @@ First, get an access token from Keycloak:
 
 ```bash
 export KEYCLOAK_TOKEN=$(curl -s -X POST \
-  'http://localhost:8080/realms/stoa/protocol/openid-connect/token' \
+  'http://localhost:8081/realms/stoa/protocol/openid-connect/token' \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   -d 'client_id=stoa-mcp-gateway' \
   -d 'client_secret=your-client-secret-here' \
@@ -156,7 +187,7 @@ export KEYCLOAK_TOKEN=$(curl -s -X POST \
 Now register the tool via the gateway's admin API:
 
 ```bash
-curl -X POST http://localhost:3000/admin/tools \
+curl -X POST http://localhost:8082/admin/tools \
   -H "Authorization: Bearer $KEYCLOAK_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -193,9 +224,9 @@ curl -X POST http://localhost:3000/admin/tools \
 
 Your tool is now registered and ready to be called by AI agents.
 
-## Step 3: Connect an AI Agent
+## Step 4: Connect an AI Agent
 
-The gateway exposes an MCP-compliant server endpoint at `http://localhost:3000/mcp`. AI agents connect via **Server-Sent Events (SSE)** or **WebSocket** transport.
+The gateway exposes an MCP-compliant server endpoint at `http://localhost:8082/mcp`. AI agents connect via **Server-Sent Events (SSE)** or **Streamable HTTP** transport.
 
 Here's how Claude Desktop connects to your gateway. Add this to your Claude Desktop MCP settings (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
 
@@ -203,7 +234,7 @@ Here's how Claude Desktop connects to your gateway. Add this to your Claude Desk
 {
   "mcpServers": {
     "stoa-acme": {
-      "url": "http://localhost:3000/mcp",
+      "url": "http://localhost:8082/mcp",
       "transport": "sse",
       "headers": {
         "Authorization": "Bearer YOUR_GATEWAY_API_KEY",
@@ -233,7 +264,7 @@ If you're building a custom AI agent, use the STOA Python SDK:
 from stoa_sdk import STOAClient
 
 client = STOAClient(
-    gateway_url="http://localhost:3000",
+    gateway_url="http://localhost:8082",
     api_key="YOUR_GATEWAY_API_KEY",
     tenant_id="acme"
 )
@@ -252,7 +283,7 @@ print(result)
 
 This approach decouples your agent code from the underlying API structure. If you switch from JSONPlaceholder to your own CRM API, the agent code remains unchanged.
 
-## Step 4: Add a Runtime Policy
+## Step 5: Add a Runtime Policy
 
 The gateway supports Open Policy Agent (OPA) policies for dynamic authorization, rate limiting, and data filtering.
 
@@ -281,7 +312,7 @@ quota_usage[tenant_id] := requests if {
 Load the policy into the gateway:
 
 ```bash
-curl -X POST http://localhost:3000/admin/policies \
+curl -X POST http://localhost:8082/admin/policies \
   -H "Authorization: Bearer $KEYCLOAK_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -304,12 +335,12 @@ Now, tenant "acme" is limited to 100 tool calls per hour. The 101st call returns
 
 Policies are evaluated **before** proxying to your backend API, so you never waste backend capacity on unauthorized requests.
 
-## Step 5: Monitor and Debug
+## Step 6: Monitor and Debug
 
-The gateway exposes Prometheus metrics at `http://localhost:3000/metrics`:
+The gateway exposes Prometheus metrics at `http://localhost:8082/metrics`:
 
 ```bash
-curl http://localhost:3000/metrics | grep stoa_tool_calls_total
+curl -s http://localhost:8082/metrics | grep stoa_tool_calls_total
 ```
 
 **Sample metrics**:
@@ -323,7 +354,7 @@ stoa_policy_evaluations_total{tenant_id="acme",policy_name="rate-limit-acme",res
 For structured logs, check the gateway container:
 
 ```bash
-docker-compose logs -f stoa-gateway
+docker compose logs -f stoa-gateway
 ```
 
 You'll see:
@@ -381,9 +412,9 @@ Before deploying to production:
 
 This tutorial uses:
 
-- **STOA Gateway**: v0.6.0 (Rust, edge-mcp mode)
-- **Keycloak**: 23.0
-- **PostgreSQL**: 15
+- **STOA Gateway**: latest (Rust, edge-mcp mode)
+- **Keycloak**: 24.0
+- **PostgreSQL**: 16
 
 For the latest versions, check the [STOA releases page](https://github.com/stoa-platform/stoa/releases).
 
@@ -391,7 +422,7 @@ For the latest versions, check the [STOA releases page](https://github.com/stoa-
 
 ### What are the minimum Docker requirements for running an MCP gateway?
 
-You need Docker 20.10+ and Docker Compose 2.x. For development/testing, allocate at least 4GB RAM to Docker Desktop. For production, deploy on a Linux server with 8GB+ RAM and persistent volumes for PostgreSQL data. The gateway itself is lightweight (Rust binary, ~50MB RAM under load), but Keycloak and PostgreSQL require more resources. See the [quickstart guide](/docs/guides/quickstart) for Kubernetes deployment options.
+You need Docker 24+ and Docker Compose 2.x. For development/testing, allocate at least 4GB RAM to Docker Desktop. For production, deploy on a Linux server with 8GB+ RAM and persistent volumes for PostgreSQL data. The gateway itself is lightweight (Rust binary, ~50MB RAM under load), but Keycloak and PostgreSQL require more resources. See the [quickstart guide](/docs/guides/quickstart) for Kubernetes deployment options.
 
 ### Is this setup production-ready?
 
@@ -407,4 +438,4 @@ After the quickstart, add more tools by registering additional REST API endpoint
 
 **Need help?** Join our [Discord community](https://discord.gostoa.dev) or check the [troubleshooting guide](/docs/reference/troubleshooting).
 
-> **Disclaimer**: Product capabilities and configuration options may change between versions. This guide reflects the state of STOA Platform as of February 2026. For the most current setup instructions, refer to the [official documentation](https://docs.gostoa.dev).
+> **Disclaimer**: Product capabilities and configuration options may change between versions. This guide reflects the state of STOA Platform as of March 2026. For the most current setup instructions, refer to the [official documentation](https://docs.gostoa.dev).
