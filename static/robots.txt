@@ -6,6 +6,7 @@ Allow: /
 
 # Sitemaps
 Sitemap: https://docs.gostoa.dev/sitemap.xml
+Sitemap: https://docs.gostoa.dev/fr/sitemap.xml
 
 # Google AI Training Crawler
 User-agent: Google-Extended
