@@ -1,9 +1,9 @@
 ---
 slug: axway-api-gateway-migration-open-source
-title: "Migrer depuis Axway API Gateway : feuille de route open source 2026"
+title: "Axway API Gateway : monitoring Prometheus & SNMP sans migration"
 authors: [stoa-team]
 tags: [migration, comparison, open-source, api-gateway]
-description: "Renouvellement Axway imminent ? Cartographiez politiques, certificats et 100+ APIs vers des équivalents open source. Feuille de route par phases avec migration sans interruption."
+description: "Comment ajouter l'observabilité Prometheus et SNMP à votre Axway API Gateway existant. Dashboards Grafana, alertes automatiques, zéro migration vers une autre gateway."
 keywords:
   - Axway API gateway migration
   - Axway alternative

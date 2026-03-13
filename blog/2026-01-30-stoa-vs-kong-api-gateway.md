@@ -1,9 +1,9 @@
 ---
 slug: stoa-vs-kong
-title: "Kong Alternative 2026: MCP-Native API Gateway Comparison"
+title: "Kong Alternative for Legacy API Gateways: Why STOA Federates Instead of Replacing"
 authors: [stoa-team]
 tags: [comparison, open-source]
-description: "Looking for a Kong alternative with MCP support? Side-by-side on AI agent routing, multi-tenancy, performance, and European sovereignty."
+description: "Already running webMethods, OAM, or Axway? STOA adds MCP Protocol and unified observability without replacing your gateway. Open-source, Apache 2.0."
 keywords: [Kong alternative, Kong vs STOA, open source API gateway comparison, API gateway comparison 2026, AI API gateway, MCP support, API management]
 ---
 

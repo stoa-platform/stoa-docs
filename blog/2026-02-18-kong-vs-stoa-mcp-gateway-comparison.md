@@ -1,9 +1,9 @@
 ---
 slug: kong-vs-stoa-mcp-gateway
-title: "Kong MCP Gateway Support: What's Missing for AI Agents"
+title: "Kong Gateway en 2026 : ce qui manque pour les agents IA (et comment STOA le complète)"
 authors: [stoa-team]
 tags: [comparison, mcp, ai, api-gateway]
-description: "Kong has no native MCP support in 2026. Benchmark data on tool discovery, OAuth 2.1, and SSE transport — plus open-source alternatives."
+description: "Kong ne supporte pas nativement le protocole MCP. Comparaison Kong vs STOA pour exposer vos APIs aux agents IA. Zéro migration, MCP-ready en 1 jour."
 keywords:
   - Kong MCP gateway
   - Kong vs STOA MCP
