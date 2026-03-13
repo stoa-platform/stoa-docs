@@ -4,7 +4,6 @@ title: "Audit Trails When Things Go Wrong (Freelancer Part 3)"
 description: "What was your API doing at 3am? Structured logging, incident response without an ops team, and queryable audit trails for solo developers."
 authors: [stoa-team]
 tags: [security, tutorial, api-gateway, compliance]
-unlisted: true
 keywords:
   - api audit trail freelancer
   - api logging best practices

@@ -4,7 +4,6 @@ title: "Rate Limiting That Works (Freelancer Security Part 2)"
 description: "Sliding windows, burst allowances, per-endpoint limits, and tiered plans. How to tune rate limits without breaking your legitimate users."
 authors: [stoa-team]
 tags: [security, tutorial, api-gateway]
-unlisted: true
 keywords:
   - api rate limiting strategies
   - sliding window rate limiting
