@@ -30,11 +30,18 @@ const sectionNames: Record<string, string> = {
 };
 
 function buildBreadcrumbs(permalink: string): Array<{name: string; item: string}> {
+  // Strip locale prefix (e.g. /fr/docs/... → /docs/...) so breadcrumb URLs
+  // use the canonical (defaultLocale) paths, avoiding broken /docs/fr/docs/... URLs.
+  const localeMatch = permalink.match(/^\/([a-z]{2})\/docs\//);
+  const canonicalPermalink = localeMatch
+    ? permalink.replace(`/${localeMatch[1]}`, '')
+    : permalink;
+
   const crumbs: Array<{name: string; item: string}> = [
     {name: 'Docs', item: `${BASE_URL}/docs/intro`},
   ];
 
-  const path = permalink.replace(/^\/docs\//, '');
+  const path = canonicalPermalink.replace(/^\/docs\//, '');
   const segments = path.split('/').filter(Boolean);
   let accumulated = '/docs';
 

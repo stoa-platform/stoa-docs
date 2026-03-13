@@ -8,14 +8,17 @@ import BlogPostPage from '@theme-original/BlogPostPage';
 import type BlogPostPageType from '@theme/BlogPostPage';
 import type {WrapperProps} from '@docusaurus/types';
 import Head from '@docusaurus/Head';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 
 type Props = WrapperProps<typeof BlogPostPageType>;
 
 export default function BlogPostPageWrapper(props: Props): React.ReactElement {
   const {content} = props;
   const {metadata} = content;
+  const {i18n} = useDocusaurusContext();
 
   const tags = metadata.tags?.map((t) => t.label) || [];
+  const lang = i18n.currentLocale === 'fr' ? 'fr-FR' : 'en-US';
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -42,7 +45,7 @@ export default function BlogPostPageWrapper(props: Props): React.ReactElement {
     isPartOf: {
       '@id': 'https://docs.gostoa.dev/#website',
     },
-    inLanguage: 'en',
+    inLanguage: lang,
   };
 
   return (
