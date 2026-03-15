@@ -773,3 +773,14 @@ To continue learning:
 - Check the [STOA quota reference](/docs/reference/quotas) for complete configuration options
 
 Ready to implement production-grade AI gateway quotas? [Try STOA Platform](https://console.gostoa.dev/signup) with built-in token-aware rate limiting and multi-tenant quota management.
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

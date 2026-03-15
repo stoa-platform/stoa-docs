@@ -222,3 +222,14 @@ Not necessarily. Features that Apigee includes (developer portal, analytics, mul
 *Christophe Aboulicam is the Founder & CTO at HLFH. Before building STOA, he spent over a decade implementing and operating enterprise API management platforms including webMethods, Kong, and Apigee.*
 
 > **Disclaimer:** Feature comparisons are based on publicly available documentation as of February 2026. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners.
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

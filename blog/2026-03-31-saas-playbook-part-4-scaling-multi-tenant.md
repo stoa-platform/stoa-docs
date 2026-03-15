@@ -359,3 +359,14 @@ Use the formula: `pool size = (req/sec) × (avg DB latency)`. Add 50% overhead f
 ### What Kubernetes node size should I use for gateway pods?
 
 For the STOA Gateway (Rust-based), CPU is typically the bottleneck before memory. Start with `4 CPU / 8 GB RAM` nodes and measure. Each gateway pod can typically handle 10,000-50,000 req/sec depending on policy complexity and caching configuration. Size your nodes so HPA can go from `minReplicas` to `maxReplicas` without saturating the node's CPU.
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

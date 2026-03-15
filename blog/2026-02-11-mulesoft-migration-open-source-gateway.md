@@ -221,3 +221,14 @@ Cost savings depend on your license structure, infrastructure, and usage. Organi
 > This guide describes technical migration steps and does not imply any deficiency in the source platform. Migration decisions depend on specific organizational requirements. All trademarks belong to their respective owners. See [trademarks](/docs/legal/trademarks).
 
 > STOA Platform provides technical capabilities that support regulatory compliance efforts. This does not constitute legal advice or a guarantee of compliance.
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

@@ -4,7 +4,6 @@ title: "Audit Trails When Things Go Wrong (Freelancer Part 3)"
 description: "What was your API doing at 3am? Structured logging, incident response without an ops team, and queryable audit trails for solo developers."
 authors: [stoa-team]
 tags: [security, tutorial, api-gateway, compliance]
-unlisted: true
 keywords:
   - api audit trail freelancer
   - api logging best practices
@@ -443,3 +442,14 @@ The combination — gateway security baseline + tiered rate limiting + structure
 - [Developer Portal Guide](/docs/guides/portal) — let clients self-register and manage their own keys
 - [Authentication Guide](/docs/guides/authentication) — JWT, OAuth 2.0, and mTLS options for higher-security scenarios
 - [Observability Guide](/docs/guides/observability) — full Prometheus + Grafana setup for uptime monitoring
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

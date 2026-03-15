@@ -4,7 +4,6 @@ title: "Rate Limiting That Works (Freelancer Security Part 2)"
 description: "Sliding windows, burst allowances, per-endpoint limits, and tiered plans. How to tune rate limits without breaking your legitimate users."
 authors: [stoa-team]
 tags: [security, tutorial, api-gateway]
-unlisted: true
 keywords:
   - api rate limiting strategies
   - sliding window rate limiting
@@ -369,3 +368,14 @@ Return `Retry-After` in the 429 response. Properly implemented clients will back
 You've set up rate limiting. The next question is: what happened before you turned it on, and what happens when something slips through?
 
 **[Part 3: Audit Trails for When Things Go Wrong](/blog/freelancer-api-security-part-3-audit-trails)** covers structured logging, what to capture, how to build useful queries, and minimum viable incident response for solo developers.
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

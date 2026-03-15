@@ -750,3 +750,14 @@ The most secure gateway is one that follows the principle of least privilege: on
 For a comprehensive overview of open-source API gateway options and their security features, read our [Open Source API Gateway Guide 2026](/blog/open-source-api-gateway-2026).
 
 Want to see these security controls in action? STOA Platform implements all 10 steps out of the box. Learn more in our [Security Compliance documentation](/docs/enterprise/security-compliance) or explore the [Gateway Concepts](/docs/concepts/gateway).
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

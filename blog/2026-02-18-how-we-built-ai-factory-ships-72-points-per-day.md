@@ -260,3 +260,14 @@ The binary DoD catches most errors before merge. When something slips through, t
 The `security-reviewer` subagent runs on every code change. It is read-only (cannot modify code) and produces a binary Go/Fix/Redo verdict. Any P0 finding blocks the PR. Additionally, CI runs gitleaks (secrets), Bandit (Python SAST), clippy SAST (Rust), and Trivy (container scanning) on every PR.
 
 > Product names mentioned in this article are trademarks of their respective owners. STOA Platform is not affiliated with or endorsed by any mentioned vendor.
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

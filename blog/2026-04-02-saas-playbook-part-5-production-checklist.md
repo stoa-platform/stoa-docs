@@ -381,3 +381,14 @@ Not necessarily. If you are using a different gateway (not STOA), many of the im
 ### How long does this checklist take to complete?
 
 Allocate 1-2 full engineering days for the first run. Security checks often require infrastructure changes that take hours to implement and verify. After the first run, subsequent checks (before major releases) typically take 2-4 hours if no regressions are found.
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

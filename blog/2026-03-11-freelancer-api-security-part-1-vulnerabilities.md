@@ -4,7 +4,6 @@ title: "Your APIs Are More Vulnerable Than You Think (Part 1)"
 description: "Real attack patterns targeting solo developer APIs. What breaks first, how attackers find you, and the 80% fix that doesn't add complexity."
 authors: [stoa-team]
 tags: [security, tutorial, api-gateway, education]
-unlisted: true
 keywords:
   - api security freelancer
   - api vulnerabilities solo developer
@@ -288,3 +287,14 @@ A WAF adds another layer (SQL injection signatures, bot detection rules). It's a
 ### How do I know if my API is already being abused?
 
 Check your audit logs: `GET /v1/audit/$TENANT_ID`. Look for unusual patterns — many requests from one consumer, requests to endpoints that don't exist (404 flood), or requests at unusual hours. [Part 3](/blog/freelancer-api-security-part-3-audit-trails) of this series covers exactly this.
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community
