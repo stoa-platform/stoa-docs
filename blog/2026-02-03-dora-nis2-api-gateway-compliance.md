@@ -54,6 +54,22 @@ Key requirements of NIS2:
 
 API gateways sit at the heart of modern digital architectures. They process every request between clients, services, and increasingly, AI agents. This central position makes them a critical compliance surface for both directives.
 
+```mermaid
+graph LR
+  req["API Request"]
+  auth["Auth Layer\nOAuth2 / mTLS\nNIS2 Art.21"]
+  opa["Policy Engine\nOPA rules\nDORA ICT risk"]
+  audit["Audit Log\nImmutable trail\nDORA Art.9 / NIS2 Art.23"]
+  mtls["Encrypted Channel\nmTLS\nNIS2 encryption"]
+  backend["Backend Service"]
+
+  req --> auth
+  auth --> opa
+  opa --> audit
+  audit --> mtls
+  mtls --> backend
+```
+
 ### Audit Logging and Traceability
 
 Both DORA and NIS2 require comprehensive logging of security-relevant events. For an API gateway, this means:

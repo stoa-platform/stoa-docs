@@ -50,6 +50,31 @@ This creates a direct legal conflict: a US-based API gateway provider hosting da
 
 The practical implication: routing EU personal data through a US-controlled API gateway introduces legal uncertainty that European-controlled alternatives do not.
 
+```mermaid
+graph TB
+  subgraph US["US-Controlled Gateway (CLOUD Act exposure)"]
+    us_client["EU Client"]
+    us_gw["Gateway\n(US vendor)"]
+    us_infra["US vendor infra\n(EU-hosted)"]
+    us_le["US law enforcement\n(CLOUD Act request)"]
+    us_backend["EU Backend"]
+
+    us_client --> us_gw
+    us_gw --> us_infra
+    us_infra -.->|"compelled disclosure"| us_le
+    us_infra --> us_backend
+  end
+
+  subgraph EU["EU-Sovereign Gateway (data stays in EU)"]
+    eu_client["EU Client"]
+    eu_gw["Gateway\n(EU self-hosted)"]
+    eu_backend["EU Backend"]
+
+    eu_client --> eu_gw
+    eu_gw --> eu_backend
+  end
+```
+
 ## Why Your API Gateway Jurisdiction Matters
 
 An API gateway is not a passive pipe. It actively processes every request that flows through it:

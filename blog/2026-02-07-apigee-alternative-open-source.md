@@ -103,6 +103,22 @@ The key difference is eliminating vendor lock-in on the platform license and gai
 
 Migration from a proprietary platform to open source is a project that requires planning. Here is a proven approach. For detailed step-by-step instructions, see the [Apigee Migration Guide](https://docs.gostoa.dev/docs/guides/migration/apigee).
 
+```mermaid
+graph LR
+  apigee["Apigee\n(current)"]
+  assess["Phase 1\nAssessment\n2–4 weeks"]
+  parallel["Phase 2\nParallel Run\n2–4 weeks"]
+  cutover["Phase 3\nTraffic Cutover\n4–8 weeks"]
+  decom["Phase 4\nDecommission\n2–4 weeks"]
+  stoa["STOA\n(target)"]
+
+  apigee --> assess
+  assess --> parallel
+  parallel --> cutover
+  cutover --> decom
+  decom --> stoa
+```
+
 ### Phase 1: Inventory and Assessment (2-4 weeks)
 
 Before touching any configuration:

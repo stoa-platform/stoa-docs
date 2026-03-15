@@ -160,13 +160,33 @@ Flag services with no consumer activity in the prior 90 days as zombie API candi
 
 Deploy the new gateway alongside webMethods without touching production traffic. The new gateway handles only new APIs and AI agent traffic at this stage.
 
-```
-Existing flow (unchanged):
-  All consumers → webMethods API Gateway → IS → Backend APIs
+```mermaid
+graph TB
+    subgraph before["Before: webMethods Standalone"]
+        consumers_b["All Consumers\n(web · mobile · partners)"]
+        wm["webMethods API Gateway\n+ Integration Server"]
+        backends_b["Backend APIs"]
+        consumers_b --> wm
+        wm --> backends_b
+    end
 
-New flow (added in parallel):
-  AI Agents   → STOA MCP Gateway  → Backend APIs
-  New APIs    → STOA API Gateway  → Backend APIs
+    subgraph after["After: STOA + webMethods as Adapter"]
+        ai["AI Agents"]
+        new_consumers["New API Consumers"]
+        legacy_consumers["Legacy Consumers"]
+
+        stoa_cp["STOA Control Plane\n(console · portal · catalogue)"]
+        stoa_gw["STOA Gateway\n(MCP · REST · policy · metering)"]
+        wm_adapter["webMethods IS\n(B2B · EDI · legacy flows)"]
+        backends_a["Backend APIs"]
+
+        ai -->|"MCP Protocol"| stoa_gw
+        new_consumers -->|"REST / gRPC"| stoa_gw
+        legacy_consumers -->|"SOAP / REST"| wm_adapter
+        stoa_cp -.->|"manages"| stoa_gw
+        stoa_gw --> backends_a
+        wm_adapter --> backends_a
+    end
 ```
 
 **Rule established in Phase 2**: All new APIs go through STOA from this point forward. webMethods receives no new services after this date. This is the moment the migration becomes real for the organization — enforce it explicitly.

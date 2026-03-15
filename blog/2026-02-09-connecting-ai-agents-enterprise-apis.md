@@ -81,6 +81,24 @@ The Model Context Protocol (MCP), originally developed by Anthropic, defines a s
 
 For a deeper dive into MCP concepts, see the [MCP Gateway documentation](https://docs.gostoa.dev/docs/concepts/mcp-gateway).
 
+```mermaid
+graph LR
+    agent["AI Agent\n(Claude · GPT · LLaMA)"]
+    mcp["MCP Protocol\n(JSON-RPC / SSE)"]
+    gw["STOA Gateway\n(Auth · Policy · Metering)"]
+    crm["CRM"]
+    erp["ERP"]
+    db["Database"]
+    notify["Notifications"]
+
+    agent -->|"discover tools"| mcp
+    mcp -->|"route + enforce"| gw
+    gw --> crm
+    gw --> erp
+    gw --> db
+    gw --> notify
+```
+
 ## The Missing Layer: An MCP Gateway
 
 MCP defines the protocol, but it does not define the security, governance, or operational layer. That is where an MCP gateway comes in.
@@ -225,22 +243,30 @@ For the full MCP Gateway API reference, see the [API documentation](https://docs
 
 The complete security architecture for AI agent-to-API connectivity looks like this:
 
-```
-AI Agent (Claude, GPT, etc.)
-    │
-    │  MCP Protocol (authenticated)
-    ▼
-STOA MCP Gateway
-    ├── Authentication (Keycloak / API Key)
-    ├── Authorization (OPA policies)
-    ├── Rate Limiting (per-agent, per-tenant)
-    ├── Audit Logging (OpenSearch)
-    ├── Token Optimization
-    └── Circuit Breaking
-    │
-    │  Internal API call (mTLS)
-    ▼
-Enterprise API (CRM, ERP, DB, etc.)
+```mermaid
+graph LR
+    agent["AI Agent\n(Claude · GPT · Custom)"]
+
+    subgraph gw["STOA MCP Gateway"]
+        authn["Auth\n(Keycloak / API Key)"]
+        authz["OPA Policies\n(per-agent, per-tenant)"]
+        rate["Rate Limiting\n+ Circuit Breaking"]
+        audit["Audit Logging\n(OpenSearch)"]
+        tok["Token Optimization"]
+    end
+
+    crm["CRM API"]
+    erp["ERP API"]
+    db["Database API"]
+
+    agent -->|"MCP / authenticated"| authn
+    authn --> authz
+    authz --> rate
+    rate --> audit
+    audit --> tok
+    tok -->|"mTLS"| crm
+    tok -->|"mTLS"| erp
+    tok -->|"mTLS"| db
 ```
 
 Every layer adds defense in depth:
