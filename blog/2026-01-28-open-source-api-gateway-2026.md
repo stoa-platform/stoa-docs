@@ -61,6 +61,31 @@ STOA is the newest entrant, purpose-built for the AI era. It combines a Rust-bas
 **Strengths:** Native MCP support, multi-tenant by design, hybrid deployment (control plane cloud + data plane on-premise), full management stack (console, portal, API), European compliance focus (DORA, NIS2, GDPR). For more details, see the [API gateway patterns documentation](https://docs.gostoa.dev/docs/guides/fiches/api-gateway-patterns).
 **Weaknesses:** Youngest project with the smallest community. Plugin ecosystem is still growing. Production deployments are in early stages compared to Kong and Envoy.
 
+## Gateway Architecture Overview
+
+```mermaid
+graph TB
+    mcp_q["MCP Support?"]
+
+    subgraph native["Native MCP (Core Protocol)"]
+        stoa["STOA\nRust + Python\nMulti-tenant · OPA · Hybrid"]
+    end
+
+    subgraph plugin["Plugin-Based MCP"]
+        kong["Kong\nNginx + Lua\nLargest ecosystem"]
+    end
+
+    subgraph none["No MCP Support"]
+        envoy["Envoy\nC++\nService mesh / high perf"]
+        apisix["APISIX\nNginx + etcd\nApache 2.0"]
+        tyk["Tyk\nGo\nFull OSS stack"]
+    end
+
+    mcp_q -->|"Core architecture"| native
+    mcp_q -->|"Extension layer"| plugin
+    mcp_q -->|"Not available"| none
+```
+
 ## Feature Comparison Table
 
 <!-- last verified: 2026-02 -->

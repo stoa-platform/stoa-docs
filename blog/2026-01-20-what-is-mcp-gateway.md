@@ -51,17 +51,25 @@ An MCP gateway is a reverse proxy and policy enforcement point purpose-built for
 
 Here is how an MCP gateway fits into a typical enterprise deployment:
 
-```
-AI Agents (Claude, GPT, Custom)
-         |
-         | MCP Protocol (JSON-RPC over SSE/HTTP)
-         v
-  +-----------------+
-  |   MCP Gateway   |  <-- Auth, Policy, Metering, Routing
-  +-----------------+
-     |       |       |
-     v       v       v
-  [Tool A] [Tool B] [Tool C]   <-- MCP Servers (internal services)
+```mermaid
+graph TB
+    claude["Claude Agent"]
+    gpt["GPT Agent"]
+    custom["Custom Agent"]
+
+    gw["MCP Gateway\n(Auth · Policy · Metering · Routing)"]
+
+    toolA["Tool A\n(MCP Server)"]
+    toolB["Tool B\n(MCP Server)"]
+    toolC["Tool C\n(MCP Server)"]
+
+    claude -->|"MCP / JSON-RPC"| gw
+    gpt -->|"MCP / JSON-RPC"| gw
+    custom -->|"MCP / JSON-RPC"| gw
+
+    gw --> toolA
+    gw --> toolB
+    gw --> toolC
 ```
 
 The gateway is the single entry point. Agents never talk directly to MCP servers. This is the same pattern that made API gateways essential for microservices — applied to the AI agent layer.
@@ -98,6 +106,32 @@ STOA's gateway supports [four deployment modes](/docs/concepts/architecture):
 4. **Shadow** — Mirror traffic for testing without affecting production.
 
 This flexibility lets enterprises adopt MCP governance incrementally, without a rip-and-replace migration.
+
+```mermaid
+graph TB
+    agent["AI Agent"]
+
+    subgraph gw["STOA MCP Gateway"]
+        mtls["mTLS Termination"]
+        auth["Auth\n(Keycloak / API Key)"]
+        opa["OPA Policy Engine\n(Rego rules)"]
+        routing["Tool Routing\n(Tenant Isolation)"]
+        metering["Kafka Metering\n(Usage Events)"]
+    end
+
+    crm["CRM Tool"]
+    erp["ERP Tool"]
+    db["DB Tool"]
+
+    agent -->|"MCP over SSE/HTTP"| mtls
+    mtls --> auth
+    auth --> opa
+    opa --> routing
+    routing --> metering
+    routing --> crm
+    routing --> erp
+    routing --> db
+```
 
 ## MCP Gateway vs. Exposing Raw MCP Servers
 

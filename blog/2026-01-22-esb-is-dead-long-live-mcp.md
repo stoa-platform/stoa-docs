@@ -19,6 +19,18 @@ Let us say what many enterprise architects are thinking but few vendors will adm
 
 To understand where we are going, we need to understand where we have been. Enterprise integration has gone through four distinct eras:
 
+```mermaid
+graph LR
+    p2p["Era 1\nPoint-to-Point\n1990s"]
+    esb["Era 2\nEnterprise Service Bus\n2000–2015"]
+    apigw["Era 3\nAPI Gateway\n2015–2024"]
+    mcpgw["Era 4\nMCP Gateway\n2025–Present"]
+
+    p2p -->|"N² connections\nbecome unmanageable"| esb
+    esb -->|"Microservices\nreplace monoliths"| apigw
+    apigw -->|"AI agents\nneed MCP"| mcpgw
+```
+
 ### Era 1: Point-to-Point (1990s)
 
 The first integration pattern was the simplest: direct connections between systems. Application A calls Application B via a proprietary protocol (CORBA, RMI, DCOM). It works for five systems. It becomes unmanageable at fifty. The number of connections grows quadratically — N systems produce N(N-1)/2 connections.
@@ -54,6 +66,27 @@ This is not just a protocol change. It is a fundamental shift in how integration
 | **Transformation** | In the middleware (XSLT, DataMapper) | In the service (code) | In the agent (LLM reasoning) |
 | **Governance** | ESB admin console | API portal + gateway policies | Policy engine (OPA) + tenant isolation |
 | **Invocation pattern** | Orchestrated workflows | Request/response | Context-aware tool invocation |
+
+```mermaid
+graph TB
+    subgraph esb_arch["ESB Architecture"]
+        apps_esb["App A · App B · App C"]
+        bus["Enterprise Service Bus\n(routing · transform · orchestrate)"]
+        backends_esb["Backend Services"]
+        apps_esb -->|"All traffic"| bus
+        bus --> backends_esb
+    end
+
+    subgraph mcp_arch["MCP Gateway Architecture"]
+        ai["AI Agents\n(Claude · GPT · Custom)"]
+        trad["Traditional Apps"]
+        mcpgw2["MCP Gateway\n(policy · auth · metering)"]
+        backends_mcp["Backend Services"]
+        ai -->|"MCP Protocol"| mcpgw2
+        trad -->|"REST / gRPC"| mcpgw2
+        mcpgw2 --> backends_mcp
+    end
+```
 
 ## Why the ESB Cannot Adapt
 

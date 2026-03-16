@@ -37,6 +37,31 @@ That world still exists. But a new layer has emerged:
 - **Security**: Tool-level authorization, tenant isolation, agent audit trails
 - **Governance**: Which agents can invoke which tools, in which context, with what data
 
+```mermaid
+graph TB
+  subgraph Kong["Kong — HTTP Gateway + MCP Plugin"]
+    K_client["HTTP / gRPC client"]
+    K_nginx["Nginx/Lua core"]
+    K_plugin["AI MCP Proxy plugin"]
+    K_backend["Backend services"]
+    K_client --> K_nginx
+    K_nginx --> K_plugin
+    K_plugin --> K_backend
+  end
+
+  subgraph STOA["STOA — MCP-Native Gateway"]
+    S_agent["AI agent / HTTP client"]
+    S_core["MCP-native core (Rust)"]
+    S_opa["OPA policy engine"]
+    S_cp["Control Plane (CRDs)"]
+    S_backend["Backend services"]
+    S_agent --> S_core
+    S_core --> S_opa
+    S_core --> S_cp
+    S_core --> S_backend
+  end
+```
+
 Kong has responded to this shift — adding MCP proxy and OAuth2 plugins in Gateway 3.12 (October 2025), MCP ACLs in 3.13, and a dedicated MCP server for Konnect API discovery. But there is a difference between adding MCP support to an existing HTTP gateway and building an MCP-native gateway from the ground up. That difference is what STOA represents.
 
 ## The Comparison

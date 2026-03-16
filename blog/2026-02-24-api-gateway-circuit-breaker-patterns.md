@@ -681,3 +681,14 @@ Circuit breakers are a foundational resilience pattern for production API gatewa
 - **Security integration**: Learn how circuit breakers integrate with security controls in [API Gateway Security Hardening Guide](/blog/api-gateway-security-hardening-guide)
 
 Circuit breakers won't prevent all failures, but they'll ensure your system fails gracefully, recovers automatically, and provides a better experience for your users during incidents.
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

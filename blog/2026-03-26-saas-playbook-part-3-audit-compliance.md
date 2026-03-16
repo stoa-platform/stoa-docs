@@ -352,3 +352,14 @@ STOA allows configuring `level: errors-only` or `level: summary` for specific AP
 ### How do I demonstrate that my audit log is tamper-proof to an auditor?
 
 Show them the cryptographic chain verification command and its output: "Audit chain verified: N entries, 0 integrity violations." Also demonstrate that the database role used for audit writing lacks UPDATE and DELETE privileges. For high-assurance environments, consider streaming audit events to an immutable external sink (AWS CloudTrail, Azure Monitor) as a secondary record.
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

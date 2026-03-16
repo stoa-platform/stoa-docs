@@ -323,3 +323,14 @@ Use per-tenant rate limit buckets — never a shared global bucket. STOA's Guard
 ### Can I give enterprise customers custom rate limits?
 
 Yes. STOA's enterprise plan tier includes `perEndpointOverrides: allowed`, which lets the tenant admin configure custom per-endpoint limits within their namespace. The global plan limit still acts as a ceiling — they cannot exceed what their contract permits.
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

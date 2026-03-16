@@ -322,3 +322,14 @@ STOA validates tenant context at three layers: (1) JWT `iss` claim must match th
 ### Does multi-tenancy work with MCP (AI agent) traffic?
 
 Yes. STOA's MCP support is tenant-aware. Each tenant's MCP tool registry is isolated — an AI agent authenticated to tenant A sees only tenant A's tools. Token validation, rate limiting, and audit logging all apply to MCP traffic the same way they apply to REST traffic.
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

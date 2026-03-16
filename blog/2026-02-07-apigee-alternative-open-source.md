@@ -103,6 +103,22 @@ The key difference is eliminating vendor lock-in on the platform license and gai
 
 Migration from a proprietary platform to open source is a project that requires planning. Here is a proven approach. For detailed step-by-step instructions, see the [Apigee Migration Guide](https://docs.gostoa.dev/docs/guides/migration/apigee).
 
+```mermaid
+graph LR
+  apigee["Apigee\n(current)"]
+  assess["Phase 1\nAssessment\n2–4 weeks"]
+  parallel["Phase 2\nParallel Run\n2–4 weeks"]
+  cutover["Phase 3\nTraffic Cutover\n4–8 weeks"]
+  decom["Phase 4\nDecommission\n2–4 weeks"]
+  stoa["STOA\n(target)"]
+
+  apigee --> assess
+  assess --> parallel
+  parallel --> cutover
+  cutover --> decom
+  decom --> stoa
+```
+
 ### Phase 1: Inventory and Assessment (2-4 weeks)
 
 Before touching any configuration:
@@ -222,3 +238,14 @@ Not necessarily. Features that Apigee includes (developer portal, analytics, mul
 *Christophe Aboulicam is the Founder & CTO at HLFH. Before building STOA, he spent over a decade implementing and operating enterprise API management platforms including webMethods, Kong, and Apigee.*
 
 > **Disclaimer:** Feature comparisons are based on publicly available documentation as of February 2026. Product capabilities change frequently. We encourage readers to verify current features directly with each vendor. All trademarks belong to their respective owners.
+
+
+---
+
+## Ready to bridge your legacy APIs to AI agents?
+
+STOA is open-source (Apache 2.0) and free to try.
+
+- **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
+- **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
+- **[Discord →](https://discord.gostoa.dev)** — Join the community

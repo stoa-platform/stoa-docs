@@ -73,6 +73,26 @@ A single gateway deployment handles all tenants, with isolation enforced at the 
 
 STOA uses a **hybrid model** that combines the strengths of both approaches. The gateway itself is a shared deployment, but tenant isolation is enforced through three independent mechanisms working in concert.
 
+```mermaid
+graph TB
+  gw["Shared Gateway\n(single deployment)"]
+
+  subgraph nsA["Namespace: tenant-acme"]
+    crdA["Tool / ToolSet CRDs"]
+    opaA["OPA policies\n(tenant-scoped)"]
+  end
+
+  subgraph nsB["Namespace: tenant-globex"]
+    crdB["Tool / ToolSet CRDs"]
+    opaB["OPA policies\n(tenant-scoped)"]
+  end
+
+  gw --> nsA
+  gw --> nsB
+  crdA --> opaA
+  crdB --> opaB
+```
+
 ## How STOA Implements Multi-Tenant Isolation
 
 ### Layer 1: Kubernetes Namespace Isolation
@@ -128,6 +148,30 @@ Every database query includes the tenant schema in the search path, enforced at 
 ## Lessons Learned
 
 After operating this architecture in production, here are the most important lessons.
+
+```mermaid
+graph TB
+  request["Incoming Request"]
+
+  subgraph L1["Layer 1 — Kubernetes Namespaces"]
+    ns["Namespace RBAC\n+ NetworkPolicies"]
+  end
+
+  subgraph L2["Layer 2 — OPA Policies"]
+    opa["Policy evaluation\n(tenant-scoped rules)"]
+  end
+
+  subgraph L3["Layer 3 — Keycloak Realms"]
+    kc["Realm auth\n+ JWT tenant claim"]
+  end
+
+  backend["Backend Service"]
+
+  request --> L3
+  L3 --> L2
+  L2 --> L1
+  L1 --> backend
+```
 
 ### Lesson 1: Tenant Context Must Be Immutable After Authentication
 
