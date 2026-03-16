@@ -273,6 +273,6 @@ For structured logs, set `LOG_LEVEL=debug` before starting the agent.
 
 ## Next Steps
 
-- [Multi-Gateway Setup](./multi-gateway-setup.md) — manage multiple gateways from a single Control Plane
-- [Gateway Auto-Registration](./gateway-auto-registration.md) — native STOA gateway registration without an agent
-- [OPA Policies](./opa-policies.md) — write policies that stoa-connect will sync to your gateway
+- **Multi-Gateway Setup** — manage multiple gateways from a single Control Plane (coming soon)
+- **Gateway Auto-Registration** — native STOA gateway registration without an agent (coming soon)
+- **OPA Policies** — write policies that stoa-connect will sync to your gateway (coming soon)
