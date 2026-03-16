@@ -55,6 +55,7 @@ const sidebars: SidebarsConfig = {
         'guides/service-accounts',
         'guides/console-advanced',
         'guides/portal-advanced',
+        'guides/chat-agent',
         {
           type: 'category',
           label: 'Technical Fiches',
