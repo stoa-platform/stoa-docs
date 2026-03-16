@@ -124,9 +124,13 @@ helm upgrade stoa-platform ./charts/stoa-platform -n stoa-system
 
 ---
 
-## v1.0.0 (October 2025) {#v100}
+## v0.1.0 (February 2026) {#v010}
 
-**Initial Public Release**
+**Initial Public Release — MVP**
+
+[Full release post](/blog/release-v0.1.0)
+
+First public open-source release of STOA Platform under Apache 2.0 license.
 
 ### Highlights
 
@@ -141,16 +145,6 @@ helm upgrade stoa-platform ./charts/stoa-platform -n stoa-system
 ### Breaking Changes
 
 N/A — initial release.
-
----
-
-## v0.1.0 (February 2026) {#v010}
-
-**MVP — MCP Gateway, Control Plane, Developer Portal**
-
-[Full release post](/blog/release-v0.1.0)
-
-First public open-source release of STOA Platform under Apache 2.0 license.
 
 ---
 
