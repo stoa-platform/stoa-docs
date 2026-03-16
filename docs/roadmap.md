@@ -14,7 +14,7 @@ This roadmap reflects our current priorities and may evolve based on community f
 :::
 
 :::tip Latest Release
-**[v2.2.0](/blog/release-v2.2.0)** (March 2026) — LLM Proxy, Self-Service Signup, Skills System, MCP 2025-11-25, OAuth 2.1 DPoP, and 12 new API endpoints.
+**[v2.3.0](/blog/release-v2.3.0)** (March 2026) — Pingora connection engine, per-tenant chat settings, zero-config Helm bootstrap, real-data demo APIs.
 :::
 
 ---
@@ -66,6 +66,11 @@ This roadmap reflects our current priorities and may evolve based on community f
 | Integrated AI Chat Assistant | Done | v2.2.0 |
 | Tenant Export/Import (Disaster Recovery) | Done | v2.2.0 |
 | Documentation — 100+ guides, references, ADRs, and API docs | Done | v2.2.0 |
+| Pingora Connection Engine — embedded shared connection pool (ADR-058) | Done | v2.3.0 |
+| Per-Tenant Chat Settings — per-app toggles, daily budget, source tracking | Done | v2.3.0 |
+| Zero-Config Helm Bootstrap — automated Keycloak realm, OIDC clients, tenant | Done | v2.3.0 |
+| Shared Secrets Management — auto-generated, stable across upgrades | Done | v2.3.0 |
+| Real-Data Demo APIs — 5 public APIs + echo fallback pre-seeded | Done | v2.3.0 |
 
 ---
 
@@ -75,6 +80,8 @@ This roadmap reflects our current priorities and may evolve based on community f
 
 | Feature | Status |
 |---------|--------|
+| eBPF Kernel-Level HTTP Parsing — zero-copy request inspection | In Progress |
+| UAC Policy Enforcement at Kernel Level — eBPF-based evaluation | In Progress |
 | GitOps Reconciliation Operator — K8s operator replacing AWX (ADR-042) | In Progress |
 | Gateway Sidecar Mode — coexist with Kong, Envoy, etc. (ADR-024) | In Progress |
 | CLI Tool (`stoactl`) — kubectl-style management (Go/Cobra) | In Progress |
