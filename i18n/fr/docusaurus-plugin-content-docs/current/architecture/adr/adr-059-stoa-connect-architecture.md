@@ -1,10 +1,10 @@
 ---
-title: "ADR-057 : Architecture STOA Connect — Agent Gateway VPS"
+title: "ADR-059 : Architecture STOA Connect — Agent Gateway VPS"
 description: "Décide de l'architecture de stoa-connect, l'agent léger qui connecte les gateways tiers hébergés sur VPS au Control Plane STOA. Couvre le protocole d'enregistrement CP, l'interface adaptateur, l'instrumentation OpenTelemetry et le modèle de déploiement systemd."
 keywords: [stoa-connect, vps, agent, gateway, otel, otlp, systemd, adaptateur, kong, gravitee, observabilité]
 ---
 
-# ADR-057 : Architecture STOA Connect — Agent Gateway VPS
+# ADR-059 : Architecture STOA Connect — Agent Gateway VPS
 
 ## Métadonnées
 

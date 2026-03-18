@@ -1,4 +1,4 @@
-# ADR-057: STOA Connect — VPS Gateway Agent Architecture
+# ADR-059: STOA Connect — VPS Gateway Agent Architecture
 
 | Field | Value |
 |-------|-------|
