@@ -4,7 +4,6 @@ title: "SMB API Gateway Guide 2026: Find the Right Fit"
 description: "Small team, big choices. Feature tables, pricing models, and a decision framework for SMBs evaluating Kong, Gravitee, STOA, and cloud options."
 authors: [stoa-team]
 tags: [comparison, tutorial, api-gateway]
-unlisted: true
 keywords:
   - API gateway for small business
   - SMB API gateway comparison 2026
