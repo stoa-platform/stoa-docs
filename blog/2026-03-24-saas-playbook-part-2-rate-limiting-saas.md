@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: saas-playbook-2-rate-limiting-saas
 title: "SaaS Rate Limiting: Per-Tenant Strategies That Scale"
 description: "Token bucket vs sliding window for multi-tenant APIs. Configure API key tiers, burst handling, and per-tenant quotas without custom code."
