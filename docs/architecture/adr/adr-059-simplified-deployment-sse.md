@@ -10,42 +10,42 @@
 
 ## Context
 
-Le déploiement d'une API vers une gateway emprunte aujourd'hui 3 chemins distincts :
+API deployment to a gateway currently follows 3 distinct paths:
 
-1. **SyncEngine** — cron background qui push HTTP direct vers les gateways
-2. **`_try_inline_sync`** — push HTTP synchrone appelé au moment du deploy Console
-3. **STOA Connect polling** — l'agent poll `/pending-deployments` et applique localement
+1. **SyncEngine** — background cron that pushes HTTP directly to gateways
+2. **`_try_inline_sync`** — synchronous HTTP push called at Console deploy time
+3. **STOA Connect polling** — agent polls `/pending-deployments` and applies locally
 
-Ces 3 chemins ont des guards différents, des comportements différents, des bugs différents. Le SyncEngine avait un guard `self_register` (L278), mais `_try_inline_sync` ne l'avait pas. Des gateway instances fantômes en base provoquent des push vers des hostnames Docker non résolvables. Chaque fix sur un chemin révèle un bug sur un autre.
+These 3 paths have different guards, different behaviors, different bugs. SyncEngine had a `self_register` guard (L278), but `_try_inline_sync` did not. Ghost gateway instances in the database cause pushes to unresolvable Docker hostnames. Every fix on one path reveals a bug on another.
 
-**Résultat : 4 jours bloqués sur le déploiement d'API, ratio fix/feat à 1:1, régressions en boucle.**
+**Result: 4 days blocked on API deployment, fix/feat ratio at 1:1, regressions in a loop.**
 
-Le modèle multi-path est incompatible avec l'architecture hybride de STOA (CP cloud + gateway on-premise). Le CP cloud ne devrait JAMAIS initier une connexion vers l'on-premise — c'est l'agent on-premise qui initie.
+The multi-path model is incompatible with STOA's hybrid architecture (cloud CP + on-premise gateway). The cloud CP should NEVER initiate a connection to on-premise — the on-premise agent initiates.
 
 ---
 
 ## Decision
 
-**Un seul chemin de déploiement. Le CP écrit l'intention, le Link exécute.**
+**A single deployment path. The CP writes the intent, the Link executes.**
 
-### Chemin unique
+### Single Path
 
 ```
 Console → CP API → SSE push → STOA Link → Gateway → Callback → CP API
 ```
 
-### Détail du flow
+### Detailed Flow
 
-1. Dev clique "Deploy" dans la Console
-2. CP API crée un `gateway_deployment` statut **PENDING** en base
-3. CP API émet un event SSE sur la connexion du Link ciblé
-4. STOA Link reçoit l'event instantanément (connexion SSE maintenue)
-5. STOA Link applique le desired state sur la gateway locale
-6. STOA Link callback HTTPS vers CP : **SYNCED** ou **FAILED**
-7. CP met à jour le statut en base
-8. Console affiche le résultat
+1. Dev clicks "Deploy" in the Console
+2. CP API creates a `gateway_deployment` with **PENDING** status in database
+3. CP API emits an SSE event on the targeted Link's connection
+4. STOA Link receives the event instantly (SSE connection maintained)
+5. STOA Link applies the desired state on the local gateway
+6. STOA Link callbacks HTTPS to CP: **SYNCED** or **FAILED**
+7. CP updates the status in database
+8. Console displays the result
 
-### SSE — Endpoint CP
+### SSE — CP Endpoint
 
 ```
 GET /api/v1/links/{link_id}/events
@@ -54,213 +54,213 @@ Content-Type: text/event-stream
 ```
 
 Events:
-- `deployment.requested` — nouveau desired state à appliquer
-- `deployment.cancelled` — annulation avant exécution
+- `deployment.requested` — new desired state to apply
+- `deployment.cancelled` — cancellation before execution
 
-### Reconnexion
+### Reconnection
 
-Si la connexion SSE tombe, le Link se reconnecte automatiquement (natif SSE). Au reconnect, il appelle :
+If the SSE connection drops, the Link reconnects automatically (native SSE). On reconnect, it calls:
 
 ```
 GET /api/v1/links/{link_id}/pending-deployments
 ```
 
-Un seul appel de rattrapage, pas du polling permanent. Cet endpoint retourne tous les deployments PENDING pour ce Link. Une fois rattrapé, le Link repasse en mode SSE.
+A single catch-up call, not permanent polling. This endpoint returns all PENDING deployments for this Link. Once caught up, the Link switches back to SSE mode.
 
-### Git — Side-effect asynchrone
+### Git — Asynchronous Side-effect
 
-Après un deploy SYNCED, le CP commit le desired state (UAC YAML) dans le repo Git. Non-bloquant. Git est l'archive (audit trail, versioning, rollback via `git revert`), pas le bus de déploiement. Si Git est indisponible, le deploy fonctionne quand même.
+After a SYNCED deploy, the CP commits the desired state (UAC YAML) to the Git repo. Non-blocking. Git is the archive (audit trail, versioning, rollback via `git revert`), not the deployment bus. If Git is unavailable, the deploy still works.
 
 ---
 
 ## What We Remove
 
-| Composant | Raison de suppression |
+| Component | Reason for Removal |
 |---|---|
-| **SyncEngine** (cron background) | Push HTTP direct CP → gateway. Viole le modèle hybride. |
-| **`_try_inline_sync`** | Push HTTP synchrone au deploy. Même problème. |
-| **Polling `/pending-deployments`** en mode cron | Remplacé par SSE temps réel + rattrapage au reconnect. |
-| **`gateway_instance.base_url`** utilisé pour push | Le CP n'appelle plus les gateways. Champ conservé pour info, jamais utilisé pour HTTP. |
-| **Concept de gateway "push" côté CP** | N'existe plus. Toutes les gateways sont pull/SSE. |
+| **SyncEngine** (background cron) | Direct HTTP push CP → gateway. Violates hybrid model. |
+| **`_try_inline_sync`** | Synchronous HTTP push at deploy. Same problem. |
+| **Polling `/pending-deployments`** in cron mode | Replaced by real-time SSE + catch-up on reconnect. |
+| **`gateway_instance.base_url`** used for push | CP no longer calls gateways. Field kept for info, never used for HTTP. |
+| **Gateway "push" concept on CP side** | No longer exists. All gateways are pull/SSE. |
 
 ## What We Keep
 
-| Composant | Rôle |
+| Component | Role |
 |---|---|
-| **`gateway_deployments` table** | Source de vérité des déploiements (PENDING → SYNCED/FAILED) |
-| **STOA Link / Connect** | Agent on-premise, maintient la connexion SSE, exécute les deploys |
-| **Callback HTTPS Link → CP** | Report de statut après exécution |
-| **Kafka events** | Side-effects non-bloquants : notifications, audit, observabilité |
-| **Git commits** | Archive asynchrone : audit trail, versioning, rollback |
+| **`gateway_deployments` table** | Source of truth for deployments (PENDING → SYNCED/FAILED) |
+| **STOA Link / Connect** | On-premise agent, maintains SSE connection, executes deploys |
+| **HTTPS Callback Link → CP** | Status reporting after execution |
+| **Kafka events** | Non-blocking side-effects: notifications, audit, observability |
+| **Git commits** | Asynchronous archive: audit trail, versioning, rollback |
 
 ---
 
 ## Drift Detection — Post-SyncEngine
 
-Le SyncEngine actuel exécute `_detect_drift()` en comparant `spec_hash` sur les deployments SYNCED. Avec sa suppression, la détection de drift migre côté Link :
+The current SyncEngine runs `_detect_drift()` by comparing `spec_hash` on SYNCED deployments. With its removal, drift detection moves to the Link side:
 
-**Mécanisme :** Le Link reporte périodiquement (toutes les 5 min) l'état réel de la gateway via un callback `state.report` vers le CP. Le CP compare l'état reporté avec le desired state en base. En cas de divergence → event `drift.detected` émis sur SSE → le Link ré-applique le desired state.
+**Mechanism:** The Link periodically reports (every 5 min) the actual gateway state via a `state.report` callback to the CP. The CP compares the reported state with the desired state in database. On divergence → `drift.detected` event emitted on SSE → the Link re-applies the desired state.
 
-**Pour la démo :** Drift detection désactivée. Le flow est linéaire (deploy → sync → done). La détection de drift est post-démo P1.
-
----
-
-## Kafka — Fate des Topics
-
-| Topic | Décision | Raison |
-|---|---|---|
-| `gateway-sync-requests` | **Supprimé** | Était consommé par SyncEngine pour déclencher des push. Plus de push. |
-| `gateway-events` | **Conservé** | Utilisé pour les side-effects : notifications, audit trail, observabilité. Le CP émet `deployment.synced` / `deployment.failed` après le callback du Link. |
-| `api-catalog-events` | **Inchangé** | Pas lié au deploy. |
+**For demo:** Drift detection disabled. The flow is linear (deploy → sync → done). Drift detection is post-demo P1.
 
 ---
 
-## Scope — Les 5 Boucles stoa-connect
+## Kafka — Topic Fate
 
-Le client Go `stoa-connect` a 5 boucles indépendantes. Cette ADR n'en affecte qu'une :
-
-| Boucle | Impact ADR-059 | Détail |
+| Topic | Decision | Reason |
 |---|---|---|
-| **Deployment sync** | **SSE remplace le polling** | Polling cron → SSE listener + catch-up au reconnect |
-| Heartbeat | Inchangé | Ping périodique CP → Link alive |
-| Route sync | Inchangé | Synchronisation des routes gateway → CP |
-| Discovery | Inchangé | Auto-découverte des APIs sur la gateway |
-| Credential sync | Inchangé | Synchronisation des credentials Vault → gateway |
+| `gateway-sync-requests` | **Removed** | Was consumed by SyncEngine to trigger pushes. No more pushes. |
+| `gateway-events` | **Kept** | Used for side-effects: notifications, audit trail, observability. The CP emits `deployment.synced` / `deployment.failed` after the Link callback. |
+| `api-catalog-events` | **Unchanged** | Not related to deploy. |
+
+---
+
+## Scope — The 5 stoa-connect Loops
+
+The Go client `stoa-connect` has 5 independent loops. This ADR only affects one:
+
+| Loop | ADR-059 Impact | Detail |
+|---|---|---|
+| **Deployment sync** | **SSE replaces polling** | Cron polling → SSE listener + catch-up on reconnect |
+| Heartbeat | Unchanged | Periodic ping CP → Link alive |
+| Route sync | Unchanged | Gateway routes synchronization → CP |
+| Discovery | Unchanged | Auto-discovery of APIs on the gateway |
+| Credential sync | Unchanged | Vault credentials synchronization → gateway |
 
 ---
 
 ## Naming — Link vs Connect
 
-**"STOA Link"** est le concept produit (branding validé Feb 2026, voir ADR-057). Ex: "STOA Link for webMethods."
+**"STOA Link"** is the product concept (branding validated Feb 2026, see ADR-057). E.g.: "STOA Link for webMethods."
 
-**`stoa-connect`** est le binaire Go (`stoa-go/cmd/stoa-connect/`). Pas de rename du binaire dans cette ADR — c'est un sujet cosmétique post-démo.
+**`stoa-connect`** is the Go binary (`stoa-go/cmd/stoa-connect/`). No binary rename in this ADR — it's a cosmetic topic post-demo.
 
-Dans cette ADR, "Link" = le concept et l'agent. Le code reste `stoa-connect` pour l'instant.
+In this ADR, "Link" = the concept and the agent. The code remains `stoa-connect` for now.
 
 ---
 
 ## Known Limitations
 
-### Multi-replica EventBus (P1 post-démo)
+### Multi-replica EventBus (P1 post-demo)
 
-L'EventBus actuel est **in-memory** (CAB-1420). Avec un seul replica CP API, ça fonctionne. Avec N replicas derrière un load balancer, un event émis sur le replica A ne sera pas vu par la connexion SSE sur le replica B.
+The current EventBus is **in-memory** (CAB-1420). With a single CP API replica, it works. With N replicas behind a load balancer, an event emitted on replica A won't be seen by the SSE connection on replica B.
 
-**Pour la démo :** 1 seul replica CP API. Pas de problème.
+**For demo:** 1 single CP API replica. No issue.
 
-**Post-démo :** Migrer l'EventBus vers PostgreSQL `LISTEN/NOTIFY` (déjà dans le stack, zéro dépendance nouvelle). Alternative : Redis PubSub si les volumes d'events justifient la séparation.
+**Post-demo:** Migrate the EventBus to PostgreSQL `LISTEN/NOTIFY` (already in the stack, zero new dependencies). Alternative: Redis PubSub if event volumes justify the separation.
 
-### Auth SSE vs Auth Console
+### SSE Auth vs Console Auth
 
-Deux endpoints SSE coexistent avec des modèles d'auth différents :
+Two SSE endpoints coexist with different auth models:
 
 | Endpoint | Audience | Auth |
 |---|---|---|
-| `/v1/events/stream/{tenant_id}` (existant) | Console frontend | JWT Keycloak |
-| `/api/v1/links/{link_id}/events` (nouveau) | STOA Link agent | `X-Gateway-Key` (existant) |
+| `/v1/events/stream/{tenant_id}` (existing) | Console frontend | JWT Keycloak |
+| `/api/v1/links/{link_id}/events` (new) | STOA Link agent | `X-Gateway-Key` (existing) |
 
-Bonne séparation des concerns. Pas de confusion possible.
+Good separation of concerns. No possible confusion.
 
-### Catch-up Payload Size (P2 post-démo)
+### Catch-up Payload Size (P2 post-demo)
 
-L'endpoint `/pending-deployments` retourne tous les deployments PENDING pour un Link en un seul appel. Si le Link a été déconnecté longtemps (heures/jours), la réponse peut contenir des dizaines de deployments.
+The `/pending-deployments` endpoint returns all PENDING deployments for a Link in a single call. If the Link has been disconnected for a long time (hours/days), the response may contain dozens of deployments.
 
-**Pour la démo :** Volume négligeable (1-5 deployments max). Pas de problème.
+**For demo:** Negligible volume (1-5 deployments max). No issue.
 
-**Post-démo :** Ajouter `?limit=50&offset=0` sur l'endpoint. Le Link pagine jusqu'à épuisement du backlog, puis repasse en mode SSE. Priorité P2 — ne bloque que si un Link est déconnecté pendant des jours avec un volume de deploy élevé.
+**Post-demo:** Add `?limit=50&offset=0` to the endpoint. The Link paginates until the backlog is exhausted, then switches back to SSE mode. Priority P2 — only blocks if a Link is disconnected for days with high deploy volume.
 
 ### Rollback & Gradual Rollout
 
-**Feature flag** : `DEPLOY_MODE` (env var CP API)
+**Feature flag**: `DEPLOY_MODE` (CP API env var)
 
-| Value | Behavior | Quand |
+| Value | Behavior | When |
 |---|---|---|
-| `sse_only` (default post-ADR) | Seul le chemin SSE est actif. SyncEngine et inline sync supprimés. | Cible finale |
-| `dual` | SSE actif + SyncEngine conservé en fallback read-only (drift detection uniquement, pas de push). | Transition post-démo si problème SSE |
-| `legacy` | Ancien comportement (SyncEngine + inline sync). SSE désactivé. | Rollback d'urgence |
+| `sse_only` (default post-ADR) | Only the SSE path is active. SyncEngine and inline sync removed. | Final target |
+| `dual` | SSE active + SyncEngine kept as read-only fallback (drift detection only, no push). | Post-demo transition if SSE issues |
+| `legacy` | Old behavior (SyncEngine + inline sync). SSE disabled. | Emergency rollback |
 
-**Stratégie de migration :**
-1. Merge avec `DEPLOY_MODE=dual` — SSE actif, SyncEngine réduit au drift detection
-2. Valider en staging pendant 48h (métriques : events SSE émis vs callbacks reçus)
-3. Basculer `DEPLOY_MODE=sse_only` — supprimer le code SyncEngine dans un PR de cleanup séparé
-4. Si incident en production → rollback `DEPLOY_MODE=legacy` via Helm values, redéploiement < 5 min
+**Migration strategy:**
+1. Merge with `DEPLOY_MODE=dual` — SSE active, SyncEngine reduced to drift detection
+2. Validate in staging for 48h (metrics: SSE events emitted vs callbacks received)
+3. Switch `DEPLOY_MODE=sse_only` — remove SyncEngine code in a separate cleanup PR
+4. If production incident → rollback `DEPLOY_MODE=legacy` via Helm values, redeployment < 5 min
 
-**Pour la démo :** `sse_only` directement (pas de legacy gateways à gérer).
+**For demo:** `sse_only` directly (no legacy gateways to manage).
 
 ---
 
-## Auth, Monitoring, Rate Limiting — Post-démo
+## Auth, Monitoring, Rate Limiting — Post-demo
 
-Ces concerns sont réels mais ne nécessitent PAS un nouveau composant. Ce sont des features incrémentales sur le CP :
+These concerns are real but do NOT require a new component. They are incremental features on the CP:
 
-### Auth des Links
-- Chaque Link s'authentifie avec un token (existant) ou mTLS (post-démo, CAB-1873)
-- Le token est provisionné à l'installation du Link
-- Le CP identifie chaque connexion SSE
+### Link Auth
+- Each Link authenticates with a token (existing) or mTLS (post-demo, CAB-1873)
+- The token is provisioned at Link installation
+- The CP identifies each SSE connection
 
 ### Monitoring
-- Prometheus métrique `stoa_link_connections_active{link_id, environment}`
-- Grafana dashboard "Links Health" : connexions, latence callback, events pending
-- Déjà dans le stack (Prometheus + Grafana déployés)
+- Prometheus metric `stoa_link_connections_active{link_id, environment}`
+- Grafana dashboard "Links Health": connections, callback latency, pending events
+- Already in the stack (Prometheus + Grafana deployed)
 
 ### Rate Limiting
-- Middleware FastAPI sur l'endpoint SSE : max reconnexions/minute par Link
-- Middleware sur le callback : max requests/seconde par Link
-- Fallback : Cloudflare rate limiting en frontal
+- FastAPI middleware on SSE endpoint: max reconnections/minute per Link
+- Middleware on callback: max requests/second per Link
+- Fallback: Cloudflare rate limiting at the edge
 
-### Priorité
-| Feature | Quand |
+### Priority
+| Feature | When |
 |---|---|
-| Token auth (existant) | Démo (déjà en place) |
-| Rate limiting middleware | Post-démo P1 |
-| Monitoring dashboard Links | Post-démo P1 |
-| mTLS par Link | Post-démo P2 |
+| Token auth (existing) | Demo (already in place) |
+| Rate limiting middleware | Post-demo P1 |
+| Monitoring dashboard Links | Post-demo P1 |
+| mTLS per Link | Post-demo P2 |
 
 ---
 
 ## Consequences
 
-### Positives
-- **1 seul chemin** de déploiement au lieu de 3 → 3x moins de surface de bugs
-- **Latence quasi nulle** — SSE push instantané vs polling 30s
-- **Firewall-friendly** — c'est le Link on-premise qui initie la connexion sortante HTTPS
-- **Moins de code** — suppression de SyncEngine + inline sync = soustraction nette
-- **Cohérent avec le positionnement** — "Define Once, Expose Everywhere" = CP définit, Links exposent
-- **Le CP ne connaît plus les gateways** — il connaît les Links, qui eux connaissent leurs gateways
+### Positive
+- **1 single path** for deployment instead of 3 → 3x less bug surface
+- **Near-zero latency** — instant SSE push vs 30s polling
+- **Firewall-friendly** — the on-premise Link initiates the outbound HTTPS connection
+- **Less code** — removal of SyncEngine + inline sync = net subtraction
+- **Consistent with positioning** — "Define Once, Expose Everywhere" = CP defines, Links expose
+- **CP no longer knows gateways** — it knows Links, which know their gateways
 
-### Négatives
-- **Latence perçue en Console** — le deploy n'est plus "instantané" (l'ancien push donnait un faux positif de succès immédiat). Le statut passe par PENDING → SYNCED. L'UX doit refléter ça (spinner, puis confirmation).
-- **Dépendance à la connexion SSE** — si le Link perd la connexion, les deploys s'accumulent en PENDING jusqu'au reconnect. Le mécanisme de rattrapage couvre ce cas.
+### Negative
+- **Perceived Console latency** — deploy is no longer "instant" (the old push gave a false positive of immediate success). Status goes through PENDING → SYNCED. UX must reflect this (spinner, then confirmation).
+- **SSE connection dependency** — if the Link loses connection, deploys accumulate in PENDING until reconnect. The catch-up mechanism covers this case.
 
-### Risques
-- **Migration des données** — les gateway_instances existantes avec `source != self_register` doivent être migrées ou supprimées
-- **STOA Connect Go** — le client Go doit implémenter le SSE listener (bibliothèque standard `net/http` ou `r3labs/sse`)
+### Risks
+- **Data migration** — existing gateway_instances with `source != self_register` must be migrated or deleted
+- **STOA Connect Go** — the Go client must implement the SSE listener (standard library `net/http` or `r3labs/sse`)
 
 ---
 
 ## Implementation — MEGA "Deploy Single Path"
 
-### Sous-tâche 1 — CP : Endpoint SSE + simplification deploy
-- Créer `GET /api/v1/links/{link_id}/events` (SSE endpoint)
-- Simplifier `deploy_api_to_env` : écrire PENDING + émettre SSE event. Rien d'autre.
-- Supprimer `_try_inline_sync`
-- Supprimer `SyncEngine`
-- Conserver `GET /api/v1/links/{link_id}/pending-deployments` pour le rattrapage reconnect
+### Sub-task 1 — CP: SSE Endpoint + deploy simplification
+- Create `GET /api/v1/links/{link_id}/events` (SSE endpoint)
+- Simplify `deploy_api_to_env`: write PENDING + emit SSE event. Nothing else.
+- Remove `_try_inline_sync`
+- Remove `SyncEngine`
+- Keep `GET /api/v1/links/{link_id}/pending-deployments` for reconnect catch-up
 
-### Sous-tâche 2 — Link : SSE client + exécution
-- Remplacer le polling cron par un SSE listener sur `/events`
-- Au reconnect : appeler `/pending-deployments` une fois, traiter le backlog, repasser en SSE
-- Le reste (apply sur gateway + callback) ne change pas
+### Sub-task 2 — Link: SSE client + execution
+- Replace cron polling with an SSE listener on `/events`
+- On reconnect: call `/pending-deployments` once, process the backlog, switch back to SSE
+- The rest (apply on gateway + callback) does not change
 
-### Sous-tâche 3 — Nettoyage données
-- Supprimer les gateway instances fantômes en base
-- Migrer les instances `source != self_register` ou les supprimer
-- Vérifier : 1 Link = 1 gateway instance par environnement
+### Sub-task 3 — Data cleanup
+- Delete ghost gateway instances in database
+- Migrate instances with `source != self_register` or delete them
+- Verify: 1 Link = 1 gateway instance per environment
 
-### Sous-tâche 4 — Test E2E
-- Script qui déroule le parcours démo complet :
-  1. Créer API dans Console
-  2. Deploy sur dev
-  3. Vérifier SSE event reçu par Link
-  4. Vérifier callback SYNCED
-  5. Vérifier statut dans Console
-- Ce script = critère de DONE du MEGA
+### Sub-task 4 — E2E Test
+- Script that runs the complete demo flow:
+  1. Create API in Console
+  2. Deploy to dev
+  3. Verify SSE event received by Link
+  4. Verify SYNCED callback
+  5. Verify status in Console
+- This script = DONE criteria for the MEGA
