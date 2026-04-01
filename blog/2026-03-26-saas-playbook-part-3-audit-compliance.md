@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: saas-playbook-3-audit-compliance
 title: "SaaS Audit Logging: GDPR, SOC 2, and Per-Tenant Isolation"
 description: "Build audit-ready multi-tenant APIs. Immutable logs, GDPR data subject requests, SOC 2 evidence collection, and per-tenant log isolation."
