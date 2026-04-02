@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: saas-playbook-3-audit-compliance
 title: "Journalisation d'Audit SaaS : GDPR, SOC 2 et Isolation par Tenant"
 description: "Construire des APIs multi-tenant prêtes pour l'audit. Logs immuables, demandes DSAR GDPR, collecte de preuves SOC 2 et isolation des logs par tenant."

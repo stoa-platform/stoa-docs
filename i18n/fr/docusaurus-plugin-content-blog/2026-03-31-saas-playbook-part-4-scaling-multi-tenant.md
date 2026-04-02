@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: saas-playbook-4-scaling-multi-tenant
 title: "Mise à l'Échelle des APIs Multi-Tenant de 50 à 5000 Tenants"
 description: "Ne reconstruisez pas votre API pour scaler. HPA, connection pooling, stratégies de cache et routage par shard de tenant qui évoluent avec votre activité SaaS."

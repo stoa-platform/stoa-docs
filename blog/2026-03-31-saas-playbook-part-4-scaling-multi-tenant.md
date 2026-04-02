@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: saas-playbook-4-scaling-multi-tenant
 title: "Scaling Multi-Tenant APIs from 50 to 5000 Tenants"
 description: "Don't rebuild your API to scale. HPA, connection pooling, caching strategies, and tenant shard routing that grow with your SaaS business."

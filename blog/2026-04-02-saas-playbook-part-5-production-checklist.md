@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: saas-playbook-5-production-checklist
 title: "SaaS Production Checklist: 20 Gates Before Go-Live"
 description: "Not ready until you pass all 20. Security, performance, compliance, observability, and incident response gates for multi-tenant SaaS APIs."

@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: saas-playbook-5-production-checklist
 title: "Checklist de Production SaaS : 20 Portes Avant le Lancement"
 description: "Pas prêt tant que vous n'avez pas passé les 20. Portes de sécurité, performance, conformité, observabilité et réponse aux incidents pour les APIs SaaS multi-tenant."

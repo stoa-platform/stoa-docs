@@ -6,10 +6,6 @@ keywords: [analytics, Vercel, privacy, GDPR, tracking]
 custom_edit_url: null
 ---
 
-<head>
-  <meta name="robots" content="noindex, nofollow" />
-</head>
-
 # Web Analytics
 
 Track visitors and page views on your STOA deployment using Vercel Analytics.
