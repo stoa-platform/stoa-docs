@@ -7,6 +7,7 @@
     "start": "docusaurus start",
     "prebuild": "bash scripts/manage-scheduled-posts.sh --apply",
     "build": "docusaurus build",
+    "postbuild": "node scripts/enrich-sitemap-hreflang.mjs",
     "build:fr": "docusaurus build --locale fr",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
