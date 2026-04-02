@@ -1,4 +1,36 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/docs/fr/docs/guides/quickstart",
+      "destination": "/docs/guides/stoactl-quickstart",
+      "permanent": true
+    },
+    {
+      "source": "/docs/reference/adr/stoactl-cli",
+      "destination": "/docs/architecture/adr/adr-002-stoactl-cli",
+      "permanent": true
+    },
+    {
+      "source": "/markdown-page",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/mcp-servers",
+      "destination": "/docs/concepts/mcp-gateway",
+      "permanent": true
+    },
+    {
+      "source": "/docs/trademarks",
+      "destination": "/docs/legal/trademarks",
+      "permanent": true
+    },
+    {
+      "source": "/docs/legal",
+      "destination": "/docs/legal/terms",
+      "permanent": true
+    }
+  ]
 }
