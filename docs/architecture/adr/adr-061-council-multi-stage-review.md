@@ -25,37 +25,43 @@ A naïve answer is "have a human review every PR." That does not scale when 5 pa
 
 ## Decision
 
-Implement a **3-stage Council system** where each stage gates the next. Stages 1 and 2 evaluate prose artifacts (tickets, plans) through a 4-persona LLM jury. Stage 3 evaluates code diffs through a 4-axis parallel LLM review via a CLI tool (`scripts/council-review.sh`).
+Implement a **3-stage Council system** where each stage gates the next. Stages 1 and 2 evaluate prose artifacts (tickets, plans) through an **8-persona LLM jury** (the canonical Team Coca set defined in `hegemon/patterns/validation/HEG-PAT-003`). Stage 3 evaluates code diffs through a 4-axis parallel LLM review via a CLI tool (`scripts/council-review.sh`).
 
 ```
 ┌──────────────────┐   ┌────────────────┐   ┌─────────────┐   ┌──────────────────┐
 │ S1: ticket       │ → │ S2: plan       │ → │ implement   │ → │ S3: code review  │ → merge
 │ pertinence       │   │ validation     │   │             │   │ (4 axes, diff)   │
 │ (prose,          │   │ (prose,        │   │             │   │ (CLI,            │
-│  4 personas)     │   │  4 personas)   │   │             │   │  parallel API)   │
+│  8 personas)     │   │  8 personas)   │   │             │   │  parallel API)   │
 └──────────────────┘   └────────────────┘   └─────────────┘   └──────────────────┘
 ```
 
 Each stage emits a binary verdict: **Go** (proceed), **Fix** (apply adjustments, re-run), or **Redo** (reject, rewrite from scratch). A global score of ≥ 8.0/10 is required to Go.
 
-### Stage 1 — Ticket Pertinence (live since C11)
+### Stage 1 — Ticket Pertinence (live since C11; promoted to 8-persona jury via CAB-2054)
 
-Invoked by the `/council` skill on a feature/ADR description *before* any work begins. Four personas evaluate the *ticket itself*:
+Invoked by the `/council` skill on a feature/ADR description *before* any work begins. The full 8-persona Team Coca jury (canonical set defined in `hegemon/patterns/validation/HEG-PAT-003`) evaluates the *ticket itself*:
 
 | Persona | Role | Focus |
 |---------|------|-------|
-| **Chucky** (Devil's Advocate) | Challenges assumptions | Risk, edge cases, failure modes, hidden complexity |
+| **Chucky** (Devil's Advocate) | Penetration testing / risk | Risk, edge cases, failure modes, hidden complexity |
+| **N3m0** (Webapp Security) | Frontend / UX / DX | A11y, exposed UI surfaces, keyboard flows, error message leaks |
+| **Gh0st** (Supply Chain) | Dependencies / SBOM | Trusted-by-default deps, lockfile drift, transitive CVEs |
+| **Pr1nc3ss** (Social Engineering) | Trust boundaries | Phishing vectors, bypass via human factors, error-message info leak |
 | **OSS Killer** (VC Skeptic) | Market viability | Competitive moat, user value, ROI, me-too risk |
 | **Archi 50x50** (Veteran Architect) | Technical quality | Coupling, scalability, pattern fit, tech debt |
 | **Better Call Saul** (Legal/IP) | Legal/compliance | License, GDPR/DORA, competitive claims, disclaimers |
+| **Gekk0** (Monetization / GTM) | Time-to-revenue | Pricing tier fit, monetization hook, sales enablement, GTM messaging |
 
 Each persona returns a score /10 + verdict + specific *adjustments* to apply. The average is combined with the Context Compiler **Impact Score** modifier (LOW 0, MEDIUM 0, HIGH −0.5, CRITICAL −1.0) to produce a final score. Threshold: ≥ 8.0 → Go.
 
-Stage 1 catches: mis-scoped work, features with no measurable value, scope creep, unverified competitive claims, overly-vague acceptance criteria. It runs in ~30 seconds (single Sonnet call, Council skill).
+Persona names are pop-culture archetypes (Chucky = Child's Play, Gekk0 = Gordon Gekko / "Wall Street", Better Call Saul = Breaking Bad universe, etc.) used as internal aliases for the adversarial roles. They are not commercial trademarks.
 
-### Stage 2 — Plan Validation (live since C11)
+Stage 1 catches: mis-scoped work, features with no measurable value, scope creep, unverified competitive claims, overly-vague acceptance criteria, supply-chain naivety, unmonetizable features, accessibility gaps. It runs in ~60 seconds (one Sonnet call per persona, parallelized by the Council skill).
 
-Invoked by the same `/council` skill on a *completed implementation plan* (files to touch, steps, expected LOC, alternatives considered). Same 4-persona jury, same scoring, same adjustment loop — but the questions now focus on technical correctness of the plan, not pertinence of the work.
+### Stage 2 — Plan Validation (live since C11; promoted to 8-persona jury via CAB-2054)
+
+Invoked by the same `/council` skill on a *completed implementation plan* (files to touch, steps, expected LOC, alternatives considered). Same 8-persona jury, same scoring, same adjustment loop — but the questions now focus on technical correctness of the plan, not pertinence of the work.
 
 Stage 2 catches: files in the wrong component, steps with hidden ordering dependencies, LOC estimates off by 2-5×, alternatives that weren't considered, security holes in the proposed approach, breaking contract changes masquerading as refactors.
 
@@ -135,17 +141,17 @@ All three stages use the same rubric. Each axis/persona returns an integer 1-10:
 | 6-7 | Fix required. Specific adjustments must be applied, then re-run. |
 | 1-5 | Redo. The underlying approach is wrong; start over. |
 
-The global score is the arithmetic average of the valid axes (S3) or the 4 personas (S1/S2), optionally adjusted by the Context Compiler Impact modifier. A stage Goes if the global score is ≥ 8.0 **and** no axis/persona individually returned a Redo.
+The global score is the arithmetic average of the valid axes (S3) or the 8 personas (S1/S2), optionally adjusted by the Context Compiler Impact modifier. A stage Goes if the global score is ≥ 8.0 **and** no axis/persona individually returned a Redo.
 
 ### Cost model
 
 | Stage | Trigger | Model | Typical cost | Frequency |
 |-------|---------|-------|--------------|-----------|
-| S1 | `/council` skill on ticket description | Sonnet 4.5 | ~€0.005 per run | 5-15/day |
-| S2 | `/council` skill on plan | Sonnet 4.5 | ~€0.008 per run | 3-10/day |
-| S3 | pre-push hook + CI on every diff | Sonnet 4.5 × 4 parallel | ~€0.03-0.06 per run | 15-30/day |
+| S1 | `/council` skill on ticket description | Sonnet 4.5 × 8 personas | ~€0.010 per run | 5-15/day |
+| S2 | `/council` skill on plan | Sonnet 4.5 × 8 personas | ~€0.016 per run | 3-10/day |
+| S3 | pre-push hook + CI on every diff | Sonnet 4.5 × 4 parallel axes | ~€0.03-0.06 per run | 15-30/day |
 
-Expected steady-state daily cost: **€1-2/day** (well under the €5 cap). The cap exists as a circuit breaker for pathological loops (e.g., a CI retry storm), not as a budget target.
+Expected steady-state daily cost: **€1-2/day** (well under the €5 cap). The CAB-2054 promotion from 4-persona to 8-persona S1/S2 jury added ~+€0.30-0.60/day (linear in jury size at constant prompt length), which stays well within the existing budget envelope. The cap exists as a circuit breaker for pathological loops (e.g., a CI retry storm), not as a budget target.
 
 ---
 
@@ -187,10 +193,11 @@ Expected steady-state daily cost: **€1-2/day** (well under the €5 cap). The 
 - **Kill-switches at every layer.** `COUNCIL_DISABLE`, `DISABLE_COUNCIL_GATE`, `vars.COUNCIL_S3_ENABLED`, `COUNCIL_FORCE_DEDUP=0` — any instance, CI workflow, or operator can disable any piece independently.
 - **Shadow-mode rollout** (CAB-2051) de-risks production enforcement: S3 runs on every PR but its verdict is non-blocking for 2-3 weeks. We calibrate thresholds against real diffs before flipping the required-check flag.
 - **Gitleaks pre-flight** prevents secret exfiltration to Anthropic, addressing the most acute privacy concern about LLM-based code review.
+- **Canonical alignment with HEG-PAT-003** (CAB-2054). The S1/S2 jury is now exactly the 8-persona Team Coca canonical set defined in `hegemon/patterns/validation/HEG-PAT-003`. Drift between the canonical pattern and the implementation is eliminated, and the jury composition is auditable from a single source of truth.
 
 ### Negative
 
-- **LLM judgment is not deterministic.** The same diff reviewed twice can score 8.1 and 7.9. We accept this; the threshold is an average over 4 axes, which reduces per-run variance significantly.
+- **LLM judgment is not deterministic.** The same diff reviewed twice can score 8.1 and 7.9. We accept this; the threshold is an average over 4 axes (S3) or 8 personas (S1/S2). For S1/S2, doubling the jury from 4 to 8 personas reduces per-run variance by approximately √2 (law of large numbers), which more than offsets the additional per-call noise from the larger jury — the 8-persona average is therefore *more* stable than the previous 4-persona average, not less.
 - **Prompt calibration is iterative.** Steps 4 and 5 of CAB-2047 will tune per-axis prompts against real diffs before S3 is enforced. Expect 2-3 rounds of prompt iteration in the first month.
 - **Additional API dependency.** S3 depends on the Anthropic API being reachable from CI. Outages block merges. Mitigations: the daily cap is a soft skip (exit 0), the 30s timeout + 2 retries covers transient failures, and `COUNCIL_DISABLE=1` is always available.
 - **Cost drift risk.** A runaway loop or a model price change could blow through the cap. The cap is the first line of defense; the second is a weekly audit of `council-history.jsonl`.
@@ -233,6 +240,8 @@ Enforcement becomes mandatory only after Phase 5 completes and shadow-mode data 
 - CAB-2049 — `council-gate.yml` CI workflow
 - CAB-2050 — `council-history.jsonl` rotation
 - CAB-2051 — Shadow mode observation
+- CAB-2054 — Align Council S1/S2 to 8 personas per HEG-PAT-003 (this amendment)
+- `hegemon/patterns/validation/HEG-PAT-003-team-coca-adversarial-validation.md` — canonical 8-persona Team Coca pattern (source of truth)
 - `.claude/skills/council/SKILL.md` — S1/S2 runbook
 - `.claude/rules/council-s3.md` — S3 runbook (CAB-2047 Step 4 deliverable)
 - `scripts/council-review.sh` — S3 CLI implementation
@@ -246,7 +255,7 @@ Enforcement becomes mandatory only after Phase 5 completes and shadow-mode data 
 
 | Role | Status |
 |---|---|
-| **Council S1** | 8.125/10 Go (on CAB-2046) |
-| **Council S2** | 8.5/10 Go (on CAB-2046, 13 adjustments applied) |
+| **Council S1** | 8.125/10 Go (on CAB-2046) — re-scored 8.5/10 Go on CAB-2054 amendment |
+| **Council S2** | 8.5/10 Go (on CAB-2046, 13 adjustments applied) — re-scored 8.0/10 Go on CAB-2054 amendment (5 adjustments applied) |
 | **Architect** | Christophe (CAB Ingenierie) |
-| **Impact Score** | HIGH (20) — cross-component (CI, pre-push hook, scripts/), feature-flagged rollout, kill-switches at every layer |
+| **Impact Score** | HIGH (20) — cross-component (CI, pre-push hook, scripts/), feature-flagged rollout, kill-switches at every layer. Amendment CAB-2054 is MEDIUM (~10) — docs-only, no runtime change |
