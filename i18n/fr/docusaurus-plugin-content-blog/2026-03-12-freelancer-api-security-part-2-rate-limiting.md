@@ -4,7 +4,6 @@ title: "Rate Limiting Efficace (Sécurité Freelance Partie 2)"
 description: "Fenêtres glissantes, allocations de burst, limites par endpoint et plans étagés. Comment affiner le rate limiting sans casser vos utilisateurs légitimes."
 authors: [stoa-team]
 tags: [security, tutorial, api-gateway]
-unlisted: true
 keywords:
   - api rate limiting strategies
   - sliding window rate limiting

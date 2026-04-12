@@ -4,7 +4,6 @@ title: "Guide d'Achat API Gateway PME 2026 : Trouver la Bonne Solution"
 description: "Petite équipe, grands choix. Tableaux de fonctionnalités, modèles de prix et cadre de décision pour les PME évaluant Kong, Gravitee, STOA et les options cloud."
 authors: [stoa-team]
 tags: [comparison, tutorial, api-gateway]
-unlisted: true
 keywords:
   - API gateway for small business
   - SMB API gateway comparison 2026

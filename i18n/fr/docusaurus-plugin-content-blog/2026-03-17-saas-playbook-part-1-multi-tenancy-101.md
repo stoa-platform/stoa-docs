@@ -1,5 +1,4 @@
 ---
-unlisted: true
 slug: saas-playbook-1-multi-tenancy-101
 title: "Multi-Tenancy 101 : L'Isolation des Tenants SaaS à Grande Échelle"
 description: "Namespace par tenant ou cluster partagé ? Comparez les modèles d'isolation, le RBAC Keycloak et les politiques OPA pour les APIs SaaS multi-tenant."

@@ -4,7 +4,6 @@ title: "Pistes d'Audit Quand les Choses Tournent Mal (Freelance Partie 3)"
 description: "Que faisait votre API à 3h du matin ? Journalisation structurée, réponse aux incidents sans équipe ops, et pistes d'audit interrogeables pour les développeurs solo."
 authors: [stoa-team]
 tags: [security, tutorial, api-gateway, compliance]
-unlisted: true
 keywords:
   - api audit trail freelancer
   - api logging best practices

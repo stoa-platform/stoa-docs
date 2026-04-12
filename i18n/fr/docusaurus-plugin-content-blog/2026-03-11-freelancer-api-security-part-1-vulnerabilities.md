@@ -4,7 +4,6 @@ title: "Vos APIs sont plus vulnérables que vous ne le pensez (Partie 1)"
 description: "Patterns d'attaques réels ciblant les APIs de développeurs solo. Ce qui casse en premier, comment les attaquants vous trouvent, et la protection 80% sans complexité supplémentaire."
 authors: [stoa-team]
 tags: [security, tutorial, api-gateway, education]
-unlisted: true
 keywords:
   - api security freelancer
   - api vulnerabilities solo developer
