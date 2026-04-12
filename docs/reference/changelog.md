@@ -16,8 +16,47 @@ keywords:
 Complete release history for STOA Platform. Each release includes highlights, breaking changes, and upgrade instructions.
 
 :::tip Latest
-**v2.3.0** (March 2026) — Pingora connection engine, per-tenant chat settings, zero-config Helm bootstrap.
+**April 2026** — Per-component releases via Release Please. Latest: `control-plane-api@1.3.1`, `portal@1.1.2`, `stoa-gateway@0.9.3`, `control-plane-ui@1.2.2`.
 :::
+
+:::info Versioning change
+Since April 2026, STOA Platform uses **independent per-component versioning** (Release Please) instead of monolithic `vX.Y.Z` releases. Each component (`control-plane-api`, `control-plane-ui`, `portal`, `stoa-gateway`, `stoa-go`) publishes its own semver tags. The last monolithic release was `v2.3.0`.
+:::
+
+---
+
+<!-- AUTOGEN:RELEASES:START -->
+
+## Per-Component Releases (2026-04)
+
+Automated per-component releases. Full changelog in each GitHub Release.
+
+| Component | Version | Date | Release |
+|-----------|---------|------|---------|
+| control-plane-api | v1.3.1 | 2026-04-11 | [GitHub](https://github.com/stoa-platform/stoa/releases/tag/control-plane-api-v1.3.1) |
+| portal | v1.1.2 | 2026-04-11 | [GitHub](https://github.com/stoa-platform/stoa/releases/tag/portal-v1.1.2) |
+| stoa-gateway | v0.9.3 | 2026-04-11 | [GitHub](https://github.com/stoa-platform/stoa/releases/tag/stoa-gateway-v0.9.3) |
+| control-plane-ui | v1.2.2 | 2026-04-11 | [GitHub](https://github.com/stoa-platform/stoa/releases/tag/control-plane-ui-v1.2.2) |
+| control-plane-ui | v1.2.0 → v1.2.1 | 2026-04-09 | [v1.2.1](https://github.com/stoa-platform/stoa/releases/tag/control-plane-ui-v1.2.1) |
+| portal | v1.1.1 | 2026-04-09 | [GitHub](https://github.com/stoa-platform/stoa/releases/tag/portal-v1.1.1) |
+| stoa-go | v0.3.4 | 2026-04-09 | [GitHub](https://github.com/stoa-platform/stoa/releases/tag/stoa-go-v0.3.4) |
+| stoa-gateway | v0.9.2 | 2026-04-09 | [GitHub](https://github.com/stoa-platform/stoa/releases/tag/stoa-gateway-v0.9.2) |
+| control-plane-api | v1.3.0 | 2026-04-09 | [GitHub](https://github.com/stoa-platform/stoa/releases/tag/control-plane-api-v1.3.0) |
+| portal | v1.1.0 | 2026-04-08 | [GitHub](https://github.com/stoa-platform/stoa/releases/tag/portal-v1.1.0) |
+| control-plane-api | v1.2.0 | 2026-04-08 | [GitHub](https://github.com/stoa-platform/stoa/releases/tag/control-plane-api-v1.2.0) |
+| stoa-go | v0.3.3 | 2026-04-08 | [GitHub](https://github.com/stoa-platform/stoa/releases/tag/stoa-go-v0.3.3) |
+
+## Per-Component Releases (2026-03)
+
+| Component | Version | Date |
+|-----------|---------|------|
+| control-plane-api | v1.1.0 | 2026-03-25 |
+| stoa-gateway | v0.9.1 | 2026-03-25 |
+| stoa-go | v0.3.2 | 2026-03-25 |
+| control-plane-ui | v1.1.0 | 2026-03-25 |
+| stoa-go | v0.3.1 | 2026-03-25 |
+
+<!-- AUTOGEN:RELEASES:END -->
 
 ---
 
