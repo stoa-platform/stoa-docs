@@ -3,7 +3,7 @@ slug: apigee-alternative-open-source
 title: "Apigee Alternative: Why Teams Switch to Open Source"
 authors: [stoa-team]
 tags: [comparison, open-source, migration]
-description: "Google Apigee costs add up fast. Compare open-source gateways on features, pricing, and lock-in risk with a proven migration roadmap."
+description: "Considering alternatives to Google Apigee? Compare open-source gateways on features, pricing, and lock-in risk with a proven migration roadmap."
 keywords:
   - Apigee alternative
   - Apigee open source alternative
@@ -223,7 +223,7 @@ For detailed technical walkthroughs, see our [migration documentation](https://d
 
 ### What are the actual cost differences between Apigee and open source?
 
-Apigee pricing varies significantly based on API call volume, number of environments, and contract terms. Contact Google Cloud directly for current pricing. Open-source alternatives like STOA eliminate platform license fees but require infrastructure costs (Kubernetes cluster) and engineering time for setup and operations. For organizations with existing Kubernetes expertise, the total cost of ownership can be 60-80% lower than Apigee over three years. See the [complete migration guide](/blog/api-gateway-migration-guide-2026) for TCO comparison frameworks.
+Apigee pricing varies significantly based on API call volume, number of environments, and contract terms. Contact Google Cloud directly for current pricing. Open-source alternatives like STOA eliminate platform license fees but require infrastructure costs (Kubernetes cluster) and engineering time for setup and operations. For organizations with existing Kubernetes expertise, the total cost of ownership may be substantially lower than Apigee over three years, depending on scale and operational maturity. See the [complete migration guide](/blog/api-gateway-migration-guide-2026) for TCO comparison frameworks.
 
 ### How complex is migrating from Apigee to an open-source gateway?
 
@@ -242,7 +242,7 @@ Not necessarily. Features that Apigee includes (developer portal, analytics, mul
 
 ---
 
-## Ready to bridge your legacy APIs to AI agents?
+## Ready to bridge your existing APIs to AI agents?
 
 STOA is open-source (Apache 2.0) and free to try.
 

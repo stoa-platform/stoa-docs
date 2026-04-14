@@ -466,7 +466,7 @@ Authorization: Bearer <token-from-oauth2>
 | Feature | Support |
 |---------|---------|
 | **AI agent discovery** | ✅ MCP protocol + K8s CRDs |
-| **Legacy API bridging** | ✅ REST/SOAP → MCP translation |
+| **existing API bridging** | ✅ REST/SOAP → MCP translation |
 | **Automatic auth** | ✅ OAuth2, API key, mTLS injection |
 | **Multi-tenant** | ✅ Namespace-scoped Tools |
 | **GitOps-ready** | ✅ Declarative Tool manifests |
@@ -501,7 +501,7 @@ Learn more in the [MCP Gateway tutorial](/blog/what-is-mcp-gateway) and [Quick S
 | **Ingress** | Low | HTTP only | ❌ | ✅ | Simple web apps, blogs, single-tenant |
 | **Gateway API** | Medium | HTTP, TCP, TLS | ❌ | ✅ | Multi-tenant platforms, canary deployments |
 | **Sidecar** | High | All (transparent) | ⚠️ Per-pod MCP | ✅ | Microservices with service mesh, strict isolation |
-| **MCP Gateway** | Medium | HTTP + MCP | ✅ Native | ✅ | AI-native apps, legacy API exposure to agents |
+| **MCP Gateway** | Medium | HTTP + MCP | ✅ Native | ✅ | AI-native apps, existing API exposure to agents |
 
 ### When to Use Each Pattern
 
@@ -807,7 +807,7 @@ metadata:
 2. **Generate Tool CRDs** from OpenAPI (STOA CLI: `stoactl bridge`)
 3. **Deploy MCP gateway** alongside existing gateway
 4. **Onboard AI agents** to MCP endpoint
-5. **Sunset legacy gateway** after agent migration complete
+5. **Sunset existing gateway** after agent migration complete
 
 See the [Open Source API Gateway 2026 Guide](/blog/open-source-api-gateway-2026) for vendor-specific migration paths.
 
@@ -841,7 +841,7 @@ Avoid sidecars if:
 
 STOA's multi-mode architecture lets you mix both: central edge-mcp gateway for AI agents, sidecar mode for payment/auth services.
 
-### How does MCP gateway handle authentication for legacy APIs?
+### How does MCP gateway handle authentication for existing APIs?
 
 The MCP gateway supports five authentication mechanisms via the `Tool` CRD:
 
@@ -851,7 +851,7 @@ The MCP gateway supports five authentication mechanisms via the `Tool` CRD:
 4. **Basic Auth**: Gateway injects `Authorization: Basic <base64>` header
 5. **Custom headers**: Any static header (e.g., `X-API-Key`)
 
-For OAuth2, the gateway **caches tokens** until expiry and auto-refreshes. For mTLS, it watches cert-manager Certificate resources and reloads on renewal. This allows AI agents to call legacy APIs without knowing authentication details — the gateway injects credentials transparently.
+For OAuth2, the gateway **caches tokens** until expiry and auto-refreshes. For mTLS, it watches cert-manager Certificate resources and reloads on renewal. This allows AI agents to call existing APIs without knowing authentication details — the gateway injects credentials transparently.
 
 Example OAuth2 Tool:
 
@@ -876,7 +876,7 @@ Kubernetes-native API gateway patterns have evolved far beyond simple Ingress co
 - **Ingress** for simple HTTP routing
 - **Gateway API** for multi-tenant platforms with complex traffic management
 - **Sidecar** for service mesh integration and strict per-service isolation
-- **MCP Gateway** for AI-native applications and legacy API exposure to agents
+- **MCP Gateway** for AI-native applications and existing API exposure to agents
 
 STOA Platform's unified architecture (ADR-024) supports all four modes, enabling organizations to adopt the right pattern for each use case without rewriting infrastructure. Start with the [Quick Start guide](/docs/guides/quickstart) to deploy your first MCP-enabled gateway, or explore the [Architecture documentation](/docs/concepts/architecture) for multi-mode strategies.
 

@@ -685,7 +685,7 @@ Circuit breakers won't prevent all failures, but they'll ensure your system fail
 
 ---
 
-## Ready to bridge your legacy APIs to AI agents?
+## Ready to bridge your existing APIs to AI agents?
 
 STOA is open-source (Apache 2.0) and free to try.
 

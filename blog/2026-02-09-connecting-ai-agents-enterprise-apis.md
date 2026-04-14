@@ -318,7 +318,7 @@ Connecting AI agents to enterprise APIs securely is not optional — it is the f
 - [AI Agent Security: 5 Authentication Patterns](/blog/ai-agent-security-authentication-patterns) — OAuth2, mTLS, certificate binding for enterprise AI agents
 - [STOA Security Architecture](/blog/stoa-api-security-architecture) — Defense-in-depth for AI-native API gateways
 - [How We Built an AI Factory That Ships 72 Story Points Per Day](/blog/how-we-built-ai-factory-ships-72-points-per-day) — The coordination protocols behind STOA's multi-instance AI development workflow
-- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
+- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for existing gateway modernization
 - [MCP Gateway Concepts](https://docs.gostoa.dev/docs/concepts/mcp-gateway) — Deep dive into Model Context Protocol
 - [API Gateway Patterns](https://docs.gostoa.dev/docs/guides/fiches/api-gateway-patterns) — Architecture patterns for AI-native gateways
 

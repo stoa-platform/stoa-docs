@@ -53,7 +53,7 @@ The foundation of a successful migration is knowing exactly what you have. Incom
 - Traffic volume analysis from the last 30 days
 
 **How to gather:**
-- Legacy gateway logs or analytics dashboard (extract traffic stats)
+- existing gateway logs or analytics dashboard (extract traffic stats)
 - Developer portal or API catalog (if available)
 - Source code repository analysis (`grep -r "api.example.com"`)
 - Interview application teams (often know about undocumented APIs)
@@ -167,12 +167,12 @@ This phase deploys the new gateway alongside your existing one. The new gateway 
 
 **How to deploy:**
 - Use infrastructure-as-code (Terraform, Helm charts, Ansible)
-- Deploy to the same Kubernetes cluster or network zone as the legacy gateway
+- Deploy to the same Kubernetes cluster or network zone as the existing gateway
 - Configure DNS for the new gateway hostname (e.g., `api-v2.example.com`) but don't publish it yet
 - Set up mirroring: configure your load balancer or service mesh to duplicate requests to the new gateway
 
 **Watch for:**
-- Resource contention (new gateway competing for CPU/RAM with legacy gateway)
+- Resource contention (new gateway competing for CPU/RAM with existing gateway)
 - Firewall rules blocking new gateway → upstream service communication
 - Certificate validation failures (new gateway presents different TLS cert)
 
@@ -195,7 +195,7 @@ kubectl logs -n gateway-system deployment/stoa-gateway --tail=100 | grep "GET /a
 
 ### Step 6: Import API Configurations
 
-**Objective:** Recreate all APIs from your legacy gateway in the new gateway, using declarative configuration where possible.
+**Objective:** Recreate all APIs from your existing gateway in the new gateway, using declarative configuration where possible.
 
 **Deliverables:**
 - All APIs from Step 1 inventory configured in the new gateway
@@ -203,7 +203,7 @@ kubectl logs -n gateway-system deployment/stoa-gateway --tail=100 | grep "GET /a
 - Routes, upstream targets, and health checks configured
 
 **How to import:**
-- **Option 1 (best):** Export OpenAPI specs from legacy gateway, import into new gateway
+- **Option 1 (best):** Export OpenAPI specs from existing gateway, import into new gateway
 - **Option 2:** Use migration scripts to convert proprietary config (e.g., Kong declarative YAML → STOA UAC)
 - **Option 3:** Manual recreation (tedious but ensures clean config)
 
@@ -224,7 +224,7 @@ kubectl logs -n gateway-system deployment/stoa-gateway --tail=100 | grep "GET /a
 curl https://api-v2.example.com/v1/apis -H "Authorization: Bearer admin-token"
 
 # Compare counts
-echo "Legacy gateway: $(wc -l < legacy_api_list.txt) APIs"
+echo "existing gateway: $(wc -l < legacy_api_list.txt) APIs"
 echo "New gateway: $(wc -l < new_api_list.txt) APIs"
 ```
 
@@ -240,13 +240,13 @@ echo "New gateway: $(wc -l < new_api_list.txt) APIs"
 **Deliverables:**
 - All policies from Step 2 inventory configured in the new gateway
 - Authentication integration tested (OAuth2, API keys, mTLS)
-- Rate limiting tiers replicated (same quotas as legacy gateway)
+- Rate limiting tiers replicated (same quotas as existing gateway)
 - CORS policies applied (same allowed origins and headers)
 
 **How to replicate:**
 - For standard policies (OAuth2, API keys), use built-in new gateway features
 - For custom logic (request validation, transformation), reimplement using new gateway's policy language or plugins
-- Connect new gateway to same identity provider as legacy gateway (Keycloak, Okta, Azure AD)
+- Connect new gateway to same identity provider as existing gateway (Keycloak, Okta, Azure AD)
 
 **Watch for:**
 - OAuth2 token validation endpoint differences (some gateways cache introspection results, others don't)
@@ -280,7 +280,7 @@ curl -X OPTIONS -H "Origin: https://app.example.com" https://api-v2.example.com/
 **Deliverables:**
 - Synthetic test suite covering all APIs from Step 1 inventory
 - Load test results showing new gateway handles expected throughput
-- Comparison report: new gateway vs. legacy gateway performance
+- Comparison report: new gateway vs. existing gateway performance
 
 **How to test:**
 - Create test scripts using tools like k6, Locust, JMeter, or Postman collections
@@ -598,13 +598,13 @@ The new gateway is now handling 100% of production traffic. This phase ensures s
 
 ### Step 15: Decommission Old Gateway
 
-**Objective:** Safely remove the legacy gateway from production, preserving configuration for audit and rollback.
+**Objective:** Safely remove the existing gateway from production, preserving configuration for audit and rollback.
 
 **Deliverables:**
-- Legacy gateway configuration exported and archived in Git
-- Legacy gateway pods/VMs shut down (not deleted yet)
+- existing gateway configuration exported and archived in Git
+- existing gateway pods/VMs shut down (not deleted yet)
 - DNS TTL restored to normal value (e.g., 300s or 3600s)
-- Monitoring and alerting for legacy gateway disabled
+- Monitoring and alerting for existing gateway disabled
 - Documentation updated (runbooks, architecture diagrams)
 
 **How to decommission:**

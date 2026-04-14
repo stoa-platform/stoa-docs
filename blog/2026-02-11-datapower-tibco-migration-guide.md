@@ -4,7 +4,7 @@ title: "DataPower and TIBCO Migration to Modern API Gateways"
 authors: [stoa-team]
 tags: [migration, architecture]
 description: "Still on DataPower or TIBCO? Protocol translation, identity migration, and the sidecar approach that avoids a risky big-bang cutover."
-keywords: [DataPower migration, TIBCO migration, IBM DataPower alternative, TIBCO BusinessWorks migration, API gateway modernization, legacy gateway migration, enterprise integration migration]
+keywords: [DataPower migration, TIBCO migration, IBM DataPower alternative, TIBCO BusinessWorks migration, API gateway modernization, existing gateway migration, enterprise integration migration]
 ---
 <!-- last verified: 2026-02 -->
 
@@ -214,7 +214,7 @@ This article is part of our API gateway migration series. Explore guides for oth
 - **[Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Vendor-neutral decision framework and phased migration strategy
 - **[webMethods Migration Guide](/blog/webmethods-migration-guide)** — Sidecar approach for Software AG platforms
 - **[MuleSoft Migration Guide](/blog/mulesoft-migration-open-source-gateway)** — Decouple gateway from iPaaS, migrate to open source
-- **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Escape vendor lock-in, move to self-hosted gateways
+- **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Reduce vendor dependency, move to self-hosted gateways
 
 For detailed technical walkthroughs, see our [migration documentation](https://docs.gostoa.dev/docs/guides/migration/).
 
@@ -241,7 +241,7 @@ For simple SOAP-to-REST transformations, migrate to modern gateways. For complex
 
 ---
 
-## Ready to bridge your legacy APIs to AI agents?
+## Ready to bridge your existing APIs to AI agents?
 
 STOA is open-source (Apache 2.0) and free to try.
 

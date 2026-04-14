@@ -257,7 +257,7 @@ STOA's MCP Gateway is designed for AI-native workflows. Learn how to:
 - [Gateway Modes](/docs/concepts/gateway) — Edge, sidecar, proxy, and shadow deployment patterns
 - [GitOps in 10 Minutes](/blog/gitops-in-10-minutes) — Deploy STOA with Kubernetes and ArgoCD
 
-### Migrate from Legacy Gateways
+### Migrate from existing gateways
 If you're evaluating STOA as a replacement for an existing gateway:
 - [API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Comprehensive migration playbook
 - [Open Source API Gateway Comparison](/blog/open-source-api-gateway-2026) — Feature matrix and decision guide

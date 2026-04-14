@@ -1,6 +1,7 @@
 # =============================================================================
-# CAB-953 - Documentation Audit Workflow
-# Blocks PRs containing client/prospect names
+# Documentation Audit Workflow
+# - CAB-953: Blocks PRs containing client/prospect names
+# - Content Compliance: Blocks PRs with P0 violations (competitor pricing, etc.)
 # =============================================================================
 name: Docs Audit
 
@@ -161,4 +162,94 @@ jobs:
             echo ":white_check_mark: **Audit Passed**" >> $GITHUB_STEP_SUMMARY
           else
             echo ":x: **Audit Failed** - Fix critical findings before merge" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  audit-content-compliance:
+    name: Content Compliance (P0/P1)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Make script executable
+        run: chmod +x scripts/audit-content-compliance.sh
+
+      - name: Run content compliance audit
+        id: compliance
+        run: |
+          set +e
+          OUTPUT=$(scripts/audit-content-compliance.sh --verbose 2>&1)
+          EXIT_CODE=$?
+          set -e
+
+          echo "$OUTPUT"
+          echo "$OUTPUT" > compliance-report.txt
+
+          # Strip ANSI codes for parsing
+          CLEAN=$(echo "$OUTPUT" | sed 's/\x1b\[[0-9;]*m//g')
+          P0=$(echo "$CLEAN" | awk '/P0 \(blocking\):/{print $NF}')
+          P1=$(echo "$CLEAN" | awk '/P1 \(warning\):/{print $NF}')
+          echo "p0_count=${P0:-0}" >> $GITHUB_OUTPUT
+          echo "p1_count=${P1:-0}" >> $GITHUB_OUTPUT
+          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+
+          # Only fail on P0 (exit 1). P1 (exit 2) = warning only
+          if [ "$EXIT_CODE" -eq 1 ]; then
+            exit 1
+          fi
+          exit 0
+
+      - name: Upload compliance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-report
+          path: compliance-report.txt
+          retention-days: 30
+
+      - name: Add PR comment on P0 failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `## :no_entry: Content Compliance Audit Failed
+
+            This PR contains **P0 violations** that MUST be fixed before merge.
+
+            ### P0 Rules (non-negotiable)
+            - **Never** include competitor pricing (even if publicly available)
+            - **Never** claim certifications ("STOA is DORA-compliant")
+            - **Never** name clients without written authorization
+
+            ### How to fix
+            1. Replace competitor prices with "See vendor pricing page" + link
+            2. Replace certification claims with "supports compliance with"
+            3. Run locally: \`./scripts/audit-content-compliance.sh\`
+
+            See \`content-compliance.md\` for full rules.`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## Content Compliance Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| P0 (blocking) | ${{ steps.compliance.outputs.p0_count }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| P1 (warning) | ${{ steps.compliance.outputs.p1_count }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.compliance.outputs.exit_code }}" == "0" ]; then
+            echo ":white_check_mark: **Compliance Passed**" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.compliance.outputs.exit_code }}" == "2" ]; then
+            echo ":warning: **P1 Warnings** — review recommended before publishing" >> $GITHUB_STEP_SUMMARY
+          else
+            echo ":x: **P0 Violations** — fix before merge" >> $GITHUB_STEP_SUMMARY
           fi
