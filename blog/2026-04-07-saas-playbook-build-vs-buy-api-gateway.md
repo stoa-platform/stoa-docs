@@ -160,17 +160,17 @@ This estimate assumes:
 
 ### Option C: Managed SaaS Gateway (Cloud-Native)
 
-Using AWS API Gateway (or equivalent managed service) at moderate scale:
+Using a managed SaaS gateway (e.g., AWS API Gateway, Azure APIM, or Google Apigee) at moderate scale. Pricing varies by vendor — check their pricing pages for current rates.
 
-| Year | API Calls | Cost per Million | Annual Cost | Engineering | Total |
-|---|---|---|---|---|---|
-| Year 1 | 100M calls | $3.50/million | ~€350 | €10,000 (setup) | ~€10,350 |
-| Year 2 | 500M calls | $3.50/million | ~€1,750 | €5,000 (maintenance) | ~€6,750 |
-| Year 3 | 2B calls | $3.50/million | ~€7,000 | €5,000 | ~€12,000 |
+| Year | API Calls | Estimated Infra Cost | Engineering | Estimated Total |
+|---|---|---|---|---|
+| Year 1 | 100M calls | Vendor-dependent | €10,000 (setup + integration) | €10,000-15,000 |
+| Year 2 | 500M calls | Vendor-dependent | €5,000 (maintenance) | €7,000-15,000 |
+| Year 3 | 2B calls | Vendor-dependent | €5,000 | €12,000-30,000 |
 
-**3-Year Managed SaaS Total: ~€29,100** (at this scale)
+**3-Year Managed SaaS Total: €29,000-60,000** (highly dependent on vendor, scale, and region)
 
-At higher scale (10B+ calls/year), managed SaaS becomes significantly more expensive than self-hosted. The break-even point between managed SaaS and OSS self-hosted is typically around 500M-1B API calls/month, depending on request size and regional pricing.
+At higher scale (10B+ calls/year), per-request pricing models can become significantly more expensive than self-hosted. Model your own break-even point based on your vendor's pricing page and expected growth.
 
 ## The 3-Year Summary
 

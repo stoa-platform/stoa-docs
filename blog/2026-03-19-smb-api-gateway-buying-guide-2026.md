@@ -110,7 +110,7 @@ If your SaaS serves multiple customers via a shared API infrastructure, multi-te
 
 **Kong CE** can implement multi-tenancy via the workspace plugin (Enterprise feature) or by carefully organizing services and routes per tenant. It is achievable but not the default — it requires deliberate architecture work.
 
-**Gravitee** supports multi-tenancy through environment separation and API visibility rules. Better than Kong CE for multi-tenancy out of the box, though not as deep as STOA's namespace model.
+**Gravitee** supports multi-tenancy through environment separation and API visibility rules. Gravitee provides more native multi-tenancy support than Kong CE (environment separation and API visibility rules), though STOA's namespace model offers deeper tenant isolation.
 
 **AWS API Gateway** has no native multi-tenancy concept below the AWS account level. You can implement tenant separation at the application layer, but the gateway itself is not tenant-aware.
 
@@ -135,9 +135,9 @@ If you are building AI-powered features in 2026, your gateway needs to route, au
 | STOA (self-hosted) | Infrastructure cost only | ~€30-50 (small K8s node) | ~€200-500 (scaled deployment) |
 | Kong CE (self-hosted) | Infrastructure cost only | ~€30-50 | ~€200-500 |
 | Gravitee (self-hosted) | Infrastructure cost + Elasticsearch | ~€80-120 | ~€400-800 |
-| AWS API Gateway | Per-request: $3.50/million (REST) | ~€3 | ~€350 |
-| Kong Konnect | Subscription + usage | ~€500+/month | Contact sales |
-| Cloudflare Workers | Per-request after free tier | Likely free tier | ~€50+ |
+| AWS API Gateway | Per-request pricing | [See AWS pricing](https://aws.amazon.com/api-gateway/pricing/) | [See AWS pricing](https://aws.amazon.com/api-gateway/pricing/) |
+| Kong Konnect | Subscription + usage | [See Kong pricing](https://konghq.com/pricing) | [See Kong pricing](https://konghq.com/pricing) |
+| Cloudflare Workers | Per-request after free tier | [See Cloudflare pricing](https://developers.cloudflare.com/workers/platform/pricing/) | [See Cloudflare pricing](https://developers.cloudflare.com/workers/platform/pricing/) |
 
 *Cost estimates are illustrative ranges based on publicly available pricing as of February 2026. Actual costs depend on configuration and scale. Verify current pricing directly with each vendor.*
 

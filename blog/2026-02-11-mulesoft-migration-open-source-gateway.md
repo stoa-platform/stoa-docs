@@ -191,7 +191,7 @@ This article is part of our API gateway migration series. Explore guides for oth
 
 - **[Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Vendor-neutral decision framework and phased migration strategy
 - **[webMethods Migration Guide](/blog/webmethods-migration-guide)** — Sidecar approach for Software AG platforms
-- **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Escape vendor lock-in, move to self-hosted gateways
+- **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Migrate from Apigee to self-hosted gateways
 - **[DataPower & TIBCO Migration Guide](/blog/datapower-tibco-migration-guide)** — Protocol translation and identity migration
 
 For detailed technical walkthroughs, see our [migration documentation](https://docs.gostoa.dev/docs/guides/migration/).

@@ -163,7 +163,7 @@ async def get_document(document_id: str, current_user: User = Depends(get_curren
 
 **What happens:** Your API has an endpoint like `POST /api/process-batch` that accepts 1,000 items. One malicious call triggers 1,000 downstream operations. At 10 calls/second, that's 10,000 operations/second hitting your database or a paid third-party API.
 
-**Real-world example:** An OpenAI proxy with no batch size limit. An attacker submits requests with 1,000-item batches. Each call costs $0.10 in OpenAI credits. At 10 concurrent users, that's $1/second — $3,600/hour in charges before you notice.
+**Real-world example:** An LLM proxy with no batch size limit. An attacker submits requests with 1,000-item batches. Each batch consumes expensive compute credits. At 10 concurrent users, costs escalate to thousands of dollars per hour before you notice.
 
 **What a gateway does:**
 

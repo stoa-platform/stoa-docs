@@ -214,7 +214,7 @@ This article is part of our API gateway migration series. Explore guides for oth
 - **[Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Vendor-neutral decision framework and phased migration strategy
 - **[webMethods Migration Guide](/blog/webmethods-migration-guide)** — Sidecar approach for Software AG platforms
 - **[MuleSoft Migration Guide](/blog/mulesoft-migration-open-source-gateway)** — Decouple gateway from iPaaS, migrate to open source
-- **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Escape vendor lock-in, move to self-hosted gateways
+- **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Migrate from Apigee to self-hosted gateways
 
 For detailed technical walkthroughs, see our [migration documentation](https://docs.gostoa.dev/docs/guides/migration/).
 
