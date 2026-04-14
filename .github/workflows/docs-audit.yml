@@ -188,10 +188,10 @@ jobs:
 
           # Strip ANSI codes for parsing
           CLEAN=$(echo "$OUTPUT" | sed 's/\x1b\[[0-9;]*m//g')
-          P0=$(echo "$CLEAN" | grep "P0 (blocking):" | grep -oE '[0-9]+' || echo "0")
-          P1=$(echo "$CLEAN" | grep "P1 (warning):" | grep -oE '[0-9]+' || echo "0")
-          echo "p0_count=$P0" >> $GITHUB_OUTPUT
-          echo "p1_count=$P1" >> $GITHUB_OUTPUT
+          P0=$(echo "$CLEAN" | awk '/P0 \(blocking\):/{print $NF}')
+          P1=$(echo "$CLEAN" | awk '/P1 \(warning\):/{print $NF}')
+          echo "p0_count=${P0:-0}" >> $GITHUB_OUTPUT
+          echo "p1_count=${P1:-0}" >> $GITHUB_OUTPUT
           echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
 
           # Only fail on P0 (exit 1). P1 (exit 2) = warning only
