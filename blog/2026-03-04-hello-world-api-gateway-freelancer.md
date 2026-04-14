@@ -288,7 +288,7 @@ In 15 minutes, you've built:
 | Request Logging | ✅ Full audit trail |
 | Consumer Management | ✅ Add/revoke without code changes |
 
-This is the same architecture used in production API management platforms costing thousands of dollars per month. You're running it on your laptop for free.
+This is the same architecture used in production API management platforms. You're running it on your laptop for free.
 
 ---
 

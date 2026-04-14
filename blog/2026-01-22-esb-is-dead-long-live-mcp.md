@@ -44,7 +44,7 @@ The ESB worked. For a while. But it introduced its own problems:
 - **Central bottleneck.** Everything routes through the bus. If the bus is slow, everything is slow.
 - **Vendor lock-in.** Proprietary message formats, transformation languages, and deployment models.
 - **Monolithic governance.** Change management for ESB configurations is slow and risky.
-- **Cost.** License fees for enterprise ESBs run into millions per year.
+- **Cost.** License fees for enterprise ESBs represent a significant line item in platform budgets.
 
 ### Era 3: API Gateways and Microservices (2015-2024)
 
@@ -187,7 +187,7 @@ The ESB is dead. Long live MCP.
 
 ## Further Reading
 
-- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
+- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for existing gateway modernization
 - [webMethods Migration Guide](/blog/webmethods-migration-guide) — ESB-to-gateway migration with sidecar approach
 - [MCP Gateway Concepts](/docs/concepts/mcp-gateway) — How MCP replaces ESB integration patterns
 

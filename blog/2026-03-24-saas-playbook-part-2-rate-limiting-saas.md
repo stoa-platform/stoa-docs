@@ -326,7 +326,7 @@ Yes. STOA's enterprise plan tier includes `perEndpointOverrides: allowed`, which
 
 ---
 
-## Ready to bridge your legacy APIs to AI agents?
+## Ready to bridge your existing APIs to AI agents?
 
 STOA is open-source (Apache 2.0) and free to try.
 

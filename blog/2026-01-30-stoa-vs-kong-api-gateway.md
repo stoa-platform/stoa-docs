@@ -1,6 +1,6 @@
 ---
 slug: stoa-vs-kong
-title: "Kong Alternative for Legacy API Gateways: Why STOA Federates Instead of Replacing"
+title: "Kong Alternative for existing API Gateways: Why STOA Federates Instead of Replacing"
 authors: [stoa-team]
 tags: [comparison, open-source]
 description: "Already running webMethods, OAM, or Axway? STOA adds MCP Protocol and unified observability without replacing your gateway. Open-source, Apache 2.0."
@@ -170,7 +170,7 @@ We have a detailed [Kong migration guide](/docs/guides/migration/kong) that walk
 
 The API gateway market is at an inflection point. The last major shift was from hardware appliances (F5, NGINX Plus) to cloud-native software gateways (Kong, Envoy, Traefik). The next shift is from HTTP-only gateways to protocol-aware AI gateways that understand MCP, manage agent identities, and enforce AI-specific policies.
 
-We built STOA because we believe the AI-native use case benefits from a purpose-built foundation — where MCP, multi-tenancy, and legacy gateway orchestration are core architectural decisions, not additions to an HTTP proxy. Kong is a worthy competitor that has moved fast on AI. We differentiate on architecture, sovereignty, and the UAC "define once, expose everywhere" model.
+We built STOA because we believe the AI-native use case benefits from a purpose-built foundation — where MCP, multi-tenancy, and existing gateway orchestration are core architectural decisions, not additions to an HTTP proxy. Kong is a worthy competitor that has moved fast on AI. We differentiate on architecture, sovereignty, and the UAC "define once, expose everywhere" model.
 
 ## Try STOA
 
@@ -186,7 +186,7 @@ See the difference for yourself:
 
 ## Further Reading
 
-- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
+- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for existing gateway modernization
 - [Kong Migration Guide](/docs/guides/migration/kong) — Detailed migration path from Kong to STOA
 - [API Gateway Patterns](/docs/guides/fiches/api-gateway-patterns) — Architecture patterns for modern API gateways
 

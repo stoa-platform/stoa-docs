@@ -7,7 +7,7 @@ description: "Migrating from Layer7, webMethods, or Apigee? Step-by-step assessm
 keywords:
   - api gateway migration
   - api gateway migration guide 2026
-  - legacy api gateway replacement
+  - existing API gateway replacement
   - layer7 migration
   - webmethods migration
   - axway migration
@@ -24,7 +24,7 @@ keywords:
 
 # API Gateway Migration Guide 2026: From Legacy Platforms to AI-Ready Infrastructure
 
-Migrating from a legacy API gateway is one of the highest-stakes infrastructure projects an enterprise platform team can undertake. Done well, it eliminates years of accumulated technical debt, reduces licensing costs, and opens the door to AI agent integration. Done poorly, it disrupts production APIs and erodes trust with every team that depends on the platform.
+Migrating from a existing API gateway is one of the highest-stakes infrastructure projects an enterprise platform team can undertake. Done well, it eliminates years of accumulated technical debt, reduces licensing costs, and opens the door to AI agent integration. Done poorly, it disrupts production APIs and erodes trust with every team that depends on the platform.
 
 This guide provides a vendor-neutral framework for planning and executing an API gateway migration in 2026 — covering assessment, policy translation, phased traffic migration, and the new requirements introduced by AI agents. Specific guidance for individual platforms (Broadcom Layer7, Software AG webMethods, Axway, Apigee) is linked throughout.
 
@@ -40,11 +40,11 @@ Broadcom's 2023 acquisition of VMware — and the subsequent restructuring of en
 
 ### Kubernetes-Native Infrastructure Is Now the Standard
 
-In 2019, running a legacy API gateway on VMs alongside a nascent Kubernetes environment was a reasonable interim posture. By 2026, Kubernetes is the operational standard for enterprise platform teams, and the friction of adapting legacy gateway deployments to GitOps workflows, Helm-based deployment, and Kubernetes-native scaling has become a continuous engineering tax. Platforms designed from the ground up for Kubernetes deliver significantly lower operational overhead for teams that have made the platform investment.
+In 2019, running a existing API gateway on VMs alongside a nascent Kubernetes environment was a reasonable interim posture. By 2026, Kubernetes is the operational standard for enterprise platform teams, and the friction of adapting existing gateway deployments to GitOps workflows, Helm-based deployment, and Kubernetes-native scaling has become a continuous engineering tax. Platforms designed from the ground up for Kubernetes deliver significantly lower operational overhead for teams that have made the platform investment.
 
 ### AI Agents Have Become First-Class API Consumers
 
-The emergence of AI agents as API consumers is not a future trend — it is happening in production today. AI agents have fundamentally different interaction patterns from human-driven applications: they discover APIs dynamically, invoke multiple tools in sequence, require streaming responses for long-running tasks, and generate new metering and governance requirements (token-level accounting, per-agent quotas, audit trails for regulatory compliance). Legacy gateways were not designed for these patterns. Adding MCP (Model Context Protocol) support, tool discovery, and agent metering as extensions to an assertion-based policy engine designed for human-driven REST and SOAP traffic creates architectural debt from the first day of deployment.
+The emergence of AI agents as API consumers is not a future trend — it is happening in production today. AI agents have fundamentally different interaction patterns from human-driven applications: they discover APIs dynamically, invoke multiple tools in sequence, require streaming responses for long-running tasks, and generate new metering and governance requirements (token-level accounting, per-agent quotas, audit trails for regulatory compliance). existing gateways were not designed for these patterns. Adding MCP (Model Context Protocol) support, tool discovery, and agent metering as extensions to an assertion-based policy engine designed for human-driven REST and SOAP traffic creates architectural debt from the first day of deployment.
 
 Organizations that migrate now can build AI agent infrastructure on the same platform as their API management — rather than running two parallel systems.
 
@@ -102,7 +102,7 @@ Classify each API into one of three migration tracks:
 
 ## The Six-Phase Migration Framework
 
-This framework applies to all legacy gateway platforms. Phase duration scales with estate size and complexity — a 50-service estate may complete in 4 months; a 500-service enterprise estate may require 12-18 months.
+This framework applies to all existing gateway platforms. Phase duration scales with estate size and complexity — a 50-service estate may complete in 4 months; a 500-service enterprise estate may require 12-18 months.
 
 ### Phase 1: Assessment and Stakeholder Alignment (Weeks 1-6)
 
@@ -124,7 +124,7 @@ Deploy the new gateway alongside the existing system without touching production
 
 ```
 Existing flow (unchanged):
-  All consumers → Legacy Gateway → Backend APIs
+  All consumers → existing gateway → Backend APIs
 
 New flow (added in parallel):
   AI Agents    → New Gateway (MCP) → Backend APIs
@@ -189,7 +189,7 @@ The following table maps common legacy policy patterns to their modern equivalen
 
 ### Phase 5: Canary Traffic Migration (Weeks 16-24)
 
-Canary traffic migration shifts production load from the legacy gateway to the new gateway in controlled increments. Each increment is held for a defined observation period before the next increment.
+Canary traffic migration shifts production load from the existing gateway to the new gateway in controlled increments. Each increment is held for a defined observation period before the next increment.
 
 A standard canary sequence:
 
@@ -201,7 +201,7 @@ A standard canary sequence:
 | Late majority | 90% | 2 weeks | < 1 minute |
 | Full cutover | 100% | — | Legacy on standby |
 
-**At every stage, rollback is one DNS or ingress change away.** The legacy gateway continues running in parallel throughout Phase 5. This is non-negotiable: the ability to roll back in under a minute is what makes canary migration safe.
+**At every stage, rollback is one DNS or ingress change away.** The existing gateway continues running in parallel throughout Phase 5. This is non-negotiable: the ability to roll back in under a minute is what makes canary migration safe.
 
 Metrics to monitor at each stage:
 
@@ -211,18 +211,18 @@ Metrics to monitor at each stage:
 - Throughput (requests per second) — validate the new gateway scales under production load
 - Consumer error reports — actively monitor for teams reporting behavioral changes
 
-Green light criteria before advancing to the next stage: all metrics within 5% of legacy gateway values, no unexplained error rate increase, no consumer escalations.
+Green light criteria before advancing to the next stage: all metrics within 5% of existing gateway values, no unexplained error rate increase, no consumer escalations.
 
 ### Phase 6: Decommission (Weeks 22-30)
 
-The legacy gateway should only be decommissioned after two conditions are met: zero production traffic for at least two weeks, and documented archival of all policy configuration.
+The existing gateway should only be decommissioned after two conditions are met: zero production traffic for at least two weeks, and documented archival of all policy configuration.
 
 Decommission checklist:
 
-- Verify zero traffic on all legacy gateway instances (check access logs, not just routing configuration)
+- Verify zero traffic on all existing gateway instances (check access logs, not just routing configuration)
 - Export and archive all policy bundles, service configurations, and certificates
 - Update vendor license agreements per contractual terms
-- Update DNS records, firewall rules, and network policies to remove legacy gateway references
+- Update DNS records, firewall rules, and network policies to remove existing gateway references
 - Notify all dependent teams of the cutover completion
 - Update runbooks, architecture diagrams, and monitoring dashboards
 
@@ -260,7 +260,7 @@ This requires per-agent quota enforcement, per-agent audit trails (for regulator
 
 ### Streaming and Long-Running Request Support
 
-AI agents frequently need streaming responses — either for real-time generation (SSE, WebSocket) or for long-running tasks that exceed the timeout constraints of traditional request-response APIs. Legacy gateways optimized for sub-second REST requests handle these patterns poorly.
+AI agents frequently need streaming responses — either for real-time generation (SSE, WebSocket) or for long-running tasks that exceed the timeout constraints of traditional request-response APIs. existing gateways optimized for sub-second REST requests handle these patterns poorly.
 
 ### European Sovereignty for AI Workloads
 
@@ -276,7 +276,7 @@ Understanding the most frequent failure modes allows teams to build explicit mit
 
 **SOAP/WS-Security underestimation:** Organizations consistently underestimate the translation effort for WS-Security workloads. A service that looks like a simple API may depend on XML signature, XML encryption, or WS-Trust token exchange that requires significant policy work. Mitigation: Red-track classification in Phase 1, extended timeline for SOAP services.
 
-**Stakeholder resistance during traffic migration:** When individual product teams are asked to validate their applications against the new gateway, they often surface issues that had been masked by the legacy gateway's behavior — workarounds, undocumented features, non-standard error handling. This resistance is legitimate and must be planned for. Mitigation: dedicated migration support resources for each product team during their traffic migration window.
+**Stakeholder resistance during traffic migration:** When individual product teams are asked to validate their applications against the new gateway, they often surface issues that had been masked by the existing gateway's behavior — workarounds, undocumented features, non-standard error handling. This resistance is legitimate and must be planned for. Mitigation: dedicated migration support resources for each product team during their traffic migration window.
 
 **Rollback plan not tested:** A rollback plan that has never been executed is not a rollback plan. Mitigation: execute a full rollback drill in a pre-production environment before the first production canary deployment.
 
@@ -287,7 +287,7 @@ Define success metrics before the migration begins, not after. The metrics that 
 **Operational metrics (measured continuously during migration):**
 - Gateway P99 latency: new gateway within 5% of legacy at each traffic stage
 - Error rate: no unexplained increase above baseline at any traffic stage
-- Availability: new gateway uptime equal to or better than legacy during migration window
+- Availability: new gateway uptime equal to or exceeding the previous gateway during migration window
 
 **Business metrics (measured 90 days post-migration):**
 - API onboarding time: reduction in time from API development complete to production-accessible
@@ -305,21 +305,21 @@ Define success metrics before the migration begins, not after. The metrics that 
 
 For a small estate (under 50 services), expect 3-4 months. For a mid-size estate (50-150 services), expect 4-6 months. For a large estate (150+ services, multiple legacy platforms, SOAP/WS-Security workloads), expect 9-18 months. The primary variable is policy translation complexity — SOAP/WS-Security and Kerberos services require significantly more time than REST/OAuth2 services.
 
-### Can I keep running my legacy gateway for some services indefinitely?
+### Can I keep running my existing gateway for some services indefinitely?
 
-Yes. The sidecar deployment pattern supports indefinite hybrid operation. Many organizations keep their legacy gateway for SOAP/WS-Security workloads while routing all REST, AI agent, and new API traffic through the new gateway. The economics of hybrid operation (two sets of operational overhead) eventually motivate full migration, but there is no technical reason the hybrid state cannot be maintained.
+Yes. The sidecar deployment pattern supports indefinite hybrid operation. Many organizations keep their existing gateway for SOAP/WS-Security workloads while routing all REST, AI agent, and new API traffic through the new gateway. The economics of hybrid operation (two sets of operational overhead) eventually motivate full migration, but there is no technical reason the hybrid state cannot be maintained.
 
 ### Do I need to migrate my identity provider at the same time?
 
 No. Identity migration and gateway migration are independent work streams. Keycloak (or equivalent) can federate with Oracle OAM, CA SiteMinder, Active Directory, and Kerberos without requiring those systems to be replaced. Many organizations complete gateway migration while their legacy IdP continues operating unchanged for years.
 
-### What if my legacy gateway has custom extensions or plugins?
+### What if my existing gateway has custom extensions or plugins?
 
-Custom extensions (Java-based assertions in Layer7, IS services in webMethods, custom filters in Axway) represent the highest-risk migration component. For each extension, document the business purpose (not the implementation), then evaluate three options: implement equivalent logic as an OPA/Rego policy, move the logic to the service layer (a microservice that performs the same function), or maintain the legacy gateway in parallel for services that depend on the extension. The third option is valid — not every custom extension is worth the translation effort.
+Custom extensions (Java-based assertions in Layer7, IS services in webMethods, custom filters in Axway) represent the highest-risk migration component. For each extension, document the business purpose (not the implementation), then evaluate three options: implement equivalent logic as an OPA/Rego policy, move the logic to the service layer (a microservice that performs the same function), or maintain the existing gateway in parallel for services that depend on the extension. The third option is valid — not every custom extension is worth the translation effort.
 
 ### What about SOAP APIs — should I modernize them or migrate them?
 
-Treat SOAP modernization as a separate project from gateway migration. For the purposes of migration planning, treat each SOAP API as a Red-track item: keep the legacy gateway handling it until a separate modernization decision has been made. Attempting to modernize SOAP APIs and migrate the gateway simultaneously doubles project risk.
+Treat SOAP modernization as a separate project from gateway migration. For the purposes of migration planning, treat each SOAP API as a Red-track item: keep the existing gateway handling it until a separate modernization decision has been made. Attempting to modernize SOAP APIs and migrate the gateway simultaneously doubles project risk.
 
 ### How do I handle the migration in a regulated industry?
 

@@ -264,7 +264,7 @@ The `security-reviewer` subagent runs on every code change. It is read-only (can
 
 ---
 
-## Ready to bridge your legacy APIs to AI agents?
+## Ready to bridge your existing APIs to AI agents?
 
 STOA is open-source (Apache 2.0) and free to try.
 

@@ -184,7 +184,7 @@ If you are evaluating API gateway platforms for regulated industries, STOA provi
 
 ## Further Reading
 
-- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
+- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for existing gateway modernization
 - [API Management in Europe: Data Sovereignty](/blog/api-management-europe-sovereignty) — How gateway jurisdiction impacts compliance
 - [Enterprise Security Compliance](/docs/enterprise/security-compliance) — Detailed regulatory mapping
 - [STOA Security Architecture: Defense-in-Depth](/blog/stoa-api-security-architecture) — Five-layer security model supporting DORA resilience requirements

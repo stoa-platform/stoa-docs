@@ -1,12 +1,12 @@
 ---
 slug: open-source-api-gateway-2026
-title: "Best Open-Source API Gateways 2026: 5 Compared (with MCP)"
+title: "Top Open-Source API Gateways 2026: 5 Compared (with MCP)"
 authors: [stoa-team]
 tags: [comparison, open-source]
 description: "Kong, Envoy, APISIX, Tyk, and STOA scored on 8 criteria: MCP support, multi-tenancy, licensing, performance, and AI readiness."
 keywords:
   - open source API gateway
-  - best API gateway 2026
+  - top API gateway 2026
   - API gateway comparison
   - free API gateway
   - Kong vs Envoy vs APISIX
@@ -122,7 +122,7 @@ MCP introduces new requirements that traditional API gateways were not designed 
 - **Session management** — AI agent sessions span multiple tool calls and require state tracking.
 - **Token optimization** — Tool descriptions must be compressed and cached to minimize LLM token usage.
 
-The plugin approach works for bridging MCP-to-HTTP traffic. But deeper capabilities — CRD-based tool governance, per-tenant tool filtering, UAC "define once, expose as REST + MCP + GraphQL", and legacy gateway orchestration — require MCP to be a foundational protocol, not an adapter layer.
+The plugin approach works for bridging MCP-to-HTTP traffic. But deeper capabilities — CRD-based tool governance, per-tenant tool filtering, UAC "define once, expose as REST + MCP + GraphQL", and existing gateway orchestration — require MCP to be a foundational protocol, not an adapter layer.
 
 ## Where Each Gateway Excels
 
@@ -159,7 +159,7 @@ Rather than declaring a single winner, here is where each gateway genuinely shin
 
 ## The Convergence Ahead
 
-Kong has already added MCP support, and we expect APISIX and Envoy (via WASM filters) to follow. The question going forward is not "does your gateway support MCP?" but "how deeply is MCP integrated into your gateway's architecture?" — and whether your gateway can orchestrate existing legacy gateways alongside AI traffic.
+Kong has already added MCP support, and we expect APISIX and Envoy (via WASM filters) to follow. The question going forward is not "does your gateway support MCP?" but "how deeply is MCP integrated into your gateway's architecture?" — and whether your gateway can orchestrate existing existing gateways alongside AI traffic.
 
 Similarly, multi-tenancy and developer portals are becoming table stakes. The trend is clear: open-source gateways are evolving from traffic proxies into full API management platforms.
 
@@ -176,7 +176,7 @@ If your use case involves AI agents, multi-tenancy, or European compliance, STOA
 
 ## Further Reading
 
-- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for legacy gateway modernization
+- [Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — Decision framework for existing gateway modernization
 - [API Gateway Patterns](/docs/guides/fiches/api-gateway-patterns) — Architecture patterns for modern API gateways
 - [MCP Gateway Concepts](/docs/concepts/mcp-gateway) — Understanding AI-native gateway architecture
 - [Enterprise AI-Native Gateway Benchmark](/blog/enterprise-ai-native-gateway-benchmark) — Why proxy throughput is the wrong metric for AI gateways

@@ -15,7 +15,7 @@ The API gateway landscape has evolved rapidly with the rise of AI agents, zero-t
 
 <!-- last verified: 2026-02 -->
 
-Whether you're migrating from a legacy gateway, evaluating new solutions, or building AI-native integrations, understanding these concepts is critical. We've included practical context on how modern platforms like STOA handle each capability.
+Whether you're migrating from a existing gateway, evaluating new solutions, or building AI-native integrations, understanding these concepts is critical. We've included practical context on how modern platforms like STOA handle each capability.
 
 For a comprehensive introduction to MCP-specific terminology and architecture, see our guide: [What is an MCP Gateway?](/blog/what-is-mcp-gateway)
 
@@ -163,7 +163,7 @@ After understanding the terminology, explore practical implementation patterns i
 
 - [API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026) — comprehensive migration hub
 - [API Gateway Patterns](https://docs.gostoa.dev/docs/guides/fiches/api-gateway-patterns) — technical implementation patterns
-- [MCP Gateway Concepts](/blog/what-is-mcp-gateway) — how STOA bridges legacy APIs and AI agents
+- [MCP Gateway Concepts](/blog/what-is-mcp-gateway) — how STOA bridges existing APIs and AI agents
 - [Open Source API Gateway Comparison 2026](/blog/open-source-api-gateway-2026) — Kong, Tyk, Gravitee, APISIX, and STOA
 
 ---

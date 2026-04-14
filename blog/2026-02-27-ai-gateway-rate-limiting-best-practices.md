@@ -760,7 +760,7 @@ Additionally, consider **graceful degradation**: when system load is high, reduc
 
 This guide covered the fundamentals of rate limiting and quota management for AI gateways. Key takeaways:
 
-1. **Token-aware limits** reflect true resource consumption better than request counts
+1. **Token-aware limits** reflect true resource consumption more accurately than request counts
 2. **Hybrid approach** (request + token limits) provides both flood protection and fair resource allocation
 3. **Per-tenant quotas** with tiering enable flexible multi-tenant architectures
 4. **Monitoring and alerting** prevent surprise quota exhaustion
@@ -777,7 +777,7 @@ Ready to implement production-grade AI gateway quotas? [Try STOA Platform](https
 
 ---
 
-## Ready to bridge your legacy APIs to AI agents?
+## Ready to bridge your existing APIs to AI agents?
 
 STOA is open-source (Apache 2.0) and free to try.
 

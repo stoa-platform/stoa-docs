@@ -372,7 +372,7 @@ You've set up rate limiting. The next question is: what happened before you turn
 
 ---
 
-## Ready to bridge your legacy APIs to AI agents?
+## Ready to bridge your existing APIs to AI agents?
 
 STOA is open-source (Apache 2.0) and free to try.
 

@@ -10,7 +10,7 @@ keywords: [MuleSoft migration, MuleSoft alternative, Anypoint migration, MuleSof
 
 # MuleSoft Migration: Moving from Anypoint to an Open-Source API Gateway
 
-MuleSoft migrations work best when you separate the API gateway layer from integration flows. Move Experience APIs (routing, auth, rate limiting) to open-source gateways while keeping Anypoint for DataWeave transformations and complex connectors.
+MuleSoft migrations are most effective when you separate the API gateway layer from integration flows. Move Experience APIs (routing, auth, rate limiting) to open-source gateways while keeping Anypoint for DataWeave transformations and complex connectors.
 
 **MuleSoft Anypoint** has become one of the most widely deployed integration platforms in enterprise IT. Since Salesforce's acquisition in 2018, the platform has deepened its ties to the Salesforce ecosystem while organizations face evolving requirements around AI agent support, European data sovereignty, and infrastructure cost management.
 
@@ -191,7 +191,7 @@ This article is part of our API gateway migration series. Explore guides for oth
 
 - **[Complete API Gateway Migration Guide 2026](/blog/api-gateway-migration-guide-2026)** — Vendor-neutral decision framework and phased migration strategy
 - **[webMethods Migration Guide](/blog/webmethods-migration-guide)** — Sidecar approach for Software AG platforms
-- **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Escape vendor lock-in, move to self-hosted gateways
+- **[Apigee Migration Guide](/blog/apigee-alternative-open-source)** — Reduce vendor dependency, move to self-hosted gateways
 - **[DataPower & TIBCO Migration Guide](/blog/datapower-tibco-migration-guide)** — Protocol translation and identity migration
 
 For detailed technical walkthroughs, see our [migration documentation](https://docs.gostoa.dev/docs/guides/migration/).
@@ -214,7 +214,7 @@ Anypoint Exchange provides an internal marketplace with reusable assets, version
 
 ### What's the typical cost savings from migrating MuleSoft to open source?
 
-Cost savings depend on your license structure, infrastructure, and usage. Organizations report 40-70% reduction in gateway-layer costs by moving Experience APIs to open-source while keeping MuleSoft for integration. The savings come from eliminating per-core or per-app licensing for simple routing workloads. However, self-hosted gateways add operational costs (Kubernetes, monitoring, support). A TCO analysis should include license, infrastructure, operations, and training. See the cost considerations section in this guide.
+Cost savings depend on your license structure, infrastructure, and usage. Teams may see meaningful reduction in gateway-layer costs by moving Experience APIs to open-source while keeping MuleSoft for integration. The savings come from eliminating per-core or per-app licensing for simple routing workloads. However, self-hosted gateways add operational costs (Kubernetes, monitoring, support). A TCO analysis should include license, infrastructure, operations, and training. See the cost considerations section in this guide.
 
 ---
 
@@ -225,7 +225,7 @@ Cost savings depend on your license structure, infrastructure, and usage. Organi
 
 ---
 
-## Ready to bridge your legacy APIs to AI agents?
+## Ready to bridge your existing APIs to AI agents?
 
 STOA is open-source (Apache 2.0) and free to try.
 

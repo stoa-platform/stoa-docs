@@ -170,7 +170,7 @@ Using AWS API Gateway (or equivalent managed service) at moderate scale:
 
 **3-Year Managed SaaS Total: ~€29,100** (at this scale)
 
-At higher scale (10B+ calls/year), managed SaaS becomes significantly more expensive than self-hosted. The break-even point between managed SaaS and OSS self-hosted is typically around 500M-1B API calls/month, depending on request size and regional pricing.
+At higher scale (10B+ calls/year), managed SaaS costs grow faster than self-hosted infrastructure. The break-even point between managed SaaS and OSS self-hosted is typically around 500M-1B API calls/month, depending on request size and regional pricing.
 
 ## The 3-Year Summary
 

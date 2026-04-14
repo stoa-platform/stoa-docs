@@ -234,7 +234,7 @@ Client ←──SSE────── Server (response stream)
 - SSE connections can be dropped by aggressive proxies (configure timeouts)
 - No binary frame support (everything is UTF-8 text)
 
-**Best for:** Production deployments behind API gateways, cloud environments, enterprise networks.
+**Recommended for:** Production deployments behind API gateways, cloud environments, enterprise networks.
 
 ### Streamable HTTP (2025-03 spec)
 

@@ -16,7 +16,7 @@ keywords:
 
 # Introducing STOA Platform
 
-STOA Platform is an open-source, AI-native API gateway built for the Model Context Protocol (MCP) era. It bridges legacy APIs and AI agents with unified governance, European sovereignty, and zero vendor lock-in — all under Apache 2.0.
+STOA Platform is an open-source, AI-native API gateway built for the Model Context Protocol (MCP) era. It bridges existing APIs and AI agents with unified governance, European sovereignty, and zero vendor lock-in — all under Apache 2.0.
 
 We're excited to announce **STOA** — an API Gateway built for the AI era.
 

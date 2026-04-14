@@ -381,7 +381,7 @@ Security scanning is one layer of a broader strategy. For related topics:
 
 ---
 
-## Ready to bridge your legacy APIs to AI agents?
+## Ready to bridge your existing APIs to AI agents?
 
 STOA is open-source (Apache 2.0) and free to try.
 

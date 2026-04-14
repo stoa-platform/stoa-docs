@@ -234,7 +234,7 @@ For a mid-size deployment (50-150 APIs), expect 4-6 months using the phased appr
 
 ### Can I keep Axway for some APIs and use the new gateway for others?
 
-Yes. The sidecar deployment pattern is designed for exactly this. Many organizations keep their legacy gateway for APIs with complex mediation or B2B protocols while routing all new development and AI agent traffic through the new gateway. This hybrid model can run indefinitely.
+Yes. The sidecar deployment pattern is designed for exactly this. Many organizations keep their existing gateway for APIs with complex mediation or B2B protocols while routing all new development and AI agent traffic through the new gateway. This hybrid model can run indefinitely.
 
 ### What about Axway AMPLIFY features beyond the API Gateway?
 
