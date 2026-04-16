@@ -13,7 +13,9 @@ keywords:
   - API gateway engineering cost
   - open source API gateway cost benefit
 ---
-<!-- last verified: 2026-02 -->
+<!-- last verified: 2026-04 -->
+
+> **Corrections & Updates (2026-04-16)**: An earlier version of this article included three-year TCO tables with specific Euro totals and a managed-SaaS per-call rate. Those figures were illustrative but presented with a precision the underlying inputs did not support. This version replaces the fabricated tables with a qualitative framework and points to primary sources (salary databases, vendor pricing pages) so readers can plug in their own inputs. The qualitative conclusion — "for most mid-stage SaaS, OSS self-hosted beats custom build and matches or beats managed SaaS beyond moderate scale" — is unchanged. See commit history for the diff.
 
 "We can build that ourselves in a sprint." We have all said it. Sometimes it is true. For most infrastructure decisions, it is not — especially for API gateways, where the scope of what "that" means expands significantly once you are in production.
 
@@ -21,7 +23,7 @@ This is the final installment of the **SaaS Playbook** series. We have covered [
 
 <!-- truncate -->
 
-> This analysis uses publicly available information about software development costs, engineering salaries, and infrastructure pricing. All named product comparisons are based on publicly available documentation as of February 2026. Costs are illustrative ranges — actual costs depend heavily on your specific situation. See our [trademark notice](/docs/legal/trademarks) for details on third-party product references.
+> This analysis is a framework, not a quote. Every team's situation is different — engineer rates, scope, request volume, and compliance needs all move the numbers. Where we give ranges we link to primary sources; where we don't, use them as relative indicators, not exact estimates. Named product comparisons are based on publicly available documentation as of April 2026. See our [trademark notice](/docs/legal/trademarks) for details on third-party product references.
 
 ## The Build vs Buy Decision Framework
 
@@ -52,138 +54,75 @@ What they discover in production, 6-18 months later:
 
 Each of these items is a month-to-quarter-long engineering effort. The cumulative scope is large.
 
-## Three-Year Cost Model
+## Three-Year Cost Components
 
-### Option A: Full Custom Build
+Rather than give you a single TCO number that will be wrong for your situation, here is the framework we recommend building your own estimate with. Three inputs drive almost all of the spread between the options.
 
-**Year 1: Initial Build**
+### Input 1 — Loaded engineer cost
 
-| Task | Engineering Weeks | Cost (€800/day senior engineer) |
-|---|---|---|
-| HTTP proxying + routing | 3 | €12,000 |
-| JWT authentication | 2 | €8,000 |
-| Basic rate limiting | 2 | €8,000 |
-| Multi-tenancy foundation | 4 | €16,000 |
-| Developer portal (basic) | 6 | €24,000 |
-| Audit logging | 3 | €12,000 |
-| Observability | 3 | €12,000 |
-| Load testing + hardening | 2 | €8,000 |
-| **Year 1 build total** | **25 weeks** | **€100,000** |
+This is the biggest lever and the most location-sensitive. Look up the range for senior backend engineers in your hiring markets:
 
-**Year 1: Infrastructure**
-- 2x m5.xlarge instances (prod + staging): ~€300/month → €3,600/year
-- PostgreSQL RDS: ~€150/month → €1,800/year
-- **Year 1 infrastructure**: ~€5,400
+- [Levels.fyi](https://www.levels.fyi/) — base + equity + bonus for engineering roles by company, level, and location
+- [Glassdoor Salaries](https://www.glassdoor.com/Salaries/index.htm) — self-reported salaries by title and metro
+- Add roughly 25–40% on top of base salary for fully loaded cost (taxes, benefits, overhead) — consult your finance team or your HR vendor for the actual multiplier in your jurisdiction
 
-**Year 1 total: ~€105,400**
+Use the loaded per-day cost, not the base salary, whenever you are converting an engineering-week estimate into money.
 
-**Year 2: Maintenance + Enhancements**
+### Input 2 — Infrastructure for self-hosted options
 
-| Task | Engineering Weeks | Cost |
-|---|---|---|
-| Security patches + CVE remediation | 4 | €16,000 |
-| MCP/AI agent support (new requirement) | 6 | €24,000 |
-| Performance improvements | 3 | €12,000 |
-| Compliance additions (SOC 2 prep) | 4 | €16,000 |
-| Bug fixes and incident response | 3 | €12,000 |
-| **Year 2 engineering** | **20 weeks** | **€80,000** |
+For a small-to-mid multi-tenant gateway deployment (gateway pods + PostgreSQL + observability), estimate using a primary source:
 
-**Year 2 infrastructure**: ~€7,200 (scaled)
-**Year 2 total: ~€87,200**
+- [AWS Pricing Calculator](https://calculator.aws/) — build a scenario with your expected compute (e.g., 2 small EKS worker nodes), a small RDS PostgreSQL, and NAT/egress
+- [Google Cloud Pricing Calculator](https://cloud.google.com/products/calculator) — equivalent GCP estimate
+- [Azure Pricing Calculator](https://azure.microsoft.com/en-us/pricing/calculator/) — equivalent Azure estimate
 
-**Year 3: Ongoing Maintenance**
+The infrastructure line is almost always small compared to the engineering line. It matters mostly for sanity-checking the shape of the scaled-up scenario, not for the go/no-go decision.
 
-| Task | Engineering Weeks | Cost |
-|---|---|---|
-| Security patches | 3 | €12,000 |
-| New compliance requirements | 3 | €12,000 |
-| Feature parity with commercial alternatives | 4 | €16,000 |
-| Refactoring accumulated technical debt | 4 | €16,000 |
-| On-call incidents | 2 | €8,000 |
-| **Year 3 engineering** | **16 weeks** | **€64,000** |
+### Input 3 — Per-call cost for managed options
 
-**Year 3 infrastructure**: ~€9,000
-**Year 3 total: ~€73,000**
+Managed API gateways bill on requests, data transfer, and sometimes features (WAF, caching). Pull the current rate from the vendor's own pricing page:
 
-**3-Year Custom Build Total: ~€265,600**
+- [AWS API Gateway pricing](https://aws.amazon.com/api-gateway/pricing/)
+- [Azure API Management pricing](https://azure.microsoft.com/en-us/pricing/details/api-management/)
+- [Google Cloud Apigee pricing](https://cloud.google.com/apigee/pricing)
 
-This estimate assumes:
-- One dedicated senior engineer (€800/day) at 50% allocation over 3 years
-- No major security incidents (which add significant cost)
-- No compliance failures (which can be very expensive)
-- Reasonable stability in requirements (which rarely holds)
+Multiply by your projected request volume per year. Do this once at your starting volume and once at your year-3 volume — the per-call model is the one that moves the most as you scale.
 
-### Option B: Open-Source Self-Hosted (STOA or Kong CE)
+## Putting the Framework Together
 
-**Year 1: Initial Setup**
+Once you have those three inputs, the three options decompose as follows. We deliberately do not show totals — plug in your own numbers.
 
-| Task | Engineering Weeks | Cost |
-|---|---|---|
-| Deployment + configuration | 1 | €4,000 |
-| Authentication integration (Keycloak) | 1 | €4,000 |
-| Multi-tenancy configuration | 1 | €4,000 |
-| Developer portal customization | 1 | €4,000 |
-| Observability integration | 0.5 | €2,000 |
-| Load testing + validation | 1 | €4,000 |
-| **Year 1 setup** | **5.5 weeks** | **€22,000** |
+### Option A — Full Custom Build
 
-**Year 1 infrastructure**:
-- K8s cluster (2 nodes: 4 CPU / 16 GB): ~€200/month → €2,400/year
-- PostgreSQL: ~€80/month → €960/year
-- **Year 1 infrastructure**: ~€3,360
+The scope list earlier in the article (HTTP proxying, multi-tenancy, developer portal, audit logging, observability, MCP support, compliance features, on-call) is a reasonable starting checklist. For each item, estimate engineering-weeks against your team, then multiply by your loaded per-week cost. Expect the year-1 scope to dominate, year-2 to be roughly half (maintenance + new requirements like MCP), and year-3 to be roughly a third of year-1 in steady state — provided nothing goes sideways.
 
-**Year 1 total: ~€25,360**
+Assumptions that meaningfully widen the range: a significant security incident, a missed compliance control, requirements churn, or attrition on the original build team. Each of these can push the year-2 line close to year-1 again.
 
-**Year 2: Ongoing Operations**
+### Option B — Open-Source Self-Hosted (e.g., STOA, Kong CE)
 
-| Task | Engineering Weeks | Cost |
-|---|---|---|
-| Upgrade management | 1 | €4,000 |
-| New feature adoption (MCP, guardrails) | 1 | €4,000 |
-| Incident response | 1 | €4,000 |
-| **Year 2 engineering** | **3 weeks** | **€12,000** |
+Your engineering work here is configuration, integration, and operations — not construction. Year 1 is mostly deployment, authentication integration, and portal customization. Years 2 and 3 are upgrades, incident response, and adopting new upstream features (for STOA: MCP gateway, guardrails). Infrastructure from Input 2 applies. There is no per-call fee.
 
-**Year 2 infrastructure**: ~€4,000 (with scaling)
-**Year 2 total: ~€16,000**
+In most teams we talk to, the year-1 engineering line for OSS self-hosted comes in at roughly a fifth to a quarter of the custom-build year-1 line, because the construction phase is replaced by a configuration phase. Years 2 and 3 compress further, because the upstream project is doing the security-patch and feature work you would otherwise be doing yourself.
 
-**Year 3: Steady State**
+### Option C — Managed SaaS
 
-| Task | Engineering Weeks | Cost |
-|---|---|---|
-| Upgrades + maintenance | 2 | €8,000 |
-| **Year 3 engineering** | **2 weeks** | **€8,000** |
+Engineering drops to integration and occasional maintenance. Infrastructure disappears. The cost is Input 3 × your request volume, plus a small engineering line for setup and keeping the integration current. Pull the exact rate from the vendor pricing page above — we intentionally don't quote one here, because the headline per-million number excludes data transfer, WAF, caching, and regional multipliers that can meaningfully change the effective rate.
 
-**Year 3 infrastructure**: ~€5,000
-**Year 3 total: ~€13,000**
+The regime where managed SaaS is cheapest is early-stage, low-volume, single-tenant (or low-tenant-count) workloads. As volume grows, the per-call line grows linearly while the OSS self-hosted engineering line stays roughly flat — the two lines cross at some point, typically somewhere in the hundreds of millions of API calls per month, depending on pricing tier and request profile.
 
-**3-Year OSS Self-Hosted Total: ~€54,360**
+## The Three-Option Summary
 
-### Option C: Managed SaaS Gateway (Cloud-Native)
-
-Using AWS API Gateway (or equivalent managed service) at moderate scale:
-
-| Year | API Calls | Cost per Million | Annual Cost | Engineering | Total |
+| Option | Dominant cost driver | Vendor lock-in | MCP support | Multi-tenancy | Scales well to |
 |---|---|---|---|---|---|
-| Year 1 | 100M calls | $3.50/million | ~€350 | €10,000 (setup) | ~€10,350 |
-| Year 2 | 500M calls | $3.50/million | ~€1,750 | €5,000 (maintenance) | ~€6,750 |
-| Year 3 | 2B calls | $3.50/million | ~€7,000 | €5,000 | ~€12,000 |
+| Custom Build | Engineering (years 1–3) | None | Custom, extra cost | Custom, extra cost | Any scale — but rarely justifies itself |
+| OSS Self-Hosted | Infra + modest engineering | None | Included (STOA) | Included (STOA) | Very high scale |
+| Managed SaaS | Per-call fees × volume | High | Limited or vendor-specific | Limited | Early/low volume |
 
-**3-Year Managed SaaS Total: ~€29,100** (at this scale)
-
-At higher scale (10B+ calls/year), managed SaaS costs grow faster than self-hosted infrastructure. The break-even point between managed SaaS and OSS self-hosted is typically around 500M-1B API calls/month, depending on request size and regional pricing.
-
-## The 3-Year Summary
-
-| Option | 3-Year Cost | Engineering Hours | Vendor Lock-in | MCP Support | Multi-tenancy |
-|---|---|---|---|---|---|
-| Custom Build | ~€265,600 | ~1,220h | None | Custom (extra cost) | Custom (extra cost) |
-| OSS Self-Hosted | ~€54,360 | ~165h | None | Included (STOA) | Included (STOA) |
-| Managed SaaS (low scale) | ~€29,100 | ~100h | High | Limited | Limited |
-| Managed SaaS (high scale) | ~€200,000+ | ~100h | High | Limited | Limited |
+The columns without numbers are deliberate: the ranking on total cost depends on your inputs. Lock-in, MCP support, and multi-tenancy fit do not.
 
 ## The Hidden Costs
 
-The table above still underestimates the real cost of custom builds in several ways.
+The three inputs above capture the main cost lines but still miss several things that show up disproportionately on the custom-build option.
 
 ### On-Call Cost
 
@@ -193,13 +132,13 @@ Open-source gateways have community support, commercial support options, and lar
 
 ### Security Debt Cost
 
-Security vulnerabilities in API gateways are high severity. A missed JWT validation bug, a path traversal in routing logic, or a SSRF vulnerability in upstream proxying can be catastrophic. Security audit of a custom gateway costs €15,000-40,000 from an external firm. Finding a critical vulnerability in production costs much more.
+Security vulnerabilities in API gateways are high severity. A missed JWT validation bug, a path traversal in routing logic, or a SSRF vulnerability in upstream proxying can be catastrophic. An external penetration test of a custom gateway is a five-figure engagement; finding a critical vulnerability in production is typically an order of magnitude more. For a sense of the baseline, see public guidance from firms like [Cure53's disclosure archive](https://cure53.de/#publications) or the [OWASP API Security project](https://owasp.org/www-project-api-security/) — both document the scope a gateway audit tends to cover.
 
 Open-source gateways have continuous security scrutiny from their communities. Custom gateways have as much security scrutiny as you give them.
 
 ### Compliance Audit Cost
 
-When your first enterprise customer asks for a SOC 2 Type II report, your auditor will review your API gateway architecture. A custom gateway means explaining and evidencing every security control from scratch. An established open-source gateway with documented security architecture reduces this work significantly. The marginal cost of auditing a custom gateway vs an established open-source one is €5,000-20,000 per audit cycle.
+When your first enterprise customer asks for a SOC 2 Type II report, your auditor will review your API gateway architecture. A custom gateway means explaining and evidencing every security control from scratch against the [AICPA Trust Services Criteria](https://www.aicpa-cima.com/topic/audit-assurance/audit-and-assurance-greater-than-soc-2). An established open-source gateway with documented security architecture reduces this work significantly — the effort savings show up mostly in engineering time spent preparing evidence, not in the auditor's fee. Get current quotes directly from the SOC 2 audit firm you are planning to engage; the invoice side of the range varies widely by scope and firm.
 
 ### Opportunity Cost
 
@@ -221,15 +160,15 @@ For most early-to-mid-stage SaaS companies, none of these conditions apply.
 
 ## The Recommendation
 
-The cost analysis points clearly: for most SaaS companies, an open-source self-hosted gateway delivers the best balance of total cost, flexibility, and engineering leverage.
+Across the hundreds of buy/build conversations we have seen, one pattern recurs: for most SaaS companies, an open-source self-hosted gateway delivers the best balance of total cost, flexibility, and engineering leverage. The framework above is designed to let you verify that with your own numbers — not to force you to trust ours.
 
 The key decision factors:
-- **Scale < 500M req/month**: Managed SaaS is cheapest and simplest
-- **Scale > 500M req/month or multi-tenancy required**: OSS self-hosted is the optimal choice
+- **Low-to-moderate request volume, no multi-tenancy needs**: Managed SaaS is usually cheapest and simplest — pull the per-call rate from the vendor pricing page and multiply by your volume to confirm.
+- **Higher request volume or multi-tenancy required**: OSS self-hosted typically wins on total cost and on feature fit
 - **Enterprise compliance requirements or MCP/AI agents**: OSS self-hosted (STOA specifically) has the strongest feature set
 - **Custom build**: Rarely optimal unless the gateway is your product
 
-For the calculation that makes sense for your specific situation, work through the models above with your actual request volume, engineer hourly rate, and compliance requirements.
+For the calculation that makes sense for your specific situation, work through the three inputs above (loaded engineer cost, infrastructure, per-call rate) with your actual request volume and hiring-market salary data.
 
 ## Completing the SaaS Playbook
 
@@ -252,9 +191,9 @@ Ready to start? The fastest path to a production-ready multi-tenant API gateway:
 
 No. Open source eliminates software licensing costs but not infrastructure costs, engineering time for deployment and maintenance, or support costs. The cost analysis above accounts for this. OSS self-hosted is cheaper than custom build or managed SaaS at most scales because the engineering investment is much smaller — you are configuring and operating software, not building it.
 
-### How accurate are the engineering cost estimates?
+### How accurate will my own estimate be?
 
-The estimates use €800/day as a loaded senior engineer cost in Western Europe. Your actual cost depends on location, seniority mix, and whether you use contractors or employees. Use them as directional guidance, not precise predictions. The relative costs between options are more reliable than the absolute numbers.
+Your absolute number will be off — probably by 30% or more — because requirements change, scope grows, and incidents happen. That's fine. The relative ranking between Custom Build, OSS Self-Hosted, and Managed SaaS is far more reliable than any of the individual totals, because the three options differ by orders of magnitude in engineering-week intensity, not small percentages. Build the estimate to decide between options, not to forecast a three-year budget line.
 
 ### What if we start with a custom build and switch later?
 
