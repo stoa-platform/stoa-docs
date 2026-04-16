@@ -10,7 +10,7 @@ keywords: [pr-review, ai-factory, github-actions, claude-code, policy, advisory,
 
 | Field | Value |
 |-------|-------|
-| **Status** | Proposed |
+| **Status** | Accepted |
 | **Date** | 2026-04-16 |
 | **Decision Makers** | Christophe, Claude Code |
 | **Linear** | (to be filed) |
