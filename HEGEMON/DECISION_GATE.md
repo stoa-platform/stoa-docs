@@ -62,6 +62,7 @@ Both required:
 
 - **#1 · Editorial plan "EU régulé"** · GPT-5 · 5/5 · **VALID** · **Y** — flagged over-engineering (Lychee CI cutoff, 5× peer review, 3× legal review, industrialised retrofit of 63 articles). Plan cut to v1 with a human gate.
 - **#2 · Dual-council LLM (Claude Code proposal ≈ 12 h dev)** · GPT-5 · 5/5 · **VALID** · **Y** — flagged premature automation. Refocused on manual MVP Phase 0 (10 logs / 60 d gate before Phase 1).
+- **#3 · Gateway benchmark public CAB-2043 (≈ 10–20 h setup)** · GPT-5 (3 rounds) · 4.5/5 · **VALID** · **Y** — reframed "5-gateway public shootout" → "C-asymmetric 80/20" (main act = démo 3-actes OTEL/Tempo + dossier archi 5 piliers régulé EU ; bench = annexe sobre STOA vs Gravitee, framing "within expected range"). R1 insight : p999 ≠ critère de décision comité régulé. R2 insight : sans chiffres = doute silencieux différé, bench-annexe = désactivateur. R3 insight : sequencing démo→dossier (pas l'inverse) pour éviter biais projection. Dropped : 5 gateways × 3 scénarios × publication centrale.
 
 ## Phase Gates
 
