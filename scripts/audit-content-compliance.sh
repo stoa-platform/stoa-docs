@@ -113,6 +113,16 @@ P1_UNSOURCED_CLAIMS=(
 )
 
 # =============================================================================
+# P1_UNSOURCED_TCO — Fabricated TCO tables (CAB-2069)
+# Detects markdown table rows with currency (€/$) that lack a source link
+# within +-10 lines. Whitelisted markers: markdown http(s) link in context,
+# "Vendor-dependent", "see .* pricing", "see .* calculator", or gostoa.dev.
+# =============================================================================
+
+TCO_RADIUS=10
+TCO_CONTEXT_WHITELIST='Vendor-dependent|[Ss]ee .* pricing|[Ss]ee .* calculator|gostoa\.dev'
+
+# =============================================================================
 # Whitelist (false positives)
 # =============================================================================
 
@@ -172,6 +182,24 @@ has_competitor_in_table_context() {
         fi
     done
     return 1
+}
+
+has_source_link_in_context() {
+    local file="$1"
+    local line_num="$2"
+    local start=$((line_num - TCO_RADIUS))
+    [[ $start -lt 1 ]] && start=1
+    local end=$((line_num + TCO_RADIUS))
+    sed -n "${start},${end}p" "$file" 2>/dev/null | grep -qE '\[[^]]+\]\(https?://[^)]+\)'
+}
+
+has_tco_whitelist_in_context() {
+    local file="$1"
+    local line_num="$2"
+    local start=$((line_num - TCO_RADIUS))
+    [[ $start -lt 1 ]] && start=1
+    local end=$((line_num + TCO_RADIUS))
+    sed -n "${start},${end}p" "$file" 2>/dev/null | grep -qE "$TCO_CONTEXT_WHITELIST"
 }
 
 report_p0() {
@@ -236,6 +264,20 @@ scan_file() {
             report_p1 "$file" "$line_num" "$pattern" "Unsourced comparative claim"
         done < <(grep -nEi "$pattern" "$file" 2>/dev/null || true)
     done
+
+    # --- P1_UNSOURCED_TCO: Fabricated TCO tables (CAB-2069) ---
+    while IFS=: read -r line_num content; do
+        [[ -z "$line_num" ]] && continue
+        # Must be a markdown table row
+        echo "$content" | grep -qE '^[[:space:]]*\|' || continue
+        # Line-level TCO whitelist
+        echo "$content" | grep -qE "$TCO_CONTEXT_WHITELIST" && continue
+        # Context-level TCO whitelist (±10 lines)
+        has_tco_whitelist_in_context "$file" "$line_num" && continue
+        # Source link in ±10 lines exempts the row
+        has_source_link_in_context "$file" "$line_num" && continue
+        report_p1 "$file" "$line_num" "P1_UNSOURCED_TCO" "Unsourced currency in table row"
+    done < <(grep -nE '€[0-9]|\$[0-9]' "$file" 2>/dev/null || true)
 
     # --- P1: Comparison page without disclaimer ---
     # Check if file mentions any competitor by name
