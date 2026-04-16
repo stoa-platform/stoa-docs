@@ -111,6 +111,7 @@ This directory contains important architectural decisions for STOA Platform.
 | # | Title | Status |
 |:---:|-------|:------:|
 | [030](./adr-030-ai-context-management.md) | AI-Native Context Management Architecture | ✅ |
+| [065](./adr-065-pr-guardian.md) | STOA PR Guardian — Advisory AI Review on GitHub Actions | ✅ |
 
 ---
 
