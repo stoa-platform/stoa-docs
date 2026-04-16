@@ -99,7 +99,7 @@ Rewriting the nine CP API workers in Go delivers no user-visible improvement and
 
 Small, incremental, reversible. Keeps the team shipping and leaves future framework decisions for when a CRD-native need actually appears.
 
-## Council Validation — 8.25/10 {Go}
+## Council Validation — 8.25/10 (Go)
 
 | Persona | Score | Verdict |
 | -- | -- | -- |
