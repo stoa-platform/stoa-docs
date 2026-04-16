@@ -123,6 +123,21 @@ TCO_RADIUS=10
 TCO_CONTEXT_WHITELIST='Vendor-dependent|[Ss]ee .* pricing|[Ss]ee .* calculator|gostoa\.dev'
 
 # =============================================================================
+# P1_REGULATORY_CLAIM — Fabricated regulatory alignment claims (CAB-2072)
+# Detects "STOA is DORA compliant" / "AI Act aligned" / "NIS2 ready" style
+# claims without a link to an official primary source within +-10 lines.
+# Whitelists: softener phrases ("supports compliance with",
+# "helps you comply with"), gostoa.dev scoping, or a markdown link whose URL
+# matches an official domain (eur-lex/enisa/iso/nist/hhs/edpb/europa.eu).
+# =============================================================================
+
+REG_RADIUS=10
+REG_FRAMEWORK='(DORA|AI Act|NIS2|GDPR|SOC[[:space:]]*2|ISO[[:space:]]*27001|HIPAA)'
+REG_STATE_VERB='(compliant|aligned|ready|certified|conformant)'
+REG_SOFTENER='(supports compliance with|helps you comply with)'
+REG_OFFICIAL_DOMAIN='(eur-lex\.europa\.eu|enisa\.europa\.eu|iso\.org|nist\.gov|hhs\.gov|edpb\.europa\.eu|europa\.eu|gdpr\.eu)'
+
+# =============================================================================
 # Whitelist (false positives)
 # =============================================================================
 
@@ -191,6 +206,21 @@ has_source_link_in_context() {
     [[ $start -lt 1 ]] && start=1
     local end=$((line_num + TCO_RADIUS))
     sed -n "${start},${end}p" "$file" 2>/dev/null | grep -qE '\[[^]]+\]\(https?://[^)]+\)'
+}
+
+has_regulatory_whitelist_on_line() {
+    local line="$1"
+    # Softener phrases, gostoa.dev self-scoping, or official domain on the same line.
+    echo "$line" | grep -qEi "$REG_SOFTENER|gostoa\.dev|$REG_OFFICIAL_DOMAIN"
+}
+
+has_official_source_in_context() {
+    local file="$1"
+    local line_num="$2"
+    local start=$((line_num - REG_RADIUS))
+    [[ $start -lt 1 ]] && start=1
+    local end=$((line_num + REG_RADIUS))
+    sed -n "${start},${end}p" "$file" 2>/dev/null | grep -qEi "$REG_OFFICIAL_DOMAIN"
 }
 
 has_tco_whitelist_in_context() {
@@ -264,6 +294,20 @@ scan_file() {
             report_p1 "$file" "$line_num" "$pattern" "Unsourced comparative claim"
         done < <(grep -nEi "$pattern" "$file" 2>/dev/null || true)
     done
+
+    # --- P1_REGULATORY_CLAIM: Fabricated regulatory alignment (CAB-2072) ---
+    # Framework + state verb on the same line, unless softened or sourced.
+    while IFS=: read -r line_num content; do
+        [[ -z "$line_num" ]] && continue
+        # Must contain both a framework token and a state verb on the same line
+        echo "$content" | grep -qEi "$REG_FRAMEWORK" || continue
+        echo "$content" | grep -qEi "$REG_STATE_VERB" || continue
+        # Line-level whitelist (softener, gostoa.dev, or official domain)
+        has_regulatory_whitelist_on_line "$content" && continue
+        # Context-level whitelist (±10 lines with official source link)
+        has_official_source_in_context "$file" "$line_num" && continue
+        report_p1 "$file" "$line_num" "P1_REGULATORY_CLAIM" "Unsourced regulatory claim"
+    done < <(grep -niE "$REG_FRAMEWORK" "$file" 2>/dev/null || true)
 
     # --- P1_UNSOURCED_TCO: Fabricated TCO tables (CAB-2069) ---
     while IFS=: read -r line_num content; do

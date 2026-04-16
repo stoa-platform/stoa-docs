@@ -65,6 +65,16 @@ run_case "compliance-fail-fabricated" \
     "$FIXTURES/compliance-fail-fabricated.md" \
     2 1
 
+# Pass fixture: regulatory claims with official source or softener (CAB-2072)
+run_case "compliance-pass-regulatory-sourced" \
+    "$FIXTURES/compliance-pass-regulatory-sourced.md" \
+    0 0
+
+# Fail fixture: regulatory claims without sources (CAB-2072)
+run_case "compliance-fail-regulatory-claim" \
+    "$FIXTURES/compliance-fail-regulatory-claim.md" \
+    2 1
+
 echo ""
 if [[ "$FAIL_COUNT" -eq 0 ]]; then
     echo -e "${GREEN}ALL TESTS PASSED${NC} ($PASS_COUNT/$((PASS_COUNT + FAIL_COUNT)))"
