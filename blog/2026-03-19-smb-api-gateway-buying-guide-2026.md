@@ -13,7 +13,9 @@ keywords:
   - Kong alternative SMB
   - API gateway cost comparison
 ---
-<!-- last verified: 2026-02 -->
+<!-- last verified: 2026-04 -->
+
+> **Corrections & Updates (2026-04-16)**: An earlier version of this guide included a Total Cost of Ownership table with specific monthly Euro ranges for self-hosted and managed options. Those figures were illustrative but presented with a precision the underlying inputs did not support. This version replaces the table with a qualitative framework and links to each vendor's public pricing page so readers can plug in their own request volumes and infrastructure rates. The qualitative conclusion — self-hosted open source wins at moderate-to-high scale, managed options stay competitive at low volume — is unchanged.
 
 Choosing an API gateway as a small or medium business in 2026 is harder than it should be. Most comparison articles assume you have a dedicated platform team, a six-figure infrastructure budget, and months to spare on evaluation. Most SaaS companies have none of those things.
 
@@ -128,20 +130,25 @@ If you are building AI-powered features in 2026, your gateway needs to route, au
 
 ### Dimension 4: Total Cost of Ownership
 
-"Free" open-source software is never actually free — you pay in engineering time and operational complexity. "Managed" SaaS appears simple but costs grow quickly with scale.
+"Free" open-source software is never actually free — you pay in engineering time and operational complexity. "Managed" SaaS appears simple but costs grow quickly with scale. Rather than give you a single TCO number that will be wrong for your situation, here is the cost shape for each option and where to source the numbers yourself.
 
-| Option | Cost Model | At 1M req/month | At 100M req/month |
-|---|---|---|---|
-| STOA (self-hosted) | Infrastructure cost only | ~€30-50 (small K8s node) | ~€200-500 (scaled deployment) |
-| Kong CE (self-hosted) | Infrastructure cost only | ~€30-50 | ~€200-500 |
-| Gravitee (self-hosted) | Infrastructure cost + Elasticsearch | ~€80-120 | ~€400-800 |
-| AWS API Gateway | Per-request: $3.50/million (REST) | ~€3 | ~€350 |
-| Kong Konnect | Subscription + usage | ~€500+/month | Contact sales |
-| Cloudflare Workers | Per-request after free tier | Likely free tier | ~€50+ |
+**Self-hosted options (STOA, Kong CE, Gravitee)** — your cost is one or two Kubernetes nodes plus supporting infrastructure. Size your nodes against real traffic and price them with your cloud's official calculator:
 
-*Cost estimates are illustrative ranges based on publicly available pricing as of February 2026. Actual costs depend on configuration and scale. Verify current pricing directly with each vendor.*
+- [AWS Pricing Calculator](https://calculator.aws/) for EKS + EC2
+- [Google Cloud Pricing Calculator](https://cloud.google.com/products/calculator) for GKE
+- [Azure Pricing Calculator](https://azure.microsoft.com/en-us/pricing/calculator/) for AKS
 
-The economics favor self-hosted open-source at scale. The break-even point where managed SaaS becomes more expensive than self-hosted is typically around 10-50M requests/month, depending on your infrastructure costs and team bandwidth.
+Gravitee's stack includes a mandatory Elasticsearch cluster for analytics, so a Gravitee self-hosted deployment adds an Elasticsearch node pool on top of the gateway nodes — expect a higher node count than STOA or Kong CE for the same throughput. See [Gravitee architecture docs](https://documentation.gravitee.io/apim/overview/architecture) for the required components.
+
+**Managed options (AWS API Gateway, Cloudflare Workers, Kong Konnect)** — cost is per-request or subscription-based and published by the vendor:
+
+- [AWS API Gateway pricing](https://aws.amazon.com/api-gateway/pricing/) — REST, HTTP, and WebSocket tiers
+- [Cloudflare Workers pricing](https://www.cloudflare.com/plans/developer-platform/) — free tier plus per-million-request pricing
+- [Kong Konnect pricing](https://konghq.com/pricing) — tiered SaaS plans, Enterprise contact sales
+
+The qualitative shape: self-hosted cost grows roughly with node count (sub-linear with traffic once you scale past a single node), while per-request managed pricing grows linearly. The break-even point where self-hosted becomes cheaper depends on your loaded engineer cost, your team's Kubernetes familiarity, and the specific managed tier you would buy — for most SMB SaaS teams already running Kubernetes it lands well inside the volumes covered in this guide. Teams without platform engineering capacity should weight managed options higher even if the raw per-request cost is higher.
+
+*Pricing pages linked above are the primary sources. Named product comparisons are based on publicly available documentation as of April 2026. Verify current pricing directly with each vendor.*
 
 ## Our Recommendation by Profile
 
