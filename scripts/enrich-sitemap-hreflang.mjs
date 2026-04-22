@@ -29,9 +29,17 @@ function extractUrls(xml) {
   return urls;
 }
 
-/** Strip site URL to get path */
+/** Strip site URL to get path (origin-checked, not substring-matched) */
 function toPath(url) {
-  return url.startsWith(SITE_URL) ? url.slice(SITE_URL.length) : url;
+  try {
+    const parsed = new URL(url);
+    if (parsed.origin === SITE_URL) {
+      return parsed.pathname + parsed.search + parsed.hash;
+    }
+  } catch {
+    // not a parsable URL — fall through
+  }
+  return url;
 }
 
 // Read both sitemaps
