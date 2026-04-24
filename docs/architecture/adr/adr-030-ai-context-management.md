@@ -14,6 +14,8 @@ keywords: [AI Factory, context management, Claude Code, memory, session state, a
 | **Date** | 2026-02-05 |
 | **Author** | Christophe Aboulicam + Claude Code |
 
+> **Status update — 2026-04-24:** Partially superseded by ADR-062 for the `.claude/rules/` directory and `globs:` frontmatter model. The active AI-context model is the `CLAUDE.md` hierarchy (root + per-service, 250-line cap) with `.claude/docs/<topic>.md` loaded on demand. Other ADR-030 decisions (component-level `CLAUDE.md`, native skills, hooks, single `memory.md`, cross-repo `~/.claude/CLAUDE.md`, retirement of `.stoa-ai/`, clean permission model) remain valid unless explicitly superseded.
+
 ## Context
 
 STOA Platform is built exclusively with AI (Claude Code) in an "AI Factory" model where an architect supervises autonomous AI workers. Effective context management is critical: each Claude Code session starts fresh and must quickly load all necessary context to produce correct, consistent code.

@@ -15,6 +15,13 @@ keywords: [monorepo, architecture, polyglot, Python, TypeScript, Rust, microserv
 | **Date** | 2026-02-06 |
 | **Linear** | N/A (Foundational) |
 
+> **Status update — 2026-04-24:** This ADR remains the source of truth for the monorepo decision. Gateway topology and AI-context sections below are partially superseded by later ADRs and must be read as historical context, not current state:
+>
+> - `mcp-gateway/` (Python) references are historical. The Python MCP Gateway has been retired and replaced by `stoa-gateway/` (Rust) as the active gateway. Gateway modes and topology are governed by ADR-024.
+> - Product boundaries across `stoactl`, `stoa-link`, and `stoa-connect` are governed by ADR-057.
+> - Active deployment topology follows the single SSE path defined in ADR-059.
+> - Active AI-context hierarchy follows ADR-062 (`CLAUDE.md` hierarchy + on-demand `.claude/docs/`), not the earlier `.claude/rules/` model.
+
 ## Context
 
 STOA Platform is a comprehensive API Management solution comprising multiple services: a control plane API, multiple frontends, an AI-native gateway, infrastructure automation, and tooling. These components share common dependencies, require coordinated releases, and benefit from unified CI/CD pipelines.
@@ -68,8 +75,8 @@ stoa/
 ├── control-plane-api/       # Python 3.11 — FastAPI backend
 ├── control-plane-ui/        # React 18 + TypeScript — Console UI
 ├── portal/                  # React 18 + TypeScript — Developer Portal
-├── mcp-gateway/             # Python 3.11 — MCP Gateway (current)
-├── stoa-gateway/            # Rust (stable) — Future unified gateway
+├── mcp-gateway/             # Python 3.11 — MCP Gateway (historical, retired)
+├── stoa-gateway/            # Rust — Current STOA Gateway
 ├── cli/                     # Python — Internal CLI
 ├── e2e/                     # Playwright + BDD — E2E tests
 ├── landing-api/             # Python 3.12 — Landing page API
