@@ -8,7 +8,7 @@ sidebar_position: 62
 - **Status**: Accepted
 - **Date**: 2026-04-15
 - **Deciders**: Christophe, Claude Code
-- **Supersedes**: implicit "rules dir" pattern (never formally recorded)
+- **Supersedes**: ADR-030 in part — specifically the `.claude/rules/` directory and `globs:` frontmatter model. ADR-062 replaces that rules-dir pattern with the `CLAUDE.md` hierarchy and on-demand `.claude/docs/` pattern. Other ADR-030 decisions remain valid.
 
 ## Context
 
