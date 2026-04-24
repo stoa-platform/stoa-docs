@@ -1,0 +1,24 @@
+name: ADR Lint
+
+on:
+  pull_request:
+    paths:
+      - "docs/architecture/adr/**"
+      - "scripts/adr_lint.py"
+      - ".github/workflows/adr-lint.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/architecture/adr/**"
+      - "scripts/adr_lint.py"
+      - ".github/workflows/adr-lint.yml"
+
+jobs:
+  adr-lint:
+    name: ADR Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ADR lint
+        run: python3 scripts/adr_lint.py
