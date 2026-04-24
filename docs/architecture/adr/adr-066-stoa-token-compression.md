@@ -1,4 +1,4 @@
-# ADR-060 — STOA Token Compression (STC): Lossless Response Compression for LLM Agents
+# ADR-066 — STOA Token Compression (STC): Lossless Response Compression for LLM Agents
 
 **Status:** Accepted
 **Date:** 2026-04-01
