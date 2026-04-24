@@ -5,7 +5,7 @@ description: "Architecture Decision Record for the GitOps-native STOA CLI tool b
 keywords: [stoactl, CLI, Go, Cobra, GitOps, kubectl, API management]
 ---
 
-# ADR-001: stoactl CLI Design
+# ADR-002: stoactl CLI Design
 
 **Status**: Proposed
 **Date**: 2026-01-24
