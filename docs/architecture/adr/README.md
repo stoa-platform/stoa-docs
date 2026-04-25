@@ -68,6 +68,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [047](./adr-047-mcp-skills-system.md) | MCP Skills System — Context Injection | 📋 |
 | [048](./adr-048-integrated-chat-agent.md) | Integrated Chat Agent Architecture | 📋 |
 | [051](./adr-051-lazy-mcp-discovery.md) | Lazy MCP Discovery with Cache-First Pattern | ✅ |
+| [067](./adr-067-uac-as-llm-optimized-executable-contract.md) | UAC as LLM-Optimized Executable Contract | 📋 |
 
 ### Performance & Observability
 
