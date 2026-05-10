@@ -80,6 +80,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [050](./adr-050-guardrails-token-budget-state.md) | Guardrails V2 — Token Budget State Management | ✅ |
 | [052](./adr-052-benchmark-opensearch-persistence.md) | Benchmark OpenSearch Persistence & LLM Routing | ✅ |
 | [053](./adr-053-llm-cost-aware-routing.md) | LLM Cost-Aware Routing | ✅ |
+| [068](./adr-068-audit-log-actor-resource-views.md) | Audit Log Actor and Resource Views | ✅ |
 
 ### Gateway & Deployment
 
