@@ -106,6 +106,7 @@ This directory contains important architectural decisions for STOA Platform.
 |:---:|-------|:------:|
 | [019](./adr-019-business-model-moat-strategy.md) | Business Model & Moat Strategy | ✅ |
 | [041](./adr-041-plugin-architecture-community-enterprise.md) | Plugin Architecture — Community Core vs Enterprise Extensions | ✅ |
+| [068](./adr-068-reuse-first-owned-portable-layer.md) | Reuse-First — Owned Portable Layer over Commodity Federated Runtimes | 📋 |
 
 ### Developer Experience & AI Workflow
 
