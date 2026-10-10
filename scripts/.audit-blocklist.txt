@@ -1,27 +1,8 @@
-# CAB-953 - Client/Prospect Names Blocklist
-# One pattern per line (case-insensitive matching)
-# Lines starting with # are comments
+# Client-name audit blocklist — TEMPLATE ONLY.
 #
-# To add a new client: simply add a new line
-# This file can be overridden in CI via secrets for private lists
-
-# French Banking
-Banque de France
-BdF
-BNP Paribas
-Société Générale
-Crédit Agricole
-
-# Energy
-Engie
-TotalEnergies
-
-# Retail & Luxury
-LVMH
-Carrefour
-
-# Logistics
-CEVA
-
-# Add new clients/prospects below this line
-# -------------------------------------------
+# The real list is NEVER committed: it is injected at CI time from the private
+# repository variable PRIVATE_BLOCKLIST (see .github/workflows/docs-audit.yml).
+# For a local run, export PRIVATE_BLOCKLIST and append it to this file, or pass
+# your own copy; do not add client names here.
+#
+# Format: one case-insensitive pattern per line, '#' for comments.
