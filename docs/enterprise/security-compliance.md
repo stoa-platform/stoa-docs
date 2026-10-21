@@ -236,13 +236,9 @@ Built-in dashboards for:
 - Data access patterns
 - SLA compliance metrics
 
-## Security Certifications (Roadmap)
+## Security Certifications
 
-| Certification | Status | Target |
-|---------------|--------|--------|
-| SOC 2 Type II | Planned | Q4 2026 |
-| ISO 27001 | Planned | 2027 |
-| ISAE 3402 | Planned | 2027 |
+STOA holds no third-party certification (SOC 2, ISO 27001) at this stage.
 
 ---
 
