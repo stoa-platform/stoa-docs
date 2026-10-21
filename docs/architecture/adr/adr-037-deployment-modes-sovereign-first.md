@@ -4,6 +4,10 @@ description: "Decides the sovereign-first deployment strategy with on-premise, h
 keywords: [deployment modes, sovereign cloud, data sovereignty, NIS2, DORA, on-premise, hybrid]
 ---
 
+:::note Public platform shut down (23 May 2026)
+Hostnames under `*.gostoa.dev` in this record, other than the documentation site, refer to the public platform that was shut down on 23 May 2026. They are historical. Current examples use `stoa.example`. The documentation site remains at [docs.gostoa.dev](https://docs.gostoa.dev). The SaaS row, where this ADR mentions one, is not an offered service.
+:::
+
 # ADR-037: Deployment Modes Strategy — Sovereign First
 
 ## Metadata

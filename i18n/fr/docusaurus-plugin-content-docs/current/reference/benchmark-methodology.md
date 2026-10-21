@@ -400,7 +400,7 @@ kubectl create job --from=cronjob/gateway-arena arena-test-$(date +%s) -n stoa-s
 Après l'ajout d'un gateway, vérifiez que les métriques apparaissent dans Pushgateway :
 
 ```bash
-curl -s https://pushgateway.gostoa.dev/metrics | grep 'gateway="my-gateway"'
+curl -s https://pushgateway.stoa.example/metrics | grep 'gateway="my-gateway"'
 ```
 
 ---

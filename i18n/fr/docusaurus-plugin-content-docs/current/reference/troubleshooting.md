@@ -81,13 +81,13 @@ alembic stamp head  # Réinitialiser à l'état actuel (utiliser avec précautio
 Les exemples ci-dessous utilisent des variables d'environnement. Définissez-les pour votre instance STOA :
 
 ```bash
-export STOA_API_URL="https://api.gostoa.dev"       # Remplacer par votre domaine
-export STOA_AUTH_URL="https://auth.gostoa.dev"      # Fournisseur OIDC Keycloak
-export STOA_GATEWAY_URL="https://mcp.gostoa.dev"    # Endpoint MCP Gateway
-export STOA_CONSOLE_URL="https://console.gostoa.dev"
+export STOA_API_URL="https://api.stoa.example"       # Remplacer par votre domaine
+export STOA_AUTH_URL="https://auth.stoa.example"      # Fournisseur OIDC Keycloak
+export STOA_GATEWAY_URL="https://mcp.stoa.example"    # Endpoint MCP Gateway
+export STOA_CONSOLE_URL="https://console.stoa.example"
 ```
 
-Hébergé vous-même ? Remplacez `gostoa.dev` par votre domaine.
+Remplacez `stoa.example` par le domaine de votre installation.
 :::
 
 ### 401 Unauthorized sur Toutes les Requêtes

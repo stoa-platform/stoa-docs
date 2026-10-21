@@ -5,6 +5,10 @@ description: "Décide des stratégies de déploiement sidecar pour exécuter STO
 keywords: [sidecar, déploiement VM, systemd, gateway, non-Kubernetes, infrastructure]
 ---
 
+:::note Plateforme publique éteinte (23 mai 2026)
+Les noms d'hôte `*.gostoa.dev` de cet enregistrement, hors site de documentation, désignent la plateforme publique éteinte le 23 mai 2026. Ils sont historiques. Les exemples actuels utilisent `stoa.example`. Le site de documentation reste [docs.gostoa.dev](https://docs.gostoa.dev). La ligne SaaS, lorsque cet ADR en contient une, n'est pas un service proposé.
+:::
+
 # ADR-038 : Stratégies de Déploiement Sidecar sur Infrastructure VM
 
 ## Statut
@@ -80,7 +84,7 @@ services:
     environment:
       STOA_UPSTREAM_HOST: "localhost"
       STOA_UPSTREAM_PORT: "5555"
-      STOA_CONTROL_PLANE_URL: "https://cp.gostoa.dev"
+      STOA_CONTROL_PLANE_URL: "https://cp.stoa.example"
       STOA_TENANT_ID: "${TENANT_ID}"
     volumes:
       - ./stoa-gateway.yaml:/etc/stoa/gateway.yaml:ro

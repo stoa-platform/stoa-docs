@@ -187,7 +187,7 @@ kubectl logs -n stoa-system deployment/stoa-gateway --tail=50 | grep weather-cur
 MCP agents discover tools via the `GET /mcp/v1/tools` endpoint. Let's verify your tool appears in the listing:
 
 ```bash
-curl -s https://mcp.gostoa.dev/mcp/v1/tools | jq '.tools[] | select(.name == "get_current_weather")'
+curl -s https://mcp.stoa.example/mcp/v1/tools | jq '.tools[] | select(.name == "get_current_weather")'
 ```
 
 Expected response:
@@ -218,7 +218,7 @@ For more details on the discovery protocol, see our [MCP protocol architecture d
 Now test the tool invocation flow. MCP tools are invoked via `POST /mcp/v1/tools/{name}/invoke`:
 
 ```bash
-curl -X POST https://mcp.gostoa.dev/mcp/v1/tools/get_current_weather/invoke \
+curl -X POST https://mcp.stoa.example/mcp/v1/tools/get_current_weather/invoke \
   -H "Content-Type: application/json" \
   -d '{
     "arguments": {
@@ -261,7 +261,7 @@ You now have a production-ready custom MCP tool that:
 - **Transforms data automatically** — agents get clean responses without knowing the backend API's quirks
 - **Scales with your infrastructure** — STOA handles rate limiting, retries, and observability (metrics for every tool invocation)
 
-To connect an AI agent like Claude to your tool, configure the MCP client with your gateway URL (`https://mcp.gostoa.dev`). The agent will automatically discover `get_current_weather` and can invoke it whenever a user asks about weather conditions.
+To connect an AI agent like Claude to your tool, configure the MCP client with your gateway URL (`https://mcp.stoa.example`). The agent will automatically discover `get_current_weather` and can invoke it whenever a user asks about weather conditions.
 
 ## Advanced Patterns
 

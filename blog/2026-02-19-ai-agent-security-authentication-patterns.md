@@ -158,7 +158,7 @@ STOA uses [Keycloak](https://www.keycloak.org/) for OAuth2/OIDC. Here's how to c
 ```bash
 # Create a Keycloak client for the AI agent
 # (via Admin Console or API)
-curl -X POST https://auth.gostoa.dev/admin/realms/stoa/clients \
+curl -X POST https://auth.stoa.example/admin/realms/stoa/clients \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -195,13 +195,13 @@ A user registers as a consumer in the STOA Portal and receives initial credentia
 USER_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.user_claims..."
 
 # Step 2: Agent exchanges the user token for an agent-scoped token
-curl -X POST https://auth.gostoa.dev/oauth/token \
+curl -X POST https://auth.stoa.example/oauth/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" \
   -d "subject_token=$USER_TOKEN" \
   -d "subject_token_type=urn:ietf:params:oauth:token-type:access_token" \
   -d "requested_token_type=urn:ietf:params:oauth:token-type:access_token" \
-  -d "audience=https://mcp.gostoa.dev" \
+  -d "audience=https://mcp.stoa.example" \
   -d "scope=mcp:invoke"
 
 # Response:
@@ -213,7 +213,7 @@ curl -X POST https://auth.gostoa.dev/oauth/token \
 }
 
 # Step 3: Agent uses the new token to call the MCP Gateway
-curl -X POST https://mcp.gostoa.dev/tools/search-contacts/invoke \
+curl -X POST https://mcp.stoa.example/tools/search-contacts/invoke \
   -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.agent_claims..." \
   -d '{"query": "Jane Doe"}'
 ```
@@ -238,7 +238,7 @@ This enables **delegated access with attribution**: the MCP gateway knows the ag
   "act": {
     "sub": "agent-crm-assistant"  // Acting agent
   },
-  "aud": "https://mcp.gostoa.dev",
+  "aud": "https://mcp.stoa.example",
   "scope": "mcp:invoke crm:read",
   "exp": 1234567890
 }
@@ -271,7 +271,7 @@ When the gateway issues an access token, it includes a `cnf` (confirmation) clai
 ```json
 {
   "sub": "agent-production-01",
-  "aud": "https://mcp.gostoa.dev",
+  "aud": "https://mcp.stoa.example",
   "exp": 1234567890,
   "cnf": {
     "x5t#S256": "bwcK0esc3ACC3DB2Y5_lESsXE8o9ltc05O89jdN-dg2"
@@ -290,7 +290,7 @@ openssl req -new -x509 -days 365 -nodes \
   -keyout agent.key -out agent.crt
 
 # Step 2: Agent authenticates with mTLS and receives a cert-bound token
-curl -X POST https://auth.gostoa.dev/oauth/token \
+curl -X POST https://auth.stoa.example/oauth/token \
   --cert agent.crt --key agent.key \
   -d "grant_type=client_credentials" \
   -d "client_id=agent-prod"
@@ -298,7 +298,7 @@ curl -X POST https://auth.gostoa.dev/oauth/token \
 # Response: access token with cnf claim
 
 # Step 3: Agent calls API with both token and certificate
-curl -X POST https://mcp.gostoa.dev/tools/delete-user/invoke \
+curl -X POST https://mcp.stoa.example/tools/delete-user/invoke \
   --cert agent.crt --key agent.key \
   -H "Authorization: Bearer $TOKEN" \
   -d '{"user_id": "12345"}'

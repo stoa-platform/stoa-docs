@@ -29,6 +29,6 @@ Tutorials teach you how to **accomplish a goal**. For detailed configuration opt
 ## Prerequisites
 
 All tutorials assume:
-- A STOA Platform instance (cloud at `console.gostoa.dev` or [self-hosted](/docs/deployment/hybrid))
+- A STOA instance you run ([install it](/docs/admin/installation))
 - A browser and a terminal
 - Basic familiarity with REST APIs and JSON

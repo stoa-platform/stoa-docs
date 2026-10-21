@@ -83,15 +83,15 @@ Le client MCP découvre d'abord que la ressource nécessite OAuth en récupéran
 
 ```
 GET /.well-known/oauth-protected-resource HTTP/1.1
-Host: mcp.gostoa.dev
+Host: mcp.stoa.example
 ```
 
 Réponse :
 
 ```json
 {
-  "resource": "https://mcp.gostoa.dev",
-  "authorization_servers": ["https://mcp.gostoa.dev"],
+  "resource": "https://mcp.stoa.example",
+  "authorization_servers": ["https://mcp.stoa.example"],
   "scopes_supported": ["openid", "stoa:read", "stoa:write", "stoa:admin"],
   "bearer_methods_supported": ["header"]
 }
@@ -105,17 +105,17 @@ Le client suit `authorization_servers[0]` pour récupérer les métadonnées OAu
 
 ```
 GET /.well-known/oauth-authorization-server HTTP/1.1
-Host: mcp.gostoa.dev
+Host: mcp.stoa.example
 ```
 
 Réponse :
 
 ```json
 {
-  "issuer": "https://auth.gostoa.dev/realms/stoa",
-  "authorization_endpoint": "https://auth.gostoa.dev/realms/stoa/protocol/openid-connect/auth",
-  "token_endpoint": "https://mcp.gostoa.dev/oauth/token",
-  "registration_endpoint": "https://mcp.gostoa.dev/oauth/register",
+  "issuer": "https://auth.stoa.example/realms/stoa",
+  "authorization_endpoint": "https://auth.stoa.example/realms/stoa/protocol/openid-connect/auth",
+  "token_endpoint": "https://mcp.stoa.example/oauth/token",
+  "registration_endpoint": "https://mcp.stoa.example/oauth/register",
   "scopes_supported": ["openid", "profile", "email", "stoa:read", "stoa:write", "stoa:admin"],
   "response_types_supported": ["code"],
   "grant_types_supported": ["authorization_code", "refresh_token"],
@@ -124,7 +124,7 @@ Réponse :
 }
 ```
 
-Notez que `token_endpoint` et `registration_endpoint` pointent vers le gateway (`mcp.gostoa.dev/oauth/*`), pas directement vers Keycloak. Le gateway proxifie ces requêtes en appliquant des transformations qui font fonctionner le flux pour les clients MCP publics.
+Notez que `token_endpoint` et `registration_endpoint` pointent vers le gateway (`mcp.stoa.example/oauth/*`), pas directement vers Keycloak. Le gateway proxifie ces requêtes en appliquant des transformations qui font fonctionner le flux pour les clients MCP publics.
 
 ### Étape 3 : Dynamic Client Registration (DCR)
 
@@ -132,7 +132,7 @@ Le client MCP s'enregistre dynamiquement :
 
 ```
 POST /oauth/register HTTP/1.1
-Host: mcp.gostoa.dev
+Host: mcp.stoa.example
 Content-Type: application/json
 
 {
@@ -153,7 +153,7 @@ Après que l'utilisateur autorise dans son navigateur, le client MCP échange le
 
 ```
 POST /oauth/token HTTP/1.1
-Host: mcp.gostoa.dev
+Host: mcp.stoa.example
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=authorization_code
@@ -175,7 +175,7 @@ sequenceDiagram
     participant B as Browser
 
     C->>G: GET /.well-known/oauth-protected-resource
-    G-->>C: {authorization_servers: ["https://mcp.gostoa.dev"]}
+    G-->>C: {authorization_servers: ["https://mcp.stoa.example"]}
 
     C->>G: GET /.well-known/oauth-authorization-server
     G-->>C: {registration_endpoint, token_endpoint, ...}
@@ -250,13 +250,13 @@ Cela nécessite `KEYCLOAK_ADMIN_PASSWORD` comme variable d'environnement. Sans e
 
 ### Piège 4 : Les Serveurs d'Autorisation Doivent Pointer vers le Gateway
 
-**Problème** : Si `authorization_servers` dans les métadonnées de ressource protégée pointe directement vers Keycloak (`auth.gostoa.dev`), le client récupère les métadonnées OAuth natives de Keycloak. Ces métadonnées n'annoncent pas `token_endpoint_auth_methods_supported: ["none"]`, causant l'échec de l'enregistrement des clients publics.
+**Problème** : Si `authorization_servers` dans les métadonnées de ressource protégée pointe directement vers Keycloak (`auth.stoa.example`), le client récupère les métadonnées OAuth natives de Keycloak. Ces métadonnées n'annoncent pas `token_endpoint_auth_methods_supported: ["none"]`, causant l'échec de l'enregistrement des clients publics.
 
 **Cause Racine** : Les métadonnées OAuth de Keycloak reflètent sa configuration par défaut. Même quand les clients publics sont activés au niveau client, les métadonnées au niveau serveur ne changent pas.
 
 **Correction** : `authorization_servers` pointe toujours vers le gateway. Le gateway sert des métadonnées curées qui incluent `"none"` comme méthode d'auth supportée. Les endpoints d'enregistrement et de token sont proxifiés via le gateway, qui applique les transformations nécessaires.
 
-**Vérification** : Comparez `GET https://auth.gostoa.dev/realms/stoa/.well-known/openid-configuration` avec `GET https://mcp.gostoa.dev/.well-known/oauth-authorization-server`. Les métadonnées du gateway devraient inclure `"none"` dans `token_endpoint_auth_methods_supported`.
+**Vérification** : Comparez `GET https://auth.stoa.example/realms/stoa/.well-known/openid-configuration` avec `GET https://mcp.stoa.example/.well-known/oauth-authorization-server`. Les métadonnées du gateway devraient inclure `"none"` dans `token_endpoint_auth_methods_supported`.
 
 ### Piège 5 : Politique de Scope DCR Keycloak
 
@@ -290,13 +290,13 @@ Le proxy OAuth dans STOA Gateway est configuré via des variables d'environnemen
 
 ```bash
 # Connexion Keycloak
-KEYCLOAK_BASE_URL=https://auth.gostoa.dev
+KEYCLOAK_BASE_URL=https://auth.stoa.example
 KEYCLOAK_REALM=stoa
 KEYCLOAK_ADMIN_PASSWORD=<requis pour le patch PKCE>
 
 # Métadonnées OAuth
-OAUTH_ISSUER=https://auth.gostoa.dev/realms/stoa
-GATEWAY_EXTERNAL_URL=https://mcp.gostoa.dev
+OAUTH_ISSUER=https://auth.stoa.example/realms/stoa
+GATEWAY_EXTERNAL_URL=https://mcp.stoa.example
 ```
 
 ### Tester le Flux Manuellement
@@ -305,13 +305,13 @@ Vérifiez chaque étape de la chaîne de découverte :
 
 ```bash
 # Étape 1 : Métadonnées de ressource protégée
-curl -s https://mcp.gostoa.dev/.well-known/oauth-protected-resource | jq .
+curl -s https://mcp.stoa.example/.well-known/oauth-protected-resource | jq .
 
 # Étape 2 : Métadonnées du serveur d'autorisation
-curl -s https://mcp.gostoa.dev/.well-known/oauth-authorization-server | jq .
+curl -s https://mcp.stoa.example/.well-known/oauth-authorization-server | jq .
 
 # Étape 3 : Dynamic client registration
-curl -s -X POST https://mcp.gostoa.dev/oauth/register \
+curl -s -X POST https://mcp.stoa.example/oauth/register \
   -H "Content-Type: application/json" \
   -d '{
     "client_name": "test-client",
@@ -329,7 +329,7 @@ echo "Verifier: $CODE_VERIFIER"
 echo "Challenge: $CODE_CHALLENGE"
 
 # Étape 5 : Ouvrir l'URL d'autorisation (navigateur)
-echo "https://auth.gostoa.dev/realms/stoa/protocol/openid-connect/auth?\
+echo "https://auth.stoa.example/realms/stoa/protocol/openid-connect/auth?\
 client_id=<client_id>&\
 response_type=code&\
 redirect_uri=http://127.0.0.1:9999/callback&\

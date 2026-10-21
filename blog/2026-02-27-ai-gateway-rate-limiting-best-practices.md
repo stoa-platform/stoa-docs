@@ -376,7 +376,7 @@ Query the STOA API for current usage:
 
 ```bash
 curl -H "Authorization: Bearer $TOKEN" \
-  https://api.gostoa.dev/v1/quotas/tenant-acme/usage
+  https://api.stoa.example/v1/quotas/tenant-acme/usage
 ```
 
 Response:
@@ -417,7 +417,7 @@ MCP clients should gracefully handle `429` responses:
 
 ```typescript
 async function callTool(toolName: string, input: object) {
-  const response = await fetch(`https://mcp.gostoa.dev/mcp/tools/${toolName}`, {
+  const response = await fetch(`https://mcp.stoa.example/mcp/tools/${toolName}`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,
@@ -772,7 +772,7 @@ To continue learning:
 - Review the [API Gateway Glossary](/blog/api-gateway-glossary-2026) for terminology reference
 - Check the [STOA quota reference](/docs/reference/quotas) for complete configuration options
 
-Ready to implement production-grade AI gateway quotas? [Try STOA Platform](https://console.gostoa.dev/signup) with built-in token-aware rate limiting and multi-tenant quota management.
+Ready to implement production-grade AI gateway quotas? [Install STOA](/docs/admin/installation) on your infrastructure. Token-aware limits and per-tenant quotas run on the instance you operate.
 
 
 ---

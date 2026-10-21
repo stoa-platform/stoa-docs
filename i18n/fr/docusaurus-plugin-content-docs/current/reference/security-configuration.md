@@ -122,8 +122,8 @@ CORS_MAX_AGE=600
 ```
 https://console.stoa.dev
 https://portal.stoa.dev
-https://console.gostoa.dev
-https://portal.gostoa.dev
+https://console.stoa.example
+https://portal.stoa.example
 ```
 
 ### Développement Local

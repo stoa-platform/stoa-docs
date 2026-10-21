@@ -7,7 +7,7 @@ keywords: [GDPR, data sovereignty, DORA, NIS2, compliance, STOA, European regula
 
 # Fiche #5 : Souveraineté des Données & RGPD
 
-> L'architecture hybride de STOA est conçue pour que les données métier sensibles et les identités utilisateurs restent dans votre périmètre, tandis que les métadonnées et les métriques sont hébergées sur une infrastructure souveraine européenne.
+> Vous décidez où se trouvent les données. Les charges utiles sensibles et les identités restent dans le périmètre que vous choisissez. Les métadonnées et les métriques restent sur une infrastructure que vous exploitez. STOA ne les héberge pas.
 
 ## 5 Points Clés
 
@@ -17,7 +17,7 @@ Une question clé pour toute entreprise : "Où vont mes données ?" STOA le rend
 
 ```mermaid
 flowchart TB
-    subgraph Cloud["☁️ STOA CLOUD (Région EU)"]
+    subgraph Cloud["☁️ VOTRE PLAN DE CONTRÔLE"]
         Portal["📱 Portal"]
         Config["⚙️ Control Plane"]
         KC["🔐 Keycloak"]

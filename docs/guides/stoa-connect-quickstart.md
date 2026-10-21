@@ -43,7 +43,7 @@ VPS / On-Premise
 ## Prerequisites
 
 - A running Kong, Gravitee, or webMethods gateway with its admin API accessible locally
-- A STOA account at [console.gostoa.dev](https://console.gostoa.dev)
+- A STOA control plane you run ([installation guide](/docs/admin/installation))
 - A **Gateway API Key** from the STOA Console (Settings → Gateways → New Key)
 
 ## Step 1 — Install stoa-connect
@@ -55,7 +55,8 @@ import TabItem from '@theme/TabItem';
 <TabItem value="linux" label="Linux (amd64)">
 
 ```bash
-curl -sSL https://get.gostoa.dev/connect | sh
+# Public installer retired on 23 May 2026.
+go install github.com/stoa-platform/stoa-connect@latest
 ```
 
 </TabItem>
@@ -237,7 +238,7 @@ Or use the CLI:
 stoactl connect status --url http://localhost:8090
 ```
 
-Confirm the gateway appears in the Console at [console.gostoa.dev](https://console.gostoa.dev) under **Gateways**. The status indicator should be green within 30 seconds.
+Confirm the gateway appears in your Console (for example `https://console.stoa.example`) under **Gateways**. The status indicator should be green within 30 seconds.
 
 ---
 

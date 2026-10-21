@@ -188,7 +188,8 @@ Voici la configuration minimale pour faire fonctionner la multi-tenancy avec STO
 
 ```bash
 # Install stoactl
-curl -sSL https://install.gostoa.dev | sh
+# Installateur public retiré le 23 mai 2026.
+go install github.com/stoa-platform/stoactl@latest
 
 # Configure endpoint
 stoactl config set endpoint ${STOA_API_URL}
@@ -267,7 +268,7 @@ Les tokens doivent porter le contexte du tenant. Incluez `tenant_id` (ou équiva
 {
   "sub": "user-123",
   "tenant_id": "acme",
-  "iss": "https://auth.gostoa.dev/realms/tenant-acme",
+  "iss": "https://auth.stoa.example/realms/tenant-acme",
   "roles": ["tenant-admin"],
   "iat": 1740000000
 }

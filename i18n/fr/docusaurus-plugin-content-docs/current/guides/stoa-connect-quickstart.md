@@ -43,7 +43,7 @@ VPS / On-Premise
 ## Prérequis
 
 - Une passerelle Kong, Gravitee ou webMethods en cours d'exécution avec son API d'administration accessible localement
-- Un compte STOA sur [console.gostoa.dev](https://console.gostoa.dev)
+- Un plan de contrôle STOA que vous exploitez ([guide d'installation](/docs/admin/installation))
 - Une **clé API de passerelle** obtenue depuis la Console STOA (Paramètres → Gateways → Nouvelle clé)
 
 ## Étape 1 — Installer stoa-connect
@@ -55,7 +55,8 @@ import TabItem from '@theme/TabItem';
 <TabItem value="linux" label="Linux (amd64)">
 
 ```bash
-curl -sSL https://get.gostoa.dev/connect | sh
+# Installateur public retiré le 23 mai 2026.
+go install github.com/stoa-platform/stoa-connect@latest
 ```
 
 </TabItem>
@@ -237,7 +238,7 @@ Ou via la CLI :
 stoactl connect status --url http://localhost:8090
 ```
 
-Confirmez que la passerelle apparaît dans la Console sur [console.gostoa.dev](https://console.gostoa.dev) sous **Gateways**. L'indicateur d'état doit devenir vert en moins de 30 secondes.
+Confirmez que la passerelle apparaît dans votre Console (par exemple `https://console.stoa.example`) sous **Gateways**. L'indicateur d'état doit devenir vert en moins de 30 secondes.
 
 ---
 

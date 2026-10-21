@@ -5,6 +5,10 @@ description: "Decides the sidecar deployment strategies for running STOA Gateway
 keywords: [sidecar, VM deployment, systemd, gateway, non-Kubernetes, infrastructure]
 ---
 
+:::note Public platform shut down (23 May 2026)
+Hostnames under `*.gostoa.dev` in this record, other than the documentation site, refer to the public platform that was shut down on 23 May 2026. They are historical. Current examples use `stoa.example`. The documentation site remains at [docs.gostoa.dev](https://docs.gostoa.dev). The SaaS row, where this ADR mentions one, is not an offered service.
+:::
+
 # ADR-038: Sidecar Deployment Strategies on VM-Based Infrastructure
 
 ## Status
@@ -80,7 +84,7 @@ services:
     environment:
       STOA_UPSTREAM_HOST: "localhost"
       STOA_UPSTREAM_PORT: "5555"
-      STOA_CONTROL_PLANE_URL: "https://cp.gostoa.dev"
+      STOA_CONTROL_PLANE_URL: "https://cp.stoa.example"
       STOA_TENANT_ID: "${TENANT_ID}"
     volumes:
       - ./stoa-gateway.yaml:/etc/stoa/gateway.yaml:ro

@@ -68,7 +68,7 @@ ALLOWED_AUDIENCES=""
 #### Configuration
 ```bash
 # Default whitelist
-CORS_ORIGINS=https://console.stoa.dev,https://portal.stoa.dev,https://console.gostoa.dev,https://portal.gostoa.dev
+CORS_ORIGINS=https://console.stoa.dev,https://portal.stoa.dev,https://console.stoa.example,https://portal.stoa.example
 
 # Additional settings
 CORS_ALLOW_METHODS=GET,POST,PUT,DELETE,OPTIONS

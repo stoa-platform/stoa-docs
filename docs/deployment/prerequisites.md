@@ -9,6 +9,10 @@ keywords: [deployment, prerequisites, network, ports, firewall, authentication, 
 
 This document provides the complete list of infrastructure, network, and authentication requirements for deploying STOA Platform. **Share this with your IT, network, and security teams** before deployment.
 
+:::caution No vendor cloud
+The public STOA cloud was shut down on 23 May 2026. Nothing on this page is provided by a STOA-operated region. You run the control plane and the gateway.
+:::
+
 :::tip Which deployment model?
 See [Hybrid Deployment](/docs/deployment/hybrid) to choose between Hybrid, Full On-Premises, or Multi-Cloud models. This page covers the technical prerequisites for all models.
 :::
@@ -47,7 +51,7 @@ See [Hybrid Deployment](/docs/deployment/hybrid) to choose between Hybrid, Full 
 
 ### External Dependencies (Full On-Premises only)
 
-These are only required for the Full On-Premises model. In Hybrid mode, STOA Cloud provides them.
+You install these yourself on every deployment. There is no vendor-hosted control plane that provides them.
 
 | Component | Version | Purpose | Alternative |
 |-----------|---------|---------|-------------|
@@ -70,7 +74,7 @@ flowchart LR
         idp["Identity<br/>Provider"]
     end
 
-    subgraph stoa_cloud["STOA Cloud (EU)"]
+    subgraph control_plane["Your control plane"]
         cp["Control Plane"]
     end
 
@@ -90,7 +94,7 @@ flowchart LR
     client -->|"HTTPS :443"| le
 
     style client fill:#d1fae5,stroke:#10b981
-    style stoa_cloud fill:#dbeafe,stroke:#3b82f6
+    style control_plane fill:#dbeafe,stroke:#3b82f6
     style external fill:#fef3c7,stroke:#f59e0b
 ```
 
@@ -112,7 +116,7 @@ flowchart LR
 |--------|-------------|------|----------|---------|-----------|
 | Gateway pods | Backend APIs | **varies** | HTTP/HTTPS | API traffic routing | Yes |
 | Gateway pods | Identity Provider | **443** | HTTPS | OIDC token validation (JWKS) | Yes |
-| Gateway pods | STOA Cloud API | **443** | HTTPS | Config sync, metrics push (Hybrid only) | Hybrid only |
+| Gateway pods | Your control plane | **443** | HTTPS | Config sync, metrics push (split placement only) | Only if the control plane is outside the cluster |
 | Control Plane API | Identity Provider | **443** | HTTPS | User federation, token introspection | Yes |
 | Control Plane API | PostgreSQL | **5432** | TCP/TLS | Database queries | Yes |
 | K8s nodes | Container Registry | **443** | HTTPS | Pull container images (GHCR) | Yes |
@@ -148,7 +152,7 @@ ALLOW  TCP/443   TO ghcr.io                                # Container images
 ALLOW  TCP/443   TO acme-v02.api.letsencrypt.org           # TLS certs (if using LE)
 ALLOW  TCP/443   TO <YOUR_IDP_DOMAIN>                      # OIDC (Keycloak, Okta, Azure AD)
 ALLOW  TCP/5432  TO <YOUR_PG_HOST>                         # PostgreSQL (if external)
-ALLOW  TCP/443   TO api.gostoa.dev                         # STOA Cloud (Hybrid only)
+# No vendor API. Do not open traffic to *.gostoa.dev for the platform.
 
 # OPTIONAL OUTBOUND
 ALLOW  TCP/443   TO api.anthropic.com                      # LLM routing (if enabled)
@@ -273,10 +277,10 @@ global:
 
 ## 6. Deployment Topology Comparison
 
-### Hybrid (Recommended)
+### Split placement (both sides are yours)
 
 ```
-Your Responsibility                    STOA Cloud (EU)
+Gateway network                        Your control plane
 ┌─────────────────────────┐            ┌────────────────────┐
 │ K8s Cluster             │            │ Control Plane      │
 │  ├── Stoa Gateway (2)   │───HTTPS───▶│  ├── Console UI    │
@@ -287,9 +291,8 @@ Your Responsibility                    STOA Cloud (EU)
 └─────────────────────────┘            └────────────────────┘
 ```
 
-**You manage:** K8s cluster, gateway pods, backend APIs, IdP federation.
-**STOA manages:** Control Plane, database, updates, monitoring.
-**Network:** Outbound HTTPS only (no inbound from STOA Cloud).
+**You manage both sides**, including the control plane, the database, updates, and monitoring. STOA does not operate the right-hand box.
+**Network:** Outbound HTTPS only toward a control plane you run. There is no inbound connection from a STOA-operated cloud.
 
 ### Full On-Premises
 

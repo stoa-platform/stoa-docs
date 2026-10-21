@@ -4,6 +4,10 @@ description: "Décide de la stratégie de déploiement souverain en premier avec
 keywords: [modes de déploiement, cloud souverain, souveraineté des données, NIS2, DORA, on-premise, hybride]
 ---
 
+:::note Plateforme publique éteinte (23 mai 2026)
+Les noms d'hôte `*.gostoa.dev` de cet enregistrement, hors site de documentation, désignent la plateforme publique éteinte le 23 mai 2026. Ils sont historiques. Les exemples actuels utilisent `stoa.example`. Le site de documentation reste [docs.gostoa.dev](https://docs.gostoa.dev). La ligne SaaS, lorsque cet ADR en contient une, n'est pas un service proposé.
+:::
+
 # ADR-037 : Stratégie des Modes de Déploiement — Souveraineté d'Abord
 
 ## Metadata

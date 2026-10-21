@@ -16,8 +16,8 @@ import EnvSetup from '@site/docs/_partials/_env-setup.mdx';
 
 Deploy your first MCP tool and invoke it from an AI agent — in 5 minutes.
 
-:::tip No cluster? Use the hosted cloud instead
-This guide covers the **self-hosted path** using kubectl and CRDs. If you just want to connect Claude to STOA's hosted cloud without any infrastructure, see [MCP for Developers](/docs/guides/mcp-developer-guide).
+:::info Self-hosted
+This guide applies a Tool CRD to a STOA instance you run. The public cloud was shut down on 23 May 2026. There is no hosted shortcut. To connect an agent once the gateway is up, see [MCP for Developers](/docs/guides/mcp-developer-guide).
 :::
 
 ## Prerequisites

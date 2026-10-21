@@ -376,7 +376,7 @@ Interrogez l'API STOA pour l'utilisation actuelle :
 
 ```bash
 curl -H "Authorization: Bearer $TOKEN" \
-  https://api.gostoa.dev/v1/quotas/tenant-acme/usage
+  https://api.stoa.example/v1/quotas/tenant-acme/usage
 ```
 
 Réponse :
@@ -417,7 +417,7 @@ Les clients MCP devraient gérer gracieusement les réponses `429` :
 
 ```typescript
 async function callTool(toolName: string, input: object) {
-  const response = await fetch(`https://mcp.gostoa.dev/mcp/tools/${toolName}`, {
+  const response = await fetch(`https://mcp.stoa.example/mcp/tools/${toolName}`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,
@@ -772,4 +772,4 @@ Pour continuer à apprendre :
 - Consultez le [Glossaire Gateway API](/blog/api-gateway-glossary-2026) pour la référence de terminologie
 - Vérifiez la [référence des quotas STOA](/docs/reference/quotas) pour les options de configuration complètes
 
-Prêt à implémenter des quotas de gateway IA de niveau production ? [Essayez STOA Platform](https://console.gostoa.dev/signup) avec un rate limiting par token intégré et une gestion des quotas multi-tenant.
+Prêt à implémenter des quotas de gateway IA de niveau production ? [Installez STOA](/docs/admin/installation) sur votre infrastructure. Les limites par jeton et les quotas par tenant tournent sur l'instance que vous exploitez.

@@ -30,7 +30,7 @@ Permettez aux développeurs de découvrir, tester et souscrire à vos API sans p
 
 ## Étape 1 : Découvrir l'API
 
-Ouvrez le [Portail Développeur](https://portal.gostoa.dev) et parcourez le catalogue d'API.
+Ouvrez le Portail Développeur de votre installation (par exemple `https://portal.stoa.example`) et parcourez le catalogue d'API.
 
 Chaque API affiche :
 - **Description** et version

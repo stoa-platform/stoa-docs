@@ -62,7 +62,7 @@ The real comparison:
 Same as Red Hat, Confluent, HashiCorp (before BSL):
 
 1. **Enterprise Support** — SLAs, dedicated support, custom integrations
-2. **Managed Service** — STOA Cloud (coming 2027)
+2. **Self-hosted operation** — you run STOA; there is no managed cloud (the public platform shut down on 23 May 2026)
 3. **Certification** — Developer and architect certifications
 4. **Training** — Workshops, onboarding, consulting
 5. **Partner Program** — Revenue share with integrators

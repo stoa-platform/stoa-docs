@@ -325,7 +325,7 @@ groups:
         annotations:
           summary: "Nœud zombie détecté : {{ $labels.node_id }}"
           description: "Le nœud {{ $labels.node_id }} n'est pas prêt mais reçoit du trafic. {{ $value }} requêtes rejetées en 5 minutes."
-          runbook: https://docs.gostoa.dev/runbooks/zombie-node
+          runbook: https://docs.gostoa.dev/docs/architecture/adr/adr-025-gateway-resilience-zombie
 ```
 
 ---

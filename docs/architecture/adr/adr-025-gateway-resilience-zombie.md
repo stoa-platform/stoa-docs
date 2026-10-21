@@ -325,7 +325,7 @@ groups:
         annotations:
           summary: "Zombie node detected: {{ $labels.node_id }}"
           description: "Node {{ $labels.node_id }} is not ready but receiving traffic. {{ $value }} requests rejected in 5 minutes."
-          runbook: https://docs.gostoa.dev/runbooks/zombie-node
+          runbook: https://docs.gostoa.dev/docs/architecture/adr/adr-025-gateway-resilience-zombie
 ```
 
 ---

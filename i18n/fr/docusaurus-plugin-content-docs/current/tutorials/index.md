@@ -29,6 +29,6 @@ Les tutoriels vous apprennent à **atteindre un objectif**. Pour les options de 
 ## Prérequis
 
 Tous les tutoriels supposent :
-- Une instance STOA Platform (cloud sur `console.gostoa.dev` ou [auto-hébergée](/docs/deployment/hybrid))
+- Une instance STOA que vous exploitez ([installez-la](/docs/admin/installation))
 - Un navigateur et un terminal
 - Des connaissances basiques en API REST et JSON

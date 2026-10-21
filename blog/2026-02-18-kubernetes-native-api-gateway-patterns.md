@@ -551,12 +551,9 @@ Based on the decision tree above, select the pattern that fits your architecture
 ### Step 2: Install STOA Gateway
 
 ```bash
-# Add Helm repository
-helm repo add stoa-platform https://charts.gostoa.dev
-helm repo update
-
-# Install in edge-mcp mode
-helm install stoa-gateway stoa-platform/stoa-platform \
+# Public chart host retired on 23 May 2026. Install from source.
+git clone https://github.com/stoa-platform/stoa.git
+helm install stoa-gateway ./stoa/charts/stoa-platform \
   --namespace stoa-system \
   --create-namespace \
   --set gateway.mode=edge-mcp \

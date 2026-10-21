@@ -155,7 +155,7 @@ Constatez la différence par vous-même :
 - **[Guide de démarrage rapide](/docs/guides/quickstart)** — Instance fonctionnelle en 15 minutes.
 - **[Patterns d'API Gateway](/docs/guides/fiches/api-gateway-patterns)** — Plongée profonde dans les patterns architecturaux.
 - **[Guide de migration Kong](/docs/guides/migration/kong)** — Chemin de migration étape par étape.
-- **[Console](https://console.gostoa.dev)** — Explorez l'interface admin.
+- **[Console](https://console.stoa.example)** — Explorez l'interface admin.
 
 ---
 

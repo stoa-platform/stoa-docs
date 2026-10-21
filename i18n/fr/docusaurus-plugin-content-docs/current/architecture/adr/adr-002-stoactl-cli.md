@@ -5,6 +5,10 @@ description: "Architecture Decision Record pour l'outil CLI STOA natif GitOps, c
 keywords: [stoactl, CLI, Go, Cobra, GitOps, kubectl, gestion API]
 ---
 
+:::note Plateforme publique éteinte (23 mai 2026)
+Les noms d'hôte `*.gostoa.dev` de cet enregistrement, hors site de documentation, désignent la plateforme publique éteinte le 23 mai 2026. Ils sont historiques. Les exemples actuels utilisent `stoa.example`. Le site de documentation reste [docs.gostoa.dev](https://docs.gostoa.dev). La ligne SaaS, lorsque cet ADR en contient une, n'est pas un service proposé.
+:::
+
 # ADR-001 : Conception du CLI stoactl
 
 **Statut** : Proposé
@@ -129,7 +133,7 @@ contexts:
 
   - name: staging
     context:
-      server: https://api.staging.gostoa.dev
+      server: https://api.staging.stoa.example
       tenant: acme-staging
 
   - name: local
@@ -188,7 +192,7 @@ stoactl get apis -o json
 | Binaire | GitHub Releases | Prévu T3 2026 |
 | Docker | `docker run ghcr.io/stoa-platform/stoactl` | Prévu T3 2026 |
 
-> Les canaux de distribution seront disponibles lorsque le CLI quittera la bêta privée. [Demandez l'accès](mailto:christophe@hlfh.io) pour participer.
+> Installez via Homebrew ou `go install`, comme décrit dans la [référence CLI](/docs/reference/cli). L'hôte d'installation public a été retiré le 23 mai 2026.
 
 ## Conséquences
 

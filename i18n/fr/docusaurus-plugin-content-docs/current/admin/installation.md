@@ -46,19 +46,21 @@ Consultez [Ressources Matérielles](/docs/reference/hardware-requirements) pour 
 
 ## Installation Rapide
 
-```bash
-# Ajouter le dépôt Helm STOA
-helm repo add stoa https://charts.gostoa.dev
-helm repo update
+Le dépôt Helm public (`charts.gostoa.dev`) a été retiré le 23 mai 2026. Installez depuis le dépôt source :
 
-# Créer le namespace
+```bash
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+
 kubectl create namespace stoa-system
 
-# Installer avec les valeurs par défaut
-helm install stoa-platform stoa/stoa-platform \
+helm install stoa-platform ./charts/stoa-platform \
   -n stoa-system \
-  --set stoaGateway.keycloakUrl="https://auth.<YOUR_DOMAIN>"
+  --set stoaGateway.keycloakUrl="https://auth.stoa.example"
 ```
+
+Remplacez `auth.stoa.example` par l'URL Keycloak de votre installation.
+
 
 ## Référence du Chart Helm
 

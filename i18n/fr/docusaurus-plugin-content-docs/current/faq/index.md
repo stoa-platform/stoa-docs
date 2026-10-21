@@ -24,7 +24,7 @@ STOA (Stoa) fait référence au portique couvert de la Grèce antique où les ph
 
 ### STOA est-il open source ?
 
-Oui ! STOA est publié sous licence **Apache 2.0**. La plateforme core est entièrement open source. Nous proposons un support commercial optionnel et des fonctionnalités enterprise via STOA Cloud.
+Oui ! STOA est publié sous licence **Apache 2.0**. La plateforme core est entièrement open source. Le support commercial optionnel est un contrat avec le mainteneur. Il n'y a pas de cloud exploité par STOA.
 
 ### Qu'est-ce qui distingue STOA des autres gateways API ?
 

@@ -13,7 +13,7 @@ The Console is the **API provider and admin** interface. Platform admins and ten
 The Console follows the **Stripe Model**: Console = Provider + Admin (Create & Manage). Consumer features (API discovery, subscriptions, testing) are on the [Portal](/docs/guides/portal).
 :::
 
-**URL**: [console.gostoa.dev](https://console.gostoa.dev)
+**URL**: the Console of your installation, for example `https://console.stoa.example`. There is no public console.
 
 ## Getting Started
 

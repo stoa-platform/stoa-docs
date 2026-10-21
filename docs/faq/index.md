@@ -24,7 +24,7 @@ STOA (Stoa) refers to the ancient Greek covered walkway where Stoic philosophers
 
 ### Is STOA open source?
 
-Yes! STOA is released under **Apache 2.0** license. The core platform is fully open source. We offer optional commercial support and enterprise features through STOA Cloud.
+Yes! STOA is released under **Apache 2.0** license. The core platform is fully open source. Optional commercial support is a contract with the maintainer. There is no STOA-operated cloud.
 
 ### What makes STOA different from other API gateways?
 

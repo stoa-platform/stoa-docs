@@ -332,7 +332,7 @@ function CTASection() {
         </Heading>
         <p>
           <Translate id="homepage.cta.subtitle">
-            Deploy STOA in your infrastructure or try our managed cloud.
+            Install STOA on your own infrastructure. The public cloud shut down on 23 May 2026.
           </Translate>
         </p>
         <div className={styles.ctaButtons}>
@@ -343,8 +343,8 @@ function CTASection() {
           </Link>
           <Link
             className="button button--secondary button--lg"
-            href="https://console.gostoa.dev/signup">
-            <Translate id="homepage.cta.btn.cloud">☁️ Try STOA Cloud</Translate>
+            to="/docs/admin/installation">
+            <Translate id="homepage.cta.btn.install">🏠 Install on your infrastructure</Translate>
           </Link>
           <Link
             className="button button--outline button--lg"

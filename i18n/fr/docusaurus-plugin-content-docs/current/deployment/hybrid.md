@@ -1,11 +1,15 @@
 ---
 sidebar_position: 1
 title: Déploiement Hybride
-description: Modèles de déploiement hybride de la Plateforme STOA — Control Plane cloud avec gateway sur site, souveraineté complète sur site, options multi-cloud et résidence des données
+description: Topologies de déploiement que vous exploitez — plan de contrôle et passerelle séparés, entièrement sur site, et multi-site. Pas de cloud hébergé par STOA.
 keywords: [deployment, hybrid, on-premises, multi-cloud, Kubernetes, sovereignty]
 ---
 
 # Déploiement Hybride
+
+:::caution Pas de cloud exploité par STOA
+Le cloud public STOA a été éteint le 23 mai 2026. STOA n'exploite pas de plan de contrôle pour vous. Chaque modèle de cette page est un déploiement que **vous** installez et exploitez. Le placement séparé consiste à mettre le plan de contrôle et la passerelle sur des réseaux différents que vous exploitez.
+:::
 
 La Plateforme STOA supporte plusieurs modèles de déploiement pour répondre à vos exigences de sécurité, de souveraineté et d'exploitation.
 
@@ -13,21 +17,21 @@ La Plateforme STOA supporte plusieurs modèles de déploiement pour répondre à
 
 | Modèle | Control Plane | Gateway | Résidence des Données | Idéal Pour |
 |--------|---------------|---------|----------------------|------------|
-| **Hybride** | STOA Cloud (UE) | Sur site | Données métier sur site | La plupart des entreprises |
+| **Placement séparé** | Votre infrastructure | Votre infrastructure, près des API | Les charges utiles restent près de la passerelle | Réseau de plan de contrôle distinct |
 | **Entièrement Sur Site** | Votre infrastructure | Votre infrastructure | 100% sur site | Souveraineté maximale |
-| **Multi-Cloud** | STOA Cloud | Plusieurs régions | Distribué | Organisations mondiales |
+| **Multi-site** | Votre infrastructure | Plusieurs sites que vous exploitez | Distribué | Plusieurs régions que vous exploitez |
 
 ---
 
-## Modèle 1 : Hybride (Recommandé)
+## Modèle 1 : Placement séparé
 
-**Control Plane Cloud + Gateway Sur Site**
+**Votre plan de contrôle et votre passerelle**
 
-Le modèle de déploiement par défaut équilibre la facilité de gestion avec la souveraineté des données.
+Vous exploitez les deux. La passerelle reste près de vos API. Le plan de contrôle peut être sur un autre réseau que vous exploitez. STOA n'héberge aucun des deux plans.
 
 ```mermaid
 flowchart TB
-    subgraph Cloud["☁️ STOA CLOUD (Région UE)"]
+    subgraph Cloud["☁️ VOTRE PLAN DE CONTRÔLE"]
         subgraph CPL["Control Plane"]
             Portal["📱 Portail<br/>(Catalogue)"]
             Config["⚙️ API<br/>(Config)"]
@@ -83,15 +87,15 @@ flowchart TB
 
 | Direction | Protocole | Ports | Objectif |
 |-----------|----------|-------|---------|
-| **Sur site → Cloud** | HTTPS | 443 | Sync config, envoi métriques |
-| **Cloud → Sur site** | Aucun | — | Aucune connexion entrante requise |
+| **Réseau passerelle → votre plan de contrôle** | HTTPS | 443 | Sync config, envoi métriques |
+| **Plan de contrôle → réseau passerelle** | Aucun | — | Aucune connexion entrante requise |
 
 **Avantage sécurité clé :** Aucune connexion entrante requise. Toute communication est initiée depuis votre infrastructure.
 
 ### Prérequis
 
 - Cluster Kubernetes 1.28+ sur site
-- HTTPS sortant vers les endpoints STOA Cloud
+- HTTPS sortant uniquement vers des endpoints que vous exploitez (votre plan de contrôle, registre d'images, fournisseur d'identité)
 - Résolution DNS pour les services STOA
 - Fournisseur d'identité existant (OAM, Okta, Azure AD)
 
@@ -153,13 +157,13 @@ flowchart TB
 
 ### Compromis
 
-| Aspect | Hybride | Entièrement Sur Site |
-|--------|---------|----------------------|
-| Complexité opérationnelle | Faible | Élevée |
-| Mises à jour | Automatiques | Manuelles |
-| Support | Complet | Self-service limité |
-| Résidence des données | Métadonnées dans le cloud | 100% sur site |
-| Configuration initiale | 1-2 jours | 1-2 semaines |
+| Aspect | Placement séparé | Entièrement sur site |
+|--------|------------------|----------------------|
+| Complexité opérationnelle | Deux réseaux que vous exploitez | Un seul périmètre |
+| Mises à jour | Vous les appliquez des deux côtés | Vous les appliquez |
+| Support | Communauté, ou un contrat de support | Communauté, ou un contrat de support |
+| Résidence des données | Métadonnées sur le réseau de plan de contrôle que vous choisissez | 100 % dans un seul périmètre |
+| Configuration initiale | Vous installez les deux plans | Vous installez la pile complète |
 
 ---
 
@@ -171,7 +175,7 @@ Pour les organisations nécessitant une présence dans plusieurs régions ou clo
 
 ```mermaid
 flowchart TB
-    subgraph Global["🌐 STOA CLOUD (Mondial)"]
+    subgraph Global["🌐 VOTRE PLAN DE CONTRÔLE"]
         GCP["Control Plane Mondial<br/>Configuration & Orchestration"]
     end
 
@@ -232,7 +236,7 @@ flowchart TB
     Internet["🌐 Internet"]
     WAF["🛡️ WAF"]
 
-    subgraph Cloud["☁️ STOA Cloud (UE)"]
+    subgraph Cloud["☁️ Votre plan de contrôle"]
         CP["Control Plane"]
     end
 
@@ -255,28 +259,18 @@ flowchart TB
 
 ### Démarrage Rapide Hybride
 
-:::info Bêta Privée
-L'accès au dépôt est accordé aux participants bêta. [Demandez l'accès](mailto:christophe@hlfh.io) pour obtenir le chart Helm et les instructions de déploiement.
-:::
+L'hôte de charts public et la bêta privée ont été retirés le 23 mai 2026. Installez depuis les sources, et pointez la passerelle vers un plan de contrôle que **vous** exploitez :
 
 ```bash
-# 1. Créer le namespace
+git clone https://github.com/stoa-platform/stoa.git
 kubectl create namespace stoa-system
-
-# 2. Ajouter le dépôt Helm STOA (fourni avec l'accès bêta)
-helm repo add stoa https://charts.gostoa.dev
-helm repo update
-
-# 3. Installer avec la configuration hybride
-helm install stoa stoa/stoa-platform \
+helm install stoa-platform ./stoa/charts/stoa-platform \
   --namespace stoa-system \
-  --set mode=hybrid \
-  --set controlPlane.endpoint=https://api.<YOUR_DOMAIN> \
-  --set controlPlane.tenantId=YOUR_TENANT_ID
-
-# 4. Vérifier l'installation
+  --set stoaGateway.controlPlaneUrl="https://api.stoa.example"
 kubectl get pods -n stoa-system
 ```
+
+Remplacez `api.stoa.example` par votre plan de contrôle. Voir le [guide d'installation](/docs/admin/installation).
 
 ### Démarrage Rapide Entièrement Sur Site
 

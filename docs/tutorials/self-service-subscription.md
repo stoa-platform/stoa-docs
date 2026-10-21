@@ -30,7 +30,7 @@ By the end of this tutorial:
 
 ## Step 1: Discover the API
 
-Open the [Developer Portal](https://portal.gostoa.dev) and browse the API catalog.
+Open the Developer Portal of your installation (for example `https://portal.stoa.example`) and browse the API catalog.
 
 Each API shows:
 - **Description** and version

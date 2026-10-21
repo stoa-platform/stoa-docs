@@ -178,7 +178,7 @@ If you are evaluating API gateway platforms for regulated industries, STOA provi
 - Explore the [Security and Compliance documentation](https://docs.gostoa.dev/docs/enterprise/security-compliance)
 - Learn about [Hybrid Deployment](https://docs.gostoa.dev/docs/deployment/hybrid)
 - Try STOA today with the [Quickstart Guide](https://docs.gostoa.dev/docs/guides/quickstart)
-- Sign up for the [STOA Console](https://console.gostoa.dev) to see the platform in action
+- Sign up for the [STOA Console](https://console.stoa.example) to see the platform in action
 
 ---
 

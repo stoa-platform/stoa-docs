@@ -24,12 +24,12 @@ By the end of this tutorial:
 
 ## Prerequisites
 
-- A STOA instance (cloud or [self-hosted](/docs/deployment/hybrid))
+- A STOA instance you run ([installation guide](/docs/admin/installation))
 - A REST API with an OpenAPI spec (or we'll create a simple one)
 
 ## Step 1: Register Your API
 
-Log into the [Console](https://console.gostoa.dev) and navigate to **APIs > Create API**.
+Log into the Console of your installation (for example `https://console.stoa.example`) and navigate to **APIs > Create API**.
 
 ```bash
 # Or via the CLI:
