@@ -32,10 +32,10 @@ ${STOA_API_URL}/v1
 
 :::tip Configure your environment
 ```bash
-export STOA_API_URL="https://api.gostoa.dev"   # Replace with your domain
-export STOA_AUTH_URL="https://auth.gostoa.dev"  # Keycloak OIDC provider
+export STOA_API_URL="https://api.stoa.example"   # Replace with your domain
+export STOA_AUTH_URL="https://auth.stoa.example"  # Keycloak OIDC provider
 ```
-Self-hosted? Replace `gostoa.dev` with your domain.
+Replace `stoa.example` with the domain of your installation.
 :::
 
 ## Authentication

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 title: "MCP pour les Développeurs : De Zéro à un Appel d'Outil en 2 Minutes"
-description: "Connectez-vous au MCP Gateway hébergé de STOA depuis Claude.ai, Python ou TypeScript — pas de kubectl, pas de cluster, juste une URL et un token."
+description: "Connectez Claude.ai, Python ou TypeScript à la passerelle MCP d'une instance STOA que vous exploitez — une URL et un jeton sur votre domaine."
 keywords:
   - MCP developer guide
   - connect Claude to MCP
@@ -13,10 +13,10 @@ keywords:
 
 # MCP pour les Développeurs
 
-Connectez-vous au MCP Gateway de STOA et appelez votre premier outil — depuis Claude.ai, Python ou TypeScript. Pas de kubectl. Pas de cluster. Juste une URL et un token.
+Connectez Claude.ai, Python ou TypeScript à la passerelle MCP d'une instance STOA que vous exploitez déjà.
 
-:::info Cloud Hébergé
-Ce guide utilise le gateway hébergé de STOA à `mcp.gostoa.dev`. Tout fonctionne immédiatement — aucune configuration d'infrastructure n'est nécessaire.
+:::info Votre passerelle
+La passerelle publique `mcp.stoa.example` a été éteinte le 23 mai 2026. Les exemples utilisent `https://mcp.stoa.example`. Remplacez cet hôte par la passerelle de votre installation. Installez d'abord : [démarrage stoactl](/docs/guides/stoactl-quickstart) ou le [guide Kubernetes](/docs/admin/installation).
 :::
 
 ## Option A : Claude.ai (Le Plus Rapide)
@@ -29,7 +29,7 @@ Dans [claude.ai](https://claude.ai) : **Paramètres** → **Intégrations** → 
 
 | Champ | Valeur |
 |-------|--------|
-| URL | `https://mcp.gostoa.dev/mcp/sse` |
+| URL | `https://mcp.stoa.example/mcp/sse` |
 | Nom | `STOA Platform` |
 
 Connectez-vous avec vos identifiants STOA lorsque vous y êtes invité.
@@ -53,7 +53,7 @@ Utilisez le SDK Python MCP ou du HTTP natif.
 ```python
 import httpx
 
-GATEWAY = "https://mcp.gostoa.dev"
+GATEWAY = "https://mcp.stoa.example"
 TOKEN = "your-access-token"  # Voir "Obtenir un Token" ci-dessous
 
 headers = {
@@ -83,7 +83,7 @@ from mcp import ClientSession
 from mcp.client.sse import sse_client
 
 async def main():
-    async with sse_client("https://mcp.gostoa.dev/mcp/sse") as (read, write):
+    async with sse_client("https://mcp.stoa.example/mcp/sse") as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
 
@@ -109,7 +109,7 @@ asyncio.run(main())
 ### Avec `fetch` (Sans SDK)
 
 ```typescript
-const GATEWAY = "https://mcp.gostoa.dev";
+const GATEWAY = "https://mcp.stoa.example";
 const TOKEN = "your-access-token"; // Voir "Obtenir un Token" ci-dessous
 
 // Lister les outils
@@ -146,7 +146,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 
 const transport = new SSEClientTransport(
-  new URL("https://mcp.gostoa.dev/mcp/sse")
+  new URL("https://mcp.stoa.example/mcp/sse")
 );
 const client = new Client(
   { name: "my-app", version: "1.0.0" },
@@ -180,7 +180,7 @@ Pour Python/TypeScript (Options B et C), vous avez besoin d'un token d'accès OA
 ### Rapide : Client Credentials
 
 ```bash
-TOKEN=$(curl -s -X POST "https://auth.gostoa.dev/realms/stoa/protocol/openid-connect/token" \
+TOKEN=$(curl -s -X POST "https://auth.stoa.example/realms/stoa/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=${CLIENT_ID}" \
   -d "client_secret=${CLIENT_SECRET}" \
@@ -196,7 +196,7 @@ Obtenez votre `CLIENT_ID` et `CLIENT_SECRET` depuis la Console sous **Clés API*
 Si vous avez créé une clé API scopée dans la Console (sous **Clés API**), utilisez-la directement :
 
 ```bash
-curl -s "https://mcp.gostoa.dev/mcp/tools/list" \
+curl -s "https://mcp.stoa.example/mcp/tools/list" \
   -H "X-API-Key: stoa_saas_xxxx_your_key_here" | jq
 ```
 
@@ -212,7 +212,7 @@ Pour utiliser STOA depuis **Claude Desktop** (application locale), ajoutez ceci 
 {
   "mcpServers": {
     "stoa": {
-      "url": "https://mcp.gostoa.dev/mcp/sse"
+      "url": "https://mcp.stoa.example/mcp/sse"
     }
   }
 }
@@ -247,4 +247,4 @@ Redémarrez Claude Desktop après avoir sauvegardé. Vous serez invité à vous 
 | La connexion SSE se coupe | Timeout réseau. Le gateway ferme les connexions SSE inactives après 5 min |
 | "Aucun outil trouvé" | Aucune API enregistrée dans votre tenant. Enregistrez-en une dans la Console |
 | Claude dit "Serveur MCP indisponible" | Vérifiez que l'URL se termine par `/mcp/sse`. Déconnectez et reconnectez dans les Paramètres |
-| `ConnectionError` Python | Vérifiez que `httpx` est installé et que l'URL est accessible : `curl https://mcp.gostoa.dev/health` |
+| `ConnectionError` Python | Vérifiez que `httpx` est installé et que l'URL est accessible : `curl https://mcp.stoa.example/health` |

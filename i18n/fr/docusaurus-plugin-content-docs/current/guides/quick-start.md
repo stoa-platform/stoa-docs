@@ -2,7 +2,7 @@
 sidebar_position: 1
 slug: /guides/quickstart
 title: "Démarrage rapide : Connecter un agent IA à votre API"
-description: "Connectez Claude à vos API via STOA en moins de 5 minutes — inscrivez-vous, obtenez votre URL de serveur MCP et effectuez votre premier appel d'outil IA."
+description: "Connectez Claude à vos API via une instance STOA que vous exploitez — installez, indiquez votre URL de serveur MCP et effectuez votre premier appel d'outil IA."
 keywords:
   - STOA démarrage rapide
   - passerelle API premiers pas
@@ -15,30 +15,38 @@ keywords:
 
 Passez de zéro à votre premier appel API piloté par l'IA en moins de 5 minutes.
 
-:::info Cloud hébergé
-Ce guide utilise le cloud hébergé de STOA à **mcp.gostoa.dev**. Pas besoin de Docker, kubectl ou d'infrastructure. Auto-hébergement ? Consultez le [Déploiement hybride](/docs/deployment/hybrid).
+:::info Auto-hébergement uniquement
+Le cloud public STOA (console, inscription, API et passerelle MCP) a été éteint le 23 mai 2026. Ce guide suppose une instance STOA que **vous** installez. Le site de documentation [docs.gostoa.dev](https://docs.gostoa.dev) reste en ligne.
+
+Les exemples utilisent le nom réservé `stoa.example`. Remplacez-le par le domaine de votre installation.
 :::
 
 ## Ce que vous allez accomplir
 
-À la fin de ce guide, un agent IA (Claude) découvrira et appellera une API via STOA — sans que vous écriviez une seule ligne de code.
+À la fin de ce guide, un agent IA (Claude) découvrira et appellera une API via votre passerelle STOA.
 
-## Étape 1 : Créer votre compte
+## Étape 1 : Installer STOA
 
-1. Rendez-vous sur [console.gostoa.dev](https://console.gostoa.dev) et cliquez sur **S'inscrire**
-2. Renseignez votre email et choisissez un mot de passe
-3. C'est tout — STOA crée votre tenant automatiquement
+Choisissez un parcours :
 
-:::tip Vous avez déjà un compte ?
-Passez directement à l'[Étape 2](#étape-2--connecter-claude-à-stoa).
-:::
+1. **En local, avec Docker** — [Auto-héberger en 5 minutes avec stoactl](/docs/guides/stoactl-quickstart)
+2. **Kubernetes** — [Guide d'installation](/docs/admin/installation)
+
+Notez ensuite les URL de **votre** instance :
+
+| Composant | Exemple |
+|-----------|---------|
+| Passerelle MCP | `https://mcp.stoa.example/mcp/sse` |
+| Keycloak | `https://auth.stoa.example` |
+| Console | `https://console.stoa.example` |
+
 
 ## Étape 2 : Connecter Claude à STOA
 
 1. Ouvrez [claude.ai](https://claude.ai) (abonnement Pro ou Team requis pour MCP)
 2. Allez dans **Paramètres** → **Intégrations** → **Ajouter un serveur MCP**
 3. Entrez :
-   - **URL** : `https://mcp.gostoa.dev/mcp/sse`
+   - **URL** : `https://mcp.stoa.example/mcp/sse`
    - **Nom** : `STOA Platform`
 4. Authentifiez-vous avec vos identifiants STOA lorsque demandé
 
@@ -99,18 +107,18 @@ Si vous préférez la ligne de commande, vous pouvez appeler STOA directement :
 
 ```bash
 # Obtenir un jeton OAuth
-TOKEN=$(curl -s -X POST "https://auth.gostoa.dev/realms/stoa/protocol/openid-connect/token" \
+TOKEN=$(curl -s -X POST "https://auth.stoa.example/realms/stoa/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=${CLIENT_ID}" \
   -d "client_secret=${CLIENT_SECRET}" \
   -d "grant_type=client_credentials" | jq -r '.access_token')
 
 # Lister les outils disponibles
-curl -s "https://mcp.gostoa.dev/mcp/tools/list" \
+curl -s "https://mcp.stoa.example/mcp/tools/list" \
   -H "Authorization: Bearer ${TOKEN}" | jq '.tools[] | {name, description}'
 
 # Appeler un outil
-curl -s -X POST "https://mcp.gostoa.dev/mcp/tools/call" \
+curl -s -X POST "https://mcp.stoa.example/mcp/tools/call" \
   -H "Authorization: Bearer ${TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{"name": "echo", "arguments": {"message": "bonjour"}}' | jq
@@ -122,10 +130,10 @@ curl -s -X POST "https://mcp.gostoa.dev/mcp/tools/call" \
 
 | Objectif | Guide |
 |----------|-------|
-| Connecter Claude sans kubectl | [MCP pour développeurs](/docs/guides/mcp-developer-guide) |
+| Connecter un agent à votre passerelle | [MCP pour développeurs](/docs/guides/mcp-developer-guide) |
 | Créer des outils MCP personnalisés | [Développement d'outils MCP](/docs/guides/mcp-tools-development) |
 | Gérer les abonnements API | [Cycle de vie des abonnements](/docs/guides/subscriptions-lifecycle) |
-| Déployer sur votre propre infrastructure | [Déploiement hybride](/docs/deployment/hybrid) |
+| Choisir une topologie | [Modèles de déploiement](/docs/deployment/hybrid) |
 | Comprendre le protocole MCP | [Fiche protocole MCP](/docs/guides/fiches/mcp-protocol) |
 
 ---
@@ -134,7 +142,7 @@ curl -s -X POST "https://mcp.gostoa.dev/mcp/tools/call" \
 
 | Problème | Solution |
 |----------|----------|
-| Claude ne peut pas se connecter au serveur MCP | Vérifiez que l'URL est `https://mcp.gostoa.dev/mcp/sse` — notez le chemin `/mcp/sse` |
+| Claude ne peut pas se connecter au serveur MCP | Utilisez l'URL de votre passerelle, par exemple `https://mcp.stoa.example/mcp/sse` — notez le chemin `/mcp/sse` |
 | « Non autorisé » après connexion | Ré-authentifiez-vous : déconnectez puis reconnectez le serveur MCP dans les paramètres de Claude |
 | Aucun outil n'apparaît | Votre tenant n'a peut-être pas encore d'API enregistrée — enregistrez-en une dans la Console |
 | curl retourne `401` | Jeton expiré (par défaut : 5 min) — relancez la commande de jeton |

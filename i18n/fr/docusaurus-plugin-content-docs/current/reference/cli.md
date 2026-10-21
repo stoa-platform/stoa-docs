@@ -25,7 +25,8 @@ brew install stoa-platform/tap/stoactl
 <TabItem value="linux" label="Linux">
 
 ```bash
-curl -sSL https://get.gostoa.dev | sh
+# Installateur public retiré le 23 mai 2026.
+go install github.com/stoa-platform/stoactl@latest
 ```
 
 </TabItem>

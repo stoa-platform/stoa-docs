@@ -1,17 +1,21 @@
 ---
 title: Terms of Service
-description: STOA Platform Terms of Service — Early Access program terms, acceptable use, and legal information.
+description: STOA Platform Terms of Service — proposed self-hosted wording, acceptable use, and legal information. Pending legal review.
 sidebar_position: 1
-keywords: [terms of service, legal, early access, acceptable use]
+keywords: [terms of service, legal, self-hosted, acceptable use]
 ---
 
 # Terms of Service
 
 **Effective date**: February 16, 2026
-**Last updated**: February 16, 2026
+**Last updated**: October 21, 2026
 
-:::info Early Access
-STOA Platform is currently in **Early Access**. These terms may be updated as the platform evolves toward General Availability. Material changes will be communicated via the email address associated with your account.
+:::caution Proposed wording — legal review required
+The Early Access and hosted-service wording on this page was revised on 21 October 2026 so it no longer describes a STOA-operated cloud. This text is a **proposal**. Counsel must validate it before it is treated as in force. Section 8 (governing law and the courts of Paris) is unchanged.
+:::
+
+:::info Self-hosted software
+STOA is open-source software under the Apache License 2.0. You install and operate it on your own infrastructure. The public hosted service (console, signup, and API) was shut down on 23 May 2026. These terms do not offer a STOA-operated cloud, an Early Access program, or a hosted uptime commitment.
 :::
 
 ## 1. Eligibility
@@ -19,10 +23,10 @@ STOA Platform is currently in **Early Access**. These terms may be updated as th
 STOA Platform is available to individuals and organizations who:
 
 - Are at least 18 years old (or the age of majority in their jurisdiction).
-- Provide accurate registration information.
+- Provide accurate information where an instance asks for it.
 - Comply with applicable laws and regulations.
 
-By creating an account, you represent that you meet these requirements.
+By using the software, you represent that you meet these requirements.
 
 ## 2. Acceptable Use
 
@@ -34,29 +38,27 @@ You agree to use STOA Platform in good faith for its intended purpose: managing,
 - Exceed documented rate limits or abuse the platform infrastructure.
 - Resell access to the platform without prior written agreement.
 
-We reserve the right to suspend or terminate accounts that violate these terms.
+The operator of an instance may suspend or terminate accounts on that instance that violate these terms. CAB Ingénierie does not operate those accounts.
 
 ## 3. Intellectual Property
 
 STOA Platform is open-source software licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0). Your rights to use, modify, and distribute the source code are governed by that license.
 
-Content you create, upload, or configure through the platform (API definitions, tool configurations, policies) remains yours. By using the platform, you grant STOA the limited right to process and store this content as necessary to provide the service.
+Content you create, upload, or configure through the software (API definitions, tool configurations, policies) remains yours. On a self-hosted deployment, the operator of that instance processes and stores it. These terms do not grant CAB Ingénierie a right to process that content.
 
 The STOA name, logo, and branding are trademarks of CAB Ingenierie. See our [Trademark Notice](/docs/legal/trademarks) for details.
 
 ## 4. Service Availability
 
-STOA Platform is provided on an "as-is" and "as-available" basis during Early Access. We aim for high availability but do not guarantee uninterrupted service. Scheduled maintenance windows will be communicated in advance when possible.
-
-For the hosted service, current status and uptime information is available at [status.gostoa.dev](https://status.gostoa.dev).
+The software is provided on an "as-is" and "as-available" basis. There is no STOA-operated hosted service and no vendor uptime commitment. Availability, maintenance, and status of a deployment are the responsibility of the operator of that deployment.
 
 ## 5. Data and Privacy
 
-We collect the minimum data necessary to operate the platform: account credentials, API configurations, and usage metrics. We do not sell personal data to third parties.
+A self-hosted deployment stores the data its operator configures (accounts, API definitions, usage metrics) on infrastructure that operator controls. CAB Ingénierie does not collect that data by operating a public cloud. We do not sell personal data.
 
 For deployments using Keycloak authentication, user credentials are managed by your identity provider. STOA does not store passwords directly.
 
-A detailed Privacy Policy will be published before General Availability.
+Operators of a self-hosted instance are responsible for the privacy notice they give their users. These terms are not a privacy policy for a STOA-operated service.
 
 ## 6. Disclaimers
 
@@ -68,7 +70,7 @@ A detailed Privacy Policy will be published before General Availability.
 
 To the maximum extent permitted by applicable law, CAB Ingenierie and its contributors shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, arising from your use of STOA Platform.
 
-During the Early Access period, the platform is provided free of charge. Our total aggregate liability for any claims arising from these terms shall not exceed the amount you have paid us in the 12 months preceding the claim.
+The software is licensed at no charge under the Apache License 2.0. Our total aggregate liability for any claims arising from these terms shall not exceed the amount you have paid us in the 12 months preceding the claim.
 
 ## 8. Governing Law
 

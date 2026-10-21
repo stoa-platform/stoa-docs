@@ -133,7 +133,7 @@ STOA est open source (Apache 2.0) et conçu pour un déploiement auto-hébergé 
 
 1. **[Guide de démarrage rapide](/docs/guides/quickstart)** — Configuration Docker Compose avec un MCP gateway fonctionnel, un portail et une console.
 2. **[Concepts du MCP Gateway](/docs/concepts/mcp-gateway)** — Plongée en profondeur dans l'architecture, le moteur de politique et la gestion des outils.
-3. **[Console](https://console.gostoa.dev)** — Essayez la version hébergée pour explorer l'interface d'administration.
+3. **[Console](https://console.stoa.example)** — Essayez la version hébergée pour explorer l'interface d'administration.
 
 Le MCP gateway est la couche d'infrastructure qui rend les agents IA prêts pour l'enterprise. À mesure que davantage d'organisations passent des expérimentations IA aux déploiements en production, c'est la pièce qui fera la différence entre des opérations IA gouvernées et sécurisées et la prochaine génération de shadow IT.
 

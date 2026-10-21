@@ -596,8 +596,8 @@
   "homepage.quickstart.btn.guide": {
     "message": "📚 Guide de démarrage complet"
   },
-  "homepage.quickstart.btn.try": {
-    "message": "🚀 Essayer STOA gratuitement"
+  "homepage.quickstart.btn.install": {
+    "message": "🏠 Installer STOA"
   },
   "homepage.features.title": {
     "message": "✨ Pourquoi STOA ?"
@@ -732,13 +732,13 @@
     "message": "Prêt à démarrer ?"
   },
   "homepage.cta.subtitle": {
-    "message": "Déployez STOA dans votre infrastructure ou essayez notre cloud managé."
+    "message": "Installez STOA sur votre infrastructure. Le cloud public a été éteint le 23 mai 2026."
   },
   "homepage.cta.btn.quickstart": {
     "message": "🚀 Guide de démarrage rapide"
   },
-  "homepage.cta.btn.cloud": {
-    "message": "☁️ Essayer STOA Cloud"
+  "homepage.cta.btn.install": {
+    "message": "🏠 Installer sur votre infrastructure"
   },
   "homepage.cta.btn.contact": {
     "message": "📧 Contacter les ventes"

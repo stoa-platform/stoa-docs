@@ -13,7 +13,7 @@ La Console est l'interface **fournisseur d'API et administrateur**. Les administ
 La Console suit le **modèle Stripe** : Console = Fournisseur + Admin (Créer & Gérer). Les fonctionnalités consommateur (découverte d'API, abonnements, tests) se trouvent sur le [Portail](/docs/guides/portal).
 :::
 
-**URL** : [console.gostoa.dev](https://console.gostoa.dev)
+**URL** : la Console de votre installation, par exemple `https://console.stoa.example`. Il n'y a pas de console publique.
 
 ## Démarrage Rapide
 

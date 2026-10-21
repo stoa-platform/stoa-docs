@@ -209,9 +209,9 @@ const config: Config = {
       {name: 'twitter:image', content: 'https://docs.gostoa.dev/img/stoa-social-card.png'},
     ],
     announcementBar: {
-      id: 'oss-launch-2026',
+      id: 'self-host-2026-05-23',
       content:
-        '🚀 STOA is open source — Apache 2.0. <a target="_blank" rel="noopener noreferrer" href="https://github.com/stoa-platform">Star us on GitHub</a>',
+        'The public STOA cloud (console, signup, API) shut down on 23 May 2026. <a href="/docs/admin/installation">Install it yourself</a>. — Le cloud public STOA a été éteint le 23/05/2026. <a href="/fr/docs/admin/installation">Installez-le sur votre infrastructure</a>.',
       backgroundColor: '#1a1a2e',
       textColor: '#e0e0e0',
       isCloseable: true,

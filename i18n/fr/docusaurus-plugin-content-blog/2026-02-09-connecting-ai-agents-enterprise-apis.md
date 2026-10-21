@@ -197,7 +197,7 @@ L'agent IA se connecte à l'endpoint STOA MCP Gateway et découvre les outils di
 ```python
 import httpx
 
-MCP_GATEWAY = "https://mcp.gostoa.dev"  # Remplacer par votre domaine
+MCP_GATEWAY = "https://mcp.stoa.example"  # Remplacer par votre domaine
 API_KEY = "stoa_key_acme_support_agent_01"
 
 # Découvrir les outils disponibles
@@ -282,7 +282,7 @@ Connecter les agents IA aux APIs enterprise de façon sécurisée n'est pas opti
 - Lisez les [Concepts du MCP Gateway](https://docs.gostoa.dev/docs/concepts/mcp-gateway)
 - Explorez la [Référence API du MCP Gateway](https://docs.gostoa.dev/docs/api/mcp-gateway)
 - Suivez le [Guide de démarrage rapide](https://docs.gostoa.dev/docs/guides/quickstart) pour déployer STOA en quelques minutes
-- Inscrivez-vous à la [Console STOA](https://console.gostoa.dev) pour commencer à enregistrer des outils
+- Inscrivez-vous à la [Console STOA](https://console.stoa.example) pour commencer à enregistrer des outils
 
 ---
 

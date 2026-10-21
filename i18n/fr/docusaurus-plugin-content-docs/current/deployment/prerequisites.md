@@ -9,6 +9,10 @@ keywords: [deployment, prerequisites, network, ports, firewall, authentication, 
 
 Ce document fournit la liste complète des exigences d'infrastructure, de réseau et d'authentification pour déployer la Plateforme STOA. **Partagez-le avec vos équipes IT, réseau et sécurité** avant le déploiement.
 
+:::caution Pas de cloud vendeur
+Le cloud public STOA a été éteint le 23 mai 2026. Rien sur cette page n'est fourni par une région exploitée par STOA. Vous exploitez le plan de contrôle et la passerelle.
+:::
+
 :::tip Quel modèle de déploiement ?
 Consultez [Déploiement Hybride](/docs/deployment/hybrid) pour choisir entre les modèles Hybride, Entièrement Sur Site ou Multi-Cloud. Cette page couvre les prérequis techniques pour tous les modèles.
 :::
@@ -47,7 +51,7 @@ Consultez [Déploiement Hybride](/docs/deployment/hybrid) pour choisir entre les
 
 ### Dépendances Externes (Entièrement Sur Site uniquement)
 
-Ces composants ne sont requis que pour le modèle Entièrement Sur Site. En mode Hybride, STOA Cloud les fournit.
+Vous installez ces composants vous-même pour chaque déploiement. Aucun plan de contrôle hébergé par le vendeur ne les fournit.
 
 | Composant | Version | Objectif | Alternative |
 |-----------|---------|---------|-------------|
@@ -70,7 +74,7 @@ flowchart LR
         idp["Fournisseur<br/>d'Identité"]
     end
 
-    subgraph stoa_cloud["STOA Cloud (UE)"]
+    subgraph control_plane["Votre plan de contrôle"]
         cp["Control Plane"]
     end
 
@@ -90,7 +94,7 @@ flowchart LR
     client -->|"HTTPS :443"| le
 
     style client fill:#d1fae5,stroke:#10b981
-    style stoa_cloud fill:#dbeafe,stroke:#3b82f6
+    style control_plane fill:#dbeafe,stroke:#3b82f6
     style external fill:#fef3c7,stroke:#f59e0b
 ```
 
@@ -112,7 +116,7 @@ flowchart LR
 |--------|-------------|------|----------|---------|---------|
 | Pods gateway | APIs backend | **variable** | HTTP/HTTPS | Routage du trafic API | Oui |
 | Pods gateway | Fournisseur d'identité | **443** | HTTPS | Validation de token OIDC (JWKS) | Oui |
-| Pods gateway | API STOA Cloud | **443** | HTTPS | Sync config, envoi métriques (Hybride uniquement) | Hybride uniquement |
+| Pods gateway | Votre plan de contrôle | **443** | HTTPS | Sync config, envoi métriques (placement séparé uniquement) | Seulement si le plan de contrôle est hors du cluster |
 | Control Plane API | Fournisseur d'identité | **443** | HTTPS | Fédération utilisateur, introspection de token | Oui |
 | Control Plane API | PostgreSQL | **5432** | TCP/TLS | Requêtes base de données | Oui |
 | Nœuds K8s | Registre de conteneurs | **443** | HTTPS | Pull des images (GHCR) | Oui |
@@ -148,7 +152,7 @@ ALLOW  TCP/443   TO ghcr.io                                # Images de conteneur
 ALLOW  TCP/443   TO acme-v02.api.letsencrypt.org           # Certificats TLS (si LE)
 ALLOW  TCP/443   TO <VOTRE_DOMAINE_IDP>                    # OIDC (Keycloak, Okta, Azure AD)
 ALLOW  TCP/5432  TO <VOTRE_HOST_PG>                        # PostgreSQL (si externe)
-ALLOW  TCP/443   TO api.gostoa.dev                         # STOA Cloud (Hybride uniquement)
+# Pas d'API vendeur. N'ouvrez pas de flux vers *.gostoa.dev pour la plateforme.
 
 # SORTANT OPTIONNEL
 ALLOW  TCP/443   TO api.anthropic.com                      # Routage LLM (si activé)
@@ -273,10 +277,10 @@ global:
 
 ## 6. Comparaison des Topologies de Déploiement
 
-### Hybride (Recommandé)
+### Placement séparé (les deux côtés sont les vôtres)
 
 ```
-Votre Responsabilité                    STOA Cloud (UE)
+Réseau passerelle                      Votre plan de contrôle
 ┌─────────────────────────┐            ┌────────────────────┐
 │ Cluster K8s             │            │ Control Plane      │
 │  ├── Stoa Gateway (2)   │───HTTPS───▶│  ├── Console UI    │
@@ -287,9 +291,8 @@ Votre Responsabilité                    STOA Cloud (UE)
 └─────────────────────────┘            └────────────────────┘
 ```
 
-**Vous gérez :** Cluster K8s, pods gateway, APIs backend, fédération IdP.
-**STOA gère :** Control Plane, base de données, mises à jour, monitoring.
-**Réseau :** HTTPS sortant uniquement (aucune connexion entrante depuis STOA Cloud).
+**Vous gérez les deux côtés**, y compris le plan de contrôle, la base de données, les mises à jour et la supervision. STOA n'exploite pas le cadre de droite.
+**Réseau :** HTTPS sortant uniquement vers un plan de contrôle que vous exploitez. Aucune connexion entrante depuis un cloud exploité par STOA.
 
 ### Entièrement Sur Site
 

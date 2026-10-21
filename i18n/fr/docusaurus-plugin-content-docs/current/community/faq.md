@@ -62,7 +62,7 @@ La vraie comparaison :
 Comme Red Hat, Confluent, HashiCorp (avant BSL) :
 
 1. **Support Entreprise** — SLAs, support dédié, intégrations personnalisées
-2. **Service Géré** — STOA Cloud (prévu 2027)
+2. **Exploitation sur site** — vous exploitez STOA ; il n'y a pas de cloud managé (la plateforme publique a été éteinte le 23 mai 2026)
 3. **Certification** — Certifications développeur et architecte
 4. **Formation** — Ateliers, accompagnement, conseil
 5. **Programme Partenaires** — Partage des revenus avec les intégrateurs

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 title: "MCP for Developers: Zero to Tool Call in 2 Minutes"
-description: "Connect to STOA's hosted MCP Gateway from Claude.ai, Python, or TypeScript — no kubectl, no cluster, just a URL and a token."
+description: "Connect Claude.ai, Python, or TypeScript to the MCP gateway of a STOA instance you run — a URL and a token on your domain."
 keywords:
   - MCP developer guide
   - connect Claude to MCP
@@ -13,10 +13,10 @@ keywords:
 
 # MCP for Developers
 
-Connect to STOA's MCP Gateway and call your first tool — from Claude.ai, Python, or TypeScript. No kubectl. No cluster. Just a URL and a token.
+Connect Claude.ai, Python, or TypeScript to the MCP gateway of a STOA instance you already run.
 
-:::info Hosted Cloud
-This guide uses STOA's hosted gateway at `mcp.gostoa.dev`. Everything works out of the box — no infrastructure setup required.
+:::info Your gateway
+The public gateway at `mcp.stoa.example` was shut down on 23 May 2026. Examples below use `https://mcp.stoa.example`. Replace that host with the gateway of your installation. Install first: [stoactl quickstart](/docs/guides/stoactl-quickstart) or the [Kubernetes guide](/docs/admin/installation).
 :::
 
 ## Option A: Claude.ai (Fastest)
@@ -29,7 +29,7 @@ In [claude.ai](https://claude.ai): **Settings** → **Integrations** → **Add M
 
 | Field | Value |
 |-------|-------|
-| URL | `https://mcp.gostoa.dev/mcp/sse` |
+| URL | `https://mcp.stoa.example/mcp/sse` |
 | Name | `STOA Platform` |
 
 Sign in with your STOA credentials when prompted.
@@ -53,7 +53,7 @@ Use the MCP Python SDK or plain HTTP.
 ```python
 import httpx
 
-GATEWAY = "https://mcp.gostoa.dev"
+GATEWAY = "https://mcp.stoa.example"
 TOKEN = "your-access-token"  # See "Get a Token" below
 
 headers = {
@@ -83,7 +83,7 @@ from mcp import ClientSession
 from mcp.client.sse import sse_client
 
 async def main():
-    async with sse_client("https://mcp.gostoa.dev/mcp/sse") as (read, write):
+    async with sse_client("https://mcp.stoa.example/mcp/sse") as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
 
@@ -109,7 +109,7 @@ asyncio.run(main())
 ### With `fetch` (No SDK)
 
 ```typescript
-const GATEWAY = "https://mcp.gostoa.dev";
+const GATEWAY = "https://mcp.stoa.example";
 const TOKEN = "your-access-token"; // See "Get a Token" below
 
 // List tools
@@ -146,7 +146,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 
 const transport = new SSEClientTransport(
-  new URL("https://mcp.gostoa.dev/mcp/sse")
+  new URL("https://mcp.stoa.example/mcp/sse")
 );
 const client = new Client(
   { name: "my-app", version: "1.0.0" },
@@ -180,7 +180,7 @@ For Python/TypeScript (Option B and C), you need an OAuth access token.
 ### Quick: Client Credentials
 
 ```bash
-TOKEN=$(curl -s -X POST "https://auth.gostoa.dev/realms/stoa/protocol/openid-connect/token" \
+TOKEN=$(curl -s -X POST "https://auth.stoa.example/realms/stoa/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=${CLIENT_ID}" \
   -d "client_secret=${CLIENT_SECRET}" \
@@ -196,7 +196,7 @@ Get your `CLIENT_ID` and `CLIENT_SECRET` from the Console under **API Keys**.
 If you created a scoped API key in the Console (under **API Keys**), use it directly:
 
 ```bash
-curl -s "https://mcp.gostoa.dev/mcp/tools/list" \
+curl -s "https://mcp.stoa.example/mcp/tools/list" \
   -H "X-API-Key: stoa_saas_xxxx_your_key_here" | jq
 ```
 
@@ -212,7 +212,7 @@ To use STOA from **Claude Desktop** (local app), add this to your `claude_deskto
 {
   "mcpServers": {
     "stoa": {
-      "url": "https://mcp.gostoa.dev/mcp/sse"
+      "url": "https://mcp.stoa.example/mcp/sse"
     }
   }
 }
@@ -247,4 +247,4 @@ Restart Claude Desktop after saving. You'll be prompted to authenticate on first
 | SSE connection drops | Network timeout. The gateway closes idle SSE connections after 5 min |
 | "No tools found" | No APIs registered in your tenant. Register one in the Console |
 | Claude says "MCP server unavailable" | Check URL ends with `/mcp/sse`. Disconnect and reconnect in Settings |
-| Python `ConnectionError` | Verify `httpx` is installed and the URL is reachable: `curl https://mcp.gostoa.dev/health` |
+| Python `ConnectionError` | Verify `httpx` is installed and the URL is reachable: `curl https://mcp.stoa.example/health` |

@@ -162,7 +162,7 @@ Si vous évaluez des plateformes d'API gateway pour les secteurs réglementés, 
 - Explorez la [documentation Sécurité et Conformité](https://docs.gostoa.dev/docs/enterprise/security-compliance)
 - En savoir plus sur le [Déploiement hybride](https://docs.gostoa.dev/docs/deployment/hybrid)
 - Essayez STOA avec le [Guide de démarrage rapide](https://docs.gostoa.dev/docs/guides/quickstart)
-- Inscrivez-vous à la [Console STOA](https://console.gostoa.dev) pour voir la plateforme en action
+- Inscrivez-vous à la [Console STOA](https://console.stoa.example) pour voir la plateforme en action
 
 ---
 

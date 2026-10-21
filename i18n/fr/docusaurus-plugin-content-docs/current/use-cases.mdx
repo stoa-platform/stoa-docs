@@ -5,8 +5,6 @@ description: Scénarios concrets où STOA Platform apporte de la valeur — API 
 keywords: [use cases, AI agents, legacy modernization, multi-tenant, API gateway]
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 
 # Cas d'Usage
 
@@ -250,28 +248,17 @@ flowchart TB
 
 Prêt à mettre en œuvre ces cas d'usage ?
 
-:::info Accès Anticipé — Bêta Privée
-STOA Platform est actuellement en bêta privée. [Demandez l'accès](mailto:christophe@hlfh.io) pour déployer ces cas d'usage sur votre infrastructure, ou explorez la [Vue d'Ensemble de l'Architecture](/docs/concepts/architecture) pour comprendre comment fonctionne STOA.
+:::info Auto-hébergé
+Le cloud public et l'inscription Early Access ont été éteints le 23 mai 2026. Déployez ces cas d'usage sur une infrastructure que vous exploitez.
 :::
 
-<Tabs>
-  <TabItem value="saas" label="☁️ SaaS" default>
-    ```
-    1. Demander l'accès bêta → christophe@hlfh.io
-    2. Recevoir vos identifiants tenant
-    3. Se connecter sur https://console.gostoa.dev
-    4. Créer votre première API dans la Console
-    ```
-  </TabItem>
-  <TabItem value="self-hosted" label="🏠 Auto-hébergé">
-    ```
-    1. Demander l'accès bêta → christophe@hlfh.io
-    2. Recevoir l'accès au chart Helm
-    3. helm repo add stoa https://charts.gostoa.dev
-    4. helm install stoa stoa/stoa-platform -n stoa-system
-    ```
-  </TabItem>
-</Tabs>
+```bash
+git clone https://github.com/stoa-platform/stoa.git
+helm install stoa-platform ./stoa/charts/stoa-platform \
+  -n stoa-system --create-namespace
+```
+
+L'hôte de charts public `charts.gostoa.dev` n'existe plus. Les commandes ci-dessus installent depuis le dépôt source. Détail : [guide d'installation](/docs/admin/installation).
 
 ---
 

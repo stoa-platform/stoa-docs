@@ -13,7 +13,7 @@ Le Portail Développeur est l'interface du **consommateur d'API**. Les développ
 Le Portail suit le **modèle Stripe** : Portail = Consommateur UNIQUEMENT (Découvrir & Utiliser). Les fonctionnalités fournisseur et administrateur (publication d'API, webhooks, correspondances de credentials, contrats) sont gérées dans la [Console](/docs/guides/console).
 :::
 
-**URL** : [portal.gostoa.dev](https://portal.gostoa.dev)
+**URL** : le Portail de votre installation, par exemple `https://portal.stoa.example`. Il n'y a pas de portail public.
 
 ## Démarrage Rapide
 

@@ -2,6 +2,7 @@
 // Copyright 2024-2026 CAB Ingénierie / Christophe ABOULICAM
 import React, { useState } from 'react';
 import CodeBlock from '@theme/CodeBlock';
+import Link from '@docusaurus/Link';
 import {translate} from '@docusaurus/Translate';
 
 type Language = 'curl' | 'python' | 'typescript' | 'mcp';
@@ -13,11 +14,11 @@ interface CodeExample {
   mcp: string;
 }
 
-// URLs use STOA hosted service. Self-hosted users: replace gostoa.dev with your domain.
+// Example hostnames use the reserved name stoa.example. Replace them with your installation.
 const examples: Record<string, CodeExample> = {
   subscribe: {
     curl: `# Subscribe to an API
-# Set STOA_API_URL to your instance (e.g. https://api.gostoa.dev)
+# Set STOA_API_URL to your instance (e.g. https://api.stoa.example)
 curl -X POST $STOA_API_URL/v1/subscriptions \\
   -H "Authorization: Bearer $STOA_TOKEN" \\
   -H "Content-Type: application/json" \\
@@ -28,7 +29,7 @@ curl -X POST $STOA_API_URL/v1/subscriptions \\
     python: `# Subscribe to an API
 import httpx
 
-STOA_API_URL = "https://api.gostoa.dev"  # Replace with your domain
+STOA_API_URL = "https://api.stoa.example"  # Replace with your domain
 
 client = httpx.Client(
     base_url=f"{STOA_API_URL}/v1",
@@ -43,7 +44,7 @@ response = client.post("/subscriptions", json={
 subscription = response.json()
 print(f"Subscribed! Key: {subscription['api_key']}")`,
     typescript: `// Subscribe to an API
-const STOA_API_URL = 'https://api.gostoa.dev'; // Replace with your domain
+const STOA_API_URL = 'https://api.stoa.example'; // Replace with your domain
 
 const response = await fetch(
   \`\${STOA_API_URL}/v1/subscriptions\`,
@@ -76,14 +77,14 @@ stoa_subscription(
   },
   call: {
     curl: `# Call an API through STOA Gateway
-# Set STOA_GATEWAY_URL to your instance (e.g. https://mcp.gostoa.dev)
+# Set STOA_GATEWAY_URL to your instance (e.g. https://mcp.stoa.example)
 curl $STOA_GATEWAY_URL/v1/billing/invoices \\
   -H "X-API-Key: $API_KEY" \\
   -H "Content-Type: application/json"`,
     python: `# Call an API through STOA Gateway
 import httpx
 
-STOA_GATEWAY_URL = "https://mcp.gostoa.dev"  # Replace with your domain
+STOA_GATEWAY_URL = "https://mcp.stoa.example"  # Replace with your domain
 
 client = httpx.Client(
     base_url=f"{STOA_GATEWAY_URL}/v1",
@@ -94,7 +95,7 @@ invoices = client.get("/billing/invoices").json()
 for inv in invoices["data"]:
     print(f"Invoice {inv['id']}: €{inv['amount']}")`,
     typescript: `// Call an API through STOA Gateway
-const STOA_GATEWAY_URL = 'https://mcp.gostoa.dev'; // Replace with your domain
+const STOA_GATEWAY_URL = 'https://mcp.stoa.example'; // Replace with your domain
 
 const response = await fetch(
   \`\${STOA_GATEWAY_URL}/v1/billing/invoices\`,
@@ -132,7 +133,7 @@ curl $STOA_API_URL/v1/subscriptions/sub-123/quota \\
     python: `# Check your API usage and quota
 import httpx
 
-STOA_API_URL = "https://api.gostoa.dev"  # Replace with your domain
+STOA_API_URL = "https://api.stoa.example"  # Replace with your domain
 
 client = httpx.Client(
     base_url=f"{STOA_API_URL}/v1",
@@ -144,7 +145,7 @@ quota = client.get("/subscriptions/sub-123/quota").json()
 print(f"Usage: {quota['requests_used']}/{quota['requests_limit']}")
 print(f"Remaining: {quota['requests_limit'] - quota['requests_used']}")`,
     typescript: `// Check your API usage and quota
-const STOA_API_URL = 'https://api.gostoa.dev'; // Replace with your domain
+const STOA_API_URL = 'https://api.stoa.example'; // Replace with your domain
 
 const response = await fetch(
   \`\${STOA_API_URL}/v1/subscriptions/sub-123/quota\`,
@@ -217,7 +218,7 @@ export default function QuickStartCode(): JSX.Element {
   const copyLabel = translate({id: 'homepage.quickstart.copy', message: '📋 Copy'});
   const copiedLabel = translate({id: 'homepage.quickstart.copied', message: '✓ Copied!'});
   const fullGuideLabel = translate({id: 'homepage.quickstart.btn.guide', message: '📚 Full Quick Start Guide'});
-  const tryFreeLabel = translate({id: 'homepage.quickstart.btn.try', message: '🚀 Try STOA Free'});
+  const installLabel = translate({id: 'homepage.quickstart.btn.install', message: '🏠 Install STOA'});
 
   return (
     <div className="quickstart-container">
@@ -258,12 +259,12 @@ export default function QuickStartCode(): JSX.Element {
 
       {/* CTA */}
       <div className="quickstart-cta">
-        <a href="/docs/guides/quickstart" className="cta-button primary">
+        <Link to="/docs/guides/quickstart" className="cta-button primary">
           {fullGuideLabel}
-        </a>
-        <a href="https://console.gostoa.dev/signup" className="cta-button secondary">
-          {tryFreeLabel}
-        </a>
+        </Link>
+        <Link to="/docs/admin/installation" className="cta-button secondary">
+          {installLabel}
+        </Link>
       </div>
 
       <style>{`

@@ -1,11 +1,15 @@
 ---
 sidebar_position: 1
 title: Hybrid Deployment
-description: STOA Platform hybrid deployment models — control plane cloud with on-premises gateway, full on-premises sovereignty, multi-cloud options, and data residency
+description: STOA deployment layouts you run yourself — split control plane and gateway, full on-premises, and multi-site. No vendor-hosted cloud.
 keywords: [deployment, hybrid, on-premises, multi-cloud, Kubernetes, sovereignty]
 ---
 
 # Hybrid Deployment
+
+:::caution No vendor-hosted cloud
+The public STOA cloud was shut down on 23 May 2026. STOA does not operate a control plane for you. Every model on this page is a deployment **you** install and run. "Split placement" means you put the control plane and the gateway on different networks that you operate.
+:::
 
 STOA Platform supports multiple deployment models to match your security, sovereignty, and operational requirements.
 
@@ -13,21 +17,21 @@ STOA Platform supports multiple deployment models to match your security, sovere
 
 | Model | Control Plane | Gateway | Data Residency | Best For |
 |-------|---------------|---------|----------------|----------|
-| **Hybrid** | STOA Cloud (EU) | On-Premises | Business data on-prem | Most enterprises |
-| **Full On-Premises** | Your infrastructure | Your infrastructure | Full on-prem | Max sovereignty |
-| **Multi-Cloud** | STOA Cloud | Multiple regions | Distributed | Global organizations |
+| **Split placement** | Your infrastructure | Your infrastructure, next to the APIs | Payloads stay next to the gateway | Separate control-plane network |
+| **Full on-premises** | Your infrastructure | Your infrastructure | Full on-prem | Maximum sovereignty |
+| **Multi-site** | Your infrastructure | Several sites you operate | Distributed | Several regions you run yourself |
 
 ---
 
-## Model 1: Hybrid (Recommended)
+## Model 1: Split placement
 
-**Control Plane Cloud + Gateway On-Premises**
+**Your control plane and your gateway**
 
-The default deployment model balances ease of management with data sovereignty.
+You run both. The gateway stays next to your APIs. The control plane can sit on another network you operate. STOA does not host either plane.
 
 ```mermaid
 flowchart TB
-    subgraph Cloud["☁️ STOA CLOUD (EU Region)"]
+    subgraph Cloud["☁️ YOUR CONTROL PLANE"]
         subgraph CPL["Control Plane"]
             Portal["📱 Portal<br/>(Catalog)"]
             Config["⚙️ API<br/>(Config)"]
@@ -83,15 +87,15 @@ flowchart TB
 
 | Direction | Protocol | Ports | Purpose |
 |-----------|----------|-------|---------|
-| **On-prem → Cloud** | HTTPS | 443 | Config sync, metrics push |
-| **Cloud → On-prem** | None | — | No inbound required |
+| **Gateway network → your control plane** | HTTPS | 443 | Config sync, metrics push |
+| **Control plane → gateway network** | None | — | No inbound required |
 
 **Key security benefit:** No inbound connections required. All communication is initiated from your infrastructure.
 
 ### Prerequisites
 
 - Kubernetes 1.28+ cluster on-premises
-- Outbound HTTPS to STOA Cloud endpoints
+- Outbound HTTPS only to endpoints you operate (your control plane, container registry, identity provider)
 - DNS resolution for STOA services
 - Existing identity provider (OAM, Okta, Azure AD)
 
@@ -153,13 +157,13 @@ flowchart TB
 
 ### Trade-offs
 
-| Aspect | Hybrid | Full On-Prem |
-|--------|--------|--------------|
-| Operational complexity | Lower | Higher |
-| Updates | Automatic | Manual |
-| Support | Full | Limited self-service |
-| Data residency | Metadata in cloud | 100% on-prem |
-| Initial setup | 1-2 days | 1-2 weeks |
+| Aspect | Split placement | Full on-prem |
+|--------|-----------------|--------------|
+| Operational complexity | Two networks you run | One perimeter |
+| Updates | You apply them on both sides | You apply them |
+| Support | Community, or a support contract | Community, or a support contract |
+| Data residency | Metadata on the control-plane network you choose | 100% in one perimeter |
+| Initial setup | You install both planes | You install the full stack |
 
 ---
 
@@ -171,7 +175,7 @@ For organizations requiring presence in multiple regions or clouds.
 
 ```mermaid
 flowchart TB
-    subgraph Global["🌐 STOA CLOUD (Global)"]
+    subgraph Global["🌐 YOUR CONTROL PLANE"]
         GCP["Global Control Plane<br/>Configuration & Orchestration"]
     end
 
@@ -232,7 +236,7 @@ flowchart TB
     Internet["🌐 Internet"]
     WAF["🛡️ WAF"]
 
-    subgraph Cloud["☁️ STOA Cloud (EU)"]
+    subgraph Cloud["☁️ Your control plane"]
         CP["Control Plane"]
     end
 
@@ -255,28 +259,18 @@ flowchart TB
 
 ### Hybrid Deployment Quick Start
 
-:::info Private Beta
-Repository access is granted to beta participants. [Request access](mailto:christophe@hlfh.io) to get the Helm chart and deployment instructions.
-:::
+The public chart host and the private-beta gate were retired on 23 May 2026. Install from source, and point the gateway at a control plane **you** run:
 
 ```bash
-# 1. Create namespace
+git clone https://github.com/stoa-platform/stoa.git
 kubectl create namespace stoa-system
-
-# 2. Add the STOA Helm repository (provided with beta access)
-helm repo add stoa https://charts.gostoa.dev
-helm repo update
-
-# 3. Install with hybrid configuration
-helm install stoa stoa/stoa-platform \
+helm install stoa-platform ./stoa/charts/stoa-platform \
   --namespace stoa-system \
-  --set mode=hybrid \
-  --set controlPlane.endpoint=https://api.<YOUR_DOMAIN> \
-  --set controlPlane.tenantId=YOUR_TENANT_ID
-
-# 4. Verify installation
+  --set stoaGateway.controlPlaneUrl="https://api.stoa.example"
 kubectl get pods -n stoa-system
 ```
+
+Replace `api.stoa.example` with your control plane. See the [installation guide](/docs/admin/installation).
 
 ### Full On-Premises Quick Start
 

@@ -24,12 +24,12 @@ Transformez n'importe quelle API REST en outil MCP que les agents IA peuvent dé
 
 ## Prérequis
 
-- Une instance STOA (cloud ou [auto-hébergée](/docs/deployment/hybrid))
+- Une instance STOA que vous exploitez ([guide d'installation](/docs/admin/installation))
 - Une API REST avec une spécification OpenAPI (ou nous en créerons une simple)
 
 ## Étape 1 : Enregistrer votre API
 
-Connectez-vous à la [Console](https://console.gostoa.dev) et naviguez vers **APIs > Créer une API**.
+Connectez-vous à la Console de votre installation (par exemple `https://console.stoa.example`) et naviguez vers **APIs > Créer une API**.
 
 ```bash
 # Ou via le CLI :

@@ -4,6 +4,10 @@ description: "Établit une séparation stricte Producteur/Consommateur : Portal 
 keywords: [portal, console, gouvernance, ux, rbac, producteur, consommateur, séparation-des-responsabilités, gestion-api]
 ---
 
+:::note Plateforme publique éteinte (23 mai 2026)
+Les noms d'hôte `*.gostoa.dev` de cet enregistrement, hors site de documentation, désignent la plateforme publique éteinte le 23 mai 2026. Ils sont historiques. Les exemples actuels utilisent `stoa.example`. Le site de documentation reste [docs.gostoa.dev](https://docs.gostoa.dev). La ligne SaaS, lorsque cet ADR en contient une, n'est pas un service proposé.
+:::
+
 # ADR-055 : Gouvernance Portal/Console — Séparation Claire des Responsabilités
 
 ## Métadonnées
@@ -24,8 +28,8 @@ keywords: [portal, console, gouvernance, ux, rbac, producteur, consommateur, sé
 
 STOA Platform dispose de deux applications frontend :
 
-- **Console** (`console.gostoa.dev`) — destinée aux fournisseurs d'API, administrateurs tenant et administrateurs de plateforme
-- **Portal** (`portal.gostoa.dev`) — destiné aux consommateurs d'API et aux développeurs
+- **Console** (`console.stoa.example`) — destinée aux fournisseurs d'API, administrateurs tenant et administrateurs de plateforme
+- **Portal** (`portal.stoa.example`) — destiné aux consommateurs d'API et aux développeurs
 
 Au fil du temps, des fonctionnalités fournisseur ont été ajoutées au Portal, créant une **interface hybride** où les tenant-admins doivent jongler entre les deux UIs sans frontière claire. Un audit des deux interfaces (mars 2026) a révélé une duplication significative de fonctionnalités et une confusion UX.
 

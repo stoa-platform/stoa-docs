@@ -16,8 +16,8 @@ import EnvSetup from '@site/docs/_partials/_env-setup.mdx';
 
 Déployez votre premier outil MCP et invoquez-le depuis un agent IA — en 5 minutes.
 
-:::tip Pas de cluster ? Utilisez le cloud hébergé
-Ce guide couvre le **parcours auto-hébergé** avec kubectl et les CRD. Si vous souhaitez simplement connecter Claude au cloud hébergé de STOA sans infrastructure, consultez [MCP pour développeurs](/docs/guides/mcp-developer-guide).
+:::info Auto-hébergé
+Ce guide applique une CRD Tool sur une instance STOA que vous exploitez. Le cloud public a été éteint le 23 mai 2026. Il n'y a pas de raccourci hébergé. Pour connecter un agent une fois la passerelle en place, voir [MCP pour développeurs](/docs/guides/mcp-developer-guide).
 :::
 
 ## Prérequis

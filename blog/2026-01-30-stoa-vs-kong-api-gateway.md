@@ -180,7 +180,7 @@ See the difference for yourself:
 - **[Quickstart Guide](/docs/guides/quickstart)** — Running instance in 15 minutes.
 - **[API Gateway Patterns](/docs/guides/fiches/api-gateway-patterns)** — Deep dive into architectural patterns.
 - **[Kong Migration Guide](/docs/guides/migration/kong)** — Step-by-step migration path.
-- **[Console](https://console.gostoa.dev)** — Explore the admin interface.
+- **[Console](https://console.stoa.example)** — Explore the admin interface.
 
 ---
 

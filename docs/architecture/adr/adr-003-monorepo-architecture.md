@@ -307,9 +307,8 @@ axum = "0.7"
 **Response:**
 
 ```bash
-# Repository access granted to beta participants
-# Request access: christophe@hlfh.io
-git clone --depth=1 <repository-url>
+# Public repository
+git clone --depth=1 https://github.com/stoa-platform/stoa.git
 cd stoa/portal
 npm install
 npm run dev

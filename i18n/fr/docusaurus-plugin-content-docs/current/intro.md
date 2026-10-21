@@ -7,8 +7,8 @@ keywords: [STOA, passerelle API, MCP, documentation, démarrage, open source, pa
 
 # Premiers pas avec STOA
 
-:::info Accès anticipé — Bêta privée
-STOA Platform est actuellement en bêta privée. [Demandez l'accès](mailto:christophe@hlfh.io) pour démarrer, ou explorez la [Vue d'ensemble de l'architecture](/docs/concepts/architecture) et les [Cas d'usage entreprise](/docs/use-cases) pour en savoir plus.
+:::info Logiciel auto-hébergé
+STOA est un logiciel open source (Apache 2.0) que vous installez sur votre infrastructure. Le cloud public (console, inscription et API) a été éteint le 23 mai 2026. Commencez par le [guide d'installation](/docs/admin/installation) ou le [démarrage rapide](/docs/guides/quickstart).
 :::
 
 Bienvenue sur **STOA Platform** — une plateforme de gestion d'API open source et AI-native, conçue pour l'ère MCP.
@@ -30,7 +30,7 @@ STOA est une passerelle API et une plateforme de gestion cloud-native construite
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│                    PLAN DE CONTRÔLE (Cloud)                   │
+│                    PLAN DE CONTRÔLE (votre cluster)           │
 │                                                              │
 │   Console    Portail     API       Auth       Observabilité  │
 │   (React)   (React)  (FastAPI) (Keycloak)  (Grafana+Prom)  │
@@ -39,7 +39,7 @@ STOA est une passerelle API et une plateforme de gestion cloud-native construite
                        │  orchestre
                        ▼
 ┌──────────────────────────────────────────────────────────────┐
-│                    PLAN DE DONNÉES (On-Premise ou Cloud)      │
+│                    PLAN DE DONNÉES (votre cluster)            │
 │                                                              │
 │   STOA Gateway (Rust)          Adaptateurs legacy            │
 │   • Protocole MCP              • webMethods                  │
@@ -54,15 +54,15 @@ Le **Plan de contrôle** gère le catalogue d'API, l'authentification et l'obser
 
 ## Démarrage rapide
 
-Une fois que vous avez accès à la bêta, vous pouvez interagir avec STOA de trois façons :
+Installez STOA, puis utilisez les URL de **votre** instance. Les noms ci-dessous sont des exemples (`stoa.example` est un domaine réservé) :
 
-| Chemin | URL | Idéal pour |
-|--------|-----|-----------|
-| **Console UI** | [console.gostoa.dev](https://console.gostoa.dev) | Gestion visuelle, catalogue d'API, observabilité |
-| **API REST** | [api.gostoa.dev/v1](https://api.gostoa.dev/v1) | Automatisation, pipelines CI/CD, scripting |
-| **MCP Gateway** | [mcp.gostoa.dev](https://mcp.gostoa.dev) | Agents IA (Claude, GPT, agents personnalisés) |
+| Chemin | Exemple | Idéal pour |
+|--------|---------|-----------|
+| **Console UI** | `https://console.stoa.example` | Gestion visuelle, catalogue d'API, observabilité |
+| **API REST** | `https://api.stoa.example/v1` | Automatisation, pipelines CI/CD, scripting |
+| **MCP Gateway** | `https://mcp.stoa.example` | Agents IA (Claude, GPT, agents personnalisés) |
 
-Consultez le [Guide de démarrage rapide](/docs/guides/quickstart) pour un parcours étape par étape.
+Consultez le [Guide de démarrage rapide](/docs/guides/quickstart) pour un parcours étape par étape, et le [guide d'installation](/docs/admin/installation) pour déployer la plateforme.
 
 ## Différenciateurs clés
 
