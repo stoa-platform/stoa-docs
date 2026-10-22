@@ -34,49 +34,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Skip fork pull requests
+        id: fork_gate
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: echo "::warning::Audit Client Names skipped for a fork pull request. The empty private-blocklist guard is not applied."
+
       - name: Checkout repository
+        if: steps.fork_gate.outcome == 'skipped'
         uses: actions/checkout@v4
 
-      # Optional: Override blocklist from secrets (for private client lists)
-      - name: Override blocklist from secrets
-        if: ${{ vars.PRIVATE_BLOCKLIST != '' }}
-        run: |
-          echo "${{ vars.PRIVATE_BLOCKLIST }}" >> scripts/.audit-blocklist.txt
-          echo "Added private blocklist patterns"
-
       - name: Make script executable
+        if: steps.fork_gate.outcome == 'skipped'
         run: chmod +x scripts/audit-client-names.sh
 
       - name: Run audit
         id: audit
+        if: steps.fork_gate.outcome == 'skipped'
         env:
-          # Counted by the script. Do not print this value; the script prints the integer only.
-          PRIVATE_BLOCKLIST: ${{ vars.PRIVATE_BLOCKLIST }}
+          PRIVATE_BLOCKLIST: ${{ secrets.PRIVATE_BLOCKLIST }}
         run: |
-          # Capture output for annotation
           set +e
-          OUTPUT=$(scripts/audit-client-names.sh --verbose 2>&1)
+          bash scripts/audit-client-names.sh --verbose > audit-full.txt 2>&1
           EXIT_CODE=$?
           set -e
 
-          # Save output
-          echo "$OUTPUT"
-          echo "$OUTPUT" > audit-report.txt
+          # Register masks with the runner. Do not store those lines.
+          if grep -q '^::add-mask::' audit-full.txt; then
+            grep '^::add-mask::' audit-full.txt
+          fi
+          grep -v '^::add-mask::' audit-full.txt > audit-report.txt
+          cat audit-report.txt
+          rm -f audit-full.txt
 
-          # Set outputs for next steps
-          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
-
-          # Extract counts for summary (strip ANSI color codes first)
-          CLEAN_OUTPUT=$(echo "$OUTPUT" | sed 's/\x1b\[[0-9;]*m//g')
+          echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
+          CLEAN_OUTPUT=$(sed 's/\x1b\[[0-9;]*m//g' audit-report.txt)
           CRITICAL=$(echo "$CLEAN_OUTPUT" | grep "CRITICAL findings:" | grep -oE '[0-9]+' || echo "0")
           WARNING=$(echo "$CLEAN_OUTPUT" | grep "WARNING findings:" | grep -oE '[0-9]+' || echo "0")
-          echo "critical_count=$CRITICAL" >> $GITHUB_OUTPUT
-          echo "warning_count=$WARNING" >> $GITHUB_OUTPUT
+          echo "critical_count=$CRITICAL" >> "$GITHUB_OUTPUT"
+          echo "warning_count=$WARNING" >> "$GITHUB_OUTPUT"
 
           exit $EXIT_CODE
 
       - name: Upload audit report
-        if: always()
+        if: always() && steps.fork_gate.outcome == 'skipped'
         uses: actions/upload-artifact@v4
         with:
           name: audit-report
@@ -84,7 +84,7 @@ jobs:
           retention-days: 30
 
       - name: Add PR comment on failure
-        if: failure() && github.event_name == 'pull_request'
+        if: failure() && github.event_name == 'pull_request' && steps.fork_gate.outcome == 'skipped'
         uses: actions/github-script@v7
         with:
           script: |
@@ -124,7 +124,7 @@ jobs:
             });
 
       - name: Add PR comment on warnings
-        if: success() && github.event_name == 'pull_request' && steps.audit.outputs.warning_count > 0
+        if: success() && github.event_name == 'pull_request' && steps.fork_gate.outcome == 'skipped' && steps.audit.outputs.warning_count > 0
         uses: actions/github-script@v7
         with:
           script: |
@@ -152,7 +152,7 @@ jobs:
             });
 
       - name: Job summary
-        if: always()
+        if: always() && steps.fork_gate.outcome == 'skipped'
         run: |
           echo "## Docs Audit Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
