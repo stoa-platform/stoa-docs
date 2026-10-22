@@ -25,7 +25,7 @@ A naïve answer is "have a human review every PR." That does not scale when 5 pa
 
 ## Decision
 
-Implement a **3-stage Council system** where each stage gates the next. Stages 1 and 2 evaluate prose artifacts (tickets, plans) through an **8-persona LLM jury** (the canonical Team Coca set defined in `hegemon/patterns/validation/HEG-PAT-003`). Stage 3 evaluates code diffs through a 4-axis parallel LLM review via a CLI tool (`scripts/council-review.sh`).
+Implement a **3-stage Council system** where each stage gates the next. Stages 1 and 2 evaluate prose artifacts (tickets, plans) through an **8-persona LLM jury** (the canonical Team Coca set maintained in internal tooling). Stage 3 evaluates code diffs through a 4-axis parallel LLM review via a CLI tool (`scripts/council-review.sh`).
 
 ```
 ┌──────────────────┐   ┌────────────────┐   ┌─────────────┐   ┌──────────────────┐
@@ -40,7 +40,7 @@ Each stage emits a binary verdict: **Go** (proceed), **Fix** (apply adjustments,
 
 ### Stage 1 — Ticket Pertinence (live since C11; promoted to 8-persona jury via CAB-2054)
 
-Invoked by the `/council` skill on a feature/ADR description *before* any work begins. The full 8-persona Team Coca jury (canonical set defined in `hegemon/patterns/validation/HEG-PAT-003`) evaluates the *ticket itself*:
+Invoked by the `/council` skill on a feature/ADR description *before* any work begins. The full 8-persona Team Coca jury (canonical set maintained in internal tooling) evaluates the *ticket itself*:
 
 | Persona | Role | Focus |
 |---------|------|-------|
@@ -193,7 +193,7 @@ Expected steady-state daily cost: **€1-2/day** (well under the €5 cap). The 
 - **Kill-switches at every layer.** `COUNCIL_DISABLE`, `DISABLE_COUNCIL_GATE`, `vars.COUNCIL_S3_ENABLED`, `COUNCIL_FORCE_DEDUP=0` — any instance, CI workflow, or operator can disable any piece independently.
 - **Shadow-mode rollout** (CAB-2051) de-risks production enforcement: S3 runs on every PR but its verdict is non-blocking for 2-3 weeks. We calibrate thresholds against real diffs before flipping the required-check flag.
 - **Gitleaks pre-flight** prevents secret exfiltration to Anthropic, addressing the most acute privacy concern about LLM-based code review.
-- **Canonical alignment with HEG-PAT-003** (CAB-2054). The S1/S2 jury is now exactly the 8-persona Team Coca canonical set defined in `hegemon/patterns/validation/HEG-PAT-003`. Drift between the canonical pattern and the implementation is eliminated, and the jury composition is auditable from a single source of truth.
+- **Canonical alignment with HEG-PAT-003** (CAB-2054). The S1/S2 jury is now exactly the 8-persona Team Coca canonical set maintained in internal tooling. Drift between the canonical pattern and the implementation is eliminated, and the jury composition is auditable from a single source of truth.
 
 ### Negative
 
@@ -241,7 +241,6 @@ Enforcement becomes mandatory only after Phase 5 completes and shadow-mode data 
 - CAB-2050 — `council-history.jsonl` rotation
 - CAB-2051 — Shadow mode observation
 - CAB-2054 — Align Council S1/S2 to 8 personas per HEG-PAT-003 (this amendment)
-- `hegemon/patterns/validation/HEG-PAT-003-team-coca-adversarial-validation.md` — canonical 8-persona Team Coca pattern (source of truth)
 - `.claude/skills/council/SKILL.md` — S1/S2 runbook
 - `.claude/rules/council-s3.md` — S3 runbook (CAB-2047 Step 4 deliverable)
 - `scripts/council-review.sh` — S3 CLI implementation

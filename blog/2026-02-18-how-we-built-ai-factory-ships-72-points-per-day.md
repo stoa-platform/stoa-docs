@@ -19,7 +19,7 @@ keywords:
 
 **A single developer shipping 72 story points per day across 7 components, 22 PRs per week, with zero regressions on main.** This is not a theoretical exercise — it is the measured output of STOA Platform's AI Factory during Cycle 7 (February 9-15, 2026). This article explains the architecture, the coordination protocols, and the hard lessons that make it work.
 
-If you are building an [MCP gateway](/blog/what-is-mcp-gateway) or any complex open-source platform, the patterns described here are directly reusable. They are not tied to STOA — we extracted them into a reusable pattern library (HEGEMON) that any project can adopt.
+If you are building an [MCP gateway](/blog/what-is-mcp-gateway) or any complex open-source platform, the patterns described here are directly reusable. They are not tied to STOA — we extracted them into a reusable pattern library that any project can adopt.
 
 <!-- truncate -->
 
@@ -223,7 +223,7 @@ The current architecture (v2) works for a solo developer with 3-4 parallel insta
 - **L3 pipeline hardening** — Linear ticket to PR in one automated pipeline
 - **Prompt context optimization** — reducing token waste across sessions
 
-The AI Factory is open source. The rules live in `stoa/.claude/rules/`, the agents in `stoa/.claude/agents/`, and the reusable patterns in the HEGEMON pattern library. If you are building with Claude Code, Cursor, or any AI coding agent, these patterns are directly applicable to your workflow.
+The AI Factory is open source. The rules live in `stoa/.claude/rules/`, the agents in `stoa/.claude/agents/`, and the reusable patterns in the internal pattern library. If you are building with Claude Code, Cursor, or any AI coding agent, these patterns are directly applicable to your workflow.
 
 ## Getting Started
 
@@ -249,7 +249,7 @@ No. The AI Factory replaces the repetitive parts of development: boilerplate, te
 
 ### Can this work with other AI coding agents?
 
-The patterns (rules, state files, phase ownership, Council) are agent-agnostic. The MCP integrations are specific to Claude Code's MCP support. The HEGEMON pattern library documents these patterns in a tool-neutral way.
+The patterns (rules, state files, phase ownership, Council) are agent-agnostic. The MCP integrations are specific to Claude Code's MCP support. The internal pattern library documents these patterns in a tool-neutral way.
 
 ### What happens when the AI makes a mistake?
 

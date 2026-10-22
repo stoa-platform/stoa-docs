@@ -6,15 +6,19 @@ keywords: [deployment modes, sovereign cloud, data sovereignty, NIS2, DORA, on-p
 
 # ADR-037: Deployment Modes Strategy — Sovereign First
 
+:::info Hosted service
+The hosted service was shut down on 23/05/2026. STOA is now deployed on-site, at the customer.
+:::
+
 ## Metadata
 
 | Field | Value |
 |-------|-------|
 | **Status** | ✅ Accepted |
 | **Date** | 2026-02-06 |
-| **Decision Makers** | Christophe ABOULICAM |
+| **Decision Makers** | STOA |
 | **Linear** | [CAB-1111](https://linear.app/hlfh-workspace/issue/CAB-1111/adr-deployment-modes-strategy-sovereign-first) |
-| **Migrated from** | stoa repo ADR-033 (number conflict) |
+| **Migrated from** | Earlier ADR (number conflict) |
 
 ## Context
 
@@ -91,16 +95,6 @@ Bare metal without an orchestrator (Rancher, OpenShift minimum) is **not support
 
 Sovereign mode will never require outbound network connectivity. The optional quarterly report is generated locally and transmitted manually by the customer.
 
-### Pricing Guidance
-
-| Mode | Relative Price | Typical Margin | Includes |
-|------|---------------|----------------|----------|
-| SaaS | $X/month | ~80% | Everything |
-| Hybrid | $2X/month | ~60% | Cloud CP + support |
-| Sovereign | $4X/month + mandatory support | ~40% | License + dedicated support |
-
-The pricing structure naturally steers customers toward Hybrid/SaaS unless they have genuine sovereignty requirements (air-gapped, defense, healthcare, banking).
-
 ## Consequences
 
 ### Positive
@@ -114,7 +108,7 @@ The pricing structure naturally steers customers toward Hybrid/SaaS unless they 
 ### Negative
 
 - **Version fragmentation risk** — mitigated by LTS + Extended support tiers with contractual upgrade obligations
-- **Higher support costs per customer** — mitigated by mandatory support contracts in Sovereign pricing and certified environment matrix
+- **Higher support load per customer** — mitigated by mandatory support contracts in Sovereign mode and the certified environment matrix
 - **No telemetry by default** — mitigated by health check endpoints + optional quarterly reports
 - **Slower feedback loop** — mitigated by design partner program with direct communication channels
 - **Delayed cloud revenue** — acceptable trade-off given that Phase 1 target customers would not buy a cloud-only product
@@ -141,7 +135,7 @@ Start with Cloud Control Plane + On-Prem Data Plane. Rejected because:
 ### B. All Three Modes Simultaneously (rejected)
 
 Ship all three modes from day one. Rejected because:
-- Too much surface area for a solo founder
+- Too much surface area for a small team
 - Cloud infrastructure (multi-tenant, billing, SLA) is a separate product
 - Sovereign is the superset — Hybrid and SaaS are subsets with managed infrastructure
 

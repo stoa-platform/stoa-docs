@@ -19,7 +19,7 @@ Court — tout ce qui n'est pas listé ici vit dans la pull request review.
   → trade-offs → choix → conséquences. Pas de conclusions désincarnées.
 
 Référence vivante : le prompt *STOA LinkedIn Weekly Voice* dans
-`hegemon/skills/linkedin-voice/SKILL.md`. Cette voix courte se prolonge en
+l'outillage interne. Cette voix courte se prolonge en
 format long en gardant la même discipline : pas de hype, pas d'adverbes
 vides.
 

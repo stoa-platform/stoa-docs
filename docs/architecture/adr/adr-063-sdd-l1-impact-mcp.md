@@ -55,7 +55,7 @@ stars) and [gotalab/cc-sdd](https://github.com/gotalab/cc-sdd) (v3.0.2, MIT,
 
 - New file: `docs/scripts/stoa_impact_mcp.py`.
 - **Pure Python stdlib** (no `@modelcontextprotocol/sdk` dep) — matches the
-  existing "manual JSON-RPC protocol" pattern used by `hegemon-mcp` and
+  existing "manual JSON-RPC protocol" pattern used by internal tooling and
   `stoa-gateway`, and keeps the server trivially runnable on any dev
   machine with Python 3.11+.
 - **JSON-RPC 2.0 over stdio** (not HTTP/SSE) — aligns with the invocation
@@ -163,10 +163,10 @@ non-Bash subagents, remove the `.mcp.json` entry and delete the module.
   SDK also defaults to HTTP/SSE, which doesn't match the stdio-based
   local-server pattern already in `.mcp.json`.
 
-### C. Rust MCP server matching `hegemon-mcp` pattern
+### C. Rust MCP server matching the internal tooling pattern
 
 - Match the existing Rust Axum custom-protocol pattern for consistency.
-- **Rejected.** `hegemon-mcp` uses HTTP/SSE for cross-service access;
+- **Rejected.** The internal MCP server uses HTTP/SSE for cross-service access;
   this tool is stdio-local. Rewriting in Rust for consistency doubles
   the implementation effort with zero user-visible benefit.
 

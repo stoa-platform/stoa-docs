@@ -6,15 +6,19 @@ keywords: [modes de déploiement, cloud souverain, souveraineté des données, N
 
 # ADR-037 : Stratégie des Modes de Déploiement — Souveraineté d'Abord
 
+:::info Service hébergé
+Le service hébergé a été éteint le 23/05/2026. STOA se déploie désormais sur site, chez le client.
+:::
+
 ## Metadata
 
 | Champ | Valeur |
 |-------|--------|
 | **Statut** | ✅ Accepté |
 | **Date** | 2026-02-06 |
-| **Décideurs** | Christophe ABOULICAM |
+| **Décideurs** | STOA |
 | **Linear** | [CAB-1111](https://linear.app/hlfh-workspace/issue/CAB-1111/adr-deployment-modes-strategy-sovereign-first) |
-| **Migré depuis** | ADR-033 du repo stoa (conflit de numéro) |
+| **Migré depuis** | ADR antérieur (conflit de numéro) |
 
 ## Contexte
 
@@ -91,16 +95,6 @@ Le bare metal sans orchestrateur (Rancher, OpenShift minimum) n'est **pas suppor
 
 Le mode Souverain ne nécessitera jamais de connectivité réseau sortante. Le rapport trimestriel optionnel est généré localement et transmis manuellement par le client.
 
-### Orientation Tarifaire
-
-| Mode | Prix Relatif | Marge Typique | Inclut |
-|------|-------------|--------------|--------|
-| SaaS | $X/mois | ~80% | Tout |
-| Hybride | $2X/mois | ~60% | CP Cloud + support |
-| Souverain | $4X/mois + support obligatoire | ~40% | Licence + support dédié |
-
-La structure tarifaire oriente naturellement les clients vers Hybride/SaaS à moins qu'ils n'aient de véritables exigences de souveraineté (air-gapped, défense, santé, banques).
-
 ## Conséquences
 
 ### Positives
@@ -114,7 +108,7 @@ La structure tarifaire oriente naturellement les clients vers Hybride/SaaS à mo
 ### Négatives
 
 - **Risque de fragmentation des versions** — atténué par les niveaux de support LTS + Étendu avec obligations contractuelles de mise à niveau
-- **Coûts de support plus élevés par client** — atténués par les contrats de support obligatoires dans la tarification Souverain et la matrice d'environnements certifiés
+- **Charge de support plus élevée par client** — atténuée par les contrats de support obligatoires en mode Souverain et la matrice d'environnements certifiés
 - **Pas de télémétrie par défaut** — atténué par les endpoints de vérification de santé + rapports trimestriels optionnels
 - **Boucle de feedback plus lente** — atténuée par un programme de design partners avec des canaux de communication directs
 - **Revenus cloud différés** — compromis acceptable étant donné que les clients cibles de la Phase 1 n'achèteraient pas un produit cloud-only
@@ -141,7 +135,7 @@ Commencer avec un Plan de Contrôle Cloud + Plan de Données On-Prem. Rejeté pa
 ### B. Les Trois Modes Simultanément (rejeté)
 
 Livrer les trois modes dès le départ. Rejeté parce que :
-- Surface trop grande pour un fondateur solo
+- Surface trop grande pour une petite équipe
 - L'infrastructure cloud (multi-tenant, facturation, SLA) est un produit séparé
 - Souverain est le surensemble — Hybride et SaaS sont des sous-ensembles avec infrastructure gérée
 
