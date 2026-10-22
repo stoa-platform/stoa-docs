@@ -150,22 +150,31 @@ is_whitelisted() {
     return 1
 }
 
-# Load blocklist from file
-load_blocklist() {
-    if [[ ! -f "$BLOCKLIST_FILE" ]]; then
-        log_error "Blocklist not found: $BLOCKLIST_FILE"
-        exit 1
+# Load PRIVATE_BLOCKLIST. Emit a mask command per motif, then the count only.
+# Never print a motif or a matched line in any other form. Exit 1 when the count is 0.
+load_private_blocklist() {
+    local line pattern
+    local raw="${PRIVATE_BLOCKLIST-}"
+    BLOCKLIST=()
+
+    if [[ -n "$raw" ]]; then
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            [[ "$line" =~ ^#.*$ ]] && continue
+            [[ -z "${line// }" ]] && continue
+            BLOCKLIST+=("$line")
+        done <<< "$raw"
     fi
 
-    BLOCKLIST=()
-    while IFS= read -r line || [[ -n "$line" ]]; do
-        # Skip comments and empty lines
-        [[ "$line" =~ ^#.*$ ]] && continue
-        [[ -z "${line// }" ]] && continue
-        BLOCKLIST+=("$line")
-    done < "$BLOCKLIST_FILE"
+    for pattern in "${BLOCKLIST[@]}"; do
+        printf '%s\n' "::add-mask::${pattern}"
+    done
 
-    log_info "Loaded ${#BLOCKLIST[@]} patterns from blocklist"
+    printf 'PRIVATE_BLOCKLIST patterns: %s\n' "${#BLOCKLIST[@]}"
+
+    if [[ "${#BLOCKLIST[@]}" -eq 0 ]]; then
+        log_error "PRIVATE_BLOCKLIST contains 0 patterns. Client-name audit cannot pass."
+        exit 1
+    fi
 }
 
 # Scan a single file
@@ -176,22 +185,27 @@ scan_file() {
     SCANNED_COUNT=$((SCANNED_COUNT + 1))
     [[ "$VERBOSE" == true ]] && echo "  Scanning: $relative_path"
 
-    # Check CRITICAL patterns (from blocklist)
-    for pattern in "${BLOCKLIST[@]}"; do
-        while IFS=: read -r line_num content; do
-            # Skip if whitelisted
+    # Motif hits: file, line, and 1-based index. Never the motif or the line text.
+    local i pattern index line_num content
+    for i in "${!BLOCKLIST[@]}"; do
+        pattern="${BLOCKLIST[$i]}"
+        index=$((i + 1))
+        while IFS= read -r line_num; do
+            [[ -z "$line_num" ]] && continue
+            content=$(sed -n "${line_num}p" "$file" 2>/dev/null || true)
             if is_whitelisted "$content"; then
                 continue
             fi
+            unset content
 
             CRITICAL_COUNT=$((CRITICAL_COUNT + 1))
-            printf "| %-50s | %5s | %-25s | ${RED}CRITICAL${NC} |\n" \
-                "$relative_path" "$line_num" "$pattern"
+            printf "| %-50s | %5s | %5s | ${RED}CRITICAL${NC} |\n" \
+                "$relative_path" "$line_num" "$index"
 
             if [[ "$FIX_MODE" == true ]]; then
-                echo "  -> Suggested: Replace '$pattern' with '[Enterprise Client]'"
+                printf '  -> Suggested: replace motif %s with [Enterprise Client]\n' "$index"
             fi
-        done < <(grep -inw "$pattern" "$file" 2>/dev/null || true)
+        done < <(grep -inw -e "$pattern" "$file" 2>/dev/null | cut -d: -f1 || true)
     done
 
     # Check WARNING patterns
@@ -269,13 +283,13 @@ echo "  CAB-953 - Client Names Audit"
 echo "=============================================="
 echo ""
 
-# Load blocklist
-load_blocklist
+# Mask each motif, print the count, and stop when that count is 0.
+load_private_blocklist
 
 # Print table header
 echo ""
-printf "| %-50s | %5s | %-25s | %-8s |\n" "File" "Line" "Pattern" "Severity"
-echo "|----------------------------------------------------|-------|---------------------------|----------|"
+printf "| %-50s | %5s | %5s | %-8s |\n" "File" "Line" "Index" "Severity"
+echo "|----------------------------------------------------|-------|-------|----------|"
 
 # Find and scan files
 cd "$REPO_ROOT"

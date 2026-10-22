@@ -67,14 +67,6 @@ STOA prend en charge l'orchestration de plusieurs vendors de gateway via le [Pat
 | Registre de conteneurs | GHCR | **Production** |
 | DNS/TLS | Cloudflare + Let's Encrypt | **Production** |
 
-## Environnements de Déploiement
-
-| Environnement | Infrastructure | Statut |
-|---------------|---------------|--------|
-| Production | OVH MKS (GRA9, 3x B2-15) | **Actif** — 9 pods, 22/22 tests smoke |
-| Staging | Hetzner K3s (5x cx33, nbg1) | **Actif** — 9 services HTTPS |
-| Dev local | Docker Compose | **Actif** — Stack complète avec fédération |
-
 ## Couverture de Tests
 
 | Composant | Tests Unitaires | Intégration | E2E | Total |

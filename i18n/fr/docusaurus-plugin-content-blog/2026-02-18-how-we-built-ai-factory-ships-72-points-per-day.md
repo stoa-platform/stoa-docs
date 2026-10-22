@@ -19,7 +19,7 @@ keywords:
 
 **Un seul développeur livrant 72 points de story par jour sur 7 composants, 22 PRs par semaine, avec zéro régression sur main.** Ce n'est pas un exercice théorique — c'est le résultat mesuré de l'AI Factory de STOA Platform durant le Cycle 7 (9-15 février 2026). Cet article explique l'architecture, les protocoles de coordination, et les leçons difficiles qui permettent son fonctionnement.
 
-Si vous construisez un [MCP gateway](/blog/what-is-mcp-gateway) ou toute plateforme open source complexe, les patterns décrits ici sont directement réutilisables. Ils ne sont pas liés à STOA — nous les avons extraits dans une bibliothèque de patterns réutilisables (HEGEMON) que tout projet peut adopter.
+Si vous construisez un [MCP gateway](/blog/what-is-mcp-gateway) ou toute plateforme open source complexe, les patterns décrits ici sont directement réutilisables. Ils ne sont pas liés à STOA — nous les avons extraits dans une bibliothèque de patterns réutilisables que tout projet peut adopter.
 
 <!-- truncate -->
 
@@ -223,7 +223,7 @@ L'architecture actuelle (v2) fonctionne pour un développeur solo avec 3 à 4 in
 - **Hardening du pipeline L3** — du ticket Linear à la PR en un pipeline automatisé
 - **Optimisation du contexte de prompt** — réduction des tokens gaspillés entre les sessions
 
-L'AI Factory est open source. Les règles vivent dans `stoa/.claude/rules/`, les agents dans `stoa/.claude/agents/`, et les patterns réutilisables dans la bibliothèque de patterns HEGEMON. Si vous construisez avec Claude Code, Cursor ou tout autre agent de codage IA, ces patterns sont directement applicables à votre workflow.
+L'AI Factory est open source. Les règles vivent dans `stoa/.claude/rules/`, les agents dans `stoa/.claude/agents/`, et les patterns réutilisables dans la bibliothèque de patterns interne. Si vous construisez avec Claude Code, Cursor ou tout autre agent de codage IA, ces patterns sont directement applicables à votre workflow.
 
 ## Pour commencer
 
@@ -249,7 +249,7 @@ Non. L'AI Factory remplace les parties répétitives du développement : le code
 
 ### Cela fonctionne-t-il avec d'autres agents de codage IA ?
 
-Les patterns (règles, state files, phase ownership, Council) sont agnostiques à l'agent. Les intégrations MCP sont spécifiques au support MCP de Claude Code. La bibliothèque de patterns HEGEMON documente ces patterns de façon neutre par rapport aux outils.
+Les patterns (règles, state files, phase ownership, Council) sont agnostiques à l'agent. Les intégrations MCP sont spécifiques au support MCP de Claude Code. La bibliothèque de patterns interne documente ces patterns de façon neutre par rapport aux outils.
 
 ### Que se passe-t-il quand l'IA fait une erreur ?
 

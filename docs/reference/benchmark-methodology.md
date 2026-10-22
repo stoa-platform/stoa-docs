@@ -306,14 +306,6 @@ This ensures benchmarks measure **gateway overhead only**, not backend performan
 | Kong DB-less | 8000 | `:8001/status` | echo-backend:8888 |
 | Gravitee APIM | 8082 | `:18082/_node/health` | echo-backend:8888 |
 
-#### VPS (Co-located Sidecars)
-
-| Gateway | Host | Proxy Port | Backend |
-|---------|------|-----------|---------|
-| STOA | 51.83.45.13 | 8080 | echo-local:8888 |
-| Kong | 51.83.45.13 | 8000 | echo-local:8888 |
-| Gravitee | 54.36.209.237 | 8082 | echo-local:8888 |
-
 ### Prometheus Metrics
 
 #### Layer 0

@@ -108,7 +108,7 @@ SSE_LIMITER_ENABLED=true
 
 # Trusted proxy CIDRs (default: empty = trust nothing)
 # IMPORTANT: Set to your ingress controller IPs
-SSE_TRUSTED_PROXIES=10.100.0.0/16
+SSE_TRUSTED_PROXIES=<ip-banc-redigee>/16
 ```
 
 #### Response Codes
@@ -161,7 +161,7 @@ labels:
 #### Network Policy
 - Ingress: MCP Gateway, Ingress controller only
 - Egress: PostgreSQL, Redis, Keycloak, Vault, DNS only
-- Health checks: Cluster CIDR only (10.0.0.0/8)
+- Health checks: Cluster CIDR only (<ip-banc-redigee>/8)
 
 #### Migration
 - Apply namespace PSS labels

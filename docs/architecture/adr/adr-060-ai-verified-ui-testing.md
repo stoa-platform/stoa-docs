@@ -9,7 +9,7 @@
 
 ## Context
 
-AI agents (Claude Code, Hegemon workers) write and modify React UI code across Console and Portal. They run unit tests (vitest) and linters (ESLint, Prettier) to verify correctness, but **cannot verify visual correctness** — a page that compiles and passes tests may still render broken layouts, missing data, or inaccessible markup.
+AI agents (Claude Code and other internal AI agents) write and modify React UI code across Console and Portal. They run unit tests (vitest) and linters (ESLint, Prettier) to verify correctness, but **cannot verify visual correctness** — a page that compiles and passes tests may still render broken layouts, missing data, or inaccessible markup.
 
 Current gaps:
 - No data seeding for E2E tests — dashboards tested with empty state or mocked data
