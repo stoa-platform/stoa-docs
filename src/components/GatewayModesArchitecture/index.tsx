@@ -166,7 +166,7 @@ const modes: ModeData[] = [
       'Circuit breaker patterns',
       'mTLS termination',
     ],
-    cli: 'stoa-gateway --mode=proxy --upstream=http://backend:8080',
+    cli: '${GATEWAY_BINARY} --mode=proxy --upstream=${UPSTREAM_URL}',
     targets: 'Internal APIs, new deployments',
   },
   {
@@ -185,7 +185,7 @@ const modes: ModeData[] = [
       'Human-in-the-loop validation',
       'PII detection before storage',
     ],
-    cli: 'stoa-gateway --mode=shadow --target=http://legacy-erp:8080',
+    cli: '${GATEWAY_BINARY} --mode=shadow --target=${TARGET_URL}',
     targets: 'Legacy ERPs, undocumented APIs',
   },
 ];

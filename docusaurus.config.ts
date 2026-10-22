@@ -1,25 +1,36 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import directoryLinks from './scripts/remark-directory-links.mjs';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
   title: 'STOA Docs',
-  tagline: 'Modernize Your API Gateway — MCP, Multi-Tenant, European Sovereign',
+  tagline: 'Sovereign iPaaS — European integration for APIs and AI agents',
   favicon: 'img/favicon.svg',
 
-  trailingSlash: false,
+  trailingSlash: true,
 
   // SEO & Head Tags
   headTags: [
+    // Partial fallback: HTTP-only security headers must be checked at delivery.
     {
       tagName: 'meta',
       attributes: {
-        name: 'robots',
-        content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
+        'http-equiv': 'Content-Security-Policy',
+        content: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://*.algolia.net https://*.algolianet.com https://*.algolia.io; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'",
       },
     },
+    {
+      tagName: 'meta',
+      attributes: {name: 'referrer', content: 'strict-origin-when-cross-origin'},
+    },
+    {
+      tagName: 'link',
+      attributes: {rel: 'preload', href: '/fonts/inter/InterVariable.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous'},
+    },
+    {tagName: 'script', attributes: {src: '/js/theme-cookie.js'}},
     // JSON-LD: Organization
     {
       tagName: 'script',
@@ -29,14 +40,14 @@ const config: Config = {
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'Organization',
-        '@id': 'https://gostoa.dev/#organization',
+        '@id': 'https://www.gostoa.dev/#organization',
         name: 'STOA Platform',
-        url: 'https://gostoa.dev',
+        url: 'https://www.gostoa.dev/',
         logo: {
           '@type': 'ImageObject',
           url: 'https://docs.gostoa.dev/img/logo.svg',
         },
-        description: 'Open-source AI-native API gateway for MCP and enterprise workloads.',
+        description: 'Sovereign iPaaS: European integration with its gateway and control plane, including API and MCP capabilities.',
         sameAs: [
           'https://github.com/stoa-platform',
           'https://discord.gostoa.dev',
@@ -55,15 +66,15 @@ const config: Config = {
         '@id': 'https://docs.gostoa.dev/#website',
         name: 'STOA Documentation',
         url: 'https://docs.gostoa.dev',
-        description: 'Documentation, guides, and migration tutorials for STOA — the open-source AI-native API gateway.',
+        description: 'Documentation for STOA, the European Sovereign iPaaS, with API and MCP capabilities.',
         publisher: {
-          '@id': 'https://gostoa.dev/#organization',
+          '@id': 'https://www.gostoa.dev/#organization',
         },
         potentialAction: {
           '@type': 'SearchAction',
           target: {
             '@type': 'EntryPoint',
-            urlTemplate: 'https://docs.gostoa.dev/search?q={search_term_string}',
+            urlTemplate: 'https://docs.gostoa.dev/search/?q={search_term_string}',
           },
           'query-input': 'required name=search_term_string',
         },
@@ -81,14 +92,8 @@ const config: Config = {
         name: 'STOA Platform',
         applicationCategory: 'DeveloperApplication',
         operatingSystem: 'Kubernetes',
-        license: 'https://www.apache.org/licenses/LICENSE-2.0',
-        url: 'https://gostoa.dev',
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'EUR',
-          description: 'Open source — Apache 2.0 license',
-        },
+        url: 'https://www.gostoa.dev/',
+        description: "Sovereign iPaaS with API and MCP capabilities. STOA's published code is open source under the Apache 2.0 licence.",
       }),
     },
   ],
@@ -136,6 +141,7 @@ const config: Config = {
       'classic',
       {
         docs: {
+          remarkPlugins: [directoryLinks],
           sidebarPath: './sidebars.ts',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
@@ -143,6 +149,7 @@ const config: Config = {
             'https://github.com/stoa-platform/stoa-docs/tree/main/',
         },
         blog: {
+          remarkPlugins: [directoryLinks],
           blogTitle: 'STOA Blog — AI Gateway, MCP & Migration Guides',
           blogDescription: 'Tutorials, comparisons, and migration guides for MCP gateways, AI agent architecture, and open-source API management.',
           showReadingTime: true,
@@ -162,16 +169,11 @@ const config: Config = {
         theme: {
           customCss: './src/css/custom.css',
         },
-        // Google Analytics
-        gtag: {
-          trackingID: 'G-8PL054C7RH',
-          anonymizeIP: true,
-        },
         sitemap: {
           lastmod: 'date',
           changefreq: 'weekly',
           priority: 0.5,
-          ignorePatterns: ['**/tags/**', '/blog/page/**', '/blog/archive', '/docs/category/**', '**/web-analytics'],
+          ignorePatterns: ['**/tags/**', '/blog/page/**', '/blog/archive/', '/docs/category/**', '**/web-analytics', '**/404.html', '/docs/fr/docs/guides/quickstart/', '/docs/reference/adr/stoactl-cli/', '/markdown-page/', '/mcp-servers/', '/docs/trademarks/', '/docs/legal/'],
           filename: 'sitemap.xml',
           createSitemapItems: async (params) => {
             const {defaultCreateSitemapItems, ...rest} = params;
@@ -198,7 +200,8 @@ const config: Config = {
   themeConfig: {
     // Global metadata — used as defaults for all pages
     metadata: [
-      {name: 'description', content: 'STOA documentation — open-source API gateway for AI agents. MCP support, multi-tenant isolation, migration guides from webMethods, Apigee, Kong. NIS2/DORA ready.'},
+      {name: 'robots', content: 'index, follow, max-image-preview:large'},
+      {name: 'description', content: 'STOA documentation — Sovereign iPaaS with its gateway and control plane. European integration, API and MCP capabilities, and migration guides.'},
       {name: 'keywords', content: 'API gateway, MCP, Model Context Protocol, AI gateway, open source, Kubernetes, multi-tenant, European, NIS2, DORA, STOA, API gateway migration, webMethods alternative, Apigee alternative'},
       {name: 'author', content: 'STOA Platform'},
       {property: 'og:type', content: 'website'},
@@ -211,7 +214,7 @@ const config: Config = {
     announcementBar: {
       id: 'oss-launch-2026',
       content:
-        '🚀 STOA is open source — Apache 2.0. <a target="_blank" rel="noopener noreferrer" href="https://github.com/stoa-platform">Star us on GitHub</a>',
+        "STOA's published code is open source under the Apache 2.0 licence.",
       backgroundColor: '#1a1a2e',
       textColor: '#e0e0e0',
       isCloseable: true,
@@ -245,9 +248,9 @@ const config: Config = {
           position: 'left',
           label: 'Docs',
         },
-        {to: '/docs/tutorials', label: 'Tutorials', position: 'left'},
-        {to: '/blog', label: 'Blog', position: 'left'},
-        {to: '/docs/reference/changelog', label: 'Release Notes', position: 'left'},
+        {to: '/docs/tutorials/', label: 'Tutorials', position: 'left'},
+        {to: '/blog/', label: 'Blog', position: 'left'},
+        {to: '/docs/reference/changelog/', label: 'Release Notes', position: 'left'},
         {
           href: 'https://github.com/stoa-platform',
           label: 'GitHub',
@@ -267,15 +270,15 @@ const config: Config = {
           items: [
             {
               label: 'Getting Started',
-              to: '/docs/intro',
+              to: '/docs/intro/',
             },
             {
               label: 'Guides',
-              to: '/docs/guides/quickstart',
+              to: '/docs/guides/quickstart/',
             },
             {
               label: 'API Reference',
-              to: '/docs/api/control-plane',
+              to: '/docs/api/control-plane/',
             },
           ],
         },
@@ -297,20 +300,24 @@ const config: Config = {
           items: [
             {
               label: 'Blog',
-              to: '/blog',
+              to: '/blog/',
             },
             {
               label: 'Main Website',
-              href: 'https://gostoa.dev',
+              href: 'https://www.gostoa.dev/',
+            },
+            {
+              label: 'Privacy',
+              to: '/docs/legal/privacy/',
             },
             {
               label: 'Trademark Notice',
-              to: '/docs/legal/trademarks',
+              to: '/docs/legal/trademarks/',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} STOA Platform. Built with Docusaurus. All third-party trademarks are the property of their respective owners.`,
+      copyright: `Copyright © ${new Date().getFullYear()} STOA Platform. STOA's published code is open source under the Apache 2.0 licence. Documentation content: CC BY 4.0. Built with Docusaurus. All third-party trademarks are the property of their respective owners.`,
     },
     prism: {
       theme: prismThemes.github,

@@ -10,9 +10,10 @@
  */
 
 import { readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
+import { fileURLToPath } from 'node:url';
 
-const buildDir = process.argv[2] || 'build';
+export function enrichSitemaps(buildDir = 'build') {
 const SITE_URL = 'https://docs.gostoa.dev';
 
 const enSitemapPath = join(buildDir, 'sitemap.xml');
@@ -42,14 +43,29 @@ function toPath(url) {
   return url;
 }
 
+const redirectSources = new Set(JSON.parse(readFileSync(new URL('../redirects.json', import.meta.url), 'utf8')).map(({source}) => source));
+function prepare(xml) {
+  return xml.replace(/<url>([\s\S]*?)<\/url>/g, (entry) => {
+    const loc = entry.match(/<loc>([^<]+)<\/loc>/)?.[1];
+    const path = loc && toPath(loc).replace(/\/$/, '');
+    if (redirectSources.has(path) || path === '/404.html' || path === '/fr/404.html') return '';
+    return entry.replace(/<xhtml:link\b[^>]*\/>/g, '')
+      .replace(/<loc>([^<]+)<\/loc>/, (_, url) => {
+        const parsed = new URL(url);
+        if (!/\.[^/]+$/.test(parsed.pathname)) parsed.pathname = parsed.pathname.replace(/\/$/, '') + '/';
+        return `<loc>${parsed.href}</loc>`;
+      });
+  });
+}
+
 // Read both sitemaps
-const enXml = readFileSync(enSitemapPath, 'utf-8');
-const frXml = readFileSync(frSitemapPath, 'utf-8');
+const enXml = prepare(readFileSync(enSitemapPath, 'utf-8'));
+const frXml = prepare(readFileSync(frSitemapPath, 'utf-8'));
 
 // Build path sets
 const enPaths = new Set(extractUrls(enXml).map(toPath));
 const frBasePaths = new Set(
-  extractUrls(frXml).map((url) => toPath(url).replace(/^\/fr/, ''))
+  extractUrls(frXml).map((url) => toPath(url).replace(/^\/fr(?=\/|$)/, ''))
 );
 
 /**
@@ -75,7 +91,7 @@ function enrichSitemap(xml, locale) {
 
     const url = locMatch[1];
     const path = toPath(url);
-    const basePath = locale === 'fr' ? path.replace(/^\/fr/, '') : path;
+    const basePath = locale === 'fr' ? path.replace(/^\/fr(?=\/|$)/, '') : path;
 
     // Check if counterpart exists
     const hasEn = enPaths.has(basePath);
@@ -107,3 +123,9 @@ writeFileSync(frSitemapPath, frResult.xml);
 console.log(
   `Sitemap hreflang enrichment done. EN: ${enResult.enrichedCount} URLs enriched, FR: ${frResult.enrichedCount} URLs enriched.`
 );
+
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  enrichSitemaps(process.argv[2] || 'build');
+}

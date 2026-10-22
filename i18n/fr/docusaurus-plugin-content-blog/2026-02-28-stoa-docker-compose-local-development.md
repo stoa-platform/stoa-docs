@@ -11,6 +11,12 @@ keywords:
   - mcp gateway local testing
   - kubernetes api management local
 ---
+
+:::info Tutoriel historique — autre parcours
+Cet article décrit un autre environnement. Utilisez le [quickstart R1 canonique](/docs/guides/quickstart/) pour les prérequis et commandes de référence. Son exécution réelle reste à valider. Les configurations, délais et interfaces ci-dessous ne constituent pas une preuve du parcours R1.
+:::
+
+
 <!-- last verified: 2026-02 -->
 
 Lancez la stack complète de STOA Platform sur votre machine locale avec Docker Compose. Ce tutoriel vous montre comment démarrer l'API Control Plane, la Console UI, le Developer Portal, le MCP Gateway, Keycloak et PostgreSQL — tous configurés et prêts à l'emploi en moins de 10 minutes.

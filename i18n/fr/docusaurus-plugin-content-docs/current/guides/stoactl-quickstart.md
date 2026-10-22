@@ -1,12 +1,18 @@
 ---
 sidebar_position: 2
 slug: /guides/stoactl-quickstart
-title: "Auto-hébergement en 5 Minutes avec stoactl"
+title: "Auto-hébergement alternatif avec stoactl"
 description: "Mettez en place un MCP Gateway local avec stoactl — de l'installation au bridging de votre première API REST vers des outils MCP en moins de 5 minutes"
 keywords: [stoactl, CLI, self-hosted, quickstart, MCP gateway, OpenAPI bridge, docker]
 ---
 
-# Auto-hébergement en 5 Minutes avec stoactl
+:::info Parcours alternatif à revalider
+Ce guide génère un projet distinct du quickstart R1. Commencez par le [parcours local canonique](/docs/guides/quickstart/), dont la validation réelle reste en cours. Les installations et commandes stoactl ci-dessous demandent une validation propre à la release ; elles ne constituent pas une preuve R1.
+:::
+
+
+
+# Auto-hébergement alternatif avec stoactl
 
 Démarrez un MCP Gateway local et faites le bridge de votre première API REST — sans compte cloud.
 
@@ -18,6 +24,8 @@ Démarrez un MCP Gateway local et faites le bridge de votre première API REST �
 - Des outils appelables par IA enregistrés sur votre gateway local
 
 ## Prérequis
+
+- Docker Compose, `curl` et `jq` pour les exemples de ce guide ; versions supportées à valider.
 
 - **Docker** (Docker Desktop ou Docker Engine)
 - **stoactl** — le CLI STOA

@@ -15,22 +15,14 @@ The MCP Gateway acts as the bridge between AI agents and your API ecosystem. It 
 
 ```mermaid
 flowchart LR
-    AI["AI Agent<br/>(Claude, GPT)"] <-->|"MCP Protocol<br/>tools/call, SSE"| GW["MCP Gateway<br/>(Rust/axum)"]
+    AI["AI Agent<br/>(Claude, GPT)"] <-->|"MCP Protocol<br/>tools/call, SSE"| GW["MCP Gateway<br/>(service MCP)"]
     GW <-->|"REST / gRPC"| APIs["Your APIs"]
     GW -.->|"sync"| CP["Control Plane<br/>(FastAPI)"]
 ```
 
-## Implementation
+## Current implementation and target
 
-The MCP Gateway is built with **Rust**, **Tokio**, and **axum** — in production since February 2026. It replaced the earlier Python/FastAPI prototype (now archived).
-
-| Aspect | Details |
-|--------|---------|
-| Language | Rust (stable) |
-| Framework | Tokio + axum |
-| Policy Engine | OPA (Open Policy Agent) |
-| Protocol | MCP 2025-03-26 |
-| Status | Production |
+R1 currently uses the Rust gateway. [Envoy is the decided target engine](/docs/architecture/adr/adr-098-envoy-data-plane/), with migration ahead. MCP remains an application service behind the target engine; parity and behaviour require validation. The R1 quickstart does not demonstrate an MCP path.
 
 ## Key Features
 
@@ -49,8 +41,8 @@ The MCP Gateway is built with **Rust**, **Tokio**, and **axum** — in productio
 - Request tracing with correlation IDs
 - Usage analytics per subscription
 
-### ⚡ Production Ready
-- High-performance async request handling (Rust/Tokio)
+### Runtime scope
+- Capabilities depend on the validated release and deployment path
 - Kafka/Redpanda-based metering pipeline
 - Connection pooling and request batching
 - OPA-based policy enforcement

@@ -3,7 +3,7 @@
 stoa-team:
   name: STOA Team
   title: The STOA Platform Team
-  url: https://gostoa.dev
+  url: https://www.gostoa.dev/
   image_url: https://docs.gostoa.dev/img/logo.svg
   socials:
     github: stoa-platform
@@ -12,7 +12,7 @@ christophe:
   name: Christophe Aboulicam
   title: Founder & CTO at HLFH
   url: https://github.com/christopheabcabi
-  image_url: https://github.com/christopheabcabi.png
+  image_url: https://docs.gostoa.dev/img/logo.svg
   socials:
     github: christopheabcabi
     linkedin: christophe-aboulicam

@@ -105,4 +105,4 @@ The Portal uses Keycloak for authentication:
 - **Session**: JWT tokens stored in `sessionStorage`
 - **Token refresh**: Handled automatically by `react-oidc-context`
 
-See [Authentication](./authentication) for Keycloak configuration.
+See [Authentication](./authentication.md) for Keycloak configuration.

@@ -37,14 +37,17 @@
   },
   "link.item.label.Main Website": {
     "message": "Site principal",
-    "description": "The label of footer link with label=Main Website linking to https://gostoa.dev"
+    "description": "The label of footer link with label=Main Website linking to https://www.gostoa.dev"
   },
   "link.item.label.Trademark Notice": {
     "message": "Mentions légales",
     "description": "The label of footer link with label=Trademark Notice linking to /docs/legal/trademarks"
   },
   "copyright": {
-    "message": "Copyright © 2026 STOA Platform. Créé avec Docusaurus. Toutes les marques tierces sont la propriété de leurs détenteurs respectifs.",
+    "message": "Copyright © 2026 STOA Platform. Le code publié de STOA est open source, sous licence Apache 2.0. Contenu documentaire : CC BY 4.0. Toutes les marques tierces sont la propriété de leurs détenteurs respectifs.",
     "description": "The footer copyright"
+  },
+  "link.item.label.Privacy": {
+    "message": "Confidentialité"
   }
 }

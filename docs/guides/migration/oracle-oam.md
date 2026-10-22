@@ -410,7 +410,7 @@ curl -I https://api.corp.local/health \
 
 ## Next Steps
 
-- [IBM webMethods Migration](./ibm-webmethods) — If you also have webMethods
+- [IBM webMethods Migration](./ibm-webmethods.md) — If you also have webMethods
 - [Hybrid Deployment](/docs/deployment/hybrid) — Architecture options
 - [Security & Compliance](/docs/enterprise/security-compliance) — DORA/NIS2 considerations
 

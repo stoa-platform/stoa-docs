@@ -147,7 +147,7 @@ Every tool choice follows these principles:
 
 ## See Also
 
-- [Architecture Overview](../concepts/architecture) — How components interact
-- [Hardware Requirements](./hardware-requirements) — Minimum specs per component
-- [Security Configuration](./security-configuration) — Auth, TLS, RBAC setup
-- [Exit Strategy](./exit-strategy) — Migration paths away from each tool
+- [Architecture Overview](/docs/concepts/architecture/) — How components interact
+- [Hardware Requirements](/docs/reference/hardware-requirements/) — Minimum specs per component
+- [Security Configuration](/docs/reference/security-configuration/) — Auth, TLS, RBAC setup
+- [Exit Strategy](/docs/reference/exit-strategy/) — Migration paths away from each tool

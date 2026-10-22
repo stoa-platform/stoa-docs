@@ -17,7 +17,7 @@ Different API gateways use different configuration formats:
 - Kong uses declarative YAML with services, routes, and plugins
 - Apigee uses API proxies with proxy endpoints and target endpoints
 
-UAC provides a single definition that STOA translates to each gateway's native format through the [Gateway Adapter](../guides/console#gateway-adapters) pattern.
+UAC provides a single definition that STOA translates to each gateway's native format through the [Gateway Adapter](../guides/console.md#gateway-adapters) pattern.
 
 ## UAC Structure
 

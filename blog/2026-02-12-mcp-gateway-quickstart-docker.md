@@ -19,6 +19,12 @@ keywords:
   - LLM API gateway
 ---
 
+:::info Historical tutorial — different setup
+This article describes another environment. Use the [canonical R1 quickstart](/docs/guides/quickstart/) for reference prerequisites and commands. Its execution validation is pending. The configurations, timing and interfaces below do not establish the R1 path.
+:::
+
+
+
 <!-- last verified: 2026-03 -->
 
 # How to Deploy an MCP Gateway with Docker Compose (Step-by-Step Guide)

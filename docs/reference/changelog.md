@@ -11,6 +11,12 @@ keywords:
   - migration
 ---
 
+:::info Release history
+Rust and Pingora announcements below are historical. [Envoy is the target direction](/docs/architecture/adr/adr-098-envoy-data-plane/); migration remains ahead.
+:::
+
+
+
 # Release Notes
 
 Complete release history for STOA Platform. Each release includes highlights, breaking changes, and upgrade instructions.

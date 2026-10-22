@@ -319,7 +319,7 @@ stoa traffic status --gateway webmethods
 
 ## Next Steps
 
-- [Oracle OAM Migration](./oracle-oam) — If you also have Oracle identity
+- [Oracle OAM Migration](./oracle-oam.md) — If you also have Oracle identity
 - [Hybrid Deployment](/docs/deployment/hybrid) — Architecture options
 - [Security & Compliance](/docs/enterprise/security-compliance) — DORA/NIS2 considerations
 

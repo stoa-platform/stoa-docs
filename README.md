@@ -1,173 +1,84 @@
-<div align="center">
-  <h1>📚 STOA Docs</h1>
-  <p><strong>Documentation for STOA Platform</strong></p>
-  <p>
-    <a href="https://docs.gostoa.dev">docs.gostoa.dev</a>
-  </p>
-</div>
+# STOA Docs — Sovereign iPaaS
 
-<p align="center">
-  <a href="https://github.com/stoa-platform/stoa-docs/actions/workflows/deploy.yml">
-    <img src="https://github.com/stoa-platform/stoa-docs/actions/workflows/deploy.yml/badge.svg" alt="Deploy">
-  </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="License">
-  </a>
-  <a href="https://docs.gostoa.dev">
-    <img src="https://img.shields.io/badge/docs-live-brightgreen?style=flat-square" alt="Docs">
-  </a>
-</p>
+Documentation for STOA, a European Sovereign iPaaS with its gateway and control
+plane, API management and MCP capabilities. Built with Docusaurus 3.9.2, React
+and TypeScript, in English and French.
 
----
+Public site: <https://docs.gostoa.dev/>. Main website: <https://www.gostoa.dev/>.
 
-## 🚀 Overview
+## Development
 
-This repository contains the documentation website for STOA Platform, built with [Docusaurus](https://docusaurus.io) and deployed on [Vercel](https://vercel.com).
+Use Node.js **≥ 20**, consistent with `package.json`, and npm with the committed
+lockfile. Select a supported Node LTS when preparing CI.
 
-**Live site**: [https://docs.gostoa.dev](https://docs.gostoa.dev)
-
----
-
-## 🛠️ Tech Stack
-
-| Technology | Purpose |
-|------------|---------|
-| [Docusaurus 3](https://docusaurus.io) | Documentation framework |
-| [React](https://react.dev) | UI components |
-| [TypeScript](https://www.typescriptlang.org) | Type safety |
-| [MDX](https://mdxjs.com) | Enhanced Markdown |
-| [Vercel](https://vercel.com) | Hosting |
-
----
-
-## 🏃 Quick Start
-
-### Prerequisites
-
-- Node.js 18+
-- pnpm (recommended) or npm
-
-### Development
+After obtaining this checkout:
 
 ```bash
-# Clone the repository
-git clone https://github.com/stoa-platform/stoa-docs.git
-cd stoa-docs
-
-# Install dependencies
-pnpm install
-
-# Start development server
-pnpm start
-
-# Open http://localhost:3000
+npm ci
+npm start
 ```
 
-### Build
+## Production artifact
+
+The output is **`build/`**. To validate source changes without applying scheduled
+blog publication, use the installed binary directly, then run post-processing:
 
 ```bash
-# Build for production
-pnpm build
-
-# Serve production build locally
-pnpm serve
+npm run typecheck
+./node_modules/.bin/docusaurus build
+npm run postbuild
 ```
 
----
+`npm run build` also runs `prebuild`, which applies scheduled blog changes based
+on the date. Use a disposable checkout for that editorial workflow and review
+its effects separately. Do not include those effects in a hosting change.
 
-## 📁 Project Structure
+The Markdown/MDX compiler normalizes absolute internal links for client navigation.
+Postbuild enriches the EN/FR sitemaps, normalizes legacy absolute internal links
+against generated directory indexes, puts CSP and referrer metadata before
+executable scripts, and generates the compatibility pages from `redirects.json`.
+It refuses to overwrite existing pages or redirect to a missing directory index.
+Those pages return **HTTP 200**, with meta refresh, rather than HTTP 301.
 
-```
-stoa-docs/
-├── docs/                  # Documentation content
-│   ├── getting-started/   # Getting started guides
-│   ├── concepts/          # Core concepts
-│   ├── deployment/        # Deployment guides
-│   ├── api/               # API reference
-│   └── community/         # Community resources
-├── src/
-│   ├── components/        # Custom React components
-│   ├── css/               # Custom styles
-│   └── pages/             # Custom pages
-├── static/                # Static assets
-├── docusaurus.config.ts   # Docusaurus configuration
-└── sidebars.ts            # Sidebar configuration
-```
+## Hosting target and publication
 
----
+The target is **Scaleway Object Storage + Edge Services, Paris**. Directory indexes
+use trailing slashes. The single error document is root **`404.html`**, bilingual
+EN/FR, with `noindex` and links to both home pages.
 
-## ✍️ Contributing Documentation
+Publication of **`build/` by GitHub Actions is a separate PR**. No deployment is
+implemented here and no Vercel previews are part of the target. Validate routes,
+MIME, cache, search, error status and security headers in preproduction before
+switching the public site. Keep `vercel.json` and any existing rollback
+configuration; the six historical Vercel redirects remain available there.
 
-We welcome documentation contributions! Here's how:
+The site removes audience analytics and retains Algolia search pending a decision.
+Fonts are self-hosted with licences alongside the files. The documentation
+[privacy policy](docs/legal/privacy.md) describes processing and the theme cookie.
 
-### Adding a New Page
+## Content and related public repositories
 
-1. Create a new `.md` or `.mdx` file in the appropriate `docs/` subdirectory
-2. Add frontmatter with title and description
-3. Update `sidebars.ts` if needed
+- `docs/`: English documentation; `i18n/fr/`: French translations.
+- `src/`: pages, components, styles and light theme customizations.
+- `static/`: public assets, fonts and assistant indexes.
+- [stoa](https://github.com/stoa-platform/stoa): main public product repository;
+  its `quickstart/` directory is the primary local R1 path.
+- [stoa-quickstart](https://github.com/stoa-platform/stoa-quickstart): separate
+  public quickstart repository.
 
-```markdown
----
-title: My New Page
-description: A brief description
----
+Other components are not published. R1 currently uses the Rust gateway; Envoy is
+the accepted target data plane, with migration ahead. Quickstart execution on a
+fresh clone has not been attested; the canonical guide marks validation in progress.
 
-# My New Page
+## Contributing and licences
 
-Content goes here...
-```
+Use clear language, keep EN/FR aligned and validate examples against the release.
+See [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+and [GOVERNANCE.md](GOVERNANCE.md).
 
-### Style Guide
+STOA's published code is open source under the Apache 2.0 licence.
+Le code publié de STOA est open source, sous licence Apache 2.0
 
-- Use clear, concise language
-- Include code examples where helpful
-- Add diagrams for complex concepts
-- Test all code snippets
-
----
-
-## 🚀 Deployment
-
-Deployment is automatic via Vercel on push to `main`.
-
-| Branch | Environment | URL |
-|--------|-------------|-----|
-| `main` | Production | [docs.gostoa.dev](https://docs.gostoa.dev) |
-| `*` | Preview | Auto-generated |
-
----
-
-## 🔗 Related Repositories
-
-| Repository | Description |
-|------------|-------------|
-| [stoa](https://github.com/stoa-platform/stoa) | Main platform monorepo |
-| [stoa-web](https://github.com/stoa-platform/stoa-web) | Marketing website (coming soon) |
-| [stoa-helm](https://github.com/stoa-platform/stoa-helm) | Helm charts |
-
----
-
-## 📄 License
-
-Apache License 2.0 - see [LICENSE](LICENSE) for details.
-
-Documentation content is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
-
----
-
-## Code of Conduct
-
-This project follows the [Contributor Covenant 2.1](CODE_OF_CONDUCT.md).
-By participating, you agree to uphold this code.
-
----
-
-## Governance
-
-See [GOVERNANCE.md](GOVERNANCE.md) for our decision-making process and how to become a maintainer.
-
----
-
-<div align="center">
-  <p>Part of the <a href="https://github.com/stoa-platform">STOA Platform</a> project</p>
-</div>
+This does not extend to services, unpublished components or branding.
+See [LICENSE](LICENSE) and [NOTICE](NOTICE). Documentation content remains under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

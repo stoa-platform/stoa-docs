@@ -13,6 +13,12 @@ keywords:
   - api gateway for indie hackers
   - first api gateway freelancer
 ---
+
+:::info Historical tutorial — different setup
+This article describes another environment. Use the [canonical R1 quickstart](/docs/guides/quickstart/) for reference prerequisites and commands. Its execution validation is pending. The configurations, timing and interfaces below do not establish the R1 path.
+:::
+
+
 <!-- last verified: 2026-02 -->
 
 Most "Hello World" tutorials get you to a running endpoint. This one gets you to a **protected** endpoint — with rate limiting, authentication, and an audit trail — because that's what production actually requires.

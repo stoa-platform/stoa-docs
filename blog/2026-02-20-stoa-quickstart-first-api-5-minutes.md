@@ -11,6 +11,12 @@ keywords:
   - open source api gateway tutorial
   - stoa first api tutorial
 ---
+
+:::info Historical tutorial — different setup
+This article describes another environment. Use the [canonical R1 quickstart](/docs/guides/quickstart/) for reference prerequisites and commands. Its execution validation is pending. The configurations, timing and interfaces below do not establish the R1 path.
+:::
+
+
 <!-- last verified: 2026-03 -->
 
 **STOA Platform** is an open-source API gateway designed for the AI era. In this tutorial, you'll go from zero to a working API endpoint in **5 minutes**. No complex configuration, no hours reading docs — just clone, run, and publish your first API.

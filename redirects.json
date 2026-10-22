@@ -1,0 +1,26 @@
+[
+  {
+    "source": "/docs/fr/docs/guides/quickstart",
+    "destination": "/docs/guides/stoactl-quickstart/"
+  },
+  {
+    "source": "/docs/reference/adr/stoactl-cli",
+    "destination": "/docs/architecture/adr/adr-002-stoactl-cli/"
+  },
+  {
+    "source": "/markdown-page",
+    "destination": "/"
+  },
+  {
+    "source": "/mcp-servers",
+    "destination": "/docs/concepts/mcp-gateway/"
+  },
+  {
+    "source": "/docs/trademarks",
+    "destination": "/docs/legal/trademarks/"
+  },
+  {
+    "source": "/docs/legal",
+    "destination": "/docs/legal/terms/"
+  }
+]

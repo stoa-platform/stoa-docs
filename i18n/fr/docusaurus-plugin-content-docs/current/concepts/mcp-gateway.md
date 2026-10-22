@@ -15,30 +15,14 @@ La passerelle MCP fait le pont entre les agents IA et votre écosystème d'API. 
 
 ```mermaid
 flowchart LR
-    AI["Agent IA<br/>(Claude, GPT)"] <-->|"Protocole MCP<br/>tools/call, SSE"| GW["Passerelle MCP<br/>(Rust/axum)"]
+    AI["Agent IA<br/>(Claude, GPT)"] <-->|"Protocole MCP<br/>tools/call, SSE"| GW["Passerelle MCP<br/>(service MCP)"]
     GW <-->|"REST / gRPC"| APIs["Vos API"]
     GW -.->|"sync"| CP["Control Plane<br/>(FastAPI)"]
 ```
 
-## Implémentation actuelle
+## Implémentation actuelle et cible
 
-La passerelle MCP est construite avec **Python** et **FastAPI** pour un développement rapide et flexible.
-
-| Aspect | Détails |
-|--------|---------|
-| Langage | Python 3.12+ |
-| Framework | FastAPI (async) |
-| Moteur de politiques | OPA (Open Policy Agent) |
-| Protocole | MCP 2024-11-05 |
-
-:::info Feuille de route
-Une implémentation haute performance en **Rust + Tokio + Hyper** est prévue pour le **T4 2026**, apportant :
-- Accélération au niveau noyau via eBPF
-- Latence additionnelle inférieure à la milliseconde
-- Empreinte mémoire significativement réduite
-
-Consultez notre [Feuille de route](/docs/roadmap) pour plus de détails.
-:::
+La passerelle actuelle de R1 est en Rust. [Envoy est le moteur cible décidé](/docs/architecture/adr/adr-098-envoy-data-plane/), avec une migration à venir. Les services MCP restent applicatifs derrière le moteur cible ; leur parité et leur fonctionnement doivent être validés. Le quickstart R1 ne démontre pas un parcours MCP.
 
 ## Fonctionnalités clés
 
@@ -57,8 +41,8 @@ Consultez notre [Feuille de route](/docs/roadmap) pour plus de détails.
 - Traçage des requêtes avec identifiants de corrélation
 - Analytique d'utilisation par abonnement
 
-### ⚡ Prêt pour la production
-- Traitement asynchrone des requêtes avec FastAPI
+### Périmètre du runtime
+- Les capacités dépendent de la release et du parcours validés
 - Pipeline de métrologie basé sur Kafka/Redpanda
 - Pooling de connexions et regroupement de requêtes
 - Application des politiques basée sur OPA
