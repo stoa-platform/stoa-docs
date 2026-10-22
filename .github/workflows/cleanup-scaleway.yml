@@ -1,0 +1,40 @@
+name: cleanup-scaleway
+# Nettoyage différé du bucket de production (plan §2.4) : supprime les clés absentes des manifestes
+# des releases encore « en ligne » depuis moins de 7 jours (au moins les 2 dernières). À blanc par défaut.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "À blanc (liste seulement, aucune suppression)"
+        type: boolean
+        default: true
+permissions: { contents: read }
+concurrency:   # jamais pendant un déploiement
+  group: "deploy-scaleway-docs-main"
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions: { contents: read, actions: read }
+    environment: scaleway-nettoyage        # approbation obligatoire ; clé de ci-docs-nettoyage
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false, sparse-checkout: .github/scripts }
+      - name: Historique et manifestes de production
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          WORKFLOW: deploy-scaleway.yml
+        run: python3 .github/scripts/cleanup-history.py "$RUNNER_TEMP/keep.txt"
+      - name: Nettoyage (${{ inputs.dry_run && 'à blanc' || 'réel' }})
+        env:
+          KEEP_FILE: ${{ runner.temp }}/keep.txt
+          AWS_ACCESS_KEY_ID: ${{ secrets.SCW_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SCW_SECRET_KEY }}
+          BUCKET: ${{ vars.SCW_BUCKET }}
+          REGION: ${{ vars.SCW_REGION }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+        run: bash .github/scripts/cleanup-scaleway.sh
