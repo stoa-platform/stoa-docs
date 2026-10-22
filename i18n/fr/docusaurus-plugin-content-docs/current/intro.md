@@ -1,94 +1,44 @@
 ---
+title: "STOA — iPaaS Souverain"
+description: "Intégration européenne avec sa passerelle et son plan de contrôle, API et MCP."
 sidebar_position: 1
-title: "Documentation STOA Platform"
-description: "Démarrez avec STOA — la passerelle API open source AI-native pour MCP, l'isolation multi-tenant et la modernisation des API d'entreprise."
-keywords: [STOA, passerelle API, MCP, documentation, démarrage, open source, passerelle IA, Model Context Protocol]
 ---
 
-# Premiers pas avec STOA
+# STOA — iPaaS Souverain
 
-:::info Accès anticipé — Bêta privée
-STOA Platform est actuellement en bêta privée. [Demandez l'accès](mailto:christophe@hlfh.io) pour démarrer, ou explorez la [Vue d'ensemble de l'architecture](/docs/concepts/architecture) et les [Cas d'usage entreprise](/docs/use-cases) pour en savoir plus.
-:::
+STOA est un **iPaaS Souverain** au positionnement européen. Découvrez STOA **avec sa passerelle et son plan de contrôle** : contrats d’intégration, gestion des API et accès des agents via MCP.
 
-Bienvenue sur **STOA Platform** — une plateforme de gestion d'API open source et AI-native, conçue pour l'ère MCP.
+## Qu’est-ce que STOA ?
 
-STOA fait le pont entre les API traditionnelles et les agents IA grâce au [Model Context Protocol (MCP)](/docs/concepts/mcp-gateway), permettant à Claude, GPT et d'autres agents IA de découvrir et d'appeler vos API automatiquement — avec une gouvernance complète, une isolation par tenant et des pistes d'audit.
+Le plan de contrôle gère les contrats UAC et les politiques. La passerelle applique les règles aux appels ; MCP permet aux agents de découvrir et d’utiliser les capacités exposées. Ces fonctions s’inscrivent dans une plateforme d’intégration.
 
-## Qu'est-ce que STOA ?
+## Architecture en bref
 
-STOA est une passerelle API et une plateforme de gestion cloud-native construite sur Kubernetes. Elle combine les fonctionnalités d'une passerelle API traditionnelle avec le support natif des protocoles pour agents IA :
-
-- **MCP Gateway** — Les agents IA découvrent et invoquent vos API via le Model Context Protocol, avec génération automatique de schémas et enregistrement d'outils
-- **Isolation multi-tenant** — Chaque tenant dispose de son propre namespace Kubernetes, realm Keycloak et schéma de base de données pour une séparation complète des données
-- **Configuration GitOps-first** — Toutes les définitions d'API, politiques et configurations de tenants sont gérées de manière déclarative via Git et ArgoCD
-- **Authentification OIDC/OAuth2** — Keycloak intégré pour la fédération d'identités basée sur les standards, supportant LDAP, SAML et les fournisseurs sociaux
-- **Portail développeur** — Découverte d'API en libre-service, consultation de la documentation et gestion des abonnements pour les développeurs et consommateurs d'API
-- **Observabilité entreprise** — Métriques Prometheus, tableaux de bord Grafana et OpenSearch pour les logs et snapshots d'erreurs — le tout intégré
-
-## Architecture en un coup d'oeil
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│                    PLAN DE CONTRÔLE (Cloud)                   │
-│                                                              │
-│   Console    Portail     API       Auth       Observabilité  │
-│   (React)   (React)  (FastAPI) (Keycloak)  (Grafana+Prom)  │
-│                                                              │
-└──────────────────────┬───────────────────────────────────────┘
-                       │  orchestre
-                       ▼
-┌──────────────────────────────────────────────────────────────┐
-│                    PLAN DE DONNÉES (On-Premise ou Cloud)      │
-│                                                              │
-│   STOA Gateway (Rust)          Adaptateurs legacy            │
-│   • Protocole MCP              • webMethods                  │
-│   • Proxy REST                 • Kong                        │
-│   • Rate Limiting              • Gravitee                    │
-│   • mTLS                       • Apigee                      │
-│                                                              │
-└──────────────────────────────────────────────────────────────┘
-```
-
-Le **Plan de contrôle** gère le catalogue d'API, l'authentification et l'observabilité. Le **Plan de données** exécute votre passerelle (STOA Gateway en Rust ou un sidecar à côté des passerelles existantes) au plus près de vos API.
+La passerelle actuelle de R1 est en **Rust**. **Envoy est le moteur cible décidé** ; la migration reste à réaliser. Ce choix ne prouve ni livraison, ni parité fonctionnelle, ni performance. Voir [la décision Envoy](/docs/architecture/adr/adr-098-envoy-data-plane/).
 
 ## Démarrage rapide
 
-Une fois que vous avez accès à la bêta, vous pouvez interagir avec STOA de trois façons :
+Commencez par le [quickstart R1 local](/docs/guides/quickstart/) dans le répertoire `quickstart/` du dépôt public [stoa](https://github.com/stoa-platform/stoa). Il utilise Docker Compose ; sa validation réelle reste en cours. Il déclare un contrat directement sur la passerelle et ne démontre pas la publication par le plan de contrôle.
 
-| Chemin | URL | Idéal pour |
-|--------|-----|-----------|
-| **Console UI** | [console.gostoa.dev](https://console.gostoa.dev) | Gestion visuelle, catalogue d'API, observabilité |
-| **API REST** | [api.gostoa.dev/v1](https://api.gostoa.dev/v1) | Automatisation, pipelines CI/CD, scripting |
-| **MCP Gateway** | [mcp.gostoa.dev](https://mcp.gostoa.dev) | Agents IA (Claude, GPT, agents personnalisés) |
+Le dépôt public [stoa-quickstart](https://github.com/stoa-platform/stoa-quickstart) reste un parcours distinct. Les composants qui ne sont pas publiés ne sont pas présentés comme des dépôts publics.
 
-Consultez le [Guide de démarrage rapide](/docs/guides/quickstart) pour un parcours étape par étape.
+## Capacités et périmètre
 
-## Différenciateurs clés
+- Contrats UAC pour décrire l’intégration et ses politiques.
+- Gestion des API et projections MCP pour les agents.
+- Séparation du plan de contrôle et de l’exécution des appels.
 
-| Fonctionnalité | Passerelle traditionnelle | STOA |
-|----------------|--------------------------|------|
-| Support agents IA | Non prévu | MCP Gateway natif |
-| Découverte d'API | Documentation manuelle | Auto-découverte via MCP |
-| Premier appel API | Jours à semaines | Secondes (avec MCP) |
-| Isolation par tenant | Infrastructure partagée | Isolation au niveau namespace |
-| Configuration | GUI ou API impérative | GitOps-first (ArgoCD) |
-| Hébergement | Géré par le fournisseur | Auto-hébergé, prêt pour l'UE |
-| Licence | Propriétaire | Apache 2.0 |
+Les interfaces de gestion et capacités de déploiement dépendent du parcours choisi ; le quickstart local n’inclut ni Console ni Portal.
 
-## À qui s'adresse STOA ?
+## Licence
 
-- **Équipes plateforme** modernisant des passerelles API legacy (webMethods, DataPower, Oracle OAM)
-- **Architectes d'entreprise** construisant des plateformes API multi-tenant avec une isolation forte
-- **Équipes IA/ML** connectant des agents IA aux API d'entreprise via MCP
-- **Industries régulées** (finance, santé, secteur public) nécessitant la souveraineté des données européenne et des fonctionnalités de support NIS2/DORA
+Le code publié de STOA est open source, sous licence Apache 2.0
 
-## Étapes suivantes
+Cette phrase ne couvre ni les services, ni les composants non publiés, ni la marque. Le contenu documentaire reste sous CC BY 4.0.
 
-- [Tutoriels](/docs/tutorials) — Guides pratiques : exposer une API REST comme outil MCP, souscription en libre-service, pont Oracle OAM
-- [Vue d'ensemble de l'architecture](/docs/concepts/architecture) — Comprendre l'architecture des composants de STOA
-- [Guide de démarrage rapide](/docs/guides/quickstart) — Déployer votre premier tenant et enregistrer une API
-- [Configuration de l'authentification](/docs/guides/authentication) — Configurer Keycloak OIDC
-- [Concepts MCP Gateway](/docs/concepts/mcp-gateway) — Comprendre comment les agents IA interagissent avec STOA
-- [Guides de migration](/docs/guides/migration) — Migrer depuis webMethods, Kong, Apigee ou Oracle OAM
-- [Référence API](/docs/api/control-plane) — Explorer l'API du Plan de contrôle
+## Pour aller plus loin
+
+- [Architecture](/docs/concepts/architecture/)
+- [Passerelle actuelle et cible](/docs/concepts/gateway/)
+- [État d’implémentation](/docs/concepts/implementation-status/)
+- [Offre Enterprise sur devis](https://www.gostoa.dev/fr/contact/)

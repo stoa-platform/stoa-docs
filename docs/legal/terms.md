@@ -38,7 +38,7 @@ We reserve the right to suspend or terminate accounts that violate these terms.
 
 ## 3. Intellectual Property
 
-STOA Platform is open-source software licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0). Your rights to use, modify, and distribute the source code are governed by that license.
+STOA's published code is open source under the Apache 2.0 licence. Your rights to use, modify, and distribute the source code are governed by that license.
 
 Content you create, upload, or configure through the platform (API definitions, tool configurations, policies) remains yours. By using the platform, you grant STOA the limited right to process and store this content as necessary to provide the service.
 
@@ -48,7 +48,7 @@ The STOA name, logo, and branding are trademarks of CAB Ingenierie. See our [Tra
 
 STOA Platform is provided on an "as-is" and "as-available" basis during Early Access. We aim for high availability but do not guarantee uninterrupted service. Scheduled maintenance windows will be communicated in advance when possible.
 
-For the hosted service, current status and uptime information is available at [status.gostoa.dev](https://status.gostoa.dev).
+For a hosted service, use the status information supplied by your administrator (`STOA_STATUS_URL`).
 
 ## 5. Data and Privacy
 
@@ -56,7 +56,7 @@ We collect the minimum data necessary to operate the platform: account credentia
 
 For deployments using Keycloak authentication, user credentials are managed by your identity provider. STOA does not store passwords directly.
 
-A detailed Privacy Policy will be published before General Availability.
+The [documentation privacy policy](/docs/legal/privacy/) covers this website. Service-specific processing requires separate information.
 
 ## 6. Disclaimers
 
@@ -68,7 +68,7 @@ A detailed Privacy Policy will be published before General Availability.
 
 To the maximum extent permitted by applicable law, CAB Ingenierie and its contributors shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, arising from your use of STOA Platform.
 
-During the Early Access period, the platform is provided free of charge. Our total aggregate liability for any claims arising from these terms shall not exceed the amount you have paid us in the 12 months preceding the claim.
+Our total aggregate liability for any claims arising from these terms shall not exceed the amount you have paid us in the 12 months preceding the claim.
 
 ## 8. Governing Law
 
@@ -81,3 +81,19 @@ We may update these terms from time to time. The "Last updated" date at the top 
 ## Contact
 
 For questions about these terms, contact us at **legal@gostoa.dev**.
+
+## Documentation website legal notice
+
+Publisher: CAB Ingénierie, a French single-member limited liability company (EURL) with share capital of €100, SIREN 539 901 710, RCS Paris 539 901 710, registered office: 37 rue des Mathurins, 75008 Paris.
+
+Publication director: Christophe Aboulicam.
+
+The hosting identification below is reproduced in French:
+
+Hébergeur : Scaleway SAS, société par actions simplifiée, RCS Paris 433 115 904, 8 rue de la Ville-l'Évêque, 75008 Paris, France. Téléphone : [À COMPLÉTER : téléphone de l'hébergeur]
+
+Pages are stored and delivered using Scaleway Object Storage and Edge Services in Paris. Cloudflare is a processor for DNS and bare-domain redirection, rather than the documentation host.
+
+STOA's published code is open source under the Apache 2.0 licence. This statement covers only published code, excluding services, unpublished components and branding. Documentation content retains its CC BY 4.0 licence.
+
+Enterprise is tailored and quoted on request, without a published price or commitment here. [Contact](https://www.gostoa.dev/contact/).

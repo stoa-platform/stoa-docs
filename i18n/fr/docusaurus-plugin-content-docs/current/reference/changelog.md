@@ -11,6 +11,12 @@ keywords:
   - migration
 ---
 
+:::info Historique de versions
+Les annonces Rust et Pingora ci-dessous sont historiques. [Envoy est la direction cible](/docs/architecture/adr/adr-098-envoy-data-plane/) ; la migration reste à réaliser.
+:::
+
+
+
 # Notes de Version
 
 Historique complet des versions de STOA Platform. Chaque version inclut les points saillants, les changements incompatibles et les instructions de mise à niveau.

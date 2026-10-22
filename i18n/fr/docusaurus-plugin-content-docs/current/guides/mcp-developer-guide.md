@@ -230,7 +230,7 @@ Redémarrez Claude Desktop après avoir sauvegardé. Vous serez invité à vous 
 
 | Objectif | Guide |
 |----------|-------|
-| Enregistrer votre propre API backend | [Démarrage Rapide](/docs/guides/quickstart#register-your-own-api) |
+| Enregistrer votre propre API backend | [Démarrage Rapide](/docs/guides/quickstart/#register-your-own-api) |
 | Créer des outils MCP personnalisés avec les CRDs | [Développement d'Outils MCP](/docs/guides/mcp-tools-development) |
 | Comprendre les détails internes du protocole MCP | [Fiche Protocole MCP](/docs/guides/fiches/mcp-protocol) |
 | Auto-héberger STOA sur votre infrastructure | [Déploiement Hybride](/docs/deployment/hybrid) |

@@ -13,6 +13,12 @@ keywords:
   - api gateway for indie hackers
   - first api gateway freelancer
 ---
+
+:::info Tutoriel historique — autre parcours
+Cet article décrit un autre environnement. Utilisez le [quickstart R1 canonique](/docs/guides/quickstart/) pour les prérequis et commandes de référence. Son exécution réelle reste à valider. Les configurations, délais et interfaces ci-dessous ne constituent pas une preuve du parcours R1.
+:::
+
+
 <!-- last verified: 2026-02 -->
 
 La plupart des tutoriels « Hello World » vous mènent à un endpoint qui tourne. Celui-ci vous mène à un endpoint **protégé** — avec rate limiting, authentification et une piste d'audit — parce que c'est ce que la production exige vraiment.

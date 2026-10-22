@@ -41,7 +41,7 @@ two-node EKS + small RDS Postgres scenario.
 
 ## STOA pricing (gostoa.dev)
 
-Published tiers are on [gostoa.dev](https://gostoa.dev/pricing).
+Published tiers are on [gostoa.dev](https://www.gostoa.dev/pricing).
 
 | Tier | Monthly |
 |---|---|

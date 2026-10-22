@@ -9,6 +9,10 @@ import GatewayModesArchitecture from '@site/src/components/GatewayModesArchitect
 
 # ADR-024: Unified Gateway Architecture with Mode-Based Configuration
 
+:::warning Superseded target runtime direction
+Affected runtime prescriptions are superseded for the target direction by [the Envoy decision](/docs/architecture/adr/adr-098-envoy-data-plane/). The body below preserves the historical decision and its original status; other decisions remain unchanged. R1 still uses the Rust gateway; Envoy migration remains ahead.
+:::
+
 ## Metadata
 
 | Field | Value |

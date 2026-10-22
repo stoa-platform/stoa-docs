@@ -240,8 +240,8 @@ curl -s http://kong-admin:8001/status
 
 ## Next Steps
 
-- [IBM webMethods / DataPower](./ibm-webmethods) — If migrating from IBM stack
-- [Google Apigee](./apigee) — If migrating from Apigee
+- [IBM webMethods / DataPower](./ibm-webmethods.md) — If migrating from IBM stack
+- [Google Apigee](./apigee.md) — If migrating from Apigee
 - [Hybrid Deployment](/docs/deployment/hybrid) — Architecture options
 - [Security & Compliance](/docs/enterprise/security-compliance) — DORA/NIS2 considerations
 

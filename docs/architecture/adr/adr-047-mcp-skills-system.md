@@ -6,6 +6,10 @@ keywords: [MCP, skills, context injection, CRD, Kubernetes, gateway middleware, 
 
 # ADR-047: MCP Skills System — Context Injection
 
+:::warning Superseded target runtime direction
+Affected runtime prescriptions are superseded for the target direction by [the Envoy decision](/docs/architecture/adr/adr-098-envoy-data-plane/). The body below preserves the historical decision and its original status; other decisions remain unchanged. R1 still uses the Rust gateway; Envoy migration remains ahead.
+:::
+
 ## Metadata
 
 | Field | Value |

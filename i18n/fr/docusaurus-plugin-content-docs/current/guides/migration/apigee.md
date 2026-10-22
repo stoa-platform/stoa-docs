@@ -262,8 +262,8 @@ kubectl annotate ingress api-canary \
 
 ## Prochaines Étapes
 
-- [IBM webMethods / DataPower](./ibm-webmethods) — Si vous migrez également depuis la stack IBM
-- [Kong OSS / Enterprise](./kong) — Si vous migrez depuis Kong
+- [IBM webMethods / DataPower](./ibm-webmethods.md) — Si vous migrez également depuis la stack IBM
+- [Kong OSS / Enterprise](./kong.md) — Si vous migrez depuis Kong
 - [Déploiement Hybride](/docs/deployment/hybrid) — Options d'architecture
 - [Sécurité & Conformité](/docs/enterprise/security-compliance) — Considérations DORA/NIS2
 

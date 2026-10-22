@@ -6,6 +6,10 @@ keywords: [mTLS, Rust gateway, certificate-bound tokens, RFC 8705, security, val
 
 # ADR-039: Rust Gateway mTLS + Certificate-Bound Token Validation
 
+:::warning Superseded target runtime direction
+Affected runtime prescriptions are superseded for the target direction by [the Envoy decision](/docs/architecture/adr/adr-098-envoy-data-plane/). The body below preserves the historical decision and its original status; other decisions remain unchanged. R1 still uses the Rust gateway; Envoy migration remains ahead.
+:::
+
 ## Metadata
 
 | Field | Value |

@@ -1,140 +1,83 @@
 ---
+title: "Local R1 Quickstart"
+description: "Explore STOA locally with its gateway and control plane."
 sidebar_position: 1
 slug: /guides/quickstart
-title: "Quickstart: Connect an AI Agent to Your API"
-description: "Connect Claude to your APIs through STOA in under 5 minutes — sign up, get your MCP server URL, and make your first AI tool call."
-keywords:
-  - STOA quickstart
-  - getting started API gateway
-  - MCP AI agent tutorial
-  - connect Claude to API
-  - first tool call
 ---
 
-# Quickstart: Connect an AI Agent to Your API
+# Local R1 Quickstart
 
-Get from zero to your first AI-powered API call in under 5 minutes.
-
-:::info Hosted Cloud
-This guide uses STOA's hosted cloud at **mcp.gostoa.dev**. No Docker, no kubectl, no infrastructure needed. Self-hosting? See [Hybrid Deployment](/docs/deployment/hybrid).
+:::info Validation in progress
+This path has been checked by reading the sources. Execution on a fresh clone has not been attested; image availability and results still need confirmation.
 :::
+
+Explore STOA with its gateway and control plane. This path uses the Rust gateway. [Envoy is the decided target](/docs/architecture/adr/adr-098-envoy-data-plane/); migration is still ahead.
+
+## Prerequisites
+
+- Git, Docker Engine and Docker Compose; declared Compose minimum: **2.1.1**, pending execution validation.
+- Bash, `curl`, `openssl` and GNU `timeout` for the commands below.
+- On macOS, consult the supervision alternatives in the `quickstart/` README before starting.
+- Access to public dependencies for images, packages and build dependencies.
+- The control plane image targets `linux/amd64`; another architecture may require emulation.
+
+Minimum Docker Engine and CPU, memory and disk resources: **[À COMPLÉTER : prerequisites measured on a fresh clone]**. No startup time is guaranteed. Do not run another path using the same ports at the same time.
+
+## Clone and start
+
+```bash
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa/quickstart
+timeout 300 docker compose up --wait
+./verify.sh
+```
+
+`300` is the declared startup bound, not a completion-time promise. This path requires no environment file copy, Compose profile or Make command. Demonstration placeholders are defined in Compose; do not reuse them for a real deployment.
 
 ## What You'll Accomplish
 
-By the end of this guide, an AI agent (Claude) will discover and call an API through STOA — without you writing a single line of code.
+Compose includes PostgreSQL, Keycloak, the control plane, a locally built Rust gateway and a mock backend. It includes neither Console nor Portal, nor a broker.
 
-## Step 1: Create Your Account
+The script initializes Keycloak and declares a contract directly through `POST /admin/contracts`. Expected results, **not observed here**: accepted declaration (`200` or `201`), rejection without a token (`401`), rejection with an invalid token (`401`), success with a Keycloak token (`200`), then `VERIFY_OK`. No specific business response is guaranteed.
 
-1. Go to [console.gostoa.dev](https://console.gostoa.dev) and click **Sign Up**
-2. Fill in your email and choose a password
-3. You're in — STOA creates your tenant automatically
+The control plane health check does not demonstrate API publication through it or a migrated, usable database. The script does not validate MCP or a browser interface.
 
-:::tip Already have an account?
-Skip to [Step 2](#step-2-connect-claude-to-stoa).
-:::
+## Local access
 
-## Step 2: Connect Claude to STOA
+| Role | Access from your machine |
+|---|---|
+| Control plane health | `http://localhost:8000/health` |
+| Gateway health | `http://localhost:8081/health` |
+| Keycloak base | `http://localhost:8080` |
 
-1. Open [claude.ai](https://claude.ai) (Pro or Team plan required for MCP)
-2. Go to **Settings** → **Integrations** → **Add MCP Server**
-3. Enter:
-   - **URL**: `https://mcp.gostoa.dev/mcp/sse`
-   - **Name**: `STOA Platform`
-4. Authenticate with your STOA credentials when prompted
+The canonical Keycloak URL is internal to Compose; a published port does not establish a browser administration path. The script reads administration parameters from containers and generates its call secret; no sensitive values need copying.
 
-That's it. Claude is now connected to your STOA gateway.
+## Stop and clean up
 
-## Step 3: Make Your First AI Tool Call
-
-Ask Claude:
-
-> "What tools are available in STOA?"
-
-Claude uses the MCP connection to discover your API catalog and shows you the available tools.
-
-Then ask:
-
-> "Use the echo tool to send a test message"
-
-Claude will call the tool through STOA and return the result.
-
-**You just experienced "Time To First Agent Call"** — an AI agent discovered and called an API autonomously.
-
----
-
-## What Happened Behind the Scenes
-
-```
-┌──────────┐     ┌──────────────┐     ┌─────────────┐
-│  Claude  │────▶│ STOA Gateway │────▶│ Backend API │
-│ (Agent)  │◀────│  (MCP + Auth)│◀────│             │
-└──────────┘     └──────────────┘     └─────────────┘
-```
-
-STOA handled:
-- **Discovery**: Claude found available tools via MCP `tools/list`
-- **Authentication**: OAuth 2.1 with PKCE (no secrets exposed)
-- **Authorization**: Verified your tenant access
-- **Routing**: Forwarded the call to the correct backend
-- **Observability**: Logged the call for analytics
-
----
-
-## Register Your Own API
-
-Ready to expose your own backend API as an AI tool?
-
-1. In the Console, go to **Backend APIs** → **Register API**
-2. Enter your API's name and backend URL
-3. STOA auto-generates MCP tools from your OpenAPI spec
-4. Create a **scoped API key** under **API Keys** for programmatic access
-
-Your API is now callable by any connected AI agent.
-
----
-
-## Alternative: Use curl Instead of Claude
-
-If you prefer the command line, you can call STOA directly:
+From `stoa/quickstart`:
 
 ```bash
-# Get an OAuth token
-TOKEN=$(curl -s -X POST "https://auth.gostoa.dev/realms/stoa/protocol/openid-connect/token" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "client_id=${CLIENT_ID}" \
-  -d "client_secret=${CLIENT_SECRET}" \
-  -d "grant_type=client_credentials" | jq -r '.access_token')
-
-# List available tools
-curl -s "https://mcp.gostoa.dev/mcp/tools/list" \
-  -H "Authorization: Bearer ${TOKEN}" | jq '.tools[] | {name, description}'
-
-# Call a tool
-curl -s -X POST "https://mcp.gostoa.dev/mcp/tools/call" \
-  -H "Authorization: Bearer ${TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "echo", "arguments": {"message": "hello"}}' | jq
+docker compose down
 ```
 
----
+To remove volumes and orphaned containers as well:
 
-## Next Steps
+```bash
+docker compose down --volumes --remove-orphans
+```
 
-| Goal | Guide |
-|------|-------|
-| Connect Claude with zero kubectl | [MCP for Developers](/docs/guides/mcp-developer-guide) |
-| Build custom MCP tools | [MCP Tools Development](/docs/guides/mcp-tools-development) |
-| Manage API subscriptions | [Subscription Lifecycle](/docs/guides/subscriptions-lifecycle) |
-| Deploy on your own infrastructure | [Hybrid Deployment](/docs/deployment/hybrid) |
-| Understand MCP protocol | [MCP Protocol Fiche](/docs/guides/fiches/mcp-protocol) |
+The second command deletes data in the affected volumes. Compose declares no volumes, but third-party images may create them. The script also writes temporary files: inspect the files it created and remove them after diagnosis. **[À COMPLÉTER : temporary file inventory and validated removal procedure]**.
 
----
+## Register Your Own API {#register-your-own-api}
+
+This scenario is limited to its verification contract. For another contract, study the [UAC model](/docs/concepts/uac/) and validate authentication and publication separately.
+
+## Other paths
+
+The [stoactl guide](/docs/guides/stoactl-quickstart/) scaffolds a different project and does not validate this path. The public [stoa-quickstart](https://github.com/stoa-platform/stoa-quickstart) repository remains separate.
+
+For an existing hosted environment, use the addresses and parameters supplied by your administrator (`STOA_CONSOLE_URL`, `STOA_MCP_URL`, `STOA_AUTH_URL`). The [MCP guide](/docs/guides/mcp-developer-guide/) is complementary; do not run its commands against this Compose setup assuming demonstrated compatibility.
 
 ## Troubleshooting
 
-| Problem | Fix |
-|---------|-----|
-| Claude can't connect to MCP server | Check the URL is `https://mcp.gostoa.dev/mcp/sse` — note the `/mcp/sse` path |
-| "Unauthorized" after connecting | Re-authenticate: disconnect and reconnect the MCP server in Claude settings |
-| No tools appear | Your tenant may have no APIs registered yet — register one in the Console |
-| curl returns `401` | Token expired (default: 5 min) — re-run the token command |
+Check prerequisites, occupied ports and access to public dependencies. An image reference in the repository does not guarantee anonymous availability. If startup or `verify.sh` fails, keep diagnostics locally without publishing sensitive parameters.

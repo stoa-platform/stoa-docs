@@ -2,9 +2,9 @@
 The examples below use environment variables. Set them for your STOA instance:
 
 ```bash
-export STOA_API_URL="https://api.gostoa.dev"       # Replace with your domain
-export STOA_AUTH_URL="https://auth.gostoa.dev"      # Keycloak OIDC provider
-export STOA_GATEWAY_URL="https://mcp.gostoa.dev"    # MCP Gateway endpoint
+export STOA_API_URL="${STOA_API_URL:?Supply your URL}"
+export STOA_AUTH_URL="${STOA_AUTH_URL:?Supply your URL}"
+export STOA_GATEWAY_URL="${STOA_GATEWAY_URL:?Supply your URL}"
 ```
 
 Self-hosted? Replace `gostoa.dev` with your domain.

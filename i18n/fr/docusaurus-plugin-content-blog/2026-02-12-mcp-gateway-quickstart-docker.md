@@ -19,6 +19,12 @@ keywords:
   - LLM API gateway
 ---
 
+:::info Tutoriel historique — autre parcours
+Cet article décrit un autre environnement. Utilisez le [quickstart R1 canonique](/docs/guides/quickstart/) pour les prérequis et commandes de référence. Son exécution réelle reste à valider. Les configurations, délais et interfaces ci-dessous ne constituent pas une preuve du parcours R1.
+:::
+
+
+
 <!-- last verified: 2026-02 -->
 
 # Comment déployer un MCP Gateway avec Docker Compose (guide étape par étape)

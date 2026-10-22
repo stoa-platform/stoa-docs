@@ -230,7 +230,7 @@ Restart Claude Desktop after saving. You'll be prompted to authenticate on first
 
 | Goal | Guide |
 |------|-------|
-| Register your own backend API | [Quickstart](/docs/guides/quickstart#register-your-own-api) |
+| Register your own backend API | [Quickstart](/docs/guides/quickstart/#register-your-own-api) |
 | Build custom MCP tools with CRDs | [MCP Tools Development](/docs/guides/mcp-tools-development) |
 | Understand MCP protocol internals | [MCP Protocol Fiche](/docs/guides/fiches/mcp-protocol) |
 | Self-host STOA on your infra | [Hybrid Deployment](/docs/deployment/hybrid) |

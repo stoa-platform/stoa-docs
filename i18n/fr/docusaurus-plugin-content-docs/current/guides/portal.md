@@ -105,4 +105,4 @@ Le Portail utilise Keycloak pour l'authentification :
 - **Session** : Tokens JWT stockés dans `sessionStorage`
 - **Rafraîchissement du token** : Géré automatiquement par `react-oidc-context`
 
-Voir [Authentification](./authentication) pour la configuration Keycloak.
+Voir [Authentification](./authentication.md) pour la configuration Keycloak.

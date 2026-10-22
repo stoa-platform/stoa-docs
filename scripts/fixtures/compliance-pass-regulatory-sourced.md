@@ -47,4 +47,4 @@ certified status is made.
 ## GDPR — gostoa.dev scope
 
 STOA's own GDPR posture is documented at
-[gostoa.dev/legal](https://gostoa.dev/legal).
+[gostoa.dev/legal](https://www.gostoa.dev/legal).

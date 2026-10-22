@@ -14,9 +14,9 @@
   <!-- Title -->
   <text x="200" y="270" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="#f8fafc">STOA</text>
   <!-- Tagline -->
-  <text x="100" y="350" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#94a3b8">The European Agent Gateway</text>
+  <text x="100" y="350" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#94a3b8">Sovereign iPaaS</text>
   <!-- Description -->
-  <text x="100" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#64748b">AI-Native API Gateway for MCP &amp; Enterprise</text>
+  <text x="100" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#64748b">European integration with API &amp; MCP capabilities</text>
   <!-- Features -->
   <text x="100" y="500" font-family="system-ui, -apple-system, sans-serif" font-size="20" fill="#8b5cf6">MCP Gateway</text>
   <text x="100" y="530" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#475569">Multi-Tenant  |  GitOps Native  |  European Sovereign  |  Open Source</text>

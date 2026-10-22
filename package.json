@@ -7,7 +7,7 @@
     "start": "docusaurus start",
     "prebuild": "bash scripts/manage-scheduled-posts.sh --apply",
     "build": "docusaurus build",
-    "postbuild": "node scripts/enrich-sitemap-hreflang.mjs",
+    "postbuild": "node scripts/enrich-sitemap-hreflang.mjs && node scripts/normalize-internal-links.mjs && node scripts/generate-redirects.mjs",
     "build:fr": "docusaurus build --locale fr",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
@@ -21,8 +21,8 @@
     "@docusaurus/core": "3.9.2",
     "@docusaurus/preset-classic": "3.9.2",
     "@docusaurus/theme-mermaid": "^3.9.2",
+    "@easyops-cn/docusaurus-search-local": "^0.55.3",
     "@mdx-js/react": "^3.0.0",
-    "@vercel/analytics": "^1.6.1",
     "clsx": "^2.0.0",
     "prism-react-renderer": "^2.3.0",
     "react": "^19.0.0",
@@ -59,7 +59,9 @@
     "dompurify": "^3.4.0",
     "brace-expansion": "^1.1.13",
     "follow-redirects": "^1.16.0",
-    "express": { "path-to-regexp": "^0.1.13" }
+    "express": {
+      "path-to-regexp": "^0.1.13"
+    }
   },
   "license": "Apache-2.0"
 }

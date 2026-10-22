@@ -30,10 +30,10 @@ export default function BlogPostPageWrapper(props: Props): React.ReactElement {
     author: {
       '@type': 'Organization',
       name: 'STOA Platform',
-      url: 'https://gostoa.dev',
+      url: 'https://www.gostoa.dev/',
     },
     publisher: {
-      '@id': 'https://gostoa.dev/#organization',
+      '@id': 'https://www.gostoa.dev/#organization',
     },
     mainEntityOfPage: {
       '@type': 'WebPage',

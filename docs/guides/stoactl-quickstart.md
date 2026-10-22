@@ -1,12 +1,18 @@
 ---
 sidebar_position: 2
 slug: /guides/stoactl-quickstart
-title: "Self-Host in 5 Minutes with stoactl"
+title: "Alternative Self-Hosting with stoactl"
 description: "Set up a local STOA MCP Gateway with stoactl — from install to bridging your first REST API to MCP tools in under 5 minutes"
 keywords: [stoactl, CLI, self-hosted, quickstart, MCP gateway, OpenAPI bridge, docker]
 ---
 
-# Self-Host in 5 Minutes with stoactl
+:::info Alternative path requiring validation
+This guide scaffolds a project separate from the R1 quickstart. Start with the [canonical local path](/docs/guides/quickstart/), whose execution validation is still pending. The stoactl installation and commands below require release-specific validation; they do not constitute R1 evidence.
+:::
+
+
+
+# Alternative Self-Hosting with stoactl
 
 Get a local MCP Gateway running and bridge your first REST API — no cloud account needed.
 
@@ -18,6 +24,8 @@ By the end of this guide, you'll have:
 - AI-callable tools registered on your local gateway
 
 ## Prerequisites
+
+- Docker Compose, `curl` and `jq` for the examples in this guide; supported versions require validation.
 
 - **Docker** (Docker Desktop or Docker Engine)
 - **stoactl** — the STOA CLI

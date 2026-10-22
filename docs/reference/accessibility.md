@@ -53,7 +53,7 @@ All STOA UI pages follow these conventions:
 1. **Heading hierarchy** — `h1` > `h2` > `h3`, no level skips
 2. **ARIA landmarks** — `role="region"`, `role="navigation"`, `role="tablist"` on interactive containers
 3. **ARIA labels** — `aria-label` on tables, lists, metric cards, and tab groups
-4. **data-testid convention** — standardized identifiers for E2E and visual regression testing (see [ADR-060](../architecture/adr/adr-060-ai-verified-ui-testing))
+4. **data-testid convention** — standardized identifiers for E2E and visual regression testing (see [ADR-060](/docs/architecture/adr/adr-060-ai-verified-ui-testing/))
 
 ### Keyboard Navigation
 
