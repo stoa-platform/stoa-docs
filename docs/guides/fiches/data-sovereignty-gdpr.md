@@ -95,7 +95,7 @@ STOA default: EU cloud (metadata) + On-prem (payloads)
 |-----------|--------|
 | "Any cloud component is a sovereignty risk" | Full on-premises deployment is supported with no required cloud dependency. Your cluster, your rules. |
 | "EU hosting doesn't protect against CLOUD Act" | Correct if the provider is US-headquartered. STOA's EU option uses EU-sovereign providers (OVHcloud, Scaleway). |
-| "We need SOC 2 / ISO 27001 certification" | On the roadmap: SOC 2 Type II (Q4 2026), ISO 27001 (2027). Current architecture is designed to meet these standards. |
+| "We need SOC 2 / ISO 27001 certification" | STOA holds no third-party certification (SOC 2, ISO 27001) at this stage. |
 | "GDPR requires right to deletion — can STOA do that?" | Yes. Per-consumer data isolation allows targeted deletion. Audit logs can be configured with retention policies. |
 | "Our DPO won't approve SaaS" | Share the data boundary diagram above. Only API metadata (names, descriptions) goes to cloud. Or deploy fully on-prem. |
 
