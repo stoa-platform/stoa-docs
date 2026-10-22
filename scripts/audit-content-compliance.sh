@@ -358,6 +358,146 @@ scan_file() {
 }
 
 # =============================================================================
+# Internal-content patterns (default full scan only).
+#
+# P0 literals below are blocking: a hit fails the audit (exit 1).
+#
+# The other patterns are P1 warnings on purpose. Occurrences already exist
+# outside the change that added these checks, and this audit must not force
+# that wider cleanup. They do not fail CI (exit 2, same as other P1s).
+# Promote a pattern to P0 only after its remaining hits are gone:
+#   - IPv4 outside RFC 5737 (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24),
+#     127.0.0.0/8, the address 0.0.0.0, and private ranges used as examples
+#     (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16)
+#   - linear.app/
+#   - hlfh
+#   - case-insensitive (NIS2|DORA)[ -]?(compliance|ready)
+#   - case-insensitive (NIS2|DORA)[ /-]+(NIS2|DORA)[ -]?(compliance|ready)
+# =============================================================================
+
+INTERNAL_P0_LITERALS=(
+    'stoa-next'
+    'stoa-strategy'
+    'HEGEMON/'
+)
+
+INTERNAL_P1_LITERALS=(
+    'linear.app/'
+    'hlfh'
+)
+
+INTERNAL_P1_REGEX=(
+    '(NIS2|DORA)[ -]?(compliance|ready)'
+    '(NIS2|DORA)[ /-]+(NIS2|DORA)[ -]?(compliance|ready)'
+)
+
+INTERNAL_P1_REGEX_LABELS=(
+    'NIS2-DORA compliance-ready'
+    'NIS2-DORA pair compliance-ready'
+)
+
+# 0 = valid IPv4 outside the allowlist (report). 1 = allowed or not an IPv4.
+ipv4_outside_allowlist() {
+    local ip="$1"
+    local o1 o2 o3 o4 octet
+    IFS='.' read -r o1 o2 o3 o4 <<< "$ip"
+    [[ -n "${o4:-}" ]] || return 1
+    for octet in "$o1" "$o2" "$o3" "$o4"; do
+        [[ "$octet" =~ ^[0-9]{1,3}$ ]] || return 1
+        if (( 10#$octet > 255 )); then
+            return 1
+        fi
+    done
+    o1=$((10#$o1))
+    o2=$((10#$o2))
+    o3=$((10#$o3))
+    o4=$((10#$o4))
+
+    # 0.0.0.0 exactly; 127.0.0.0/8; RFC1918 examples; RFC 5737 documentation.
+    if (( o1 == 0 && o2 == 0 && o3 == 0 && o4 == 0 )); then return 1; fi
+    if (( o1 == 127 )); then return 1; fi
+    if (( o1 == 10 )); then return 1; fi
+    if (( o1 == 172 && o2 >= 16 && o2 <= 31 )); then return 1; fi
+    if (( o1 == 192 && o2 == 168 )); then return 1; fi
+    if (( o1 == 192 && o2 == 0 && o3 == 2 )); then return 1; fi
+    if (( o1 == 198 && o2 == 51 && o3 == 100 )); then return 1; fi
+    if (( o1 == 203 && o2 == 0 && o3 == 113 )); then return 1; fi
+    return 0
+}
+
+# Report line numbers only. Do not keep or print the matched line.
+# Process substitution keeps the counter updates in the current shell.
+report_grep_lines() {
+    local file="$1" severity="$2" detail="$3"
+    shift 3
+    local line_num
+    while IFS= read -r line_num; do
+        [[ -z "$line_num" ]] && continue
+        if [[ "$severity" == "P0" ]]; then
+            report_p0 "$file" "$line_num" "$detail" "$detail"
+        else
+            report_p1 "$file" "$line_num" "$detail" "$detail"
+        fi
+    done < <("$@" 2>/dev/null | cut -d: -f1 || true)
+}
+
+scan_internal_content_file() {
+    local file="$1"
+    local pattern line_num ip last_ipv4_line=""
+    local i
+
+    for pattern in "${INTERNAL_P0_LITERALS[@]}"; do
+        report_grep_lines "$file" "P0" "$pattern" grep -nF "$pattern" "$file"
+    done
+
+    for pattern in "${INTERNAL_P1_LITERALS[@]}"; do
+        report_grep_lines "$file" "P1" "$pattern" grep -nF "$pattern" "$file"
+    done
+
+    for i in "${!INTERNAL_P1_REGEX[@]}"; do
+        report_grep_lines "$file" "P1" "${INTERNAL_P1_REGEX_LABELS[$i]}" \
+            grep -niE "${INTERNAL_P1_REGEX[$i]}" "$file"
+    done
+
+    while IFS=: read -r line_num ip; do
+        [[ -z "$line_num" ]] && continue
+        [[ "$line_num" == "$last_ipv4_line" ]] && continue
+        if ipv4_outside_allowlist "$ip"; then
+            last_ipv4_line="$line_num"
+            report_p1 "$file" "$line_num" "ipv4" "IPv4 outside allowlist"
+        fi
+    done < <(grep -nEo '[0-9]{1,3}(\.[0-9]{1,3}){3}' "$file" 2>/dev/null || true)
+}
+
+scan_internal_content() {
+    local tmp file
+    tmp=$(mktemp)
+    find . -type f \( \
+        -name "*.md" -o \
+        -name "*.mdx" -o \
+        -name "*.yml" -o \
+        -name "*.yaml" -o \
+        -name "*.json" -o \
+        -name "*.js" -o \
+        -name "*.ts" -o \
+        -name "*.tsx" \
+    \) \
+        ! -path "./node_modules/*" \
+        ! -path "./.git/*" \
+        ! -path "./.docusaurus/*" \
+        ! -path "./build/*" \
+        ! -name "package-lock.json" \
+        ! -name "pnpm-lock.yaml" \
+        ! -name "yarn.lock" \
+        2>/dev/null | sort > "$tmp" || true
+
+    while IFS= read -r file; do
+        [[ -n "$file" ]] && scan_internal_content_file "$file"
+    done < "$tmp"
+    rm -f "$tmp"
+}
+
+# =============================================================================
 # Main
 # =============================================================================
 
@@ -392,6 +532,10 @@ else
     while IFS= read -r file; do
         [[ -n "$file" ]] && scan_file "$file"
     done < <(find blog/ -type f -name "*.md" -o -name "*.mdx" 2>/dev/null | sort)
+
+    # Repo-wide internal-content check. Not run for explicit file args so
+    # fixture tests keep scanning only the file they pass in.
+    scan_internal_content
 fi
 
 echo ""

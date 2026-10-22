@@ -67,14 +67,6 @@ STOA supports orchestrating multiple gateway vendors through the [Gateway Adapte
 | Container Registry | GHCR | **Production** |
 | DNS/TLS | Cloudflare + Let's Encrypt | **Production** |
 
-## Deployment Environments
-
-| Environment | Infrastructure | Status |
-|-------------|---------------|--------|
-| Production | OVH MKS (GRA9, 3x B2-15) | **Active** — 9 pods, 22/22 smoke tests |
-| Staging | Hetzner K3s (5x cx33, nbg1) | **Active** — 9 HTTPS services |
-| Local Dev | Docker Compose | **Active** — Full stack with federation |
-
 ## Test Coverage
 
 | Component | Unit Tests | Integration | E2E | Total |

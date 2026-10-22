@@ -85,7 +85,6 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Reference',
       items: [
-        'reference/platform-tooling',
         'reference/hardware-requirements',
         'reference/performance-benchmarks',
         'reference/benchmark-methodology',
