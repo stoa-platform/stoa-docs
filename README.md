@@ -52,7 +52,10 @@ MIME, cache, search, error status and security headers in preproduction before
 switching the public site. Keep `vercel.json` and any existing rollback
 configuration; the six historical Vercel redirects remain available there.
 
-The site removes audience analytics and retains Algolia search pending a decision.
+The site removes audience analytics and uses local EN/FR search with
+`@easyops-cn/docusaurus-search-local`. Docs, blog posts and pages are indexed at
+build time. The site serves the search index; queries run in the browser and are
+not sent to a third party.
 Fonts are self-hosted with licences alongside the files. The documentation
 [privacy policy](docs/legal/privacy.md) describes processing and the theme cookie.
 

@@ -84,7 +84,9 @@ Pour toute question concernant ces conditions, contactez-nous à **legal@gostoa.
 
 ## Mentions légales du site documentaire
 
-Éditeur : CAB Ingénierie. [À COMPLÉTER : identité légale complète, coordonnées et directeur de publication]
+Éditeur : CAB Ingénierie, EURL au capital de 100 €, SIREN 539 901 710, RCS Paris 539 901 710, siège : 37 rue des Mathurins, 75008 Paris.
+
+Directeur de la publication : Christophe Aboulicam.
 
 Hébergeur : Scaleway SAS, société par actions simplifiée, RCS Paris 433 115 904, 8 rue de la Ville-l'Évêque, 75008 Paris, France. Téléphone : [À COMPLÉTER : téléphone de l'hébergeur]
 

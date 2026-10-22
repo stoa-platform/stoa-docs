@@ -84,7 +84,9 @@ For questions about these terms, contact us at **legal@gostoa.dev**.
 
 ## Documentation website legal notice
 
-Publisher: CAB Ingénierie. [À COMPLÉTER : full legal identity, contact details and publication director]
+Publisher: CAB Ingénierie, a French single-member limited liability company (EURL) with share capital of €100, SIREN 539 901 710, RCS Paris 539 901 710, registered office: 37 rue des Mathurins, 75008 Paris.
+
+Publication director: Christophe Aboulicam.
 
 The hosting identification below is reproduced in French:
 

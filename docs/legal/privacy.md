@@ -8,7 +8,7 @@ This policy covers the documentation website. STOA services and commercial corre
 
 ## Controller and rights
 
-CAB Ingénierie is the publisher. [À COMPLÉTER : full legal identity and contact for data rights]. You may request access, correction, erasure and, depending on the processing, restriction or objection, and complain to the CNIL.
+The publisher is CAB Ingénierie, a French single-member limited liability company (EURL) with share capital of €100, SIREN 539 901 710, RCS Paris 539 901 710, registered office: 37 rue des Mathurins, 75008 Paris. [À COMPLÉTER : contact for data rights]. You may request access, correction, erasure and, depending on the processing, restriction or objection, and complain to the CNIL.
 
 ## Hosting and logs
 
@@ -26,15 +26,18 @@ Security and operation rely on legitimate interest. Logs are not used for audien
 
 - Scaleway: hosting and page delivery.
 - Cloudflare: DNS and bare-domain redirection for the main website. Requests to that domain may pass through its worldwide network. [À COMPLÉTER : applicable retention and transfer safeguards].
-- Algolia DocSearch: retained third-party search service. Searching sends the query and technical connection information to Algolia. [À COMPLÉTER : location, retention, legal basis, recipients and transfer safeguards].
 
-Retaining Algolia and its contractual framework remain open decisions. Paris hosting alone does not establish the absence of transfers outside the European Union. Fonts and theme assets are self-hosted.
+Search runs locally in the browser. The site serves an index of documentation,
+blog posts and pages in English and French; no search query is sent to a third
+party. Fonts and theme assets are self-hosted.
+
+Paris hosting alone does not establish the absence of transfers outside the European Union.
 
 ## Theme preference
 
 The functional `stoa-theme` cookie contains only `light` or `dark`, with no identifier. It remembers the visitor’s requested colour preference, with a proposed lifetime of 12 months, pending Legal confirmation. It uses `Path=/; SameSite=Lax; Secure` and domain `.gostoa.dev` when the host is that domain or one of its subdomains; elsewhere it remains host-only.
 
-Docusaurus also retains this preference in browser local storage. You can remove these preferences in browser settings. Consent exemption for this preference remains subject to Legal confirmation. The site adds no other cookies or audience trackers; third-party search behaviour remains to be verified.
+Docusaurus also retains this preference in browser local storage. You can remove these preferences in browser settings. Consent exemption for this preference remains subject to Legal confirmation. The site adds no other cookies or audience trackers.
 
 ## Pending details
 

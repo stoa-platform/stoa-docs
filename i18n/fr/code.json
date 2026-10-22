@@ -294,10 +294,6 @@
     "message": "Chercher",
     "description": "The ARIA label for search page input"
   },
-  "theme.SearchPage.algoliaLabel": {
-    "message": "Fourni par Algolia",
-    "description": "The description label for Algolia mention"
-  },
   "theme.SearchPage.noResultsText": {
     "message": "Aucun résultat trouvé",
     "description": "The paragraph for empty search result"

@@ -101,6 +101,7 @@ is asserted.
 ## Website processing
 
 Documentation targets Scaleway Object Storage and Edge Services in Paris, with
-Edge logs retained for 7 days and Object Storage access logs disabled. Algolia
-remains a third-party search provider pending a decision. Audience analytics are
-removed. The privacy policy records unresolved legal details and the theme cookie.
+Edge logs retained for 7 days and Object Storage access logs disabled. Search runs
+locally in the browser using an EN/FR index of docs, blog posts and pages served by
+the site; no search query is sent to a third party. Audience analytics are removed.
+The privacy policy records unresolved legal details and the theme cookie.
