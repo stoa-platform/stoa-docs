@@ -13,7 +13,7 @@ keywords: [API security, mTLS, OAuth2, hybrid authentication, security modes]
 |-------|-------|
 | **Status** | ✅ Accepted |
 | **Date** | 11 January 2026 |
-| **Linear** | [CAB-410](https://linear.app/hlfh-workspace/issue/CAB-410) |
+| **Linear** | CAB-410 |
 
 ## Context
 
@@ -119,6 +119,6 @@ Implement an automated Decision Tree to recommend the optimal API security mode.
 
 ## References
 
-- [CAB-410: Decision Tree Implementation](https://linear.app/hlfh-workspace/issue/CAB-410)
-- [CAB-361: OAuth2/OIDC Enterprise](https://linear.app/hlfh-workspace/issue/CAB-361)
+- CAB-410
+- CAB-361
 - ADR-015: Sender-Constrained Tokens (planned)

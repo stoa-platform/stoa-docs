@@ -324,7 +324,7 @@ Permet des tableaux de bord affichant :
 
 - [mcp-gateway/src/features/error_snapshots/](https://github.com/stoa-platform/stoa/tree/main/mcp-gateway/src/features/error_snapshots/)
 - [ADR-023 — Observabilité zéro angle mort](./adr-023-zero-blind-spot-observability.md)
-- [CAB-397 — Fonctionnalité de snapshot d'erreur](https://linear.app/stoa/issue/CAB-397)
+- CAB-397
 
 ---
 

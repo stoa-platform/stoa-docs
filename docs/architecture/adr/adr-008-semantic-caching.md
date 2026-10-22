@@ -266,7 +266,7 @@ Response payloads may contain business data but:
 - [mcp-gateway/src/cache/embedder.py](https://github.com/stoa-platform/stoa/blob/main/mcp-gateway/src/cache/embedder.py)
 - [pgvector Documentation](https://github.com/pgvector/pgvector)
 - [Sentence Transformers](https://www.sbert.net/)
-- [CAB-881 — Semantic Cache Implementation](https://linear.app/stoa/issue/CAB-881)
+- CAB-881
 
 ---
 

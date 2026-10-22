@@ -16,7 +16,7 @@ import GatewayModesArchitecture from '@site/src/components/GatewayModesArchitect
 | **Statut** | ✅ Accepté |
 | **Date** | 2026-01-26 |
 | **Mis à jour** | 2026-01-26 |
-| **Linear** | [CAB-958](https://linear.app/stoa/issue/CAB-958) |
+| **Linear** | CAB-958 |
 
 ## Contexte
 

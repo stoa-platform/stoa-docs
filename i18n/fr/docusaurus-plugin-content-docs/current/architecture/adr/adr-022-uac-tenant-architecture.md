@@ -14,7 +14,7 @@ keywords: [UAC, architecture tenant, fichiers plats, configuration, multi-tenant
 >
 > **Date :** 2026-01-25
 >
-> **Linear :** [CAB-931](https://linear.app/hlfh-workspace/issue/CAB-931)
+> **Linear :** CAB-931
 
 ---
 
@@ -180,7 +180,7 @@ Le RSSI d'un client Enterprise veut voir **son** fichier de configuration, pas c
 
 ### 3. YAGNI (You Aren't Gonna Need It)
 
-Si nous atteignons 15+ tenants et que la duplication devient douloureuse, nous migrerons vers le style Ansible. Pas avant. Voir [CAB-934](https://linear.app/hlfh-workspace/issue/CAB-934).
+Si nous atteignons 15+ tenants et que la duplication devient douloureuse, nous migrerons vers le style Ansible. Pas avant. Voir CAB-934.
 
 ### 4. Philosophie
 
@@ -216,7 +216,7 @@ Cette décision sera réévaluée si :
 | **Douleur maintenance** | Mass-updates trop fréquents ou erreurs de synchronisation |
 | **Demande client** | Besoin explicite d'héritage |
 
-Ticket de suivi : [CAB-934 — Evaluate Ansible-style at 15+ tenants](https://linear.app/hlfh-workspace/issue/CAB-934)
+Ticket de suivi : CAB-934
 
 ---
 
@@ -235,7 +235,7 @@ Cette décision d'architecture simplifie l'audit CIR (Crédit Impôt Recherche) 
 
 ## Liens
 
-- **Linear :** [CAB-931 — UAC Architecture Decision](https://linear.app/hlfh-workspace/issue/CAB-931)
-- **Lié :** [CAB-912 — MCP Gateway Rust + UAC Enforcer](https://linear.app/hlfh-workspace/issue/CAB-912)
-- **Futur :** [CAB-934 — Evaluate Ansible-style at 15+ tenants](https://linear.app/hlfh-workspace/issue/CAB-934)
+- **Linear :** CAB-931
+- **Lié :** CAB-912
+- **Futur :** CAB-934
 - **ADR lié :** [ADR-021 : Observabilité pilotée par UAC](./adr-021-uac-driven-observability.md)

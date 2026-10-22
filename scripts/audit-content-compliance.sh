@@ -361,6 +361,7 @@ scan_file() {
 # Internal-content patterns (default full scan only).
 #
 # P0 literals below are blocking: a hit fails the audit (exit 1).
+# linear.app/ is P0 outside scripts/ (the control pattern itself lives here).
 #
 # The other patterns are P1 warnings on purpose. Occurrences already exist
 # outside the change that added these checks, and this audit must not force
@@ -369,7 +370,6 @@ scan_file() {
 #   - IPv4 outside RFC 5737 (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24),
 #     127.0.0.0/8, the address 0.0.0.0, and private ranges used as examples
 #     (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16)
-#   - linear.app/
 #   - hlfh
 #   - case-insensitive (NIS2|DORA)[ -]?(compliance|ready)
 #   - case-insensitive (NIS2|DORA)[ /-]+(NIS2|DORA)[ -]?(compliance|ready)
@@ -379,10 +379,10 @@ INTERNAL_P0_LITERALS=(
     'stoa-next'
     'stoa-strategy'
     'HEGEMON/'
+    'linear.app/'
 )
 
 INTERNAL_P1_LITERALS=(
-    'linear.app/'
     'hlfh'
 )
 
@@ -447,6 +447,12 @@ scan_internal_content_file() {
     local i
 
     for pattern in "${INTERNAL_P0_LITERALS[@]}"; do
+        # The linear.app/ control lives under scripts/; only hits elsewhere fail CI.
+        if [[ "$pattern" == 'linear.app/' ]]; then
+            case "$file" in
+                ./scripts/*|scripts/*) continue ;;
+            esac
+        fi
         report_grep_lines "$file" "P0" "$pattern" grep -nF "$pattern" "$file"
     done
 

@@ -9,7 +9,7 @@ sidebar_position: 64
 - **Date**: 2026-04-16
 - **Deciders**: Christophe, Claude Code
 - **Relates to**: ADR-057 (product lineup — stoactl, stoa-link, stoa-connect), ADR-059 (simplified deployment SSE), ADR-063 (SDD L1 + stoa-impact MCP)
-- **Parent ticket**: [CAB-2053](https://linear.app/hlfh-workspace/issue/CAB-2053) Phase 7 (feature freeze + CLI-first stabilization)
+- **Parent ticket**: CAB-2053 Phase 7 (feature freeze + CLI-first stabilization)
 
 > **Clarification — 2026-04-24:** This framework decision does not re-enable deployment paths removed by ADR-059. The active deployment path remains the single SSE flow defined by ADR-059. Deprecated paths — direct Control Plane push, inline sync (`_try_inline_sync`), permanent polling deployment loops, and `SyncEngine`-based deployment — must remain retired unless a future ADR explicitly reverses ADR-059. Keeping ad-hoc Python workers as the reconciler pattern (this ADR) is about *how* workers are written; it does not revive *which* deployment paths are allowed.
 

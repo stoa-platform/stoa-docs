@@ -13,7 +13,7 @@ keywords: [résilience gateway, nœuds zombies, probes de disponibilité, détec
 |-------|--------|
 | **Statut** | 📋 Proposé |
 | **Date** | 2026-01-26 |
-| **Linear** | [CAB-957](https://linear.app/hlfh-workspace/issue/CAB-957) |
+| **Linear** | CAB-957 |
 | **ADRs liés** | [ADR-023](./adr-023-zero-blind-spot-observability.md), [ADR-024](./adr-024-gateway-unified-modes.md) |
 
 ## Contexte

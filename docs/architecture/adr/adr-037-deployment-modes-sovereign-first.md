@@ -17,7 +17,7 @@ The hosted service was shut down on 23/05/2026. STOA is now deployed on-site, at
 | **Status** | ✅ Accepted |
 | **Date** | 2026-02-06 |
 | **Decision Makers** | STOA |
-| **Linear** | [CAB-1111](https://linear.app/hlfh-workspace/issue/CAB-1111/adr-deployment-modes-strategy-sovereign-first) |
+| **Linear** | CAB-1111 |
 | **Migrated from** | Earlier ADR (number conflict) |
 
 ## Context

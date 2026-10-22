@@ -13,7 +13,7 @@ keywords: [API exposure, public facade, third-party APIs, API governance, strate
 |-------|-------|
 | **Status** | ✅ Accepted |
 | **Date** | 18 January 2026 |
-| **Linear** | [CAB-669](https://linear.app/hlfh-workspace/issue/CAB-669) (Epic) |
+| **Linear** | CAB-669 (Epic) |
 
 ## Context
 

@@ -9,7 +9,7 @@ sidebar_position: 63
 - **Date**: 2026-04-16
 - **Deciders**: Christophe, Claude Code
 - **Relates to**: ADR-061 (Council multi-stage review), ADR-062 (CLAUDE.md hierarchy)
-- **Parent ticket**: [CAB-2066](https://linear.app/hlfh-workspace/issue/CAB-2066) (split from CAB-2059 after Council S1bis 8.00/10)
+- **Parent ticket**: CAB-2066 (split from CAB-2059 after Council S1bis 8.00/10)
 
 ## Context
 
@@ -194,7 +194,7 @@ non-Bash subagents, remove the `.mcp.json` entry and delete the module.
 
 ## References
 
-- Linear MEGA: [CAB-2066](https://linear.app/hlfh-workspace/issue/CAB-2066)
+- Linear MEGA: CAB-2066
 - Parent Council validation: CAB-2059 S1bis 8.00/10
 - Unblocked by: CAB-2065 (Agent Teams canary Go, 2026-04-16)
 - Repo artifacts: `.sdlc/`, `docs/scripts/stoa_impact_mcp.py`, `.mcp.json`

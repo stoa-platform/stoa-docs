@@ -378,4 +378,4 @@ Chaque tenant ne voit que ses propres outils :
 
 ---
 
-*Référence : [CAB-668](https://linear.app/hlfh-workspace/issue/CAB-668) — STOA Platform*
+*Référence : CAB-668 — STOA Platform*

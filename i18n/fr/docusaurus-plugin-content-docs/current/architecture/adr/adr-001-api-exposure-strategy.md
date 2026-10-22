@@ -13,7 +13,7 @@ keywords: [exposition API, façade publique, API tierces, gouvernance API, strat
 |-------|--------|
 | **Statut** | ✅ Accepté |
 | **Date** | 18 janvier 2026 |
-| **Linear** | [CAB-669](https://linear.app/hlfh-workspace/issue/CAB-669) (Epic) |
+| **Linear** | CAB-669 (Epic) |
 
 ## Contexte
 

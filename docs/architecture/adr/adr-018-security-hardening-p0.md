@@ -239,10 +239,10 @@ containers:
 
 ### Internal
 
-- [CAB-938](https://linear.app/hlfh-workspace/issue/CAB-938) — JWT Validation
-- [CAB-939](https://linear.app/hlfh-workspace/issue/CAB-939) — SSE Exhaustion
-- [CAB-945](https://linear.app/hlfh-workspace/issue/CAB-945) — Container Hardening
-- [CAB-950](https://linear.app/hlfh-workspace/issue/CAB-950) — UI/CLI Hardening
+- CAB-938 — JWT Validation
+- CAB-939 — SSE Exhaustion
+- CAB-945 — Container Hardening
+- CAB-950 — UI/CLI Hardening
 
 ## Appendix: Review Trail
 

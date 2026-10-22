@@ -332,9 +332,9 @@ async def get_tool(self, name: str) -> Tool | None:
 
 - [mcp-gateway/src/services/tool_registry/](https://github.com/stoa-platform/stoa/tree/main/mcp-gateway/src/services/tool_registry/)
 - [ADR-012 — MCP RBAC Architecture](./adr-012-mcp-rbac-architecture.md)
-- [CAB-841 — Tool Registry Refactoring](https://linear.app/stoa/issue/CAB-841)
-- [CAB-603 — Core vs Proxied Separation](https://linear.app/stoa/issue/CAB-603)
-- [CAB-605 — Tool Consolidation](https://linear.app/stoa/issue/CAB-605)
+- CAB-841
+- CAB-603
+- CAB-605
 
 ---
 

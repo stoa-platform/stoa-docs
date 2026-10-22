@@ -241,10 +241,10 @@ containers:
 
 ### Internes
 
-- [CAB-938](https://linear.app/hlfh-workspace/issue/CAB-938) — Validation JWT
-- [CAB-939](https://linear.app/hlfh-workspace/issue/CAB-939) — Épuisement SSE
-- [CAB-945](https://linear.app/hlfh-workspace/issue/CAB-945) — Durcissement conteneurs
-- [CAB-950](https://linear.app/hlfh-workspace/issue/CAB-950) — Durcissement UI/CLI
+- CAB-938 — Validation JWT
+- CAB-939 — Épuisement SSE
+- CAB-945 — Durcissement conteneurs
+- CAB-950 — Durcissement UI/CLI
 
 ## Annexe : Historique des revues
 

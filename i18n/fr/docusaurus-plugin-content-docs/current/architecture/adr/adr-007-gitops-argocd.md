@@ -13,7 +13,7 @@ keywords: [GitOps, Argo CD, déploiement continu, Kubernetes, infrastructure as 
 |-------|--------|
 | **Statut** | ✅ Accepté |
 | **Date** | 15 janvier 2026 |
-| **Linear** | [CAB-483](https://linear.app/hlfh-workspace/issue/CAB-483) |
+| **Linear** | CAB-483 |
 
 ## Contexte
 
