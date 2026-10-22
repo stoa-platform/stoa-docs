@@ -49,6 +49,9 @@ jobs:
 
       - name: Run audit
         id: audit
+        env:
+          # Counted by the script. Do not print this value; the script prints the integer only.
+          PRIVATE_BLOCKLIST: ${{ vars.PRIVATE_BLOCKLIST }}
         run: |
           # Capture output for annotation
           set +e

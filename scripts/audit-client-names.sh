@@ -150,6 +150,29 @@ is_whitelisted() {
     return 1
 }
 
+# Count motifs in PRIVATE_BLOCKLIST (injected by CI). Print the integer only.
+# Never print the motifs or the list. Exit 1 when the count is 0.
+require_private_blocklist() {
+    local line n=0
+    local raw="${PRIVATE_BLOCKLIST-}"
+
+    if [[ -n "$raw" ]]; then
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            # Same skip rules as the blocklist file: comments and blank lines.
+            [[ "$line" =~ ^#.*$ ]] && continue
+            [[ -z "${line// }" ]] && continue
+            n=$((n + 1))
+        done <<< "$raw"
+    fi
+
+    printf 'PRIVATE_BLOCKLIST patterns: %s\n' "$n"
+
+    if [[ "$n" -eq 0 ]]; then
+        log_error "PRIVATE_BLOCKLIST contains 0 patterns. Client-name audit cannot pass."
+        exit 1
+    fi
+}
+
 # Load blocklist from file
 load_blocklist() {
     if [[ ! -f "$BLOCKLIST_FILE" ]]; then
@@ -268,6 +291,9 @@ echo "=============================================="
 echo "  CAB-953 - Client Names Audit"
 echo "=============================================="
 echo ""
+
+# Refuse a run whose private list contributes no motif.
+require_private_blocklist
 
 # Load blocklist
 load_blocklist
