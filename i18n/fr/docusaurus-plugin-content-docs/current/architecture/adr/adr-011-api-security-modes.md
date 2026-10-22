@@ -13,7 +13,7 @@ keywords: [sécurité API, mTLS, OAuth2, authentification hybride, modes de séc
 |-------|--------|
 | **Statut** | ✅ Accepté |
 | **Date** | 11 janvier 2026 |
-| **Linear** | [CAB-410](https://linear.app/hlfh-workspace/issue/CAB-410) |
+| **Linear** | CAB-410 |
 
 ## Contexte
 
@@ -119,6 +119,6 @@ Implémenter un arbre de décision automatisé pour recommander le mode de sécu
 
 ## Références
 
-- [CAB-410 : Implémentation de l'arbre de décision](https://linear.app/hlfh-workspace/issue/CAB-410)
-- [CAB-361 : OAuth2/OIDC Enterprise](https://linear.app/hlfh-workspace/issue/CAB-361)
+- CAB-410
+- CAB-361
 - ADR-015 : Tokens liés à l'expéditeur (planifié)

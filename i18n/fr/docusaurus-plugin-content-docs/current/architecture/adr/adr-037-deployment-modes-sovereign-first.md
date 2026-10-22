@@ -17,7 +17,7 @@ Le service hébergé a été éteint le 23/05/2026. STOA se déploie désormais 
 | **Statut** | ✅ Accepté |
 | **Date** | 2026-02-06 |
 | **Décideurs** | STOA |
-| **Linear** | [CAB-1111](https://linear.app/hlfh-workspace/issue/CAB-1111/adr-deployment-modes-strategy-sovereign-first) |
+| **Linear** | CAB-1111 |
 | **Migré depuis** | ADR antérieur (conflit de numéro) |
 
 ## Contexte

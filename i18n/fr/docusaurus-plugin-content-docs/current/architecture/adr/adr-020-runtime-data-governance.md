@@ -138,7 +138,7 @@ async def sync_catalog_to_db():
 
 ## Implémentation
 
-Voir [CAB-850](https://linear.app/hlfh-workspace/issue/CAB-850) pour les détails d'implémentation.
+Voir CAB-850 pour les détails d'implémentation.
 
 ### Phases
 

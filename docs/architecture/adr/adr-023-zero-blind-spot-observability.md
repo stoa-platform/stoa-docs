@@ -203,10 +203,10 @@ apis:
 
 ## References
 
-- [CAB-960: Observability by Default](https://linear.app/hlfh-workspace/issue/CAB-960)
-- [CAB-961: Self-Diagnostic Engine](https://linear.app/hlfh-workspace/issue/CAB-961)
-- [CAB-962: Intermediate Hop Detection](https://linear.app/hlfh-workspace/issue/CAB-962)
-- [CAB-397: Error Snapshot](https://linear.app/hlfh-workspace/issue/CAB-397)
+- CAB-960
+- CAB-961
+- CAB-962
+- CAB-397
 - Inspiration: AWS X-Ray Insights, Datadog Watchdog, Honeycomb BubbleUp
 
 ---

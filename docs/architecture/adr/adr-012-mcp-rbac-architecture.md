@@ -14,7 +14,7 @@ keywords: [RBAC, MCP, multi-tenant, governance, OPA, access control, security]
 | **Status** | ✅ Accepted |
 | **Date** | 16 January 2026 |
 | **Author** | Christophe + Claude |
-| **Linear** | [CAB-602](https://linear.app/hlfh-workspace/issue/CAB-602) (Epic) |
+| **Linear** | CAB-602 (Epic) |
 
 ## Context
 

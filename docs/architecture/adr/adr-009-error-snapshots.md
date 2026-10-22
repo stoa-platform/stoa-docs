@@ -324,7 +324,7 @@ Enables dashboards showing:
 
 - [mcp-gateway/src/features/error_snapshots/](https://github.com/stoa-platform/stoa/tree/main/mcp-gateway/src/features/error_snapshots/)
 - [ADR-023 — Zero Blind Spot Observability](./adr-023-zero-blind-spot-observability.md)
-- [CAB-397 — Error Snapshot Feature](https://linear.app/stoa/issue/CAB-397)
+- CAB-397
 
 ---
 

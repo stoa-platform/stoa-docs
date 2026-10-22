@@ -14,7 +14,7 @@ keywords: [UAC, observabilité, débogage, traçage, Prometheus, diagnostics ré
 >
 > **Date :** 2026-01-23
 >
-> **Linear :** [CAB-892](https://linear.app/hlfh-workspace/issue/CAB-892/feature-uac-driven-observability-debug-chirurgical-sans-tcpdump)
+> **Linear :** CAB-892
 
 ---
 
@@ -278,6 +278,6 @@ stoa_observability_overhead_us{level="metrics|traces|debug"}
 
 ## Liens
 
-- **Linear :** [CAB-892](https://linear.app/hlfh-workspace/issue/CAB-892/feature-uac-driven-observability-debug-chirurgical-sans-tcpdump)
+- **Linear :** CAB-892
 - **Lié :** [ADR-012 : Architecture RBAC MCP](./adr-012-mcp-rbac-architecture.md)
 - **Lié :** ADR-017 : Kafka Internal-Only

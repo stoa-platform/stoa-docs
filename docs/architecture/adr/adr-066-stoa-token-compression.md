@@ -291,7 +291,7 @@ function splitValues(s: string, expected: number): string[] {
 
 ## References
 
-- [CAB-1936](https://linear.app/hlfh-workspace/issue/CAB-1936) — Implementation ticket
-- [CAB-1759](https://linear.app/hlfh-workspace/issue/CAB-1759) — Plugin SDK
+- CAB-1936 — Implementation ticket
+- CAB-1759 — Plugin SDK
 - [IBM MCP Context Forge](https://github.com/IBM/mcp-context-forge) — Competitive reference (Apache 2.0)
 - [MCP Specification](https://spec.modelcontextprotocol.io/) — Protocol reference

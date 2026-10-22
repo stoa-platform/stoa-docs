@@ -129,7 +129,7 @@ contexts:
 
   - name: staging
     context:
-      server: https://api.staging.gostoa.dev
+      server: https://api.example.com
       tenant: acme-staging
 
   - name: local

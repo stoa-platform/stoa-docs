@@ -266,7 +266,7 @@ Les payloads de réponse peuvent contenir des données métier mais :
 - [mcp-gateway/src/cache/embedder.py](https://github.com/stoa-platform/stoa/blob/main/mcp-gateway/src/cache/embedder.py)
 - [Documentation pgvector](https://github.com/pgvector/pgvector)
 - [Sentence Transformers](https://www.sbert.net/)
-- [CAB-881 — Implémentation du cache sémantique](https://linear.app/stoa/issue/CAB-881)
+- CAB-881
 
 ---
 

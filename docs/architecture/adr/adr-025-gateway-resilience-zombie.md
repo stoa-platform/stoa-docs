@@ -13,7 +13,7 @@ keywords: [gateway resilience, zombie nodes, readiness probes, anomaly detection
 |-------|-------|
 | **Status** | 📋 Proposed |
 | **Date** | 2026-01-26 |
-| **Linear** | [CAB-957](https://linear.app/hlfh-workspace/issue/CAB-957) |
+| **Linear** | CAB-957 |
 | **Related ADRs** | [ADR-023](./adr-023-zero-blind-spot-observability.md), [ADR-024](./adr-024-gateway-unified-modes.md) |
 
 ## Context
