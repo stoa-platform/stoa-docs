@@ -77,7 +77,7 @@ Every contribution matters. We track impact across four dimensions:
 | [Contributor Rewards](/docs/community/rewards) | How contributions are valued |
 | [Contributing Guide](/docs/community/contributing) | Development setup and PR workflow |
 | [FAQ](/docs/community/faq) | Common questions from OSS skeptics |
-| [Discord](https://discord.gostoa.dev) | Join the conversation |
+| [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) | Join the conversation |
 | [GitHub](https://github.com/stoa-platform) | Contribute code |
 
 ---
@@ -101,7 +101,7 @@ Not ready for code? You can still help:
 
 - **Report bugs** — [Open an issue](https://github.com/stoa-platform/stoa/issues/new) with reproduction steps
 - **Improve docs** — Fix typos, add examples, translate content
-- **Answer questions** — Help newcomers in Discord `#help`
+- **Answer questions** — Help newcomers in GitHub Discussions
 - **Share STOA** — Write about it, talk about it, star the repo
 
 ### Become a Design Partner

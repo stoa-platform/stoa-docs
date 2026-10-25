@@ -344,4 +344,4 @@ MCP was developed by Anthropic but is model-agnostic. Any AI agent that can make
 
 ---
 
-*The STOA Team builds open-source API management for the AI era. Join us on [GitHub](https://github.com/stoa-platform) and [Discord](https://discord.gostoa.dev).*
+*The STOA Team builds open-source API management for the AI era. Join us on [GitHub](https://github.com/stoa-platform) and [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions).*

@@ -116,7 +116,7 @@ We track it explicitly:
 | Contribution | Points |
 |--------------|--------|
 | Issue triage + reproduction | 5 |
-| Community help (Discord) | 2 per response |
+| Community help (GitHub Discussions) | 2 per response |
 | Mentoring (documented) | 20 per session |
 | RFC writing | 100 |
 
@@ -219,7 +219,7 @@ Good. Skepticism is healthy.
 Here's what we ask:
 
 1. **Watch us** — Follow our quarterly reports
-2. **Challenge us** — Ask hard questions in Discord
+2. **Challenge us** — Ask hard questions in GitHub Discussions
 3. **Verify us** — The dashboard will be public
 4. **Judge us by results** — First distributions when enterprise revenue arrives
 
@@ -227,4 +227,4 @@ We'd rather earn your trust than demand it.
 
 ---
 
-*Have a question not answered here? Ask in `#questions` on [Discord](https://discord.gostoa.dev) or email [hello@gostoa.dev](mailto:hello@gostoa.dev)*
+*Have a question not answered here? Ask on [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) or email [hello@gostoa.dev](mailto:hello@gostoa.dev)*

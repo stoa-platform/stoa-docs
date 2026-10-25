@@ -170,7 +170,7 @@ If your use case involves AI agents, multi-tenancy, or European compliance, STOA
 - Read the [Architecture documentation](https://docs.gostoa.dev/docs/concepts/architecture)
 - Explore [API Gateway Patterns](https://docs.gostoa.dev/docs/guides/fiches/api-gateway-patterns)
 - Get started with the [Quickstart Guide](https://docs.gostoa.dev/docs/guides/quickstart)
-- Join the conversation on [GitHub](https://github.com/stoa-platform) and [Discord](https://discord.gostoa.dev)
+- Join the conversation on [GitHub](https://github.com/stoa-platform) and [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions)
 
 ---
 

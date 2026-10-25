@@ -145,7 +145,7 @@ Si votre cas d'usage implique des agents IA, de la multi-tenancy ou la conformit
 - Lisez la [documentation d'architecture](https://docs.gostoa.dev/docs/concepts/architecture)
 - Explorez les [Patterns d'API Gateway](https://docs.gostoa.dev/docs/guides/fiches/api-gateway-patterns)
 - Commencez avec le [Guide de démarrage rapide](https://docs.gostoa.dev/docs/guides/quickstart)
-- Rejoignez la conversation sur [GitHub](https://github.com/stoa-platform) et [Discord](https://discord.gostoa.dev)
+- Rejoignez la conversation sur [GitHub](https://github.com/stoa-platform) et [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions)
 
 ---
 

@@ -304,4 +304,4 @@ No. This quick start runs entirely on Docker Compose. For production Kubernetes 
 
 **Ready to build?** Clone the [stoa-quickstart](https://github.com/stoa-platform/stoa-quickstart) repository and have your first API running in 5 minutes.
 
-**Join the community**: [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) | [Discord](https://discord.gg/stoa) | [Documentation](https://docs.gostoa.dev)
+**Join the community**: [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) | [Documentation](https://docs.gostoa.dev)

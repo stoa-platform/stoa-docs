@@ -436,6 +436,6 @@ After the quickstart, add more tools by registering additional REST API endpoint
 
 **About STOA Platform**: STOA is the open-source API gateway built for AI agents. Define your API contract once with the Universal API Contract (UAC), and expose it everywhere: MCP, REST, GraphQL, gRPC. Apache 2.0 licensed. [Get started today](/docs/guides/quickstart).
 
-**Need help?** Join our [Discord community](https://discord.gostoa.dev) or check the [troubleshooting guide](/docs/reference/troubleshooting).
+**Need help?** Ask on [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) or check the [troubleshooting guide](/docs/reference/troubleshooting).
 
 > **Disclaimer**: Product capabilities and configuration options may change between versions. This guide reflects the state of STOA Platform as of March 2026. For the most current setup instructions, refer to the [official documentation](https://docs.gostoa.dev).

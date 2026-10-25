@@ -27,9 +27,9 @@
     "message": "GitHub",
     "description": "The label of footer link with label=GitHub linking to https://github.com/stoa-platform"
   },
-  "link.item.label.Discord": {
-    "message": "Discord",
-    "description": "The label of footer link with label=Discord linking to https://discord.gostoa.dev"
+  "link.item.label.GitHub Discussions": {
+    "message": "GitHub Discussions",
+    "description": "The label of footer link with label=GitHub Discussions linking to https://github.com/stoa-platform/stoa/discussions"
   },
   "link.item.label.Blog": {
     "message": "Blog",

@@ -40,7 +40,6 @@ Tout le monde peut forker le code sous Apache 2.0. L'utilisation de la marque n√
 
 | Actif | Statut |
 |-------|--------|
-| Discord officiel | Actif |
 | Site de documentation | Actif |
 | Programme de contribution | Planifi√© |
 

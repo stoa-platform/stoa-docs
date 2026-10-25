@@ -116,7 +116,7 @@ Nous le suivons explicitement :
 | Contribution | Points |
 |--------------|--------|
 | Triage d'issue + reproduction | 5 |
-| Aide communautaire (Discord) | 2 par réponse |
+| Aide communautaire (GitHub Discussions) | 2 par réponse |
 | Mentorat (documenté) | 20 par session |
 | Rédaction de RFC | 100 |
 
@@ -219,7 +219,7 @@ C'est bien. Le scepticisme est sain.
 Voici ce que nous vous demandons :
 
 1. **Observez-nous** — Suivez nos rapports trimestriels
-2. **Challengez-nous** — Posez des questions difficiles sur Discord
+2. **Challengez-nous** — Posez des questions difficiles sur GitHub Discussions
 3. **Vérifiez-nous** — Le tableau de bord sera public
 4. **Jugez-nous sur les résultats** — Premières distributions dès que les revenus enterprise arrivent
 
@@ -227,4 +227,4 @@ Nous préférons mériter votre confiance plutôt que l'exiger.
 
 ---
 
-*Vous avez une question sans réponse ici ? Posez-la dans `#questions` sur [Discord](https://discord.gostoa.dev) ou par email à [hello@gostoa.dev](mailto:hello@gostoa.dev)*
+*Vous avez une question sans réponse ici ? Posez-la sur [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) ou par email à [hello@gostoa.dev](mailto:hello@gostoa.dev)*

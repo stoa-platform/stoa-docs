@@ -76,4 +76,4 @@ For full examples and advanced configuration, refer to the [Vercel Analytics doc
 
 ---
 
-Need help? Join our [Discord community](https://discord.gostoa.dev) or check [GitHub Issues](https://github.com/stoa-platform/stoa/issues).
+Need help? Ask on [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) or check [GitHub Issues](https://github.com/stoa-platform/stoa/issues).

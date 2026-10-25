@@ -291,4 +291,4 @@ Les secrets exposés correspondent à OWASP API8:2023 — Security Misconfigurat
 
 **Connexes** : [Guide API Gateway Open Source](/blog/open-source-api-gateway-2026) | [Checklist de sécurité API](/blog/api-security-checklist-solo-dev) | [Démarrage rapide](/docs/guides/quickstart)
 
-*Vous avez trouvé cet article utile ? Donnez-nous une étoile sur [GitHub](https://github.com/stoa-platform/stoa) et rejoignez la conversation sur [Discord](https://discord.gostoa.dev).*
+*Vous avez trouvé cet article utile ? Donnez-nous une étoile sur [GitHub](https://github.com/stoa-platform/stoa) et rejoignez la conversation sur [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions).*

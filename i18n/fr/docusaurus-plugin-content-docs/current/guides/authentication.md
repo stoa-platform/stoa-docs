@@ -247,4 +247,4 @@ Maintenant que l'authentification est configurée :
 
 ---
 
-**Besoin d'aide ?** [GitHub Issues](https://github.com/stoa-platform/stoa/issues) · [Discord](https://discord.gostoa.dev)
+**Besoin d'aide ?** [GitHub Issues](https://github.com/stoa-platform/stoa/issues) · [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions)

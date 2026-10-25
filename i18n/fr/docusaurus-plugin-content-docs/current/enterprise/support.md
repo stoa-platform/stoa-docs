@@ -14,7 +14,7 @@ STOA est un projet open source porté par [CAB Ingénierie](mailto:contact@gosto
 
 | Niveau | Canal | Pour qui |
 | --- | --- | --- |
-| **Community** | GitHub Issues, Discord | Évaluation, dev/test, contributions |
+| **Community** | GitHub Issues, GitHub Discussions | Évaluation, dev/test, contributions |
 | **Early Adopter** | Email direct, appels planifiés | Premiers déploiements en production |
 | **Enterprise** | Engagement sur mesure via partenaire | Systèmes critiques *(prévu S2 2026)* |
 
@@ -27,7 +27,7 @@ STOA est un projet open source porté par [CAB Ingénierie](mailto:contact@gosto
 Le moyen le plus rapide d'obtenir de l'aide et de contribuer.
 
 - 🐛 **GitHub Issues** — Rapports de bugs, demandes de fonctionnalités → [stoa-platform/stoa](https://github.com/stoa-platform/stoa/issues)
-- 💬 **Discord** — Chat communautaire en temps réel → [Rejoindre le Discord STOA](https://discord.gostoa.dev)
+- 💬 **GitHub Discussions** — Questions et échanges communautaires → [Rejoindre GitHub Discussions](https://github.com/stoa-platform/stoa/discussions)
 - 📚 **Documentation** — Guides, référence API, décisions d'architecture → [docs.gostoa.dev](https://docs.gostoa.dev)
 
 Le support communautaire fonctionne au mieux de nos disponibilités. Les bugs critiques sont généralement triés sous quelques jours ; les demandes de fonctionnalités sont évaluées chaque semaine.
@@ -96,4 +96,4 @@ Si vous avez besoin d'un support de niveau enterprise dès aujourd'hui, [contact
 | --- | --- |
 | Questions générales | [contact@gostoa.dev](mailto:contact@gostoa.dev) |
 | Signalement de sécurité | [security@gostoa.dev](mailto:security@gostoa.dev) |
-| Communauté | [Discord](https://discord.gostoa.dev) |
+| Communauté | [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) |

@@ -57,7 +57,7 @@ Each issue includes:
 | Documentation | [stoa-docs](https://github.com/stoa-platform/stoa-docs) | Help others learn |
 | Translations | `i18n/` directories | Reach more users |
 | Code reviews | Open PRs | Improve quality |
-| Community help | Discord `#help` | Support new users |
+| Community help | GitHub Discussions | Support new users |
 
 ---
 
@@ -202,7 +202,6 @@ Every PR should include tests. We use:
 
 ## Getting Help
 
-- **Discord** — [discord.gostoa.dev](https://discord.gostoa.dev) — ask in `#contributors`
 - **GitHub Discussions** — [stoa-platform/stoa/discussions](https://github.com/stoa-platform/stoa/discussions)
 - **Email** — [contributors@gostoa.dev](mailto:contributors@gostoa.dev)
 

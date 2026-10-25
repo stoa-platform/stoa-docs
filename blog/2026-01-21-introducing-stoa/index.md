@@ -88,7 +88,7 @@ Check out our [Roadmap](/docs/roadmap) for the full timeline, including:
 
 - [Documentation](https://docs.gostoa.dev)
 - [GitHub](https://github.com/stoa-platform)
-- [Discord](https://discord.gostoa.dev)
+- [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions)
 
 We're building in public and welcome contributions. Join us!
 

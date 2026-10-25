@@ -40,7 +40,6 @@ Anyone can fork the code under Apache 2.0. Trademark usage requires authorizatio
 
 | Asset | Status |
 |-------|--------|
-| Official Discord | Active |
 | Documentation Site | Active |
 | Contribution Program | Planned |
 

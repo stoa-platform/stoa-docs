@@ -80,4 +80,4 @@ Pour des exemples complets et une configuration avancée, consultez la [document
 
 ---
 
-Besoin d'aide ? Rejoignez notre [communauté Discord](https://discord.gostoa.dev) ou consultez les [Issues GitHub](https://github.com/stoa-platform/stoa/issues).
+Besoin d'aide ? Posez vos questions sur [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) ou consultez les [Issues GitHub](https://github.com/stoa-platform/stoa/issues).

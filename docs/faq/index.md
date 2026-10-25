@@ -227,7 +227,7 @@ See our [Quick Start Guide](/docs/guides/quickstart) for a 5-minute setup.
 
 - **Documentation**: You're here!
 - **GitHub Issues**: [stoa-platform/stoa](https://github.com/stoa-platform/stoa)
-- **Discord**: [Join the community](https://discord.gostoa.dev)
+- **GitHub Discussions**: [Join the community](https://github.com/stoa-platform/stoa/discussions)
 - **Enterprise Support**: contact@gostoa.dev
 
 ### How do I report a security vulnerability?

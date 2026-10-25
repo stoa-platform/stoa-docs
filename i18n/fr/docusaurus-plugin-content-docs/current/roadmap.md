@@ -10,7 +10,7 @@ keywords: [roadmap, features, release plan, MCP gateway, API management, STOA, o
 Notre vision pour la Plateforme STOA — construire le gateway pour l'ère de l'IA.
 
 :::info Document Vivant
-Cette feuille de route reflète nos priorités actuelles et peut évoluer en fonction des retours de la communauté et des besoins du marché. Des idées à partager ? [Rejoignez la discussion sur Discord](https://discord.gostoa.dev).
+Cette feuille de route reflète nos priorités actuelles et peut évoluer en fonction des retours de la communauté et des besoins du marché. Des idées à partager ? [Rejoignez la discussion sur GitHub Discussions](https://github.com/stoa-platform/stoa/discussions).
 :::
 
 :::tip Dernière Version
@@ -115,7 +115,7 @@ Cette feuille de route reflète nos priorités actuelles et peut évoluer en fon
 
 Nous construisons en public et accueillons les contributions !
 
-- **Discord** : [Rejoindre la communauté](https://discord.gostoa.dev)
+- **GitHub Discussions** : [Rejoindre la communauté](https://github.com/stoa-platform/stoa/discussions)
 - **Issues** : [Signaler des bugs ou demander des fonctionnalités](https://github.com/stoa-platform/stoa/issues)
 - **Contribuer** : [Guide de contribution](https://github.com/stoa-platform/stoa/blob/main/CONTRIBUTING.md)
 - **Contact** : [hello@gostoa.dev](mailto:hello@gostoa.dev)

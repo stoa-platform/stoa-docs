@@ -355,4 +355,4 @@ Non. Ce quick start fonctionne entièrement sur Docker Compose. Pour les déploi
 
 **Prêt à construire ?** Clonez le dépôt [stoa-quickstart](https://github.com/stoa-platform/stoa-quickstart) et ayez votre première API en fonctionnement en 5 minutes.
 
-**Rejoignez la communauté** : [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) | [Discord](https://discord.gg/stoa) | [Documentation](https://docs.gostoa.dev)
+**Rejoignez la communauté** : [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) | [Documentation](https://docs.gostoa.dev)

@@ -247,4 +247,4 @@ Now that authentication is configured:
 
 ---
 
-**Need Help?** [GitHub Issues](https://github.com/stoa-platform/stoa/issues) · [Discord](https://discord.gostoa.dev)
+**Need Help?** [GitHub Issues](https://github.com/stoa-platform/stoa/issues) · [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions)

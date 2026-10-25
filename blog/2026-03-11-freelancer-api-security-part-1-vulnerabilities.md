@@ -297,4 +297,4 @@ STOA is open-source (Apache 2.0) and free to try.
 
 - **[Quick Start Guide →](/docs/guides/quickstart)** — Get STOA running locally in 5 minutes
 - **[GitHub →](https://github.com/stoa-platform/stoa)** — Star us, fork us, contribute
-- **[Discord →](https://discord.gostoa.dev)** — Join the community
+- **[GitHub Discussions →](https://github.com/stoa-platform/stoa/discussions)** — Join the community

@@ -180,7 +180,7 @@ Si le coût d'Apigee, le lock-in ou le manque de fonctionnalités IA-natives vou
 - Lisez le [Guide de migration Apigee](https://docs.gostoa.dev/docs/guides/migration/apigee)
 - Explorez les [Cas d'usage enterprise](https://docs.gostoa.dev/docs/enterprise/use-cases)
 - Essayez STOA avec le [Guide de démarrage rapide](https://docs.gostoa.dev/docs/guides/quickstart)
-- Discutez avec nous sur [Discord](https://discord.gostoa.dev) de votre scénario de migration
+- Discutez avec nous sur [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) de votre scénario de migration
 
 ---
 

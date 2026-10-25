@@ -88,7 +88,7 @@ Consultez notre [Roadmap](/docs/roadmap) pour le calendrier complet, incluant :
 
 - [Documentation](https://docs.gostoa.dev)
 - [GitHub](https://github.com/stoa-platform)
-- [Discord](https://discord.gostoa.dev)
+- [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions)
 
 Nous construisons en public et accueillons les contributions. Rejoignez-nous !
 

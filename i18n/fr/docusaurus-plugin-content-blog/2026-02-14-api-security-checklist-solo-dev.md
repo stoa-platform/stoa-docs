@@ -449,4 +449,4 @@ Les mêmes principes s'appliquent : limitez par complexité de requête (pas seu
 
 **À lire aussi** : [Guide des API gateways open source](/blog/open-source-api-gateway-2026) | [Vos API keys dans l'historique Git](/blog/api-keys-in-git-history) | [GitOps en 10 minutes](/blog/gitops-in-10-minutes)
 
-*Vous développez des APIs pour des clients ? Rejoignez une communauté de développeurs qui prennent la sécurité au sérieux — [Discord](https://discord.gostoa.dev) | [GitHub](https://github.com/stoa-platform/stoa)*
+*Vous développez des APIs pour des clients ? Rejoignez une communauté de développeurs qui prennent la sécurité au sérieux — [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) | [GitHub](https://github.com/stoa-platform/stoa)*

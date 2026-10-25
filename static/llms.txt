@@ -55,7 +55,7 @@ CONTROL PLANE (Cloud)                    DATA PLANE (On-Premise/Hybrid)
 ## Contact
 
 - Email: contact@gostoa.dev
-- Discord: https://discord.gostoa.dev
+- GitHub Discussions: https://github.com/stoa-platform/stoa/discussions
 
 ## SaaS Playbook Series
 

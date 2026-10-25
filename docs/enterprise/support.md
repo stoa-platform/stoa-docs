@@ -14,7 +14,7 @@ STOA is an open-source project backed by [CAB Ingénierie](mailto:contact@gostoa
 
 | Tier | Channel | Best For |
 | --- | --- | --- |
-| **Community** | GitHub Issues, Discord | Evaluation, dev/test, contributions |
+| **Community** | GitHub Issues, GitHub Discussions | Evaluation, dev/test, contributions |
 | **Early Adopter** | Direct email, scheduled calls | First production deployments |
 | **Enterprise** | Custom engagement via partner | Mission-critical systems *(coming H2 2026)* |
 
@@ -27,7 +27,7 @@ STOA is an open-source project backed by [CAB Ingénierie](mailto:contact@gostoa
 The fastest way to get help and contribute back.
 
 - 🐛 **GitHub Issues** — Bug reports, feature requests → [stoa-platform/stoa](https://github.com/stoa-platform/stoa/issues)
-- 💬 **Discord** — Real-time community chat → [Join STOA Discord](https://discord.gostoa.dev)
+- 💬 **GitHub Discussions** — Community questions and discussions → [Join GitHub Discussions](https://github.com/stoa-platform/stoa/discussions)
 - 📚 **Documentation** — Guides, API reference, architecture decisions → [docs.gostoa.dev](https://docs.gostoa.dev)
 
 Community support operates on a best-effort basis. Critical bugs are typically triaged within a few days; feature requests are reviewed weekly.
@@ -96,4 +96,4 @@ If you need enterprise-grade support today, [get in touch](mailto:contact@gostoa
 | --- | --- |
 | General inquiries | [contact@gostoa.dev](mailto:contact@gostoa.dev) |
 | Security disclosures | [security@gostoa.dev](mailto:security@gostoa.dev) |
-| Community | [Discord](https://discord.gostoa.dev) |
+| Community | [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions) |

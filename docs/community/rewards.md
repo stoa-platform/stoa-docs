@@ -95,7 +95,7 @@ Points = (Technical × 0.30) + (Community × 0.30) +
 |--------------|--------|-------|
 | Issue triage + reproduction | 5 | Bug validation |
 | RFC accepted | 100 | Major design |
-| Community help (Discord/Forum) | 2 | Per helpful response |
+| Community help (GitHub Discussions) | 2 | Per helpful response |
 | Talk/Meetup | 30 | External presentation |
 | Blog post | 30 | Technical content |
 
@@ -190,7 +190,7 @@ We are in **Phase 2**. Contributions are valued and tracked, but there is no fin
 
 ## Get Started Today
 
-1. **Join Discord** — [discord.gostoa.dev](https://discord.gostoa.dev)
+1. **Join GitHub Discussions** — [github.com/stoa-platform/stoa/discussions](https://github.com/stoa-platform/stoa/discussions)
 2. **Pick an issue** — Look for `good-first-issue` labels
 3. **Submit a PR** — Follow contribution guidelines
 4. **Build your track record** — Every contribution is visible in git history
@@ -199,4 +199,4 @@ The financial rewards will come. But the learning, the community, and the portfo
 
 ---
 
-*Questions? Ask in `#contributors` on Discord or email [contributors@gostoa.dev](mailto:contributors@gostoa.dev)*
+*Questions? Ask on GitHub Discussions or email [contributors@gostoa.dev](mailto:contributors@gostoa.dev)*

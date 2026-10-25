@@ -286,4 +286,4 @@ Ne stockez jamais de secrets en clair dans Git. Utilisez des secrets chiffrés (
 
 **À lire aussi** : [Guide des API gateways open source](/blog/open-source-api-gateway-2026) | [Checklist de sécurité API](/blog/api-security-checklist-solo-dev) | [Démarrage rapide](/docs/guides/quickstart)
 
-*Vous souhaitez gérer vos APIs avec GitOps ? Le [démarrage rapide STOA](/docs/guides/quickstart) vous permet d'être opérationnel en 5 minutes. Rejoignez la communauté sur [Discord](https://discord.gostoa.dev).*
+*Vous souhaitez gérer vos APIs avec GitOps ? Le [démarrage rapide STOA](/docs/guides/quickstart) vous permet d'être opérationnel en 5 minutes. Rejoignez la communauté sur [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions).*

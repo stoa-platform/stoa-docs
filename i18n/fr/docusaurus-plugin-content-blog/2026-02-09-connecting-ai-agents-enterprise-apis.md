@@ -318,4 +318,4 @@ MCP a été développé par Anthropic mais est agnostique au modèle. N'importe 
 
 ---
 
-*L'équipe STOA construit un API management open source pour l'ère IA. Rejoignez-nous sur [GitHub](https://github.com/stoa-platform) et [Discord](https://discord.gostoa.dev).*
+*L'équipe STOA construit un API management open source pour l'ère IA. Rejoignez-nous sur [GitHub](https://github.com/stoa-platform) et [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions).*

@@ -236,13 +236,9 @@ Tableaux de bord intégrés pour :
 - Patterns d'accès aux données
 - Métriques de conformité SLA
 
-## Certifications de Sécurité (Feuille de Route)
+## État des certifications {#certifications-de-sécurité-feuille-de-route}
 
-| Certification | Statut | Cible |
-|---------------|--------|-------|
-| SOC 2 Type II | Planifié | T4 2026 |
-| ISO 27001 | Planifié | 2027 |
-| ISAE 3402 | Planifié | 2027 |
+STOA ne détient actuellement ni rapport SOC 2 ni certification ISO 27001.
 
 ---
 

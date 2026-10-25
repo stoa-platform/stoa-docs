@@ -227,7 +227,7 @@ Consultez notre [Guide de Démarrage Rapide](/docs/guides/quickstart) pour une c
 
 - **Documentation** : Vous y êtes !
 - **GitHub Issues** : [stoa-platform/stoa](https://github.com/stoa-platform/stoa)
-- **Discord** : [Rejoindre la communauté](https://discord.gostoa.dev)
+- **GitHub Discussions** : [Rejoindre la communauté](https://github.com/stoa-platform/stoa/discussions)
 - **Support Enterprise** : contact@gostoa.dev
 
 ### Comment signaler une vulnérabilité de sécurité ?
