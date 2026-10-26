@@ -1,6 +1,6 @@
 # ADR-058: Pingora Integration — Embedded Connection Pool
 
-- **Status**: Accepted
+- **Status**: 🔄 Superseded by [ADR-073](./adr-073-adopt-envoy-data-plane.md) (2026-10-25)
 - **Date**: 2026-03-16
 - **Decision Makers**: Christophe Aboulicam
 - **Related**: ADR-024 (Gateway Modes), CAB-1847, CAB-1849

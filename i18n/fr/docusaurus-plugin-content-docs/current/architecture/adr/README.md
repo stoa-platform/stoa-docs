@@ -83,7 +83,7 @@ Ce répertoire contient les décisions architecturales importantes pour la Plate
 
 | # | Titre | Statut |
 |:---:|-------|:------:|
-| [034](./adr-034-python-rust-migration.md) | Stratégie de Migration Python vers Rust | ✅ |
+| [034](./adr-034-python-rust-migration.md) | Stratégie de Migration Python vers Rust | 🔄 |
 
 ### 🌐 Gateway & Déploiement
 

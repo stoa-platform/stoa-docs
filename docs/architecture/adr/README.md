@@ -86,12 +86,12 @@ This directory contains important architectural decisions for STOA Platform.
 
 | # | Title | Status |
 |:---:|-------|:------:|
-| [034](./adr-034-python-rust-migration.md) | Python to Rust Migration Strategy | ✅ |
+| [034](./adr-034-python-rust-migration.md) | Python to Rust Migration Strategy | 🔄 |
 | [036](./adr-036-gateway-auto-registration.md) | Gateway Auto-Registration — Zero-Config Onboarding | ✅ |
 | [037](./adr-037-deployment-modes-sovereign-first.md) | Deployment Modes — Sovereign First Strategy | ✅ |
 | [038](./adr-038-sidecar-deployment-strategies-vm.md) | Sidecar Deployment on VM Infrastructure | 📋 |
 | [057](./adr-057-product-lineup-gateway-link-connect.md) | Product Lineup — STOA Gateway, STOA Link, STOA Connect | ✅ |
-| [058](./adr-058-pingora-integration.md) | Pingora Integration — Embedded Connection Pool | ✅ |
+| [058](./adr-058-pingora-integration.md) | Pingora Integration — Embedded Connection Pool | 🔄 |
 | [073](./adr-073-adopt-envoy-data-plane.md) | Adopt Envoy as the STOA Data Plane | ✅ |
 
 ### Frontend & UX
