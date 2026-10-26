@@ -11,7 +11,7 @@ slug: /guides/quickstart
 Ce parcours a été vérifié par lecture des sources. Son exécution réelle sur un clone vierge n’a pas été attestée ; disponibilité des images et résultat restent à confirmer.
 :::
 
-Découvrez STOA avec sa passerelle et son plan de contrôle. La passerelle de ce parcours est en Rust. [Envoy est la cible décidée](/docs/architecture/adr/adr-098-envoy-data-plane/), avec une migration à venir.
+Découvrez STOA avec sa passerelle et son plan de contrôle. La passerelle de ce parcours est en Rust. [Envoy est la cible décidée](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/), avec une migration à venir.
 
 ## Prérequis
 

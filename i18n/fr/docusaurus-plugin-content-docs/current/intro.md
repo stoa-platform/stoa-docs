@@ -14,7 +14,7 @@ Le plan de contrôle gère les contrats UAC et les politiques. La passerelle app
 
 ## Architecture en bref
 
-La passerelle actuelle de R1 est en **Rust**. **Envoy est le moteur cible décidé** ; la migration reste à réaliser. Ce choix ne prouve ni livraison, ni parité fonctionnelle, ni performance. Voir [la décision Envoy](/docs/architecture/adr/adr-098-envoy-data-plane/).
+La passerelle actuelle de R1 est en **Rust**. **Envoy est le moteur cible décidé** ; la migration reste à réaliser. Ce choix ne prouve ni livraison, ni parité fonctionnelle, ni performance. Voir [la décision Envoy](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/).
 
 ## Démarrage rapide
 

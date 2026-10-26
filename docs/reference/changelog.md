@@ -12,7 +12,7 @@ keywords:
 ---
 
 :::info Release history
-Rust and Pingora announcements below are historical. [Envoy is the target direction](/docs/architecture/adr/adr-098-envoy-data-plane/); migration remains ahead.
+Rust and Pingora announcements below are historical. [Envoy is the target direction](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/); migration remains ahead.
 :::
 
 

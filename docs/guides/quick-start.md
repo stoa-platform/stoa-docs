@@ -11,7 +11,7 @@ slug: /guides/quickstart
 This path has been checked by reading the sources. Execution on a fresh clone has not been attested; image availability and results still need confirmation.
 :::
 
-Explore STOA with its gateway and control plane. This path uses the Rust gateway. [Envoy is the decided target](/docs/architecture/adr/adr-098-envoy-data-plane/); migration is still ahead.
+Explore STOA with its gateway and control plane. This path uses the Rust gateway. [Envoy is the decided target](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/); migration is still ahead.
 
 ## Prerequisites
 

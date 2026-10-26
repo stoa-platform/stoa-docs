@@ -7,7 +7,7 @@ keywords: [MCP, skills, injection de contexte, CRD, Kubernetes, middleware gatew
 # ADR-047 : Système MCP Skills — Injection de Contexte
 
 :::warning Direction cible remplacée
-Les prescriptions de runtime concernées sont remplacées pour la direction cible par [la décision Envoy](/docs/architecture/adr/adr-098-envoy-data-plane/). Le corps ci-dessous conserve la décision historique et son statut d’origine ; les autres décisions restent inchangées. R1 utilise encore la passerelle Rust ; la migration Envoy reste à réaliser.
+Les prescriptions de runtime concernées sont remplacées pour la direction cible par [la décision Envoy](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/). Le corps ci-dessous conserve la décision historique et son statut d’origine ; les autres décisions restent inchangées. R1 utilise encore la passerelle Rust ; la migration Envoy reste à réaliser.
 :::
 
 ## Métadonnées

@@ -12,7 +12,7 @@ Ce répertoire contient les décisions architecturales importantes pour la Plate
 
 ---
 
-[ADR-098 : Envoy comme data plane cible](./adr-098-envoy-data-plane.md) — Accepted (direction architecturale ; migration à venir).
+[ADR-073 : Adopter Envoy comme plan de données STOA](./adr-073-adopt-envoy-data-plane.md) — Accepted (direction architecturale ; migration à venir).
 
 ## 📚 Index des ADRs
 
@@ -20,7 +20,7 @@ Ce répertoire contient les décisions architecturales importantes pour la Plate
 
 | # | Titre | Statut |
 |:---:|-------|:------:|
-| [003](./adr-003-monorepo-architecture.md) | Architecture Monorepo — Polyglotte Multi-Services | Direction runtime remplacée — ADR-098 |
+| [003](./adr-003-monorepo-architecture.md) | Architecture Monorepo — Polyglotte Multi-Services | Direction runtime remplacée — ADR-073 |
 | [004](./adr-004-gateway-adapter-pattern.md) | Patron Adaptateur de Gateway — Orchestration Multi-Gateway | ✅ |
 | [005](./adr-005-event-driven-kafka.md) | Architecture Event-Driven — Conception des Topics Kafka | ✅ |
 | [006](./adr-006-tool-registry-architecture.md) | Architecture du Registre d'Outils — Conception en 7 Modules | ✅ |
@@ -58,7 +58,7 @@ Ce répertoire contient les décisions architecturales importantes pour la Plate
 | [021](./adr-021-uac-driven-observability.md) | Observabilité Pilotée par l'UAC | 📋 |
 | [022](./adr-022-uac-tenant-architecture.md) | Architecture Tenant de l'UAC | ✅ |
 | [023](./adr-023-zero-blind-spot-observability.md) | Observabilité Sans Angle Mort | ✅ |
-| [024](./adr-024-gateway-unified-modes.md) | Architecture Gateway Unifiée — 4 Modes de Déploiement | Direction runtime remplacée — ADR-098 |
+| [024](./adr-024-gateway-unified-modes.md) | Architecture Gateway Unifiée — 4 Modes de Déploiement | Direction runtime remplacée — ADR-073 |
 
 ### 💼 Modèle d'Affaires & Stratégie
 
@@ -85,7 +85,7 @@ Ce répertoire contient les décisions architecturales importantes pour la Plate
 
 | # | Titre | Statut |
 |:---:|-------|:------:|
-| [034](./adr-034-python-rust-migration.md) | Stratégie de Migration Python vers Rust | Direction runtime remplacée — ADR-098 |
+| [034](./adr-034-python-rust-migration.md) | Stratégie de Migration Python vers Rust | Direction runtime remplacée — ADR-073 |
 
 ### 🌐 Gateway & Déploiement
 

@@ -7,7 +7,7 @@ sidebar_position: 2
 # Current and Target Architecture
 
 :::info Current state and target direction
-R1 currently uses the **Rust gateway**. **Envoy is the decided target**; migration remains ahead. This page does not attest availability or performance. See [the Envoy ADR](/docs/architecture/adr/adr-098-envoy-data-plane/).
+R1 currently uses the **Rust gateway**. **Envoy is the decided target**; migration remains ahead. This page does not attest availability or performance. See [the Envoy ADR](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/).
 :::
 
 ## Current Architecture
@@ -50,6 +50,6 @@ Operators supply environment addresses, for example `STOA_API_URL`, `STOA_GATEWA
 
 ## Related Documents
 
-- [Envoy decision](/docs/architecture/adr/adr-098-envoy-data-plane/)
+- [Envoy decision](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/)
 - [Local R1 quickstart](/docs/guides/quickstart/)
 - [Implementation status](/docs/concepts/implementation-status/)

@@ -7,7 +7,7 @@ sidebar_position: 5
 # Passerelle STOA
 
 :::info État actuel et direction cible
-La passerelle de R1 est actuellement en **Rust**. **Envoy est la cible décidée**, avec une migration à venir. Cette page ne constitue pas une attestation de disponibilité ou de performance. Voir [l’ADR Envoy](/docs/architecture/adr/adr-098-envoy-data-plane/).
+La passerelle de R1 est actuellement en **Rust**. **Envoy est la cible décidée**, avec une migration à venir. Cette page ne constitue pas une attestation de disponibilité ou de performance. Voir [l’ADR Envoy](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/).
 :::
 
 ## Vue d’ensemble

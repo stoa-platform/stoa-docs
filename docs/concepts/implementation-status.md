@@ -7,7 +7,7 @@ sidebar_position: 10
 # Implementation Status
 
 :::info Current state and target direction
-R1 currently uses the **Rust gateway**. **Envoy is the decided target**; migration remains ahead. This page does not attest availability or performance. See [the Envoy ADR](/docs/architecture/adr/adr-098-envoy-data-plane/).
+R1 currently uses the **Rust gateway**. **Envoy is the decided target**; migration remains ahead. This page does not attest availability or performance. See [the Envoy ADR](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/).
 :::
 
 ## Core Components

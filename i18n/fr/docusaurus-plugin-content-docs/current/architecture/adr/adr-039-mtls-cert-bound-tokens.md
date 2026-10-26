@@ -7,7 +7,7 @@ keywords: [mTLS, Rust gateway, tokens liés aux certificats, RFC 8705, sécurit�
 # ADR-039 : Rust Gateway mTLS + Validation de Tokens Liés aux Certificats
 
 :::warning Direction cible remplacée
-Les prescriptions de runtime concernées sont remplacées pour la direction cible par [la décision Envoy](/docs/architecture/adr/adr-098-envoy-data-plane/). Le corps ci-dessous conserve la décision historique et son statut d’origine ; les autres décisions restent inchangées. R1 utilise encore la passerelle Rust ; la migration Envoy reste à réaliser.
+Les prescriptions de runtime concernées sont remplacées pour la direction cible par [la décision Envoy](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/). Le corps ci-dessous conserve la décision historique et son statut d’origine ; les autres décisions restent inchangées. R1 utilise encore la passerelle Rust ; la migration Envoy reste à réaliser.
 :::
 
 ## Metadata

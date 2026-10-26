@@ -18,7 +18,7 @@ Dependencies retain their own licences.
 - [Local R1 quickstart](https://docs.gostoa.dev/docs/guides/quickstart/)
 - [Démarrage R1 local](https://docs.gostoa.dev/fr/docs/guides/quickstart/)
 - [Architecture](https://docs.gostoa.dev/docs/concepts/architecture/)
-- [Envoy target ADR](https://docs.gostoa.dev/docs/architecture/adr/adr-098-envoy-data-plane/)
+- [Envoy target ADR](https://docs.gostoa.dev/docs/architecture/adr/adr-073-adopt-envoy-data-plane/)
 - [Implementation status](https://docs.gostoa.dev/docs/concepts/implementation-status/)
 - [Privacy](https://docs.gostoa.dev/docs/legal/privacy/)
 

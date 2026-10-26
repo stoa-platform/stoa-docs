@@ -22,7 +22,7 @@ flowchart LR
 
 ## Implémentation actuelle et cible
 
-La passerelle actuelle de R1 est en Rust. [Envoy est le moteur cible décidé](/docs/architecture/adr/adr-098-envoy-data-plane/), avec une migration à venir. Les services MCP restent applicatifs derrière le moteur cible ; leur parité et leur fonctionnement doivent être validés. Le quickstart R1 ne démontre pas un parcours MCP.
+La passerelle actuelle de R1 est en Rust. [Envoy est le moteur cible décidé](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/), avec une migration à venir. Les services MCP restent applicatifs derrière le moteur cible ; leur parité et leur fonctionnement doivent être validés. Le quickstart R1 ne démontre pas un parcours MCP.
 
 ## Fonctionnalités clés
 

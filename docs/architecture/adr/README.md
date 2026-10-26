@@ -15,13 +15,13 @@ This directory contains important architectural decisions for STOA Platform.
 
 ## ADR Index
 
-[ADR-098: Envoy as the target data plane](./adr-098-envoy-data-plane.md) — Accepted (architectural direction; migration ahead).
+[ADR-073: Adopt Envoy as the STOA Data Plane](./adr-073-adopt-envoy-data-plane.md) — Accepted (architectural direction; migration ahead).
 
 ### Core Architecture
 
 | # | Title | Status |
 |:---:|-------|:------:|
-| [003](./adr-003-monorepo-architecture.md) | Monorepo Architecture — Multi-Service Polyglot | Runtime direction superseded — ADR-098 |
+| [003](./adr-003-monorepo-architecture.md) | Monorepo Architecture — Multi-Service Polyglot | Runtime direction superseded — ADR-073 |
 | [004](./adr-004-gateway-adapter-pattern.md) | Gateway Adapter Pattern — Multi-Gateway Orchestration | ✅ |
 | [005](./adr-005-event-driven-kafka.md) | Event-Driven Architecture — Kafka Topics Design | ✅ |
 | [006](./adr-006-tool-registry-architecture.md) | Tool Registry Architecture — 7-Module Design | ✅ |
@@ -51,7 +51,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [027](./adr-027-x509-header-authentication.md) | X.509 Header Authentication | ✅ |
 | [028](./adr-028-rfc8705-certificate-binding.md) | RFC 8705 Certificate Binding | ✅ |
 | [029](./adr-029-mtls-certificate-lifecycle.md) | mTLS Certificate Lifecycle | ✅ |
-| [039](./adr-039-mtls-cert-bound-tokens.md) | Rust Gateway mTLS Cert-Bound Tokens | Runtime direction superseded — ADR-098 |
+| [039](./adr-039-mtls-cert-bound-tokens.md) | Rust Gateway mTLS Cert-Bound Tokens | Runtime direction superseded — ADR-073 |
 | [044](./adr-044-mcp-oauth-gateway-proxy.md) | MCP OAuth 2.1 Gateway Proxy Architecture | ✅ |
 | [054](./adr-054-rbac-taxonomy-v2.md) | RBAC Taxonomy v2 — Persona Roles & Display Names | ✅ |
 | [056](./adr-056-fapi-2-architecture.md) | FAPI 2.0 Security Architecture | ✅ |
@@ -65,9 +65,9 @@ This directory contains important architectural decisions for STOA Platform.
 | [021](./adr-021-uac-driven-observability.md) | UAC-Driven Observability | 📋 |
 | [022](./adr-022-uac-tenant-architecture.md) | UAC Tenant Architecture | ✅ |
 | [023](./adr-023-zero-blind-spot-observability.md) | Zero Blind Spot Observability | ✅ |
-| [024](./adr-024-gateway-unified-modes.md) | Unified Gateway Architecture — 4 Deployment Modes | Runtime direction superseded — ADR-098 |
-| [046](./adr-046-mcp-federation-architecture.md) | MCP Federation Architecture | Runtime direction superseded — ADR-098 |
-| [047](./adr-047-mcp-skills-system.md) | MCP Skills System — Context Injection | Runtime direction superseded — ADR-098 |
+| [024](./adr-024-gateway-unified-modes.md) | Unified Gateway Architecture — 4 Deployment Modes | Runtime direction superseded — ADR-073 |
+| [046](./adr-046-mcp-federation-architecture.md) | MCP Federation Architecture | Runtime direction superseded — ADR-073 |
+| [047](./adr-047-mcp-skills-system.md) | MCP Skills System — Context Injection | Runtime direction superseded — ADR-073 |
 | [048](./adr-048-integrated-chat-agent.md) | Integrated Chat Agent Architecture | 📋 |
 | [051](./adr-051-lazy-mcp-discovery.md) | Lazy MCP Discovery with Cache-First Pattern | ✅ |
 | [067](./adr-067-uac-as-llm-optimized-executable-contract.md) | UAC as LLM-Optimized Executable Contract | 📋 |
@@ -88,12 +88,12 @@ This directory contains important architectural decisions for STOA Platform.
 
 | # | Title | Status |
 |:---:|-------|:------:|
-| [034](./adr-034-python-rust-migration.md) | Python to Rust Migration Strategy | Runtime direction superseded — ADR-098 |
+| [034](./adr-034-python-rust-migration.md) | Python to Rust Migration Strategy | Runtime direction superseded — ADR-073 |
 | [036](./adr-036-gateway-auto-registration.md) | Gateway Auto-Registration — Zero-Config Onboarding | ✅ |
 | [037](./adr-037-deployment-modes-sovereign-first.md) | Deployment Modes — Sovereign First Strategy | ✅ |
 | [038](./adr-038-sidecar-deployment-strategies-vm.md) | Sidecar Deployment on VM Infrastructure | 📋 |
-| [057](./adr-057-product-lineup-gateway-link-connect.md) | Product Lineup — STOA Gateway, STOA Link, STOA Connect | Runtime direction superseded — ADR-098 |
-| [058](./adr-058-pingora-integration.md) | Pingora Integration — Embedded Connection Pool | Runtime direction superseded — ADR-098 |
+| [057](./adr-057-product-lineup-gateway-link-connect.md) | Product Lineup — STOA Gateway, STOA Link, STOA Connect | Runtime direction superseded — ADR-073 |
+| [058](./adr-058-pingora-integration.md) | Pingora Integration — Embedded Connection Pool | Runtime direction superseded — ADR-073 |
 
 ### Frontend & UX
 

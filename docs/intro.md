@@ -14,7 +14,7 @@ The control plane manages UAC contracts and policies. The gateway applies rules 
 
 ## Architecture at a Glance
 
-R1 currently uses a **Rust gateway**. **Envoy is the decided target data plane**; migration remains ahead. This choice does not establish delivery, functional parity or performance. See [the Envoy decision](/docs/architecture/adr/adr-098-envoy-data-plane/).
+R1 currently uses a **Rust gateway**. **Envoy is the decided target data plane**; migration remains ahead. This choice does not establish delivery, functional parity or performance. See [the Envoy decision](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/).
 
 ## Quick Start
 

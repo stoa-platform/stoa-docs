@@ -22,7 +22,7 @@ flowchart LR
 
 ## Current implementation and target
 
-R1 currently uses the Rust gateway. [Envoy is the decided target engine](/docs/architecture/adr/adr-098-envoy-data-plane/), with migration ahead. MCP remains an application service behind the target engine; parity and behaviour require validation. The R1 quickstart does not demonstrate an MCP path.
+R1 currently uses the Rust gateway. [Envoy is the decided target engine](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/), with migration ahead. MCP remains an application service behind the target engine; parity and behaviour require validation. The R1 quickstart does not demonstrate an MCP path.
 
 ## Key Features
 

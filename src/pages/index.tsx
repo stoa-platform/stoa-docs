@@ -277,7 +277,7 @@ function CTASection() {
           </Link>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/architecture/adr/adr-098-envoy-data-plane/">
+            to="/docs/architecture/adr/adr-073-adopt-envoy-data-plane/">
             <Translate id="homepage.cta.btn.architecture">Envoy target architecture</Translate>
           </Link>
           <Link

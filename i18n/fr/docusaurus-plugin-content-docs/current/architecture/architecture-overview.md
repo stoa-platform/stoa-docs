@@ -7,7 +7,7 @@ sidebar_position: 2
 # Architecture actuelle et cible
 
 :::info État actuel et direction cible
-La passerelle de R1 est actuellement en **Rust**. **Envoy est la cible décidée**, avec une migration à venir. Cette page ne constitue pas une attestation de disponibilité ou de performance. Voir [l’ADR Envoy](/docs/architecture/adr/adr-098-envoy-data-plane/).
+La passerelle de R1 est actuellement en **Rust**. **Envoy est la cible décidée**, avec une migration à venir. Cette page ne constitue pas une attestation de disponibilité ou de performance. Voir [l’ADR Envoy](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/).
 :::
 
 ## Architecture actuelle
@@ -48,6 +48,6 @@ Les coordonnées d’environnement sont fournies par l’exploitant, par exemple
 
 ## Documents associés
 
-- [Décision Envoy](/docs/architecture/adr/adr-098-envoy-data-plane/)
+- [Décision Envoy](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/)
 - [Quickstart local R1](/docs/guides/quickstart/)
 - [État d’implémentation](/docs/concepts/implementation-status/)

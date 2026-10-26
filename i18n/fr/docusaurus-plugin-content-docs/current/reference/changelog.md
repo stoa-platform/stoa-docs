@@ -12,7 +12,7 @@ keywords:
 ---
 
 :::info Historique de versions
-Les annonces Rust et Pingora ci-dessous sont historiques. [Envoy est la direction cible](/docs/architecture/adr/adr-098-envoy-data-plane/) ; la migration reste à réaliser.
+Les annonces Rust et Pingora ci-dessous sont historiques. [Envoy est la direction cible](/docs/architecture/adr/adr-073-adopt-envoy-data-plane/) ; la migration reste à réaliser.
 :::
 
 
