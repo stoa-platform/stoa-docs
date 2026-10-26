@@ -13,7 +13,7 @@ import MigrationArchitecture from '@site/src/components/MigrationArchitecture';
 
 | Field | Value |
 |-------|-------|
-| **Status** | Accepted |
+| **Status** | 🔄 Superseded by [ADR-073](./adr-073-adopt-envoy-data-plane.md) (2026-10-25) |
 | **Date** | 2026-02-06 |
 | **Linear** | N/A (Strategic) |
 | **Related** | ADR-024 (Gateway Unified Modes) |

@@ -45,6 +45,8 @@ The forces below are the reading of the decision recorded by the documentation t
 3. **Expectations of regulated buyers.** The target audience (regulated European organisations) favours components with open governance, a public security process and existing operational knowledge in their teams.
 4. **Roadmap pressure.** Several planned gateway capabilities (routing for `proxy` mode, traffic mirroring for `shadow` mode, external authorization) exist natively in Envoy.
 5. **Constraints to preserve.** Apache 2.0 licensing for the whole of STOA ([ADR-041](./adr-041-plugin-architecture-community-enterprise.md)); sovereign deployment with no mandatory outbound connection and fully offline installation ([ADR-037](./adr-037-deployment-modes-sovereign-first.md)); the single deployment path of ADR-059.
+6. **Experience with the embedded Pingora path.** Error handling on the upstream response path of the embedded connection pool ([ADR-058](./adr-058-pingora-integration.md)) needed specific work to make sure a failure while reading an upstream body is never relayed to the client as a normal response. Envoy's upstream handling covers these cases and is maintained upstream; the R1 gateway keeps receiving its own fixes during maintenance (§9).
+7. **Dependency on Envoy and its governance.** Envoy is a Graduated project of the Cloud Native Computing Foundation since 28 November 2018, licensed under Apache 2.0, with vendor-neutral governance, many independent maintainers and a public security disclosure process. STOA uses the unmodified upstream image (§1), so it takes no fork to maintain; the residual risks are the upstream release cadence and the need to mirror and verify images for offline installation (see Mitigations).
 
 ## Options considered
 

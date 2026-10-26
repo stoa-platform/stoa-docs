@@ -10,7 +10,7 @@ keywords: [pingora, rust, connexions, pool, axum, reqwest, tokio, cloudflare, pr
 
 | Champ | Valeur |
 |-------|--------|
-| **Statut** | Accepté |
+| **Statut** | 🔄 Remplacé par [ADR-073](./adr-073-adopt-envoy-data-plane.md) (2026-10-25) |
 | **Date** | 2026-03-16 |
 | **Décideurs** | Christophe Aboulicam |
 | **Liens** | ADR-024 (Modes Gateway), CAB-1847, CAB-1849 |
