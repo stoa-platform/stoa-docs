@@ -92,6 +92,7 @@ Ce répertoire contient les décisions architecturales importantes pour la Plate
 | [035](./adr-035-gateway-adapter-pattern.md) | Patron Adaptateur de Gateway — Orchestration Multi-Gateway | ✅ |
 | [036](./adr-036-gateway-auto-registration.md) | Auto-Enregistrement du Gateway — Intégration Zéro Configuration | ✅ |
 | [037](./adr-037-deployment-modes-sovereign-first.md) | Modes de Déploiement — Stratégie Souveraineté en Premier | ✅ |
+| [073](./adr-073-adopt-envoy-data-plane.md) | Adopter Envoy comme plan de données STOA | ✅ |
 
 ---
 

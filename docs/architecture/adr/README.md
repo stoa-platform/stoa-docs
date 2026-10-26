@@ -92,6 +92,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [038](./adr-038-sidecar-deployment-strategies-vm.md) | Sidecar Deployment on VM Infrastructure | 📋 |
 | [057](./adr-057-product-lineup-gateway-link-connect.md) | Product Lineup — STOA Gateway, STOA Link, STOA Connect | ✅ |
 | [058](./adr-058-pingora-integration.md) | Pingora Integration — Embedded Connection Pool | ✅ |
+| [073](./adr-073-adopt-envoy-data-plane.md) | Adopt Envoy as the STOA Data Plane | ✅ |
 
 ### Frontend & UX
 
