@@ -156,10 +156,10 @@ Le GDPR accorde aux personnes concernées le droit d'accéder à toutes les donn
 
 Quand un utilisateur soumet une demande d'accès des personnes concernées (DSAR), il a droit à recevoir tous les enregistrements de traitement qui le concernent. Pour les logs d'audit, cela signifie que vous devez pouvoir interroger « tous les événements API où actor.email = 'user@example.com' » et exporter les résultats dans un format lisible.
 
-STOA n'a pas de commande DSAR dédiée. Exportez les entrées du journal d'audit du tenant, puis filtrez l'export sur l'identité de l'utilisateur (`actor.email`) :
+STOA n'a pas de commande DSAR dédiée. Exportez les entrées du journal d'audit du tenant sans masquage des données personnelles (l'export contient alors des données personnelles : traitez-le en conséquence), puis filtrez sur l'e-mail de l'utilisateur (champ `user_email`) :
 
 ```bash
-stoactl audit export --tenant acme --since 2025-04-01 -o json > acme-audit-export.json
+stoactl audit export --tenant acme --since 2025-04-01 --redact-pii=false -o json > acme-audit-export.json
 ```
 
 Conservez les entrées où l'utilisateur était l'acteur, y compris les requêtes refusées (qui sont souvent les plus pertinentes d'un point de vue DSAR — elles révèlent ce que l'utilisateur a essayé de faire et dont il a été empêché).

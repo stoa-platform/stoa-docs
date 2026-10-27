@@ -156,10 +156,10 @@ GDPR grants data subjects the right to access all data processed about them (Art
 
 When a user submits a data subject access request (DSAR), they are entitled to receive all records of processing that relate to them. For audit logs, this means you must be able to query "all API events where actor.email = 'user@example.com'" and export the results in a readable format.
 
-STOA has no dedicated DSAR command. Export the tenant's audit log entries, then filter the export on the user's identity (`actor.email`):
+STOA has no dedicated DSAR command. Export the tenant's audit log entries without PII masking (the export then contains personal data: handle it accordingly), then filter on the user's email (`user_email` field):
 
 ```bash
-stoactl audit export --tenant acme --since 2025-04-01 -o json > acme-audit-export.json
+stoactl audit export --tenant acme --since 2025-04-01 --redact-pii=false -o json > acme-audit-export.json
 ```
 
 Keep the entries where the user was the actor, including denied requests (which are often the most relevant from a DSAR perspective — they reveal what the user tried to do and was blocked from doing).
