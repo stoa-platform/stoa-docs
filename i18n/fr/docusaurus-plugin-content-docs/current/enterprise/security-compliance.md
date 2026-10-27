@@ -236,13 +236,9 @@ Tableaux de bord intégrés pour :
 - Patterns d'accès aux données
 - Métriques de conformité SLA
 
-## Certifications de Sécurité (Feuille de Route)
+## Certifications de sécurité
 
-| Certification | Statut | Cible |
-|---------------|--------|-------|
-| SOC 2 Type II | Planifié | T4 2026 |
-| ISO 27001 | Planifié | 2027 |
-| ISAE 3402 | Planifié | 2027 |
+STOA est un logiciel open source. Il ne détient aucune certification de sécurité (comme SOC 2, ISO 27001 ou ISAE 3402), et aucune démarche de certification n'est engagée à ce jour. Les contrôles décrits sur cette page (contrôle d'accès, journaux d'audit, chiffrement) peuvent soutenir vos propres démarches de conformité ; la certification et l'audit restent de la responsabilité de l'organisation qui déploie STOA.
 
 ---
 
