@@ -1,7 +1,7 @@
 ---
 slug: saas-playbook-3-audit-compliance
 title: "Journalisation d'Audit SaaS : GDPR, SOC 2 et Isolation par Tenant"
-description: "Construire des APIs multi-tenant prêtes pour l'audit. Logs immuables, demandes DSAR GDPR, collecte de preuves SOC 2 et isolation des logs par tenant."
+description: "Construire des APIs multi-tenant prêtes pour l'audit. Logs d'audit exportables, demandes DSAR GDPR, collecte de preuves SOC 2 et isolation des logs par tenant."
 authors: [stoa-team]
 tags: [tutorial, compliance, architecture]
 keywords:
@@ -93,8 +93,7 @@ STOA implémente la journalisation d'audit par tenant comme fonctionnalité cent
     "response_size_bytes": 512,
     "pii_detected": false,
     "guardrails_triggered": []
-  },
-  "chain_hash": "sha256:a3f2b1c4d5e6f7..."
+  }
 }
 ```
 
@@ -102,7 +101,7 @@ Champs clés pour la conformité :
 - `event_id` : format ULID — triable lexicographiquement, globalement unique
 - `actor.email` : L'identité humaine derrière la requête (depuis les claims JWT)
 - `authorization.decision` : La requête a-t-elle été autorisée ou refusée ? Les refus sont tout aussi importants à journaliser
-- `chain_hash` : Hash de l'entrée précédente + le contenu de l'entrée actuelle — permet la détection d'altération
+- `chain_hash` (prévu, non activé aujourd'hui) : hash de l'entrée précédente + le contenu de l'entrée actuelle, pour détecter une altération
 - `pii_detected` : Si la GuardrailPolicy a détecté des PII dans le payload de la requête
 
 ### Activer la Journalisation d'Audit dans STOA
@@ -121,7 +120,6 @@ spec:
     level: full              # full | summary | errors-only
     retention:
       days: 365              # GDPR: typically 90-365 days
-      immutable: true        # Append-only storage
     destination:
       type: postgresql       # postgresql | s3 | elasticsearch | loki
       encryption: aes256     # Encrypt at rest
@@ -158,17 +156,13 @@ Le GDPR accorde aux personnes concernées le droit d'accéder à toutes les donn
 
 Quand un utilisateur soumet une demande d'accès des personnes concernées (DSAR), il a droit à recevoir tous les enregistrements de traitement qui le concernent. Pour les logs d'audit, cela signifie que vous devez pouvoir interroger « tous les événements API où actor.email = 'user@example.com' » et exporter les résultats dans un format lisible.
 
+STOA n'a pas de commande DSAR dédiée. Exportez les entrées du journal d'audit du tenant, puis filtrez l'export sur l'identité de l'utilisateur (`actor.email`) :
+
 ```bash
-# STOA CLI: export DSAR for a user
-stoactl tenants dsar export \
-  --tenant acme \
-  --email alice@acme.example.com \
-  --from 2024-01-01 \
-  --to 2026-01-01 \
-  --format json
+stoactl audit export --tenant acme --since 2025-04-01 -o json > acme-audit-export.json
 ```
 
-L'export inclut tous les événements d'audit où l'utilisateur était l'acteur, incluant les requêtes refusées (qui sont souvent les plus pertinentes d'un point de vue DSAR — elles révèlent ce que l'utilisateur a essayé de faire et dont il a été empêché).
+Conservez les entrées où l'utilisateur était l'acteur, y compris les requêtes refusées (qui sont souvent les plus pertinentes d'un point de vue DSAR — elles révèlent ce que l'utilisateur a essayé de faire et dont il a été empêché).
 
 ### Droit à l'Effacement (Article 17)
 
@@ -214,40 +208,19 @@ Les audits SOC 2 Type II couvrent une période d'observation de 6 à 12 mois. L'
 | CC6.7 | Les données restreintes sont transmises via des canaux chiffrés | Application TLS, événements de certificat | Log d'accès STOA |
 | CC7.2 | L'activité anormale est détectée | Événements de violation de rate limit | Métriques STOA |
 
-### Générer des Rapports de Preuves SOC 2
+### Exporter des Preuves d'Audit pour SOC 2
+
+STOA ne génère pas de rapport SOC 2. Vous pouvez exporter les entrées du journal d'audit d'un tenant et les remettre à votre auditeur :
 
 ```bash
-# Export SOC 2 evidence for a time period
-stoactl compliance soc2-report \
-  --tenant acme \
-  --from 2025-04-01 \
-  --to 2026-03-31 \
-  --output soc2-evidence-2025-2026.pdf
+stoactl audit export --tenant acme --since 2025-04-01 -o json > acme-audit-export.json
 ```
-
-Le rapport inclut :
-- Total des appels API par mois (montre le volume d'activité auditée)
-- Taux de succès/échec d'autorisation
-- Nombre de tentatives d'accès refusées (démontre que les contrôles d'accès sont actifs)
-- Événements de provisionnement et de révocation de clé API
-- Violations de rate limit (démontre la détection des abus)
 
 ### Assurer l'Intégrité des Logs
 
-Pour SOC 2, vous devez démontrer que les logs d'audit ne peuvent pas être modifiés après coup. STOA utilise deux mécanismes :
+Pour SOC 2, vous devez démontrer que les logs d'audit ne peuvent pas être modifiés après coup.
 
-**Chaînage cryptographique** : Chaque entrée d'audit inclut un `chain_hash` qui est le SHA-256 du hash de l'entrée précédente + le contenu de l'entrée actuelle. Toute modification d'une entrée passée brise la chaîne — détectable en réexécutant la validation du hash.
-
-**Stockage append-only** : Le rôle de base de données utilisé par l'auteur d'audit dispose d'un accès INSERT mais pas UPDATE ou DELETE. Même si un attaquant compromet le processus applicatif, il ne peut pas modifier les entrées passées.
-
-```bash
-# Verify audit log integrity (run periodically or before audits)
-stoactl tenants audit verify \
-  --tenant acme \
-  --from 2025-01-01 \
-  --to 2026-01-01
-# Output: "Audit chain verified: 3,241,891 entries, 0 integrity violations"
-```
+Le stockage d'audit infalsifiable (chaîne de hachage, table en ajout seul) est conçu mais n'est pas activé dans STOA aujourd'hui. D'ici là, copiez les exports vers un stockage non réinscriptible que vous contrôlez.
 
 ## Rétention et Stockage des Logs
 
@@ -285,38 +258,15 @@ Les logs d'audit doivent être chiffrés au repos. STOA utilise AES-256 pour Pos
 
 Pour les tenants ayant des exigences de résidence des données, STOA supporte les clés de chiffrement par tenant — la compromission de la clé d'un tenant n'expose pas les données d'audit d'un autre tenant.
 
-## Pratique : Interroger Votre Piste d'Audit
+## Pratique : Exporter Votre Piste d'Audit
 
-Les requêtes d'audit les plus courantes que vous effectuerez :
+La façon prise en charge de travailler sur votre piste d'audit est d'exporter les entrées d'un tenant et de les analyser avec vos propres outils :
 
 ```bash
-# Who accessed the billing API in the last 7 days?
-stoactl tenants audit query \
-  --tenant acme \
-  --api billing-api \
-  --from -7d
-
-# All denied access attempts (security review)
-stoactl tenants audit query \
-  --tenant acme \
-  --decision denied \
-  --from -30d \
-  --format csv
-
-# All events for a specific user (DSAR or incident investigation)
-stoactl tenants audit query \
-  --tenant acme \
-  --actor alice@acme.example.com \
-  --from -365d \
-  --format json | jq '.events | length'
-
-# PII events summary
-stoactl tenants audit query \
-  --tenant acme \
-  --filter pii_detected=true \
-  --from -30d \
-  --group-by day
+stoactl audit export --tenant acme --since 2025-04-01 -o json > acme-audit-export.json
 ```
+
+À partir de l'export JSON, vous pouvez répondre aux questions courantes (qui a appelé une API, quelles requêtes ont été refusées, quels événements concernent un utilisateur donné) avec `jq` ou votre outillage de logs.
 
 ## Ce Qui Vient Ensuite
 
@@ -350,4 +300,4 @@ STOA permet de configurer `level: errors-only` ou `level: summary` pour des APIs
 
 ### Comment démontrer à un auditeur que mon log d'audit est inviolable ?
 
-Montrez-lui la commande de vérification de la chaîne cryptographique et son résultat : « Chaîne d'audit vérifiée : N entrées, 0 violation d'intégrité. » Démontrez également que le rôle de base de données utilisé pour l'écriture d'audit n'a pas les privilèges UPDATE et DELETE. Pour les environnements à haute assurance, envisagez de streamer les événements d'audit vers un puits externe immuable (AWS CloudTrail, Azure Monitor) comme enregistrement secondaire.
+STOA ne permet pas de le prouver seul aujourd'hui : le stockage d'audit infalsifiable (chaîne de hachage, table en ajout seul) est conçu mais n'est pas activé. Exportez régulièrement les entrées d'audit avec `stoactl audit export` et copiez-les vers un stockage non réinscriptible que vous contrôlez, puis montrez à votre auditeur ce stockage et ses réglages de rétention.

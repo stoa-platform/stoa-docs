@@ -93,7 +93,7 @@ Tenant isolation models (namespace, row-level, shard), UAC per-tenant configurat
 Per-tenant rate limit buckets, burst handling with token bucket and sliding window algorithms, tier-based quota enforcement (free/pro/enterprise), and GuardrailPolicy configuration for SaaS scenarios.
 
 **[SaaS Playbook Part 3: Audit & Compliance](https://docs.gostoa.dev/blog/saas-playbook-3-audit-compliance)**
-Building immutable audit trails, satisfying GDPR data subject access requests, cryptographic chain verification, compliance demonstration for SOC 2, and audit log storage strategies with tiered retention.
+Building exportable audit trails, satisfying GDPR data subject access requests, exporting audit evidence for SOC 2, and audit log storage strategies with tiered retention.
 
 **[SaaS Playbook Part 4: Scaling Multi-Tenant APIs](https://docs.gostoa.dev/blog/saas-playbook-4-scaling-multi-tenant)**
 HPA configuration for tenant traffic spikes, connection pooling with PgBouncer, caching strategies per tenant, database sharding decision criteria, and K8s resource quotas per namespace.
