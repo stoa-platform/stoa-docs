@@ -1,7 +1,7 @@
 ---
 slug: saas-playbook-3-audit-compliance
 title: "SaaS Audit Logging: GDPR, SOC 2, and Per-Tenant Isolation"
-description: "Build audit-ready multi-tenant APIs. Immutable logs, GDPR data subject requests, SOC 2 evidence collection, and per-tenant log isolation."
+description: "Build audit-ready multi-tenant APIs. Exportable audit logs, GDPR data subject requests, SOC 2 evidence collection, and per-tenant log isolation."
 authors: [stoa-team]
 tags: [tutorial, compliance, architecture]
 keywords:
@@ -93,8 +93,7 @@ STOA implements per-tenant audit logging as a core feature, not a plugin. Every 
     "response_size_bytes": 512,
     "pii_detected": false,
     "guardrails_triggered": []
-  },
-  "chain_hash": "sha256:a3f2b1c4d5e6f7..."
+  }
 }
 ```
 
@@ -102,7 +101,7 @@ Key fields for compliance:
 - `event_id`: ULID format — lexicographically sortable, globally unique
 - `actor.email`: The human identity behind the request (from JWT claims)
 - `authorization.decision`: Was the request allowed or denied? Denials are equally important to log
-- `chain_hash`: Hash of the previous entry + this entry's content — enables tamper detection
+- `chain_hash` (planned, not enabled today): hash of the previous entry + this entry's content, for tamper detection
 - `pii_detected`: Whether GuardrailPolicy detected PII in the request payload
 
 ### Enabling Audit Logging in STOA
@@ -121,7 +120,6 @@ spec:
     level: full              # full | summary | errors-only
     retention:
       days: 365              # GDPR: typically 90-365 days
-      immutable: true        # Append-only storage
     destination:
       type: postgresql       # postgresql | s3 | elasticsearch | loki
       encryption: aes256     # Encrypt at rest
@@ -158,17 +156,13 @@ GDPR grants data subjects the right to access all data processed about them (Art
 
 When a user submits a data subject access request (DSAR), they are entitled to receive all records of processing that relate to them. For audit logs, this means you must be able to query "all API events where actor.email = 'user@example.com'" and export the results in a readable format.
 
+STOA has no dedicated DSAR command. Export the tenant's audit log entries without PII masking (the export then contains personal data: handle it accordingly), then filter on the user's email (`user_email` field):
+
 ```bash
-# STOA CLI: export DSAR for a user
-stoactl tenants dsar export \
-  --tenant acme \
-  --email alice@acme.example.com \
-  --from 2024-01-01 \
-  --to 2026-01-01 \
-  --format json
+stoactl audit export --tenant acme --since 2025-04-01 --redact-pii=false -o json > acme-audit-export.json
 ```
 
-The export includes all audit events where the user was the actor, including denied requests (which are often the most relevant from a DSAR perspective — they reveal what the user tried to do and was blocked from doing).
+Keep the entries where the user was the actor, including denied requests (which are often the most relevant from a DSAR perspective — they reveal what the user tried to do and was blocked from doing).
 
 ### Right to Erasure (Article 17)
 
@@ -214,40 +208,19 @@ SOC 2 Type II audits cover a 6-12 month observation period. The auditor will ask
 | CC6.7 | Restricted data transmitted over encrypted channels | TLS enforcement, cert events | STOA access log |
 | CC7.2 | Anomalous activity is detected | Rate limit violation events | STOA metrics |
 
-### Generating SOC 2 Evidence Reports
+### Exporting Audit Evidence for SOC 2
+
+STOA does not generate SOC 2 reports. You can export a tenant's audit log entries and hand them to your auditor:
 
 ```bash
-# Export SOC 2 evidence for a time period
-stoactl compliance soc2-report \
-  --tenant acme \
-  --from 2025-04-01 \
-  --to 2026-03-31 \
-  --output soc2-evidence-2025-2026.pdf
+stoactl audit export --tenant acme --since 2025-04-01 -o json > acme-audit-export.json
 ```
-
-The report includes:
-- Total API calls per month (shows volume of activity audited)
-- Authorization success/failure rates
-- Number of denied access attempts (demonstrates access controls are active)
-- API key provisioning and revocation events
-- Rate limit violations (demonstrates abuse detection)
 
 ### Ensuring Log Integrity
 
-For SOC 2, you need to demonstrate that audit logs cannot be modified after the fact. STOA uses two mechanisms:
+For SOC 2, you need to demonstrate that audit logs cannot be modified after the fact.
 
-**Cryptographic chaining**: Each audit entry includes a `chain_hash` that is the SHA-256 of the previous entry's hash + the current entry's content. Any modification of a past entry breaks the chain — detectable by re-running the hash validation.
-
-**Append-only storage**: The database role used by the audit writer has INSERT access but not UPDATE or DELETE. Even if an attacker compromises the application process, they cannot modify past entries.
-
-```bash
-# Verify audit log integrity (run periodically or before audits)
-stoactl tenants audit verify \
-  --tenant acme \
-  --from 2025-01-01 \
-  --to 2026-01-01
-# Output: "Audit chain verified: 3,241,891 entries, 0 integrity violations"
-```
+Tamper-evident audit storage (hash chain, append-only table) is designed but not enabled in STOA today. Until it is, copy exports to write-once storage that you control.
 
 ## Log Retention and Storage
 
@@ -285,38 +258,15 @@ Audit logs must be encrypted at rest. STOA uses AES-256 for PostgreSQL (via tran
 
 For tenants with data residency requirements, STOA supports per-tenant encryption keys — a compromise of one tenant's key does not expose another tenant's audit data.
 
-## Practical: Querying Your Audit Trail
+## Practical: Exporting Your Audit Trail
 
-The most common audit queries you will run:
+The supported way to work with your audit trail is to export a tenant's entries and analyse them with your own tools:
 
 ```bash
-# Who accessed the billing API in the last 7 days?
-stoactl tenants audit query \
-  --tenant acme \
-  --api billing-api \
-  --from -7d
-
-# All denied access attempts (security review)
-stoactl tenants audit query \
-  --tenant acme \
-  --decision denied \
-  --from -30d \
-  --format csv
-
-# All events for a specific user (DSAR or incident investigation)
-stoactl tenants audit query \
-  --tenant acme \
-  --actor alice@acme.example.com \
-  --from -365d \
-  --format json | jq '.events | length'
-
-# PII events summary
-stoactl tenants audit query \
-  --tenant acme \
-  --filter pii_detected=true \
-  --from -30d \
-  --group-by day
+stoactl audit export --tenant acme --since 2025-04-01 -o json > acme-audit-export.json
 ```
+
+From the JSON export, you can answer the common questions (who called an API, which requests were denied, which events concern a given user) with `jq` or your log tooling.
 
 ## What Comes Next
 
@@ -350,7 +300,7 @@ STOA allows configuring `level: errors-only` or `level: summary` for specific AP
 
 ### How do I demonstrate that my audit log is tamper-proof to an auditor?
 
-Show them the cryptographic chain verification command and its output: "Audit chain verified: N entries, 0 integrity violations." Also demonstrate that the database role used for audit writing lacks UPDATE and DELETE privileges. For high-assurance environments, consider streaming audit events to an immutable external sink (AWS CloudTrail, Azure Monitor) as a secondary record.
+STOA cannot prove this on its own today: tamper-evident audit storage (hash chain, append-only table) is designed but not enabled. Export audit entries regularly with `stoactl audit export` and copy them to write-once storage that you control, then show your auditor that storage and its retention settings.
 
 
 ---

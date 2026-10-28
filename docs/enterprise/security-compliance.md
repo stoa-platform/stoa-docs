@@ -236,13 +236,9 @@ Built-in dashboards for:
 - Data access patterns
 - SLA compliance metrics
 
-## Security Certifications (Roadmap)
+## Security Certifications
 
-| Certification | Status | Target |
-|---------------|--------|--------|
-| SOC 2 Type II | Planned | Q4 2026 |
-| ISO 27001 | Planned | 2027 |
-| ISAE 3402 | Planned | 2027 |
+STOA is open source software. It holds no security certification (such as SOC 2, ISO 27001 or ISAE 3402), and no certification process is currently under way. The controls described on this page (access control, audit logging, encryption) can support your own compliance efforts; certification and audit remain the responsibility of the organization that deploys STOA.
 
 ---
 
