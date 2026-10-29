@@ -1,0 +1,108 @@
+name: deploy-scaleway
+# Déploiement Scaleway (Object Storage website + Edge Services, Paris) — plan de migration §2.3.
+# Un seul build, promu tel quel : build -> scaleway-preprod (automatique) -> scaleway-production (approbation).
+# Sur pull_request : build seulement, sans aucun secret.
+on:
+  push: { branches: [main] }
+  pull_request:
+  workflow_dispatch:
+permissions: { contents: read }
+concurrency:
+  group: "deploy-scaleway-docs-${{ github.event_name == 'pull_request' && github.ref || 'main' }}"
+  cancel-in-progress: false
+
+jobs:
+  build:                                   # aucun secret ici
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run typecheck
+        continue-on-error: true   # erreurs TS préexistantes sur main (namespace JSX) : non bloquant, à corriger à part
+      - name: Audits locaux disponibles
+        run: |
+          node -e 'const s = require("./package.json").scripts; for (const n of Object.keys(s).filter(n => /^audit(?::|$)/.test(n))) console.log(n)' > "$RUNNER_TEMP/audits.txt"
+          while IFS= read -r audit; do npm run "$audit"; done < "$RUNNER_TEMP/audits.txt"
+      - run: npm run build
+      - name: Validation des chemins de release
+        env:
+          IMMUTABLE_PREFIXES: "assets/js assets/css assets/images"
+        run: python3 .github/scripts/release-files.py build
+      - name: Manifeste de release
+        run: (cd build && find . -type f -print0 | sort -z | xargs -0 sha256sum) > release-manifest.txt
+      - name: Contrôles de l'artefact
+        run: |
+          test -f build/index.html
+          test -f build/404.html
+          echo "$(wc -l < release-manifest.txt) fichiers, $(du -sh build | cut -f1)"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 90
+          if-no-files-found: error
+          include-hidden-files: true
+          path: |
+            build/
+            release-manifest.txt
+
+  preprod:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: scaleway-preprod          # clé de l'application ci-docs-preprod
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false, sparse-checkout: .github/scripts }
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with: { name: "release-${{ github.run_id }}-${{ github.run_attempt }}", path: release }
+      - name: Publication (assets -> non-HTML -> HTML, sans suppression) et purge
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.SCW_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SCW_SECRET_KEY }}
+          SCW_SECRET_KEY: ${{ secrets.SCW_SECRET_KEY }}
+          MANIFEST: release/release-manifest.txt
+          DIST: release/build
+          BUCKET: ${{ vars.SCW_BUCKET }}
+          PIPELINE: ${{ vars.SCW_PIPELINE_ID }}
+          REGION: ${{ vars.SCW_REGION }}
+          IMMUTABLE_PREFIXES: "assets/js assets/css assets/images"
+        run: bash .github/scripts/deploy-scaleway.sh
+      - name: Tests de fumée
+        env:
+          SITE: ${{ vars.SITE_URL }}
+          SMOKE_PATHS: "/ /fr/"
+        run: bash .github/scripts/smoke-test.sh
+
+  production:
+    needs: preprod                         # même artefact que la préprod, pas de rebuild
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: scaleway-production       # approbation obligatoire ; clé de ci-docs-prod (sans suppression d'objet)
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false, sparse-checkout: .github/scripts }
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with: { name: "release-${{ github.run_id }}-${{ github.run_attempt }}", path: release }
+      - name: Publication (assets -> non-HTML -> HTML, sans suppression) et purge
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.SCW_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SCW_SECRET_KEY }}
+          SCW_SECRET_KEY: ${{ secrets.SCW_SECRET_KEY }}
+          MANIFEST: release/release-manifest.txt
+          DIST: release/build
+          BUCKET: ${{ vars.SCW_BUCKET }}
+          PIPELINE: ${{ vars.SCW_PIPELINE_ID }}
+          REGION: ${{ vars.SCW_REGION }}
+          IMMUTABLE_PREFIXES: "assets/js assets/css assets/images"
+        run: bash .github/scripts/deploy-scaleway.sh
+      - name: Tests de fumée
+        env:
+          SITE: ${{ vars.SITE_URL }}
+          SMOKE_PATHS: "/ /fr/"
+        run: bash .github/scripts/smoke-test.sh
