@@ -53,6 +53,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [044](./adr-044-mcp-oauth-gateway-proxy.md) | MCP OAuth 2.1 Gateway Proxy Architecture | ✅ |
 | [054](./adr-054-rbac-taxonomy-v2.md) | RBAC Taxonomy v2 — Persona Roles & Display Names | ✅ |
 | [056](./adr-056-fapi-2-architecture.md) | FAPI 2.0 Security Architecture | ✅ |
+| [072](./adr-072-gateway-fail-closed-posture.md) | Gateway Fail-Closed Posture — Deny-by-Default on CP Outage | 📋 |
 
 ### MCP & AI Gateway
 
