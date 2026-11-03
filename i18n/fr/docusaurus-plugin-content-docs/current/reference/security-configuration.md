@@ -359,7 +359,7 @@ Alertes recommandées :
 
 ### Erreurs de Validation JWT
 
-**Symptôme :** `401 Unauthorized` avec le message "Invalid token" sur les endpoints MCP ; les logs de la gateway indiquent `Invalid audience: expected <value>`
+**Symptôme :** `401 Unauthorized` sur les endpoints MCP. Le message dépend du chemin : les routes REST MCP (par exemple `/mcp/tools/list`, `/mcp/tools/call`) renvoient "Invalid audience" et la gateway journalise `Invalid audience: expected <value>` ; les handlers de transport MCP partagés (HTTP streamable, SSE, WebSocket) renvoient un "Invalid token" générique sans journaliser ce détail
 
 **Solution :**
 1. Vérifier l'audience du token : `echo $TOKEN | cut -d. -f2 | base64 -d | jq '.aud'`
