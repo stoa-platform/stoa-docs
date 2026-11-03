@@ -71,14 +71,14 @@ Content-Type: application/json
 }
 ```
 
-`name`, `display_name` and `owner_email` are required. The tenant identifier is derived from `name` (lower-cased, spaces replaced by hyphens). Provisioning runs asynchronously: poll `GET /tenants/{tenant_id}/provisioning-status`.
+`name`, `display_name` and `owner_email` are required. The tenant identifier is derived from `name` (lower-cased, spaces replaced by hyphens). Provisioning runs asynchronously: poll `GET /tenants/{tenant_id}/provisioning-status`. The response returns the supplied `display_name` as `name`.
 
 **Response:**
 
 ```json
 {
   "id": "acme",
-  "name": "acme",
+  "name": "ACME Corp",
   "display_name": "ACME Corp",
   "owner_email": "owner@example.com",
   "status": "active",
@@ -153,7 +153,7 @@ Content-Type: application/json
   "version": "1.0.0",
   "backend_url": "https://payments.internal.example.com",
   "status": "draft",
-  "created_at": "2025-01-09T10:15:00Z"
+  "created_at": null
 }
 ```
 
@@ -202,7 +202,7 @@ POST /subscriptions
 Content-Type: application/json
 
 {
-  "application_id": "app-123",
+  "application_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "application_name": "Mobile App",
   "api_id": "payment-api",
   "api_name": "Payment API",
@@ -213,14 +213,14 @@ Content-Type: application/json
 }
 ```
 
-Returns `201 Created`. All fields except `plan_id` and `plan_name` are required. The subscription starts in `pending` status until a tenant admin approves it; access uses the application's OAuth2 client credentials, no API key is issued.
+Returns `201 Created`. All fields except `plan_id` and `plan_name` are required; `application_id` is the UUID of an existing application. The subscription is returned as `active` when no `plan_id` is supplied, when the plan does not require approval, or when the caller holds one of the plan's auto-approve roles; otherwise it stays `pending` until a tenant admin approves it. Access uses the application's OAuth2 client credentials, no API key is issued.
 
-**Response (abridged):**
+**Response (abridged, plan requiring approval):**
 
 ```json
 {
   "id": "0f1e2d3c-4b5a-4c6d-8e9f-0a1b2c3d4e5f",
-  "application_id": "app-123",
+  "application_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "api_id": "payment-api",
   "tenant_id": "acme",
   "status": "pending",
@@ -234,7 +234,7 @@ Returns `201 Created`. All fields except `plan_id` and `plan_name` are required.
 GET /subscriptions/tenant/{tenant_id}?status=pending&page=1&page_size=20
 ```
 
-Lists a tenant's subscriptions (tenant admins). `status` and `environment` filters are optional; the response is paginated (`items`, `total`, `page`, `page_size`, `total_pages`). Use `GET /subscriptions/my` for the calling user's own subscriptions.
+Lists a tenant's subscriptions; available to members of that tenant and to platform admins. `status` and `environment` filters are optional; the response is paginated (`items`, `total`, `page`, `page_size`, `total_pages`). `GET /subscriptions/my` returns the calling user's own subscriptions; for tenant admins and platform admins it returns every subscription, not only their own.
 
 ### Get Subscription
 

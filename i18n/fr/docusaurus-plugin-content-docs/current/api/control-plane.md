@@ -71,14 +71,14 @@ Content-Type: application/json
 }
 ```
 
-`name`, `display_name` et `owner_email` sont obligatoires. L'identifiant du tenant est dérivé de `name` (minuscules, espaces remplacés par des tirets). Le provisioning est asynchrone : interrogez `GET /tenants/{tenant_id}/provisioning-status`.
+`name`, `display_name` et `owner_email` sont obligatoires. L'identifiant du tenant est dérivé de `name` (minuscules, espaces remplacés par des tirets). Le provisioning est asynchrone : interrogez `GET /tenants/{tenant_id}/provisioning-status`. La réponse renvoie le `display_name` fourni comme `name`.
 
 **Réponse :**
 
 ```json
 {
   "id": "acme",
-  "name": "acme",
+  "name": "ACME Corp",
   "display_name": "ACME Corp",
   "owner_email": "owner@example.com",
   "status": "active",
@@ -153,7 +153,7 @@ Content-Type: application/json
   "version": "1.0.0",
   "backend_url": "https://payments.internal.example.com",
   "status": "draft",
-  "created_at": "2025-01-09T10:15:00Z"
+  "created_at": null
 }
 ```
 
@@ -202,7 +202,7 @@ POST /subscriptions
 Content-Type: application/json
 
 {
-  "application_id": "app-123",
+  "application_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "application_name": "Mobile App",
   "api_id": "payment-api",
   "api_name": "Payment API",
@@ -213,14 +213,14 @@ Content-Type: application/json
 }
 ```
 
-Retourne `201 Created`. Tous les champs sauf `plan_id` et `plan_name` sont obligatoires. L'abonnement démarre au statut `pending` jusqu'à son approbation par un administrateur du tenant ; l'accès utilise les client credentials OAuth2 de l'application, aucune clé API n'est émise.
+Retourne `201 Created`. Tous les champs sauf `plan_id` et `plan_name` sont obligatoires ; `application_id` est l'UUID d'une application existante. L'abonnement est renvoyé au statut `active` si aucun `plan_id` n'est fourni, si le plan n'exige pas d'approbation ou si l'appelant possède l'un des rôles d'approbation automatique du plan ; sinon il reste `pending` jusqu'à son approbation par un administrateur du tenant. L'accès utilise les client credentials OAuth2 de l'application, aucune clé API n'est émise.
 
-**Réponse (abrégée) :**
+**Réponse (abrégée, plan soumis à approbation) :**
 
 ```json
 {
   "id": "0f1e2d3c-4b5a-4c6d-8e9f-0a1b2c3d4e5f",
-  "application_id": "app-123",
+  "application_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "api_id": "payment-api",
   "tenant_id": "acme",
   "status": "pending",
@@ -234,7 +234,7 @@ Retourne `201 Created`. Tous les champs sauf `plan_id` et `plan_name` sont oblig
 GET /subscriptions/tenant/{tenant_id}?status=pending&page=1&page_size=20
 ```
 
-Liste les abonnements d'un tenant (administrateurs du tenant). Les filtres `status` et `environment` sont optionnels ; la réponse est paginée (`items`, `total`, `page`, `page_size`, `total_pages`). Utilisez `GET /subscriptions/my` pour les abonnements de l'utilisateur appelant.
+Liste les abonnements d'un tenant ; accessible aux membres de ce tenant et aux administrateurs plateforme. Les filtres `status` et `environment` sont optionnels ; la réponse est paginée (`items`, `total`, `page`, `page_size`, `total_pages`). `GET /subscriptions/my` renvoie les abonnements de l'utilisateur appelant ; pour les administrateurs du tenant et les administrateurs plateforme, il renvoie tous les abonnements, pas seulement les leurs.
 
 ### Obtenir un Abonnement
 
