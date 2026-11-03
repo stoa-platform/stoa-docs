@@ -40,14 +40,20 @@ Le load balancer (nginx, HAProxy, F5) termine le TLS et transmet les détails du
 
 ### Variables d'Environnement
 
+Les paramètres mTLS se trouvent dans la section imbriquée `mtls` de la configuration du gateway. Les variables d'environnement utilisent un **double underscore** (`__`) entre le préfixe `MTLS` et le nom du champ, par exemple `STOA_MTLS__ENABLED` définit `mtls.enabled`.
+
 | Variable | Défaut | Description |
 |----------|---------|-------------|
-| `STOA_MTLS_ENABLED` | `false` | Activer le traitement mTLS |
-| `STOA_MTLS_REQUIRE_BINDING` | `true` | Exiger la claim JWT `cnf` lorsqu'un certificat est présent |
-| `STOA_MTLS_TRUSTED_PROXIES` | (vide) | CIDRs de proxies de confiance séparés par des virgules |
-| `STOA_MTLS_ALLOWED_ISSUERS` | (vide) | DNs d'émetteurs autorisés séparés par des virgules |
-| `STOA_MTLS_REQUIRED_ROUTES` | (vide) | Patterns glob pour les routes nécessitant des certificats |
-| `STOA_MTLS_TENANT_FROM_DN` | `true` | Extraire le tenant du DN sujet du certificat |
+| `STOA_MTLS__ENABLED` | `false` | Activer le traitement mTLS |
+| `STOA_MTLS__REQUIRE_BINDING` | `true` | Exiger la claim JWT `cnf` lorsqu'un certificat est présent |
+| `STOA_MTLS__TRUSTED_PROXIES` | (vide) | CIDRs ou IPs des proxies de confiance (séparés par des virgules ou tableau JSON). Comparés à l'entrée la plus à droite de `X-Forwarded-For` lorsqu'elle est une adresse IP valide, sinon à l'adresse de connexion (voir [Configuration des Proxies de Confiance](#configuration-des-proxies-de-confiance)). **Obligatoire (non vide) lorsque le mTLS est activé.** |
+| `STOA_MTLS__ALLOWED_ISSUERS` | (vide) | DNs d'émetteurs, comparés à l'identique avec `X-SSL-Client-I-DN`. Vide = tout émetteur accepté. La forme séparée par des virgules découpe sur chaque virgule : un DN contenant des virgules doit être fourni sous forme de tableau JSON (ou de liste YAML dans le fichier de configuration). |
+| `STOA_MTLS__REQUIRED_ROUTES` | (vide) | Patterns glob pour les routes nécessitant des certificats (séparés par des virgules ou tableau JSON) |
+| `STOA_MTLS__TENANT_FROM_DN` | `true` | Accepté et analysé, mais actuellement inutilisé : le gateway n'extrait pas de tenant du DN sujet du certificat, ce paramètre n'a donc aucun effet |
+
+:::warning Les noms à simple underscore sont ignorés
+Les noms avec un seul underscore, comme `STOA_MTLS_ENABLED`, ne définissent aucun champ mTLS. Le gateway ne lie les champs imbriqués que via la forme `STOA_MTLS__*` (ou la section `mtls:` de son fichier de configuration YAML). Si vous avez utilisé les noms à simple underscore, le mTLS n'a jamais été activé.
+:::
 
 ### Mapping des En-têtes
 
@@ -98,11 +104,12 @@ Le gateway normalise automatiquement les empreintes depuis trois formats :
 
 ### Phase 1 : Surveillance Uniquement
 
-Activer le traitement mTLS sans application :
+Activer le traitement mTLS sans application. Une liste de proxies de confiance est obligatoire dès que `STOA_MTLS__ENABLED=true`, sinon le gateway refuse de démarrer :
 
 ```bash
-STOA_MTLS_ENABLED=true
-STOA_MTLS_REQUIRE_BINDING=false
+STOA_MTLS__ENABLED=true
+STOA_MTLS__REQUIRE_BINDING=false
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>
 ```
 
 Les certificats sont extraits et journalisés, mais les requêtes sans certificats sont toujours autorisées.
@@ -110,37 +117,51 @@ Les certificats sont extraits et journalisés, mais les requêtes sans certifica
 ### Phase 2 : Requis sur les Routes de Test
 
 ```bash
-STOA_MTLS_ENABLED=true
-STOA_MTLS_REQUIRE_BINDING=true
-STOA_MTLS_REQUIRED_ROUTES=/api/v1/test-mtls/*
+STOA_MTLS__ENABLED=true
+STOA_MTLS__REQUIRE_BINDING=true
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>
+STOA_MTLS__REQUIRED_ROUTES=/api/v1/test-mtls/*
 ```
 
 ### Phase 3 : Application en Production
 
 ```bash
-STOA_MTLS_ENABLED=true
-STOA_MTLS_REQUIRE_BINDING=true
-STOA_MTLS_REQUIRED_ROUTES=/api/v1/payments/*,/api/v1/transfers/*
-STOA_MTLS_TRUSTED_PROXIES=10.0.1.0/24
-STOA_MTLS_ALLOWED_ISSUERS=CN=STOA Intermediate CA,O=STOA Platform,C=FR
+STOA_MTLS__ENABLED=true
+STOA_MTLS__REQUIRE_BINDING=true
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>
+STOA_MTLS__REQUIRED_ROUTES=/api/v1/payments/*,/api/v1/transfers/*
+STOA_MTLS__ALLOWED_ISSUERS='["CN=<YOUR_ISSUING_CA>,O=<YOUR_ORG>,C=<COUNTRY_CODE>"]'
 ```
+
+Le DN de l'émetteur contient des virgules, il est donc passé sous forme de tableau JSON. La forme séparée par des virgules le découperait en trois entrées distinctes (`CN=...`, `O=...`, `C=...`), dont aucune n'est égale au DN complet, et tous les certificats de cette CA seraient rejetés avec `403 MTLS_ISSUER_DENIED`. Dans le fichier de configuration YAML, utilisez une liste sous `mtls.allowed_issuers`.
 
 ## Configuration des Proxies de Confiance
 
-Lorsque `STOA_MTLS_TRUSTED_PROXIES` est défini, le gateway n'accepte les en-têtes `X-SSL-*` que depuis des requêtes provenant d'IPs de confiance :
+Le gateway n'accepte les en-têtes `X-SSL-*` que depuis des requêtes provenant des IPs listées dans `STOA_MTLS__TRUSTED_PROXIES`. Cette liste est un prérequis au démarrage : lorsque `STOA_MTLS__ENABLED=true` et que la liste est vide, la validation de la configuration échoue et le gateway ne démarre pas. Une liste vide reviendrait à accepter les en-têtes de certificat depuis n'importe quelle source, ce qui constitue un contournement de l'authentification ; il n'existe donc pas de mode « tout accepter ».
 
 ```bash
-# Faire confiance à des plages CIDR spécifiques
-STOA_MTLS_TRUSTED_PROXIES=10.0.0.0/8,172.16.0.0/12
+# Faire confiance à des plages CIDR spécifiques (séparées par des virgules)
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR_1>,<TRUSTED_PROXY_CIDR_2>
 
 # Faire confiance à une IP unique
-STOA_MTLS_TRUSTED_PROXIES=10.0.1.50
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_IP>
 
-# Vide = accepter depuis toutes les sources (dev uniquement)
-STOA_MTLS_TRUSTED_PROXIES=
+# La forme tableau JSON est également acceptée
+STOA_MTLS__TRUSTED_PROXIES='["<TRUSTED_PROXY_CIDR_1>","<TRUSTED_PROXY_CIDR_2>"]'
 ```
 
-Les sources non fiables envoyant des en-têtes `X-SSL-*` reçoivent `403 MTLS_UNTRUSTED_PROXY`.
+Listez les adresses des terminateurs TLS qui transmettent les en-têtes `X-SSL-*` au gateway (ingress controller, F5, HAProxy, nginx). Les sources non fiables envoyant des en-têtes `X-SSL-*` reçoivent `403 MTLS_UNTRUSTED_PROXY`.
+
+Le gateway évalue exactement une adresse par requête, et la liste de confiance doit correspondre à cette adresse :
+
+- Lorsque la requête porte un en-tête `X-Forwarded-For` et que son entrée la **plus à droite** est une adresse IP valide, le gateway utilise cette entrée et ignore l'adresse de connexion.
+- Sinon (en-tête absent, ou entrée la plus à droite qui n'est pas une adresse IP valide), le gateway utilise l'adresse source de la connexion TCP, c'est-à-dire l'adresse de sortie du saut qui s'est connecté à lui.
+
+Cela conditionne la manière dont le dernier saut avant le gateway doit traiter `X-Forwarded-For` :
+
+- Si le terminateur se connecte directement au gateway sans envoyer `X-Forwarded-For`, mettez son adresse de sortie dans la liste de confiance.
+- Si le terminateur complète `X-Forwarded-For` de la manière habituelle, l'entrée la plus à droite est l'adresse du saut qui le précède, ou celle du client d'origine lorsque le terminateur est le premier saut. Ne lister que l'adresse de sortie du terminateur échoue alors avec `403 MTLS_UNTRUSTED_PROXY`. Supprimez `X-Forwarded-For` au niveau du terminateur, ou listez l'adresse qu'il place en position la plus à droite.
+- Ne transmettez jamais tel quel un `X-Forwarded-For` fourni par le client : l'appelant pourrait alors choisir l'adresse que le gateway évalue. Le dernier saut doit lui-même supprimer ou réécrire cet en-tête.
 
 ## Réponses d'Erreur
 
@@ -156,12 +177,7 @@ Les sources non fiables envoyant des en-têtes `X-SSL-*` reçoivent `403 MTLS_UN
 
 ## En-têtes en Aval
 
-Après une validation réussie, le gateway transmet ces en-têtes aux services backend :
-
-```
-X-Authenticated-Client-Fingerprint: {16 premiers caractères de l'empreinte}
-X-Authenticated-Client-Subject: {DN sujet}
-```
+Le gateway n'ajoute actuellement aucun en-tête d'identité dérivé du certificat aux requêtes qu'il transmet aux services backend. Les en-têtes `X-Authenticated-Client-*` fournis par le client peuvent néanmoins être transmis ; les backends ne doivent pas les considérer comme une identité client authentifiée sans avoir l'assurance qu'ils ont été définis par un gateway de confiance.
 
 ## Voir Aussi
 

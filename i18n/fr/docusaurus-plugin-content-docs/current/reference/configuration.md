@@ -145,11 +145,12 @@ STOA_ADMIN_API_TOKEN=secret
 STOA_RATE_LIMIT_DEFAULT=100     # Requêtes par minute par consumer
 STOA_QUOTA_ENABLED=true
 
-# mTLS (RFC 8705)
-STOA_MTLS_ENABLED=false
-STOA_MTLS_REQUIRE_BINDING=true
-STOA_MTLS_TRUSTED_PROXIES=      # CIDRs séparés par des virgules
-STOA_MTLS_ALLOWED_ISSUERS=      # DNs d'émetteurs séparés par des virgules
+# mTLS (RFC 8705) -- les champs imbriqués utilisent un double underscore : STOA_MTLS__<CHAMP>
+# Les noms à simple underscore (STOA_MTLS_ENABLED) sont ignorés.
+STOA_MTLS__ENABLED=false
+STOA_MTLS__REQUIRE_BINDING=true
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>   # CIDRs séparés par des virgules ; OBLIGATOIRE (non vide) si ENABLED=true, sinon le gateway refuse de démarrer
+STOA_MTLS__ALLOWED_ISSUERS=                       # DNs d'émetteurs (vide = tout émetteur). Un DN contenant des virgules exige un tableau JSON ou une liste YAML, ex. '["CN=<CA>,O=<ORG>,C=<CC>"]'
 
 # Circuit breaker
 STOA_CB_FAILURE_THRESHOLD=5
