@@ -177,7 +177,7 @@ Cela conditionne la manière dont le dernier saut avant le gateway doit traiter 
 
 ## En-têtes en Aval
 
-Le gateway n'ajoute actuellement aucun en-tête d'identité dérivé du certificat aux requêtes qu'il transmet aux services backend. Après validation, la requête est relayée sans en-têtes `X-Authenticated-Client-*` ; les backends ne doivent donc pas s'appuyer sur eux pour identifier le client.
+Le gateway n'ajoute actuellement aucun en-tête d'identité dérivé du certificat aux requêtes qu'il transmet aux services backend. Les en-têtes `X-Authenticated-Client-*` fournis par le client peuvent néanmoins être transmis ; les backends ne doivent pas les considérer comme une identité client authentifiée sans avoir l'assurance qu'ils ont été définis par un gateway de confiance.
 
 ## Voir Aussi
 

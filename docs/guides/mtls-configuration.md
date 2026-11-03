@@ -177,7 +177,7 @@ This determines how the last hop before the gateway must handle `X-Forwarded-For
 
 ## Downstream Headers
 
-The gateway does not currently add certificate-derived identity headers to the requests it forwards to backend services. After validation, the request is proxied without `X-Authenticated-Client-*` headers, so backends must not rely on them to identify the client.
+The gateway does not currently add certificate-derived identity headers to the requests it forwards to backend services. Client-supplied `X-Authenticated-Client-*` headers may still be forwarded; backends must not trust them as authenticated client identity unless they are known to have been set by a trusted gateway.
 
 ## Related
 
