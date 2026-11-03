@@ -213,7 +213,7 @@ Content-Type: application/json
 }
 ```
 
-Returns `201 Created`. All fields except `plan_id` and `plan_name` are required; `application_id` is the UUID of an existing application. The subscription is returned as `active` when no `plan_id` is supplied, when the plan does not require approval, or when the caller holds one of the plan's auto-approve roles; otherwise it stays `pending` until a tenant admin approves it. Access uses the application's OAuth2 client credentials, no API key is issued.
+Returns `201 Created`. All fields except `plan_id` and `plan_name` are required; `application_id` is the UUID of an existing application. The subscription is returned as `active` when no `plan_id` is supplied, when the plan does not require approval, or when the caller holds one of the plan's auto-approve roles; otherwise it stays `pending` until a tenant admin approves it. Access is governed by the application's security profile: the default profile is a public OAuth2 client with PKCE, and API-key applications without an OAuth2 client are also accepted. Creating a subscription issues no new API key.
 
 **Response (abridged, plan requiring approval):**
 

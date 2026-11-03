@@ -213,7 +213,7 @@ Content-Type: application/json
 }
 ```
 
-Retourne `201 Created`. Tous les champs sauf `plan_id` et `plan_name` sont obligatoires ; `application_id` est l'UUID d'une application existante. L'abonnement est renvoyé au statut `active` si aucun `plan_id` n'est fourni, si le plan n'exige pas d'approbation ou si l'appelant possède l'un des rôles d'approbation automatique du plan ; sinon il reste `pending` jusqu'à son approbation par un administrateur du tenant. L'accès utilise les client credentials OAuth2 de l'application, aucune clé API n'est émise.
+Retourne `201 Created`. Tous les champs sauf `plan_id` et `plan_name` sont obligatoires ; `application_id` est l'UUID d'une application existante. L'abonnement est renvoyé au statut `active` si aucun `plan_id` n'est fourni, si le plan n'exige pas d'approbation ou si l'appelant possède l'un des rôles d'approbation automatique du plan ; sinon il reste `pending` jusqu'à son approbation par un administrateur du tenant. L'accès dépend du profil de sécurité de l'application : le profil par défaut est un client OAuth2 public avec PKCE, et les applications à clé API sans client OAuth2 sont également acceptées. La création d'un abonnement n'émet aucune nouvelle clé API.
 
 **Réponse (abrégée, plan soumis à approbation) :**
 
