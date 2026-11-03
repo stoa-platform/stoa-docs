@@ -65,21 +65,24 @@ Content-Type: application/json
 
 {
   "name": "acme",
-  "tier": "starter",
-  "admin_email": "admin@acme.com",
-  "region": "us-east-1"
+  "display_name": "ACME Corp",
+  "description": "Payments team",
+  "owner_email": "owner@example.com"
 }
 ```
+
+`name`, `display_name` and `owner_email` are required. The tenant identifier is derived from `name` (lower-cased, spaces replaced by hyphens). Provisioning runs asynchronously: poll `GET /tenants/{tenant_id}/provisioning-status`.
 
 **Response:**
 
 ```json
 {
-  "id": "ten-abc123",
+  "id": "acme",
   "name": "acme",
-  "tier": "starter",
-  "status": "provisioning",
-  "gateway_url": "https://gateway.<YOUR_DOMAIN>/acme",
+  "display_name": "ACME Corp",
+  "owner_email": "owner@example.com",
+  "status": "active",
+  "provisioning_status": "pending",
   "created_at": "2025-01-09T10:00:00Z"
 }
 ```
@@ -87,8 +90,10 @@ Content-Type: application/json
 ### List Tenants
 
 ```http
-GET /tenants?page=1&limit=20
+GET /tenants
 ```
+
+Returns a plain JSON array, without pagination. Platform admins see every tenant; other users only see their own tenant.
 
 ### Get Tenant
 
@@ -99,16 +104,17 @@ GET /tenants/{tenant_id}
 ### Update Tenant
 
 ```http
-PATCH /tenants/{tenant_id}
+PUT /tenants/{tenant_id}
 Content-Type: application/json
 
 {
-  "tier": "business",
-  "settings": {
-    "rate_limit_multiplier": 2.0
-  }
+  "display_name": "ACME Corporation",
+  "description": "Payments and billing teams",
+  "max_apis": 20
 }
 ```
+
+All fields are optional (`display_name`, `description`, `owner_email`, `max_apis`, `max_applications`); omitted fields are left unchanged.
 
 ### Delete Tenant
 
@@ -126,25 +132,27 @@ Content-Type: application/json
 
 {
   "name": "payment-api",
+  "display_name": "Payment API",
   "description": "Payment processing API",
-  "upstream_url": "https://api.payments.example.com",
-  "path": "/payments",
-  "version": "v1",
-  "auth_required": true,
-  "rate_limit": {
-    "requests_per_hour": 1000
-  }
+  "backend_url": "https://payments.internal.example.com",
+  "version": "1.0.0",
+  "tags": ["payments"]
 }
 ```
+
+`name`, `display_name` and `backend_url` are required. `version` defaults to `1.0.0`; `openapi_spec` optionally carries the OpenAPI document as a string. The API identifier is derived from `name`.
 
 **Response:**
 
 ```json
 {
-  "id": "api-xyz789",
+  "id": "payment-api",
+  "tenant_id": "acme",
   "name": "payment-api",
-  "public_url": "https://gateway.<YOUR_DOMAIN>/acme/payments",
-  "status": "active",
+  "display_name": "Payment API",
+  "version": "1.0.0",
+  "backend_url": "https://payments.internal.example.com",
+  "status": "draft",
   "created_at": "2025-01-09T10:15:00Z"
 }
 ```
@@ -152,8 +160,10 @@ Content-Type: application/json
 ### List APIs
 
 ```http
-GET /tenants/{tenant_id}/apis
+GET /tenants/{tenant_id}/apis?page=1&page_size=20
 ```
+
+Optional `environment` filter (`dev`, `staging` or `prod`). The response is a page envelope with `items`, `total`, `page` and `page_size`.
 
 ### Get API
 
@@ -164,15 +174,16 @@ GET /tenants/{tenant_id}/apis/{api_id}
 ### Update API
 
 ```http
-PATCH /tenants/{tenant_id}/apis/{api_id}
+PUT /tenants/{tenant_id}/apis/{api_id}
 Content-Type: application/json
 
 {
-  "rate_limit": {
-    "requests_per_hour": 2000
-  }
+  "description": "Payment processing API (new backend)",
+  "backend_url": "https://payments-v2.internal.example.com"
 }
 ```
+
+Only the provided fields are updated (`display_name`, `version`, `description`, `backend_url`, `openapi_spec`, `tags`).
 
 ### Delete API
 
@@ -182,28 +193,37 @@ DELETE /tenants/{tenant_id}/apis/{api_id}
 
 ## Subscriptions
 
+Subscriptions are a top-level resource under `/subscriptions`; they are not nested under the tenant.
+
 ### Create Subscription
 
 ```http
-POST /tenants/{tenant_id}/subscriptions
+POST /subscriptions
 Content-Type: application/json
 
 {
-  "api_id": "api-xyz789",
-  "plan": "standard",
-  "application": "mobile-app",
-  "callback_url": "https://myapp.com/webhook"
+  "application_id": "app-123",
+  "application_name": "Mobile App",
+  "api_id": "payment-api",
+  "api_name": "Payment API",
+  "api_version": "1.0.0",
+  "tenant_id": "acme",
+  "plan_id": "basic",
+  "plan_name": "Basic Plan"
 }
 ```
 
-**Response:**
+Returns `201 Created`. All fields except `plan_id` and `plan_name` are required. The subscription starts in `pending` status until a tenant admin approves it; access uses the application's OAuth2 client credentials, no API key is issued.
+
+**Response (abridged):**
 
 ```json
 {
-  "id": "sub-12345",
-  "api_id": "api-xyz789",
-  "status": "pending_approval",
-  "api_key": null,
+  "id": "0f1e2d3c-4b5a-4c6d-8e9f-0a1b2c3d4e5f",
+  "application_id": "app-123",
+  "api_id": "payment-api",
+  "tenant_id": "acme",
+  "status": "pending",
   "created_at": "2025-01-09T10:30:00Z"
 }
 ```
@@ -211,32 +231,42 @@ Content-Type: application/json
 ### List Subscriptions
 
 ```http
-GET /tenants/{tenant_id}/subscriptions
+GET /subscriptions/tenant/{tenant_id}?status=pending&page=1&page_size=20
 ```
+
+Lists a tenant's subscriptions (tenant admins). `status` and `environment` filters are optional; the response is paginated (`items`, `total`, `page`, `page_size`, `total_pages`). Use `GET /subscriptions/my` for the calling user's own subscriptions.
 
 ### Get Subscription
 
 ```http
-GET /tenants/{tenant_id}/subscriptions/{subscription_id}
+GET /subscriptions/{subscription_id}
 ```
 
 ### Approve Subscription
 
 ```http
-POST /tenants/{tenant_id}/subscriptions/{subscription_id}/approve
+POST /subscriptions/{subscription_id}/approve
 Content-Type: application/json
 
 {
-  "rate_limit": 1000,
-  "quota": 50000
+  "expires_at": "2025-12-31T23:59:59Z"
 }
 ```
+
+`expires_at` is optional. Requires the tenant admin or platform admin role.
 
 ### Revoke Subscription
 
 ```http
-DELETE /tenants/{tenant_id}/subscriptions/{subscription_id}
+POST /subscriptions/{subscription_id}/revoke
+Content-Type: application/json
+
+{
+  "reason": "Violation of terms of service"
+}
 ```
+
+`reason` is required. A subscriber cancels their own subscription with `DELETE /subscriptions/{subscription_id}` (returns `204`).
 
 ## API Keys
 
