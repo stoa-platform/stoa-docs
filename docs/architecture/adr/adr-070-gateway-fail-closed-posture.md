@@ -20,11 +20,11 @@ The posture was drafted on 2026-05-13 and accepted on 2026-11-03, together with 
 | **Date** | 2026-05-13 |
 | **Updated** | 2026-11-03 — accepted; signed artifact contract (annex) and readiness contract fixed |
 | **Decision Makers** | Christophe Aboulicam |
-| **Related** | [ADR-024](./adr-024-gateway-unified-modes.md), [ADR-037](./adr-037-deployment-modes-sovereign-first.md), [ADR-067](./adr-067-uac-as-llm-optimized-executable-contract.md), [ADR-068](./adr-068-audit-log-actor-resource-views.md), [ADR-073](./adr-073-adopt-envoy-data-plane.md) |
+| **Related** | [ADR-024](/docs/architecture/adr/adr-024-gateway-unified-modes), [ADR-037](/docs/architecture/adr/adr-037-deployment-modes-sovereign-first), [ADR-067](/docs/architecture/adr/adr-067-uac-as-llm-optimized-executable-contract), [ADR-068](/docs/architecture/adr/adr-068-audit-log-actor-resource-views), [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) |
 
 ## Context
 
-The component that enforces MCP tool permissions (STOA Gateway today, and the STOA logic that runs alongside Envoy under [ADR-073](./adr-073-adopt-envoy-data-plane.md)) depends on the Control Plane API (CP-API) for its policy. When that dependency degrades (CP-API unreachable, policy load failure, stale cache, missed revocation), the behaviour must be explicit and safe by default.
+The component that enforces MCP tool permissions (STOA Gateway today, and the STOA logic that runs alongside Envoy under [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) depends on the Control Plane API (CP-API) for its policy. When that dependency degrades (CP-API unreachable, policy load failure, stale cache, missed revocation), the behaviour must be explicit and safe by default.
 
 For regulated tenants (DORA, NIS2), an enforcement point that silently allows calls when its source of truth is missing is not acceptable. Choosing deny-by-default has a product cost: a CP-API outage can turn into an access outage on the data plane. This ADR records that trade-off as an explicit decision.
 
@@ -51,7 +51,7 @@ The cache used during a CP-API outage is a first-class artifact issued and signe
 
 ### 3. No implicit read-only fallback
 
-There is no degraded "read-only" mode. STOA does not yet have a machine-readable, signed proof that an operation has no side effects (see [ADR-067](./adr-067-uac-as-llm-optimized-executable-contract.md)). Any future read-only mode requires an amendment to this ADR.
+There is no degraded "read-only" mode. STOA does not yet have a machine-readable, signed proof that an operation has no side effects (see [ADR-067](/docs/architecture/adr/adr-067-uac-as-llm-optimized-executable-contract)). Any future read-only mode requires an amendment to this ADR.
 
 ### 4. Readiness and liveness
 
@@ -68,7 +68,7 @@ Every fail-closed transition emits a structured audit event (`action=health_degr
 
 ### 6. Durable audit of denials
 
-Denials and approval-gated events are written to a durable local spool before being forwarded to the CP-API (schema per [ADR-068](./adr-068-audit-log-actor-resource-views.md)). Rules:
+Denials and approval-gated events are written to a durable local spool before being forwarded to the CP-API (schema per [ADR-068](/docs/architecture/adr/adr-068-audit-log-actor-resource-views)). Rules:
 
 1. A restart keeps unflushed events.
 2. Crossing the high-water mark (default 80 % of capacity) fails readiness.
