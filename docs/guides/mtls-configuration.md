@@ -46,10 +46,10 @@ mTLS settings live in the nested `mtls` section of the gateway configuration. En
 |----------|---------|-------------|
 | `STOA_MTLS__ENABLED` | `false` | Enable mTLS processing |
 | `STOA_MTLS__REQUIRE_BINDING` | `true` | Require JWT `cnf` claim when cert present |
-| `STOA_MTLS__TRUSTED_PROXIES` | (empty) | CIDRs or IPs of trusted proxies (comma-separated or JSON array). Matched against the rightmost `X-Forwarded-For` entry, or the connection address when that header is absent (see [Trusted Proxy Configuration](#trusted-proxy-configuration)). **Required (non-empty) when mTLS is enabled.** |
+| `STOA_MTLS__TRUSTED_PROXIES` | (empty) | CIDRs or IPs of trusted proxies (comma-separated or JSON array). Matched against the rightmost `X-Forwarded-For` entry when it is a valid IP address, otherwise against the connection address (see [Trusted Proxy Configuration](#trusted-proxy-configuration)). **Required (non-empty) when mTLS is enabled.** |
 | `STOA_MTLS__ALLOWED_ISSUERS` | (empty) | Issuer DNs, compared exactly against `X-SSL-Client-I-DN`. Empty accepts any issuer. The comma-separated form splits on every comma, so a DN containing commas must be given as a JSON array (or a YAML list in the config file). |
 | `STOA_MTLS__REQUIRED_ROUTES` | (empty) | Glob patterns for routes requiring certs (comma-separated or JSON array) |
-| `STOA_MTLS__TENANT_FROM_DN` | `true` | Extract tenant from certificate subject DN |
+| `STOA_MTLS__TENANT_FROM_DN` | `true` | Accepted and parsed, but currently unused: the gateway does not extract a tenant from the certificate subject DN, so this setting has no effect |
 
 :::warning Single-underscore names are ignored
 Names with a single underscore, such as `STOA_MTLS_ENABLED`, do not set any mTLS field. The gateway only binds nested fields through the `STOA_MTLS__*` form (or the `mtls:` section of its YAML config file). If you used the single-underscore names, mTLS was never enabled.
@@ -154,8 +154,8 @@ List the addresses of the TLS terminators that forward `X-SSL-*` headers to the 
 
 The gateway evaluates exactly one address per request, and the allowlist must match that address:
 
-- When the request carries an `X-Forwarded-For` header, the gateway uses its **rightmost** entry and ignores the connection address.
-- When the header is absent, the gateway uses the source address of the TCP connection, that is, the egress address of the hop that connected to it.
+- When the request carries an `X-Forwarded-For` header and its **rightmost** entry is a valid IP address, the gateway uses that entry and ignores the connection address.
+- Otherwise (the header is absent, or its rightmost entry is not a valid IP address), the gateway uses the source address of the TCP connection, that is, the egress address of the hop that connected to it.
 
 This determines how the last hop before the gateway must handle `X-Forwarded-For`:
 
@@ -177,12 +177,7 @@ This determines how the last hop before the gateway must handle `X-Forwarded-For
 
 ## Downstream Headers
 
-After successful validation, the gateway forwards these headers to backend services:
-
-```
-X-Authenticated-Client-Fingerprint: {first 16 chars of fingerprint}
-X-Authenticated-Client-Subject: {subject DN}
-```
+The gateway does not currently add certificate-derived identity headers to the requests it forwards to backend services. After validation, the request is proxied without `X-Authenticated-Client-*` headers, so backends must not rely on them to identify the client.
 
 ## Related
 

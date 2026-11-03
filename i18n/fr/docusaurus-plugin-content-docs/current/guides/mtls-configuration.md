@@ -46,10 +46,10 @@ Les paramètres mTLS se trouvent dans la section imbriquée `mtls` de la configu
 |----------|---------|-------------|
 | `STOA_MTLS__ENABLED` | `false` | Activer le traitement mTLS |
 | `STOA_MTLS__REQUIRE_BINDING` | `true` | Exiger la claim JWT `cnf` lorsqu'un certificat est présent |
-| `STOA_MTLS__TRUSTED_PROXIES` | (vide) | CIDRs ou IPs des proxies de confiance (séparés par des virgules ou tableau JSON). Comparés à l'entrée la plus à droite de `X-Forwarded-For`, ou à l'adresse de connexion si cet en-tête est absent (voir [Configuration des Proxies de Confiance](#configuration-des-proxies-de-confiance)). **Obligatoire (non vide) lorsque le mTLS est activé.** |
+| `STOA_MTLS__TRUSTED_PROXIES` | (vide) | CIDRs ou IPs des proxies de confiance (séparés par des virgules ou tableau JSON). Comparés à l'entrée la plus à droite de `X-Forwarded-For` lorsqu'elle est une adresse IP valide, sinon à l'adresse de connexion (voir [Configuration des Proxies de Confiance](#configuration-des-proxies-de-confiance)). **Obligatoire (non vide) lorsque le mTLS est activé.** |
 | `STOA_MTLS__ALLOWED_ISSUERS` | (vide) | DNs d'émetteurs, comparés à l'identique avec `X-SSL-Client-I-DN`. Vide = tout émetteur accepté. La forme séparée par des virgules découpe sur chaque virgule : un DN contenant des virgules doit être fourni sous forme de tableau JSON (ou de liste YAML dans le fichier de configuration). |
 | `STOA_MTLS__REQUIRED_ROUTES` | (vide) | Patterns glob pour les routes nécessitant des certificats (séparés par des virgules ou tableau JSON) |
-| `STOA_MTLS__TENANT_FROM_DN` | `true` | Extraire le tenant du DN sujet du certificat |
+| `STOA_MTLS__TENANT_FROM_DN` | `true` | Accepté et analysé, mais actuellement inutilisé : le gateway n'extrait pas de tenant du DN sujet du certificat, ce paramètre n'a donc aucun effet |
 
 :::warning Les noms à simple underscore sont ignorés
 Les noms avec un seul underscore, comme `STOA_MTLS_ENABLED`, ne définissent aucun champ mTLS. Le gateway ne lie les champs imbriqués que via la forme `STOA_MTLS__*` (ou la section `mtls:` de son fichier de configuration YAML). Si vous avez utilisé les noms à simple underscore, le mTLS n'a jamais été activé.
@@ -154,8 +154,8 @@ Listez les adresses des terminateurs TLS qui transmettent les en-têtes `X-SSL-*
 
 Le gateway évalue exactement une adresse par requête, et la liste de confiance doit correspondre à cette adresse :
 
-- Lorsque la requête porte un en-tête `X-Forwarded-For`, le gateway utilise son entrée la **plus à droite** et ignore l'adresse de connexion.
-- Lorsque l'en-tête est absent, le gateway utilise l'adresse source de la connexion TCP, c'est-à-dire l'adresse de sortie du saut qui s'est connecté à lui.
+- Lorsque la requête porte un en-tête `X-Forwarded-For` et que son entrée la **plus à droite** est une adresse IP valide, le gateway utilise cette entrée et ignore l'adresse de connexion.
+- Sinon (en-tête absent, ou entrée la plus à droite qui n'est pas une adresse IP valide), le gateway utilise l'adresse source de la connexion TCP, c'est-à-dire l'adresse de sortie du saut qui s'est connecté à lui.
 
 Cela conditionne la manière dont le dernier saut avant le gateway doit traiter `X-Forwarded-For` :
 
@@ -177,12 +177,7 @@ Cela conditionne la manière dont le dernier saut avant le gateway doit traiter 
 
 ## En-têtes en Aval
 
-Après une validation réussie, le gateway transmet ces en-têtes aux services backend :
-
-```
-X-Authenticated-Client-Fingerprint: {16 premiers caractères de l'empreinte}
-X-Authenticated-Client-Subject: {DN sujet}
-```
+Le gateway n'ajoute actuellement aucun en-tête d'identité dérivé du certificat aux requêtes qu'il transmet aux services backend. Après validation, la requête est relayée sans en-têtes `X-Authenticated-Client-*` ; les backends ne doivent donc pas s'appuyer sur eux pour identifier le client.
 
 ## Voir Aussi
 
