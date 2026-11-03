@@ -46,8 +46,8 @@ Les paramètres mTLS se trouvent dans la section imbriquée `mtls` de la configu
 |----------|---------|-------------|
 | `STOA_MTLS__ENABLED` | `false` | Activer le traitement mTLS |
 | `STOA_MTLS__REQUIRE_BINDING` | `true` | Exiger la claim JWT `cnf` lorsqu'un certificat est présent |
-| `STOA_MTLS__TRUSTED_PROXIES` | (vide) | CIDRs ou IPs des proxies de confiance (séparés par des virgules ou tableau JSON). **Obligatoire (non vide) lorsque le mTLS est activé.** |
-| `STOA_MTLS__ALLOWED_ISSUERS` | (vide) | DNs d'émetteurs (séparés par des virgules ou tableau JSON). Vide = tout émetteur accepté. |
+| `STOA_MTLS__TRUSTED_PROXIES` | (vide) | CIDRs ou IPs des proxies de confiance (séparés par des virgules ou tableau JSON). Comparés à l'entrée la plus à droite de `X-Forwarded-For`, ou à l'adresse de connexion si cet en-tête est absent (voir [Configuration des Proxies de Confiance](#configuration-des-proxies-de-confiance)). **Obligatoire (non vide) lorsque le mTLS est activé.** |
+| `STOA_MTLS__ALLOWED_ISSUERS` | (vide) | DNs d'émetteurs, comparés à l'identique avec `X-SSL-Client-I-DN`. Vide = tout émetteur accepté. La forme séparée par des virgules découpe sur chaque virgule : un DN contenant des virgules doit être fourni sous forme de tableau JSON (ou de liste YAML dans le fichier de configuration). |
 | `STOA_MTLS__REQUIRED_ROUTES` | (vide) | Patterns glob pour les routes nécessitant des certificats (séparés par des virgules ou tableau JSON) |
 | `STOA_MTLS__TENANT_FROM_DN` | `true` | Extraire le tenant du DN sujet du certificat |
 
@@ -130,8 +130,10 @@ STOA_MTLS__ENABLED=true
 STOA_MTLS__REQUIRE_BINDING=true
 STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>
 STOA_MTLS__REQUIRED_ROUTES=/api/v1/payments/*,/api/v1/transfers/*
-STOA_MTLS__ALLOWED_ISSUERS=CN=<YOUR_ISSUING_CA>,O=<YOUR_ORG>,C=<COUNTRY_CODE>
+STOA_MTLS__ALLOWED_ISSUERS='["CN=<YOUR_ISSUING_CA>,O=<YOUR_ORG>,C=<COUNTRY_CODE>"]'
 ```
+
+Le DN de l'émetteur contient des virgules, il est donc passé sous forme de tableau JSON. La forme séparée par des virgules le découperait en trois entrées distinctes (`CN=...`, `O=...`, `C=...`), dont aucune n'est égale au DN complet, et tous les certificats de cette CA seraient rejetés avec `403 MTLS_ISSUER_DENIED`. Dans le fichier de configuration YAML, utilisez une liste sous `mtls.allowed_issuers`.
 
 ## Configuration des Proxies de Confiance
 
@@ -148,7 +150,18 @@ STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_IP>
 STOA_MTLS__TRUSTED_PROXIES='["<TRUSTED_PROXY_CIDR_1>","<TRUSTED_PROXY_CIDR_2>"]'
 ```
 
-Listez les adresses de sortie de chaque terminateur TLS qui transmet les en-têtes `X-SSL-*` au gateway (ingress controller, F5, HAProxy, nginx). Les sources non fiables envoyant des en-têtes `X-SSL-*` reçoivent `403 MTLS_UNTRUSTED_PROXY`.
+Listez les adresses des terminateurs TLS qui transmettent les en-têtes `X-SSL-*` au gateway (ingress controller, F5, HAProxy, nginx). Les sources non fiables envoyant des en-têtes `X-SSL-*` reçoivent `403 MTLS_UNTRUSTED_PROXY`.
+
+Le gateway évalue exactement une adresse par requête, et la liste de confiance doit correspondre à cette adresse :
+
+- Lorsque la requête porte un en-tête `X-Forwarded-For`, le gateway utilise son entrée la **plus à droite** et ignore l'adresse de connexion.
+- Lorsque l'en-tête est absent, le gateway utilise l'adresse source de la connexion TCP, c'est-à-dire l'adresse de sortie du saut qui s'est connecté à lui.
+
+Cela conditionne la manière dont le dernier saut avant le gateway doit traiter `X-Forwarded-For` :
+
+- Si le terminateur se connecte directement au gateway sans envoyer `X-Forwarded-For`, mettez son adresse de sortie dans la liste de confiance.
+- Si le terminateur complète `X-Forwarded-For` de la manière habituelle, l'entrée la plus à droite est l'adresse du saut qui le précède, ou celle du client d'origine lorsque le terminateur est le premier saut. Ne lister que l'adresse de sortie du terminateur échoue alors avec `403 MTLS_UNTRUSTED_PROXY`. Supprimez `X-Forwarded-For` au niveau du terminateur, ou listez l'adresse qu'il place en position la plus à droite.
+- Ne transmettez jamais tel quel un `X-Forwarded-For` fourni par le client : l'appelant pourrait alors choisir l'adresse que le gateway évalue. Le dernier saut doit lui-même supprimer ou réécrire cet en-tête.
 
 ## Réponses d'Erreur
 

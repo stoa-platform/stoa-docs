@@ -150,7 +150,7 @@ STOA_QUOTA_ENABLED=true
 STOA_MTLS__ENABLED=false
 STOA_MTLS__REQUIRE_BINDING=true
 STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>   # Comma-separated CIDRs; REQUIRED (non-empty) when ENABLED=true, else the gateway refuses to start
-STOA_MTLS__ALLOWED_ISSUERS=                       # Comma-separated issuer DNs (empty = any issuer)
+STOA_MTLS__ALLOWED_ISSUERS=                       # Issuer DNs (empty = any issuer). A DN containing commas requires a JSON array or YAML list, e.g. '["CN=<CA>,O=<ORG>,C=<CC>"]'
 
 # Circuit breaker
 STOA_CB_FAILURE_THRESHOLD=5

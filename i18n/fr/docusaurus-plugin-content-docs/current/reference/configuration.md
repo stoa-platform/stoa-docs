@@ -150,7 +150,7 @@ STOA_QUOTA_ENABLED=true
 STOA_MTLS__ENABLED=false
 STOA_MTLS__REQUIRE_BINDING=true
 STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>   # CIDRs séparés par des virgules ; OBLIGATOIRE (non vide) si ENABLED=true, sinon le gateway refuse de démarrer
-STOA_MTLS__ALLOWED_ISSUERS=                       # DNs d'émetteurs séparés par des virgules (vide = tout émetteur)
+STOA_MTLS__ALLOWED_ISSUERS=                       # DNs d'émetteurs (vide = tout émetteur). Un DN contenant des virgules exige un tableau JSON ou une liste YAML, ex. '["CN=<CA>,O=<ORG>,C=<CC>"]'
 
 # Circuit breaker
 STOA_CB_FAILURE_THRESHOLD=5

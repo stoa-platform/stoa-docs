@@ -46,8 +46,8 @@ mTLS settings live in the nested `mtls` section of the gateway configuration. En
 |----------|---------|-------------|
 | `STOA_MTLS__ENABLED` | `false` | Enable mTLS processing |
 | `STOA_MTLS__REQUIRE_BINDING` | `true` | Require JWT `cnf` claim when cert present |
-| `STOA_MTLS__TRUSTED_PROXIES` | (empty) | CIDRs or IPs of trusted proxies (comma-separated or JSON array). **Required (non-empty) when mTLS is enabled.** |
-| `STOA_MTLS__ALLOWED_ISSUERS` | (empty) | Issuer DNs (comma-separated or JSON array). Empty accepts any issuer. |
+| `STOA_MTLS__TRUSTED_PROXIES` | (empty) | CIDRs or IPs of trusted proxies (comma-separated or JSON array). Matched against the rightmost `X-Forwarded-For` entry, or the connection address when that header is absent (see [Trusted Proxy Configuration](#trusted-proxy-configuration)). **Required (non-empty) when mTLS is enabled.** |
+| `STOA_MTLS__ALLOWED_ISSUERS` | (empty) | Issuer DNs, compared exactly against `X-SSL-Client-I-DN`. Empty accepts any issuer. The comma-separated form splits on every comma, so a DN containing commas must be given as a JSON array (or a YAML list in the config file). |
 | `STOA_MTLS__REQUIRED_ROUTES` | (empty) | Glob patterns for routes requiring certs (comma-separated or JSON array) |
 | `STOA_MTLS__TENANT_FROM_DN` | `true` | Extract tenant from certificate subject DN |
 
@@ -130,8 +130,10 @@ STOA_MTLS__ENABLED=true
 STOA_MTLS__REQUIRE_BINDING=true
 STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>
 STOA_MTLS__REQUIRED_ROUTES=/api/v1/payments/*,/api/v1/transfers/*
-STOA_MTLS__ALLOWED_ISSUERS=CN=<YOUR_ISSUING_CA>,O=<YOUR_ORG>,C=<COUNTRY_CODE>
+STOA_MTLS__ALLOWED_ISSUERS='["CN=<YOUR_ISSUING_CA>,O=<YOUR_ORG>,C=<COUNTRY_CODE>"]'
 ```
+
+The issuer DN contains commas, so it is passed as a JSON array. The comma-separated form would split it into three separate entries (`CN=...`, `O=...`, `C=...`), none of which equals the full DN, and every certificate from that CA would be rejected with `403 MTLS_ISSUER_DENIED`. In the YAML config file, use a list under `mtls.allowed_issuers`.
 
 ## Trusted Proxy Configuration
 
@@ -148,7 +150,18 @@ STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_IP>
 STOA_MTLS__TRUSTED_PROXIES='["<TRUSTED_PROXY_CIDR_1>","<TRUSTED_PROXY_CIDR_2>"]'
 ```
 
-List the egress addresses of every TLS terminator that forwards `X-SSL-*` headers to the gateway (ingress controller, F5, HAProxy, nginx). Untrusted sources sending `X-SSL-*` headers receive `403 MTLS_UNTRUSTED_PROXY`.
+List the addresses of the TLS terminators that forward `X-SSL-*` headers to the gateway (ingress controller, F5, HAProxy, nginx). Untrusted sources sending `X-SSL-*` headers receive `403 MTLS_UNTRUSTED_PROXY`.
+
+The gateway evaluates exactly one address per request, and the allowlist must match that address:
+
+- When the request carries an `X-Forwarded-For` header, the gateway uses its **rightmost** entry and ignores the connection address.
+- When the header is absent, the gateway uses the source address of the TCP connection, that is, the egress address of the hop that connected to it.
+
+This determines how the last hop before the gateway must handle `X-Forwarded-For`:
+
+- If the terminator connects directly to the gateway and does not send `X-Forwarded-For`, allowlist its egress address.
+- If the terminator appends to `X-Forwarded-For` in the usual way, the rightmost entry is the address of the hop in front of it, or the original client when the terminator is the first hop. Allowlisting only the terminator's egress address then fails with `403 MTLS_UNTRUSTED_PROXY`. Either strip `X-Forwarded-For` at the terminator, or allowlist the address it places in the rightmost position.
+- Never pass a client-supplied `X-Forwarded-For` through unchanged: the caller could then choose which address the gateway evaluates. The last hop must strip or overwrite the header itself.
 
 ## Error Responses
 
