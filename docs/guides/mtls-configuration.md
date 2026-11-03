@@ -40,14 +40,20 @@ The load balancer (nginx, HAProxy, F5) terminates TLS and forwards certificate d
 
 ### Environment Variables
 
+mTLS settings live in the nested `mtls` section of the gateway configuration. Environment variables use a **double underscore** (`__`) between the `MTLS` prefix and the field name, for example `STOA_MTLS__ENABLED` sets `mtls.enabled`.
+
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `STOA_MTLS_ENABLED` | `false` | Enable mTLS processing |
-| `STOA_MTLS_REQUIRE_BINDING` | `true` | Require JWT `cnf` claim when cert present |
-| `STOA_MTLS_TRUSTED_PROXIES` | (empty) | Comma-separated CIDRs of trusted proxies |
-| `STOA_MTLS_ALLOWED_ISSUERS` | (empty) | Comma-separated issuer DNs |
-| `STOA_MTLS_REQUIRED_ROUTES` | (empty) | Glob patterns for routes requiring certs |
-| `STOA_MTLS_TENANT_FROM_DN` | `true` | Extract tenant from certificate subject DN |
+| `STOA_MTLS__ENABLED` | `false` | Enable mTLS processing |
+| `STOA_MTLS__REQUIRE_BINDING` | `true` | Require JWT `cnf` claim when cert present |
+| `STOA_MTLS__TRUSTED_PROXIES` | (empty) | CIDRs or IPs of trusted proxies (comma-separated or JSON array). **Required (non-empty) when mTLS is enabled.** |
+| `STOA_MTLS__ALLOWED_ISSUERS` | (empty) | Issuer DNs (comma-separated or JSON array). Empty accepts any issuer. |
+| `STOA_MTLS__REQUIRED_ROUTES` | (empty) | Glob patterns for routes requiring certs (comma-separated or JSON array) |
+| `STOA_MTLS__TENANT_FROM_DN` | `true` | Extract tenant from certificate subject DN |
+
+:::warning Single-underscore names are ignored
+Names with a single underscore, such as `STOA_MTLS_ENABLED`, do not set any mTLS field. The gateway only binds nested fields through the `STOA_MTLS__*` form (or the `mtls:` section of its YAML config file). If you used the single-underscore names, mTLS was never enabled.
+:::
 
 ### Header Mapping
 
@@ -98,11 +104,12 @@ The gateway automatically normalizes fingerprints from three formats:
 
 ### Phase 1: Monitoring Only
 
-Enable mTLS processing without enforcement:
+Enable mTLS processing without enforcement. A trusted-proxy list is mandatory as soon as `STOA_MTLS__ENABLED=true`, otherwise the gateway refuses to start:
 
 ```bash
-STOA_MTLS_ENABLED=true
-STOA_MTLS_REQUIRE_BINDING=false
+STOA_MTLS__ENABLED=true
+STOA_MTLS__REQUIRE_BINDING=false
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>
 ```
 
 Certificates are extracted and logged, but requests without certificates are still allowed.
@@ -110,37 +117,38 @@ Certificates are extracted and logged, but requests without certificates are sti
 ### Phase 2: Required on Test Routes
 
 ```bash
-STOA_MTLS_ENABLED=true
-STOA_MTLS_REQUIRE_BINDING=true
-STOA_MTLS_REQUIRED_ROUTES=/api/v1/test-mtls/*
+STOA_MTLS__ENABLED=true
+STOA_MTLS__REQUIRE_BINDING=true
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>
+STOA_MTLS__REQUIRED_ROUTES=/api/v1/test-mtls/*
 ```
 
 ### Phase 3: Production Enforcement
 
 ```bash
-STOA_MTLS_ENABLED=true
-STOA_MTLS_REQUIRE_BINDING=true
-STOA_MTLS_REQUIRED_ROUTES=/api/v1/payments/*,/api/v1/transfers/*
-STOA_MTLS_TRUSTED_PROXIES=10.0.1.0/24
-STOA_MTLS_ALLOWED_ISSUERS=CN=STOA Intermediate CA,O=STOA Platform,C=FR
+STOA_MTLS__ENABLED=true
+STOA_MTLS__REQUIRE_BINDING=true
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>
+STOA_MTLS__REQUIRED_ROUTES=/api/v1/payments/*,/api/v1/transfers/*
+STOA_MTLS__ALLOWED_ISSUERS=CN=<YOUR_ISSUING_CA>,O=<YOUR_ORG>,C=<COUNTRY_CODE>
 ```
 
 ## Trusted Proxy Configuration
 
-When `STOA_MTLS_TRUSTED_PROXIES` is set, the gateway only accepts `X-SSL-*` headers from requests originating from trusted IPs:
+The gateway only accepts `X-SSL-*` headers from requests originating from the IPs listed in `STOA_MTLS__TRUSTED_PROXIES`. This list is a startup prerequisite: when `STOA_MTLS__ENABLED=true` and the list is empty, configuration validation fails and the gateway does not start. An empty list would mean accepting certificate headers from any source, which is an authentication bypass, so there is no "accept all" mode.
 
 ```bash
-# Trust specific CIDR ranges
-STOA_MTLS_TRUSTED_PROXIES=10.0.0.0/8,172.16.0.0/12
+# Trust specific CIDR ranges (comma-separated)
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR_1>,<TRUSTED_PROXY_CIDR_2>
 
-# Trust single IP
-STOA_MTLS_TRUSTED_PROXIES=10.0.1.50
+# Trust a single IP
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_IP>
 
-# Empty = accept from all sources (dev only)
-STOA_MTLS_TRUSTED_PROXIES=
+# JSON array form is also accepted
+STOA_MTLS__TRUSTED_PROXIES='["<TRUSTED_PROXY_CIDR_1>","<TRUSTED_PROXY_CIDR_2>"]'
 ```
 
-Untrusted sources sending `X-SSL-*` headers receive `403 MTLS_UNTRUSTED_PROXY`.
+List the egress addresses of every TLS terminator that forwards `X-SSL-*` headers to the gateway (ingress controller, F5, HAProxy, nginx). Untrusted sources sending `X-SSL-*` headers receive `403 MTLS_UNTRUSTED_PROXY`.
 
 ## Error Responses
 

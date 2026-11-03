@@ -145,11 +145,12 @@ STOA_ADMIN_API_TOKEN=secret
 STOA_RATE_LIMIT_DEFAULT=100     # Requests per minute per consumer
 STOA_QUOTA_ENABLED=true
 
-# mTLS (RFC 8705)
-STOA_MTLS_ENABLED=false
-STOA_MTLS_REQUIRE_BINDING=true
-STOA_MTLS_TRUSTED_PROXIES=      # Comma-separated CIDRs
-STOA_MTLS_ALLOWED_ISSUERS=      # Comma-separated issuer DNs
+# mTLS (RFC 8705) -- nested fields use a double underscore: STOA_MTLS__<FIELD>
+# Single-underscore names (STOA_MTLS_ENABLED) are ignored.
+STOA_MTLS__ENABLED=false
+STOA_MTLS__REQUIRE_BINDING=true
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>   # Comma-separated CIDRs; REQUIRED (non-empty) when ENABLED=true, else the gateway refuses to start
+STOA_MTLS__ALLOWED_ISSUERS=                       # Comma-separated issuer DNs (empty = any issuer)
 
 # Circuit breaker
 STOA_CB_FAILURE_THRESHOLD=5

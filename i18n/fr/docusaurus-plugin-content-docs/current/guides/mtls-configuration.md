@@ -40,14 +40,20 @@ Le load balancer (nginx, HAProxy, F5) termine le TLS et transmet les détails du
 
 ### Variables d'Environnement
 
+Les paramètres mTLS se trouvent dans la section imbriquée `mtls` de la configuration du gateway. Les variables d'environnement utilisent un **double underscore** (`__`) entre le préfixe `MTLS` et le nom du champ, par exemple `STOA_MTLS__ENABLED` définit `mtls.enabled`.
+
 | Variable | Défaut | Description |
 |----------|---------|-------------|
-| `STOA_MTLS_ENABLED` | `false` | Activer le traitement mTLS |
-| `STOA_MTLS_REQUIRE_BINDING` | `true` | Exiger la claim JWT `cnf` lorsqu'un certificat est présent |
-| `STOA_MTLS_TRUSTED_PROXIES` | (vide) | CIDRs de proxies de confiance séparés par des virgules |
-| `STOA_MTLS_ALLOWED_ISSUERS` | (vide) | DNs d'émetteurs autorisés séparés par des virgules |
-| `STOA_MTLS_REQUIRED_ROUTES` | (vide) | Patterns glob pour les routes nécessitant des certificats |
-| `STOA_MTLS_TENANT_FROM_DN` | `true` | Extraire le tenant du DN sujet du certificat |
+| `STOA_MTLS__ENABLED` | `false` | Activer le traitement mTLS |
+| `STOA_MTLS__REQUIRE_BINDING` | `true` | Exiger la claim JWT `cnf` lorsqu'un certificat est présent |
+| `STOA_MTLS__TRUSTED_PROXIES` | (vide) | CIDRs ou IPs des proxies de confiance (séparés par des virgules ou tableau JSON). **Obligatoire (non vide) lorsque le mTLS est activé.** |
+| `STOA_MTLS__ALLOWED_ISSUERS` | (vide) | DNs d'émetteurs (séparés par des virgules ou tableau JSON). Vide = tout émetteur accepté. |
+| `STOA_MTLS__REQUIRED_ROUTES` | (vide) | Patterns glob pour les routes nécessitant des certificats (séparés par des virgules ou tableau JSON) |
+| `STOA_MTLS__TENANT_FROM_DN` | `true` | Extraire le tenant du DN sujet du certificat |
+
+:::warning Les noms à simple underscore sont ignorés
+Les noms avec un seul underscore, comme `STOA_MTLS_ENABLED`, ne définissent aucun champ mTLS. Le gateway ne lie les champs imbriqués que via la forme `STOA_MTLS__*` (ou la section `mtls:` de son fichier de configuration YAML). Si vous avez utilisé les noms à simple underscore, le mTLS n'a jamais été activé.
+:::
 
 ### Mapping des En-têtes
 
@@ -98,11 +104,12 @@ Le gateway normalise automatiquement les empreintes depuis trois formats :
 
 ### Phase 1 : Surveillance Uniquement
 
-Activer le traitement mTLS sans application :
+Activer le traitement mTLS sans application. Une liste de proxies de confiance est obligatoire dès que `STOA_MTLS__ENABLED=true`, sinon le gateway refuse de démarrer :
 
 ```bash
-STOA_MTLS_ENABLED=true
-STOA_MTLS_REQUIRE_BINDING=false
+STOA_MTLS__ENABLED=true
+STOA_MTLS__REQUIRE_BINDING=false
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>
 ```
 
 Les certificats sont extraits et journalisés, mais les requêtes sans certificats sont toujours autorisées.
@@ -110,37 +117,38 @@ Les certificats sont extraits et journalisés, mais les requêtes sans certifica
 ### Phase 2 : Requis sur les Routes de Test
 
 ```bash
-STOA_MTLS_ENABLED=true
-STOA_MTLS_REQUIRE_BINDING=true
-STOA_MTLS_REQUIRED_ROUTES=/api/v1/test-mtls/*
+STOA_MTLS__ENABLED=true
+STOA_MTLS__REQUIRE_BINDING=true
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>
+STOA_MTLS__REQUIRED_ROUTES=/api/v1/test-mtls/*
 ```
 
 ### Phase 3 : Application en Production
 
 ```bash
-STOA_MTLS_ENABLED=true
-STOA_MTLS_REQUIRE_BINDING=true
-STOA_MTLS_REQUIRED_ROUTES=/api/v1/payments/*,/api/v1/transfers/*
-STOA_MTLS_TRUSTED_PROXIES=10.0.1.0/24
-STOA_MTLS_ALLOWED_ISSUERS=CN=STOA Intermediate CA,O=STOA Platform,C=FR
+STOA_MTLS__ENABLED=true
+STOA_MTLS__REQUIRE_BINDING=true
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR>
+STOA_MTLS__REQUIRED_ROUTES=/api/v1/payments/*,/api/v1/transfers/*
+STOA_MTLS__ALLOWED_ISSUERS=CN=<YOUR_ISSUING_CA>,O=<YOUR_ORG>,C=<COUNTRY_CODE>
 ```
 
 ## Configuration des Proxies de Confiance
 
-Lorsque `STOA_MTLS_TRUSTED_PROXIES` est défini, le gateway n'accepte les en-têtes `X-SSL-*` que depuis des requêtes provenant d'IPs de confiance :
+Le gateway n'accepte les en-têtes `X-SSL-*` que depuis des requêtes provenant des IPs listées dans `STOA_MTLS__TRUSTED_PROXIES`. Cette liste est un prérequis au démarrage : lorsque `STOA_MTLS__ENABLED=true` et que la liste est vide, la validation de la configuration échoue et le gateway ne démarre pas. Une liste vide reviendrait à accepter les en-têtes de certificat depuis n'importe quelle source, ce qui constitue un contournement de l'authentification ; il n'existe donc pas de mode « tout accepter ».
 
 ```bash
-# Faire confiance à des plages CIDR spécifiques
-STOA_MTLS_TRUSTED_PROXIES=10.0.0.0/8,172.16.0.0/12
+# Faire confiance à des plages CIDR spécifiques (séparées par des virgules)
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_CIDR_1>,<TRUSTED_PROXY_CIDR_2>
 
 # Faire confiance à une IP unique
-STOA_MTLS_TRUSTED_PROXIES=10.0.1.50
+STOA_MTLS__TRUSTED_PROXIES=<TRUSTED_PROXY_IP>
 
-# Vide = accepter depuis toutes les sources (dev uniquement)
-STOA_MTLS_TRUSTED_PROXIES=
+# La forme tableau JSON est également acceptée
+STOA_MTLS__TRUSTED_PROXIES='["<TRUSTED_PROXY_CIDR_1>","<TRUSTED_PROXY_CIDR_2>"]'
 ```
 
-Les sources non fiables envoyant des en-têtes `X-SSL-*` reçoivent `403 MTLS_UNTRUSTED_PROXY`.
+Listez les adresses de sortie de chaque terminateur TLS qui transmet les en-têtes `X-SSL-*` au gateway (ingress controller, F5, HAProxy, nginx). Les sources non fiables envoyant des en-têtes `X-SSL-*` reçoivent `403 MTLS_UNTRUSTED_PROXY`.
 
 ## Réponses d'Erreur
 
