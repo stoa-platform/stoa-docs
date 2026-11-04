@@ -561,10 +561,10 @@
     "message": "STOA Docs"
   },
   "homepage.hero.tagline": {
-    "message": "Modernisez votre passerelle API — MCP, Multi-Tenant, Souveraineté européenne"
+    "message": "iPaaS souverain, plateforme d'API et d'intégration"
   },
   "homepage.hero.description": {
-    "message": "La passerelle européenne pour agents IA — gouvernez les interactions IA-vers-API avec le support MCP, l'isolation multi-tenant et la conformité NIS2/DORA."
+    "message": "Gérez vos API et intégrations sur votre infrastructure, avec le support MCP et l'isolation multi-tenant."
   },
   "homepage.hero.btn.docs": {
     "message": "📚 Documentation"
@@ -615,7 +615,7 @@
     "message": "Souveraineté européenne"
   },
   "homepage.feature.sovereign.desc": {
-    "message": "Hébergement européen disponible. Fonctionnalités de support NIS2 et DORA. Hébergez dans l'UE avec un contrôle total de la résidence des données."
+    "message": "Hébergement européen disponible sur demande. Fonctionnalités de support NIS2 et DORA. Hébergez dans l'UE avec un contrôle total de la résidence des données."
   },
   "homepage.feature.openSource.title": {
     "message": "Open Source"
@@ -714,19 +714,19 @@
     "message": "Prêt à démarrer ?"
   },
   "homepage.cta.subtitle": {
-    "message": "Déployez STOA dans votre infrastructure ou essayez notre cloud managé."
+    "message": "Lancez STOA localement. L'offre hébergée est disponible sur demande."
   },
   "homepage.cta.btn.quickstart": {
     "message": "🚀 Guide de démarrage rapide"
   },
   "homepage.cta.btn.cloud": {
-    "message": "☁️ Essayer STOA Cloud"
+    "message": "☁️ Demander un accès hébergé"
   },
   "homepage.cta.btn.contact": {
     "message": "📧 Contacter les ventes"
   },
   "homepage.layout.title": {
-    "message": "STOA Platform Docs — La passerelle européenne pour agents IA | Define Once, Expose Everywhere"
+    "message": "STOA Docs — iPaaS souverain, plateforme d'API et d'intégration"
   },
   "homepage.layout.description": {
     "message": "Documentation STOA Platform — la passerelle API open source AI-native avec support MCP, isolation multi-tenant et guides de migration depuis webMethods, Apigee, Kong."
