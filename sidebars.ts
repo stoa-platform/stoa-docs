@@ -97,6 +97,7 @@ const sidebars: SidebarsConfig = {
         'reference/quotas',
         'reference/security-configuration',
         'reference/exit-strategy',
+        'architecture/delivery-process',
         'reference/changelog',
         'reference/glossary',
         'reference/troubleshooting',
