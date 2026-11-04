@@ -60,6 +60,10 @@ helm install stoa-platform stoa/stoa-platform \
   --set stoaGateway.keycloakUrl="https://auth.<YOUR_DOMAIN>"
 ```
 
+:::note What this chart installs
+Today the `stoa-platform` chart installs the **STOA Gateway** (Deployment, Service, policies ConfigMap), the gateway OpenAPI sync CronJob, ServiceMonitors and an internal Secret (`stoa-internal-keys`, generated at install; its `gateway-consumer-key` is passed to the gateway as `GATEWAY_API_KEYS`). The Control Plane API, Console, Portal and Keycloak are **not** installed by this chart: `controlPlaneUrl` and `keycloakUrl` must point to existing services.
+:::
+
 ## Helm Chart Reference
 
 ### Chart Metadata
@@ -99,7 +103,7 @@ stoaGateway:
   enabled: true
   image:
     repository: ghcr.io/stoa-platform/stoa-gateway
-    tag: latest
+    tag: latest                 # Pin an immutable tag (or digest) in production: `latest` makes `helm rollback` ineffective
   replicas: 2
 
   # Keycloak OIDC
@@ -108,10 +112,10 @@ stoaGateway:
   keycloakClientId: stoa-mcp-gateway
 
   # Control Plane connection
-  controlPlaneUrl: "http://control-plane-api.stoa-system.svc.cluster.local:8000"
+  controlPlaneUrl: "http://stoa-control-plane-api.stoa-system.svc.cluster.local:80"
 
   # Gateway mode (ADR-024)
-  mode: edge-mcp               # Options: edge-mcp, sidecar, proxy, shadow
+  mode: edge-mcp               # Options: edge-mcp, sidecar, proxy, shadow, connect
 
   # Auto-registration (ADR-028)
   autoRegister: true
@@ -121,10 +125,10 @@ stoaGateway:
   resources:
     requests:
       cpu: 100m
-      memory: 64Mi
+      memory: 128Mi
     limits:
       cpu: 500m
-      memory: 256Mi
+      memory: 512Mi
 
   # Secrets
   secretName: stoa-gateway-secrets
@@ -138,9 +142,9 @@ stoaGateway:
 
 ```yaml
 stoaGateway:
-  opa:
+  policies:
     enabled: true
-    policyPath: /etc/stoa/policies/default.rego
+    path: /etc/stoa/policies/default.rego
 ```
 
 ### Kafka/Redpanda Metering
@@ -150,14 +154,15 @@ stoaGateway:
   kafka:
     enabled: false
     brokers: "redpanda.stoa-system.svc.cluster.local:9092"
-    topic: stoa.metering
+    meteringTopic: stoa.metering
+    errorsTopic: stoa.errors
 ```
 
 ### Kubernetes Watcher
 
 ```yaml
 stoaGateway:
-  k8sWatcher:
+  k8s:
     enabled: false              # Enable CRD watching for Tool/ToolSet
 ```
 
@@ -178,14 +183,14 @@ For deploying alongside third-party gateways (Kong, webMethods, Envoy):
 ```yaml
 stoaSidecar:
   enabled: false
-  gatewayType: webmethods      # Options: webmethods, kong, envoy, apigee, generic
+  targetGateway: webmethods    # Options: webmethods, kong, gravitee, agentgateway, apigee, aws_apigateway, azure_apim
   resources:
     requests:
       cpu: 50m
-      memory: 32Mi
+      memory: 64Mi
     limits:
       cpu: 200m
-      memory: 128Mi
+      memory: 256Mi
 ```
 
 ### Grafana OIDC
@@ -202,7 +207,7 @@ grafana:
 ### OpenAPI Sync CronJob
 
 ```yaml
-gatewayOpenapiSync:
+gatewaySync:
   enabled: true
   schedule: "0 */6 * * *"      # Every 6 hours
 ```

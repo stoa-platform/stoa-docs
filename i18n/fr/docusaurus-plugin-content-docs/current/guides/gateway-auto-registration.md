@@ -221,7 +221,7 @@ stoaGateway:
   replicas: 2
 
   # Connexion au Plan de Contrôle
-  controlPlaneUrl: "http://control-plane-api.stoa-system.svc.cluster.local:8000"
+  controlPlaneUrl: "http://stoa-control-plane-api.stoa-system.svc.cluster.local:80"
 
   # Secret contenant CONTROL_PLANE_API_KEY, JWT_SECRET, KEYCLOAK_CLIENT_SECRET, ADMIN_API_TOKEN
   # CONTROL_PLANE_API_KEY est REQUIS pour l'auto-enregistrement.
@@ -268,7 +268,7 @@ stoaSidecar:
   environment: prod
 
   # Connexion au Plan de Contrôle
-  controlPlaneUrl: "http://control-plane-api.stoa-system.svc.cluster.local:8000"
+  controlPlaneUrl: "http://stoa-control-plane-api.stoa-system.svc.cluster.local:80"
   secretName: stoa-sidecar-secrets  # Doit contenir control-plane-api-key
 
   # Keycloak OIDC (pour la validation des tokens)
