@@ -32,7 +32,7 @@ L'API organise les endpoints dans les groupes suivants :
 
 | Catégorie | Préfixe | Endpoints | Description |
 |-----------|---------|-----------|-------------|
-| APIs | `/v1/apis` | CRUD + sync | Gestion du cycle de vie des APIs |
+| APIs | `/v1/tenants/{tenant_id}/apis` | CRUD + openapi + versions | Gestion du cycle de vie des APIs, par tenant |
 | Tenants | `/v1/tenants` | CRUD + membres | Gestion des tenants |
 | Abonnements | `/v1/subscriptions` | CRUD + approuver/révoquer | Cycle de vie des abonnements |
 | Consumers | `/v1/consumers` | CRUD + clés | Gestion des consumers |
@@ -61,7 +61,7 @@ TOKEN=$(curl -s -X POST "${STOA_AUTH_URL}/realms/stoa/protocol/openid-connect/to
   | jq -r '.access_token')
 
 # Utiliser le token
-curl -s "${STOA_API_URL}/v1/apis" \
+curl -s "${STOA_API_URL}/v1/tenants" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -108,17 +108,19 @@ Les erreurs de validation (422) incluent des détails au niveau des champs :
 
 ## Pagination
 
-Les endpoints de liste supportent la pagination :
+Les endpoints de liste paginés (par exemple les APIs d'un tenant et les abonnements) acceptent les paramètres de requête `page` et `page_size` :
 
 ```bash
-curl "${STOA_API_URL}/v1/apis?skip=0&limit=20" \
+curl "${STOA_API_URL}/v1/tenants/<tenant_id>/apis?page=1&page_size=20" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 | Paramètre | Défaut | Max | Description |
 |-----------|--------|-----|-------------|
-| `skip` | 0 | -- | Nombre d'éléments à ignorer |
-| `limit` | 20 | 100 | Nombre d'éléments à retourner |
+| `page` | 1 | -- | Numéro de page (à partir de 1) |
+| `page_size` | 20 | 100 | Nombre d'éléments par page |
+
+La réponse enveloppe les éléments : `{"items": [...], "total": 42, "page": 1, "page_size": 20}` (les listes d'abonnements retournent aussi `total_pages`). Certains endpoints de liste, comme `GET /v1/tenants`, retournent un tableau JSON simple et n'acceptent aucun paramètre de pagination.
 
 ## Télécharger la Spécification
 

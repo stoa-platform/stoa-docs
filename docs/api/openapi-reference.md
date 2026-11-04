@@ -32,7 +32,7 @@ The API organizes endpoints into the following groups:
 
 | Category | Prefix | Endpoints | Description |
 |----------|--------|-----------|-------------|
-| APIs | `/v1/apis` | CRUD + sync | API lifecycle management |
+| APIs | `/v1/tenants/{tenant_id}/apis` | CRUD + openapi + versions | Tenant-scoped API lifecycle management |
 | Tenants | `/v1/tenants` | CRUD + members | Tenant management |
 | Subscriptions | `/v1/subscriptions` | CRUD + approve/revoke | Subscription lifecycle |
 | Consumers | `/v1/consumers` | CRUD + keys | Consumer management |
@@ -61,7 +61,7 @@ TOKEN=$(curl -s -X POST "${STOA_AUTH_URL}/realms/stoa/protocol/openid-connect/to
   | jq -r '.access_token')
 
 # Use the token
-curl -s "${STOA_API_URL}/v1/apis" \
+curl -s "${STOA_API_URL}/v1/tenants" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -108,17 +108,19 @@ Validation errors (422) include field-level details:
 
 ## Pagination
 
-List endpoints support pagination:
+Paginated list endpoints (for example tenant APIs and subscriptions) take `page` and `page_size` query parameters:
 
 ```bash
-curl "${STOA_API_URL}/v1/apis?skip=0&limit=20" \
+curl "${STOA_API_URL}/v1/tenants/<tenant_id>/apis?page=1&page_size=20" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 | Parameter | Default | Max | Description |
 |-----------|---------|-----|-------------|
-| `skip` | 0 | -- | Number of items to skip |
-| `limit` | 20 | 100 | Number of items to return |
+| `page` | 1 | -- | Page number (1-based) |
+| `page_size` | 20 | 100 | Number of items per page |
+
+The response wraps the items in an envelope: `{"items": [...], "total": 42, "page": 1, "page_size": 20}` (subscription lists also return `total_pages`). Some list endpoints, such as `GET /v1/tenants`, return a plain JSON array and take no pagination parameters.
 
 ## Downloading the Specification
 
