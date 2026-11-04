@@ -575,32 +575,11 @@
   "homepage.quickstart.title": {
     "message": "⚡ Démarrage rapide"
   },
-  "homepage.quickstart.language": {
-    "message": "Langage du code"
-  },
   "homepage.quickstart.subtitle": {
-    "message": "De zéro à un appel API en 3 étapes — fonctionne avec cURL, Python, TypeScript ou Claude.ai"
-  },
-  "homepage.quickstart.step1": {
-    "message": "1. Souscrire à une API"
-  },
-  "homepage.quickstart.step2": {
-    "message": "2. Appeler l'API"
-  },
-  "homepage.quickstart.step3": {
-    "message": "3. Suivre l'utilisation"
-  },
-  "homepage.quickstart.copy": {
-    "message": "📋 Copier"
-  },
-  "homepage.quickstart.copied": {
-    "message": "✓ Copié !"
+    "message": "Un seul parcours local avec Docker Compose : configurer, valider, puis démarrer"
   },
   "homepage.quickstart.btn.guide": {
     "message": "📚 Guide de démarrage complet"
-  },
-  "homepage.quickstart.btn.try": {
-    "message": "🚀 Essayer STOA gratuitement"
   },
   "homepage.features.title": {
     "message": "✨ Pourquoi STOA ?"
@@ -751,5 +730,26 @@
   },
   "homepage.layout.description": {
     "message": "Documentation STOA Platform — la passerelle API open source AI-native avec support MCP, isolation multi-tenant et guides de migration depuis webMethods, Apigee, Kong."
+  },
+  "homepage.local.prepare": {
+    "message": "1. Préparer votre configuration locale"
+  },
+  "homepage.local.variables": {
+    "message": "Modifiez .env et remplacez les identifiants fournis avant de continuer. Variables requises :"
+  },
+  "homepage.local.credentials": {
+    "message": "Configurez aussi GRAFANA_PASSWORD et GRAFANA_OIDC_CLIENT_SECRET. Gardez OPENSEARCH_PASSWORD cohérent avec OPENSEARCH_ADMIN_PASSWORD. Le guide explique les paramètres d'accès à la passerelle."
+  },
+  "homepage.local.validate": {
+    "message": "2. Valider la configuration"
+  },
+  "homepage.local.scope": {
+    "message": "Configuration validée statiquement seulement ; le démarrage, la connexion et le premier appel API restent à vérifier. Utilisez un environnement local dédié sans conflit de port ou de nom de conteneur."
+  },
+  "homepage.local.start": {
+    "message": "3. Démarrer les services locaux sélectionnés"
+  },
+  "homepage.local.next": {
+    "message": "Cette liste explicite de services exclut Promtail. Suivez le guide pour vérifier les accès locaux. L'initialisation des données de démonstration n'a pas encore été vérifiée pour ce parcours et reste à venir. L'offre hébergée est disponible sur demande."
   }
 }

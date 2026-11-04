@@ -60,7 +60,7 @@ function QuickStartSection() {
           </Heading>
           <p>
             <Translate id="homepage.quickstart.subtitle">
-              From zero to API call in 3 steps — works with cURL, Python, TypeScript, or Claude.ai
+              One local path with Docker Compose — configure, validate, then start
             </Translate>
           </p>
         </div>
