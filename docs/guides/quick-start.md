@@ -1,140 +1,84 @@
 ---
 sidebar_position: 1
 slug: /guides/quickstart
-title: "Quickstart: Connect an AI Agent to Your API"
-description: "Connect Claude to your APIs through STOA in under 5 minutes — sign up, get your MCP server URL, and make your first AI tool call."
-keywords:
-  - STOA quickstart
-  - getting started API gateway
-  - MCP AI agent tutorial
-  - connect Claude to API
-  - first tool call
+title: "Quickstart: Run STOA Locally"
+description: "Prepare the local STOA stack with Docker Compose and configure the required credentials."
 ---
 
-# Quickstart: Connect an AI Agent to Your API
+# Quickstart: Run STOA Locally
 
-Get from zero to your first AI-powered API call in under 5 minutes.
+**Sovereign iPaaS — API & integration platform**
 
-:::info Hosted Cloud
-This guide uses STOA's hosted cloud at **mcp.gostoa.dev**. No Docker, no kubectl, no infrastructure needed. Self-hosting? See [Hybrid Deployment](/docs/deployment/hybrid).
+This is the local evaluation path for STOA, using the main [stoa repository](https://github.com/stoa-platform/stoa/tree/main/deploy/docker-compose). It includes the Console, Developer Portal, API, gateway, identity service and observability dependencies. Hosted access is **available on request** through [our team](mailto:sales@gostoa.dev).
+
+:::info Validation scope
+The Compose configuration was validated statically with `docker compose config --quiet`. No containers were started. Startup, sign-in, data seeding and a first API call still require runtime verification; no startup duration is promised.
 :::
 
-## What You'll Accomplish
+## Prerequisites
 
-By the end of this guide, an AI agent (Claude) will discover and call an API through STOA — without you writing a single line of code.
+- Git, Docker and Docker Compose v2.
+- A dedicated local Docker environment with enough resources for the full stack.
+- Available ports and no existing containers using the names declared by the Compose file. A project name alone does not isolate fixed container names. Resolve collisions before starting; do not stop or recreate another installation.
 
-## Step 1: Create Your Account
-
-1. Go to [console.gostoa.dev](https://console.gostoa.dev) and click **Sign Up**
-2. Fill in your email and choose a password
-3. You're in — STOA creates your tenant automatically
-
-:::tip Already have an account?
-Skip to [Step 2](#step-2-connect-claude-to-stoa).
-:::
-
-## Step 2: Connect Claude to STOA
-
-1. Open [claude.ai](https://claude.ai) (Pro or Team plan required for MCP)
-2. Go to **Settings** → **Integrations** → **Add MCP Server**
-3. Enter:
-   - **URL**: `https://mcp.gostoa.dev/mcp/sse`
-   - **Name**: `STOA Platform`
-4. Authenticate with your STOA credentials when prompted
-
-That's it. Claude is now connected to your STOA gateway.
-
-## Step 3: Make Your First AI Tool Call
-
-Ask Claude:
-
-> "What tools are available in STOA?"
-
-Claude uses the MCP connection to discover your API catalog and shows you the available tools.
-
-Then ask:
-
-> "Use the echo tool to send a test message"
-
-Claude will call the tool through STOA and return the result.
-
-**You just experienced "Time To First Agent Call"** — an AI agent discovered and called an API autonomously.
-
----
-
-## What Happened Behind the Scenes
-
-```
-┌──────────┐     ┌──────────────┐     ┌─────────────┐
-│  Claude  │────▶│ STOA Gateway │────▶│ Backend API │
-│ (Agent)  │◀────│  (MCP + Auth)│◀────│             │
-└──────────┘     └──────────────┘     └─────────────┘
-```
-
-STOA handled:
-- **Discovery**: Claude found available tools via MCP `tools/list`
-- **Authentication**: OAuth 2.1 with PKCE (no secrets exposed)
-- **Authorization**: Verified your tenant access
-- **Routing**: Forwarded the call to the correct backend
-- **Observability**: Logged the call for analytics
-
----
-
-## Register Your Own API
-
-Ready to expose your own backend API as an AI tool?
-
-1. In the Console, go to **Backend APIs** → **Register API**
-2. Enter your API's name and backend URL
-3. STOA auto-generates MCP tools from your OpenAPI spec
-4. Create a **scoped API key** under **API Keys** for programmatic access
-
-Your API is now callable by any connected AI agent.
-
----
-
-## Alternative: Use curl Instead of Claude
-
-If you prefer the command line, you can call STOA directly:
+## 1. Prepare the configuration
 
 ```bash
-# Get an OAuth token
-TOKEN=$(curl -s -X POST "https://auth.gostoa.dev/realms/stoa/protocol/openid-connect/token" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "client_id=${CLIENT_ID}" \
-  -d "client_secret=${CLIENT_SECRET}" \
-  -d "grant_type=client_credentials" | jq -r '.access_token')
-
-# List available tools
-curl -s "https://mcp.gostoa.dev/mcp/tools/list" \
-  -H "Authorization: Bearer ${TOKEN}" | jq '.tools[] | {name, description}'
-
-# Call a tool
-curl -s -X POST "https://mcp.gostoa.dev/mcp/tools/call" \
-  -H "Authorization: Bearer ${TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "echo", "arguments": {"message": "hello"}}' | jq
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa/deploy/docker-compose
+cp .env.example .env
 ```
 
----
+Edit `.env` locally before continuing. Replace the supplied credential values with your own; do not publish or commit this file. These variables are required by Compose, including the OpenSearch initialization services:
 
-## Next Steps
+| Variable | Purpose |
+| --- | --- |
+| `POSTGRES_PASSWORD` | PostgreSQL authentication. |
+| `KEYCLOAK_ADMIN_PASSWORD` | Keycloak administration. |
+| `OPENSEARCH_ADMIN_PASSWORD` | OpenSearch administration and security initialization. |
+| `OPENSEARCH_DASHBOARDS_PASSWORD` | OpenSearch Dashboards service account. |
+| `OPENSEARCH_LOGWRITER_PASSWORD` | OpenSearch ingestion account. |
+| `OPENSEARCH_OIDC_CLIENT_SECRET` | OpenSearch Dashboards identity client. |
 
-| Goal | Guide |
-|------|-------|
-| Connect Claude with zero kubectl | [MCP for Developers](/docs/guides/mcp-developer-guide) |
-| Build custom MCP tools | [MCP Tools Development](/docs/guides/mcp-tools-development) |
-| Manage API subscriptions | [Subscription Lifecycle](/docs/guides/subscriptions-lifecycle) |
-| Deploy on your own infrastructure | [Hybrid Deployment](/docs/deployment/hybrid) |
-| Understand MCP protocol | [MCP Protocol Fiche](/docs/guides/fiches/mcp-protocol) |
+Also configure `GRAFANA_PASSWORD` and `GRAFANA_OIDC_CLIENT_SECRET` for Grafana access. Set `OPENSEARCH_PASSWORD` consistently with `OPENSEARCH_ADMIN_PASSWORD` for API access to OpenSearch. Set `GATEWAY_ADMIN_TOKEN` and `GATEWAY_API_KEY` consistently for any gateway administration workflow. Optional identity profiles require their own credentials and are outside this quickstart.
 
----
+Validate without starting services:
+
+```bash
+docker compose -p stoa-local-check -f docker-compose.yml config --quiet
+```
+
+An error naming a variable means it must be configured before proceeding. This check validates configuration only, not image availability, port availability or application health.
+
+## 2. Start the local stack
+
+After resolving local conflicts, start this explicit service set and its dependencies:
+
+```bash
+docker compose up -d nginx redpanda-init opensearch-init data-prepper tempo
+```
+
+This selects the application stack and its observability dependencies without starting Promtail or optional federation services. Do not replace it with an unqualified full-stack startup command. The separate `stoa-quickstart` repository is not an alternative path in this guide.
+
+## 3. Check local access
+
+Open the local reverse proxy in your browser: the Console is at `/`, the Developer Portal at `/portal`, API documentation at `/api/docs`, identity administration at `/auth`, Grafana at `/grafana`, and gateway health at `/gateway/health`. Use the host port configured by `PORT_PROXY`.
+
+Demo data initialization has not yet been verified for this local path and remains pending.
+
+## Register your own API {#register-your-own-api}
+
+After sign-in works, use **Backend APIs** in the Console to register your backend. Continue with [MCP for Developers](/docs/guides/mcp-developer-guide) for agent access and [Subscription Lifecycle](/docs/guides/subscriptions-lifecycle) for subscriptions.
 
 ## Troubleshooting
 
-| Problem | Fix |
-|---------|-----|
-| Claude can't connect to MCP server | Check the URL is `https://mcp.gostoa.dev/mcp/sse` — note the `/mcp/sse` path |
-| "Unauthorized" after connecting | Re-authenticate: disconnect and reconnect the MCP server in Claude settings |
-| No tools appear | Your tenant may have no APIs registered yet — register one in the Console |
-| curl returns `401` | Token expired (default: 5 min) — re-run the token command |
+| Problem | Action |
+| --- | --- |
+| Configuration validation fails | Check the variable named by Compose in your local `.env`. |
+| Port or container-name collision | Use a dedicated environment; leave existing installations untouched. |
+| Service unavailable after configuration validation | Check application readiness locally; static validation does not prove runtime health. |
+
+## See also
+
+- [Installation guide](/docs/deployment/hybrid)
+- [MCP for Developers](/docs/guides/mcp-developer-guide)
