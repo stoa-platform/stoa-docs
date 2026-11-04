@@ -42,7 +42,7 @@ STOA gateways can automatically register with the Control Plane at startup, elim
              │
     ┌────────┴────────┐              ┌────────────────┐
     │  STOA Gateway   │              │ STOA Sidecar   │
-    │  (edge-mcp)     │              │ + Kong/Envoy   │
+    │  (edge-mcp)     │              │ + Kong         │
     │                 │              │                │
     │  1. Register    │              │  ext_authz     │
     │  2. Heartbeat   │              │  ↓             │
@@ -58,8 +58,8 @@ Deploy a STOA gateway with automatic registration:
 
 ```bash
 # Minimal configuration (2 env vars)
-export STOA_CONTROL_PLANE_URL=https://api.<YOUR_DOMAIN>
-export STOA_CONTROL_PLANE_API_KEY=gw_your_key_here
+export STOA_CONTROL_PLANE_URL="https://api.<YOUR_DOMAIN>"
+export STOA_CONTROL_PLANE_API_KEY="<GATEWAY_API_KEY>"
 
 # Start the gateway
 ./stoa-gateway
@@ -82,7 +82,13 @@ kind: Deployment
 metadata:
   name: kong-with-stoa-sidecar
 spec:
+  selector:
+    matchLabels:
+      app: kong-with-stoa-sidecar
   template:
+    metadata:
+      labels:
+        app: kong-with-stoa-sidecar
     spec:
       containers:
         # Main gateway (Kong)
@@ -98,17 +104,19 @@ spec:
 
         # STOA sidecar
         - name: stoa-sidecar
-          image: ghcr.io/stoa/stoa-gateway:latest
+          image: ghcr.io/stoa-platform/stoa-gateway:latest
           env:
             - name: STOA_GATEWAY_MODE
               value: "sidecar"
+            - name: STOA_PORT
+              value: "8081"
             - name: STOA_CONTROL_PLANE_URL
               value: "https://api.<YOUR_DOMAIN>"
             - name: STOA_CONTROL_PLANE_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: stoa-sidecar-secrets
-                  key: control-plane-api-key
+                  key: STOA_CONTROL_PLANE_API_KEY
           ports:
             - containerPort: 8081  # ext_authz endpoint
 ```
@@ -123,7 +131,7 @@ Configure the Control Plane to accept gateway registrations:
 # Create Kubernetes secret with API keys
 kubectl create secret generic stoa-gateway-api-keys \
   --namespace stoa-system \
-  --from-literal=GATEWAY_API_KEYS="gw_prod_key_abc123,gw_staging_key_xyz789"
+  --from-literal=GATEWAY_API_KEYS="<GATEWAY_API_KEY>,<SECOND_GATEWAY_API_KEY>"
 ```
 
 **Key format**: Any string, but we recommend the format `gw_{environment}_{random}`.
@@ -135,22 +143,12 @@ kubectl create secret generic stoa-gateway-api-keys \
 Patch the Control Plane deployment:
 
 ```bash
-kubectl patch deployment control-plane-api -n stoa-system \
+kubectl patch deployment stoa-control-plane-api -n stoa-system \
   --type='json' \
   -p='[{"op": "add", "path": "/spec/template/spec/containers/0/env/-", "value": {"name": "GATEWAY_API_KEYS", "valueFrom": {"secretKeyRef": {"name": "stoa-gateway-api-keys", "key": "GATEWAY_API_KEYS"}}}}]'
 ```
 
-Or via Helm:
-
-```yaml
-# values.yaml
-controlPlane:
-  env:
-    GATEWAY_API_KEYS:
-      secretKeyRef:
-        name: stoa-gateway-api-keys
-        key: GATEWAY_API_KEYS
-```
+The `stoa-platform` chart does not deploy the Control Plane API or expose a `controlPlane.env` setting. Configure `GATEWAY_API_KEYS` in your existing Control Plane deployment.
 
 ## Gateway Configuration Reference
 
@@ -160,7 +158,7 @@ controlPlane:
 |----------|----------|---------|-------------|
 | `STOA_CONTROL_PLANE_URL` | Yes | - | Control Plane API URL |
 | `STOA_CONTROL_PLANE_API_KEY` | Yes | - | Shared secret for authentication |
-| `STOA_GATEWAY_MODE` | No | `edge-mcp` | Gateway mode: `edge-mcp`, `sidecar`, `proxy`, `shadow` |
+| `STOA_GATEWAY_MODE` | No | `edge-mcp` | Gateway mode: `edge-mcp`, `sidecar`, `proxy`, `shadow`, `connect` |
 | `STOA_ENVIRONMENT` | No | `dev` | Environment identifier for grouping |
 | `STOA_TENANT_ID` | No | - | Optional tenant restriction |
 
@@ -170,12 +168,12 @@ The gateway sends this payload at startup:
 
 ```json
 {
-  "hostname": "stoa-gateway-7f8b9c",
+  "hostname": "<GATEWAY_HOSTNAME>",
   "mode": "edge-mcp",
   "version": "0.1.0",
   "environment": "prod",
   "capabilities": ["rest", "mcp", "sse", "oidc", "rate_limiting"],
-  "admin_url": "http://10.0.1.50:8080",
+  "admin_url": "http://<GATEWAY_HOSTNAME>:8080",
   "tenant_id": null
 }
 ```
@@ -212,7 +210,7 @@ This enables:
 
 ### STOA Gateway (Tier 1)
 
-The Helm chart manages the `STOA_CONTROL_PLANE_API_KEY` secret via a Vault-backed ExternalSecret:
+Set `stoaGateway.secretName` to an existing Kubernetes Secret. To populate it from Vault instead, enable the optional ExternalSecret as shown below; this requires External Secrets Operator and an existing `ClusterSecretStore` named `vault-backend`:
 
 ```yaml
 # values.yaml
@@ -223,8 +221,8 @@ stoaGateway:
   # Control Plane connection
   controlPlaneUrl: "http://stoa-control-plane-api.stoa-system.svc.cluster.local:80"
 
-  # Secret containing CONTROL_PLANE_API_KEY, JWT_SECRET, KEYCLOAK_CLIENT_SECRET, ADMIN_API_TOKEN
-  # CONTROL_PLANE_API_KEY is REQUIRED for auto-registration.
+  # Secret keys: STOA_CONTROL_PLANE_API_KEY, STOA_KEYCLOAK_CLIENT_SECRET
+  # STOA_CONTROL_PLANE_API_KEY is required for auto-registration.
   # Without it, the gateway skips registration and runs in standalone mode.
   secretName: stoa-gateway-secrets
 
@@ -233,7 +231,7 @@ stoaGateway:
     enabled: true
     refreshInterval: 1h
     secretStoreRef: vault-backend
-    vaultPath: stoa/data/gateway  # Must contain control_plane_api_key
+    vaultPath: "<VAULT_GATEWAY_PATH>"  # Must contain both STOA_* properties listed above
 ```
 
 The deployment template injects the secret as an environment variable:
@@ -243,12 +241,12 @@ The deployment template injects the secret as an environment variable:
   valueFrom:
     secretKeyRef:
       name: stoa-gateway-secrets
-      key: control-plane-api-key
+      key: STOA_CONTROL_PLANE_API_KEY
       optional: true  # Gateway runs standalone if missing
 ```
 
 :::caution Required Vault Key
-The Vault path (`stoa/data/gateway`) must contain a `control_plane_api_key` property. Without it, the ExternalSecret will create an empty key, and the gateway will skip auto-registration.
+Replace `<VAULT_GATEWAY_PATH>` with a Vault path containing `STOA_CONTROL_PLANE_API_KEY` and `STOA_KEYCLOAK_CLIENT_SECRET`. The ExternalSecret uses those exact names for both Vault properties and Kubernetes Secret keys. Missing properties prevent successful secret synchronization; without `STOA_CONTROL_PLANE_API_KEY`, the gateway skips auto-registration.
 :::
 
 ### STOA Sidecar (Tier 2)
@@ -258,10 +256,10 @@ Full configuration in `charts/stoa-platform/values.yaml`:
 ```yaml
 stoaSidecar:
   enabled: true
-  targetGateway: webmethods  # or kong, envoy, apigee, generic
+  targetGateway: webmethods  # or kong, gravitee, agentgateway, apigee, aws_apigateway, azure_apim
 
   image:
-    repository: ghcr.io/stoa/stoa-gateway
+    repository: ghcr.io/stoa-platform/stoa-gateway
     tag: latest
 
   replicas: 2
@@ -269,7 +267,7 @@ stoaSidecar:
 
   # Control Plane connection
   controlPlaneUrl: "http://stoa-control-plane-api.stoa-system.svc.cluster.local:80"
-  secretName: stoa-sidecar-secrets  # Must contain control-plane-api-key
+  secretName: stoa-sidecar-secrets  # Must contain STOA_CONTROL_PLANE_API_KEY
 
   # Keycloak OIDC (for token validation)
   keycloakUrl: "https://auth.<YOUR_DOMAIN>"
@@ -329,12 +327,9 @@ When the error rate exceeds 5%, the panel displays a degraded warning badge.
 
 ## Deep Readiness Probe
 
-The gateway's `/ready` endpoint performs real dependency checks before reporting readiness:
+The gateway's `/ready` endpoint checks required policy state, Control Plane connectivity when configured, and OIDC provider reachability when authentication is enabled before reporting readiness.
 
-1. **Control Plane connectivity** — HTTP GET to `{STOA_CONTROL_PLANE_URL}/health` with 3-second timeout
-2. **OIDC provider reachability** — Fetches OIDC configuration from Keycloak (if auth is enabled)
-
-If either check fails, the endpoint returns `503 SERVICE UNAVAILABLE` with a descriptive message:
+If a check fails, the endpoint returns `503 SERVICE UNAVAILABLE` with a descriptive message:
 - `NOT READY: Control Plane unreachable`
 - `NOT READY: OIDC provider unreachable`
 
@@ -346,7 +341,7 @@ After registration, gateways periodically fetch their configuration from the Con
 
 ```
 GET /v1/internal/gateways/{id}/config
-Header: X-Gateway-Key: gw_xxx
+Header: X-Gateway-Key: <GATEWAY_API_KEY>
 ```
 
 The response includes:
@@ -366,26 +361,26 @@ This enables the Control Plane to push configuration changes to gateways without
 
 2. **Verify Control Plane has API keys configured:**
    ```bash
-   kubectl get secret stoa-gateway-api-keys -n stoa-system -o jsonpath='{.data.GATEWAY_API_KEYS}' | base64 -d
+   kubectl describe secret stoa-gateway-api-keys -n stoa-system
    ```
 
 3. **Check Control Plane logs:**
    ```bash
-   kubectl logs -n stoa-system deployment/control-plane-api | grep -i gateway
+   kubectl logs -n stoa-system deployment/stoa-control-plane-api | grep -i gateway
    ```
 
 4. **Test registration endpoint manually:**
    ```bash
-   curl -X POST ${STOA_API_URL}/v1/internal/gateways/register \
-     -H "X-Gateway-Key: gw_your_key" \
+   curl -X POST "${STOA_CONTROL_PLANE_URL}/v1/internal/gateways/register" \
+     -H "X-Gateway-Key: <GATEWAY_API_KEY>" \
      -H "Content-Type: application/json" \
      -d '{
-       "hostname": "test-gateway",
+       "hostname": "<GATEWAY_HOSTNAME>",
        "mode": "edge-mcp",
        "version": "0.1.0",
        "environment": "dev",
        "capabilities": ["rest"],
-       "admin_url": "http://localhost:8080"
+       "admin_url": "http://<GATEWAY_HOSTNAME>:8080"
      }'
    ```
 
@@ -399,7 +394,7 @@ This enables the Control Plane to push configuration changes to gateways without
 2. **Verify network connectivity to Control Plane:**
    ```bash
    kubectl exec -n stoa-system deployment/stoa-gateway -- \
-     curl -s http://control-plane-api.stoa-system.svc.cluster.local:8000/health
+     curl --fail --silent --show-error http://stoa-control-plane-api.stoa-system.svc.cluster.local:80/health/live
    ```
 
 ### Registration Returns 503
@@ -410,23 +405,22 @@ This enables the Control Plane to push configuration changes to gateways without
 ```bash
 kubectl create secret generic stoa-gateway-api-keys \
   --namespace stoa-system \
-  --from-literal=GATEWAY_API_KEYS="gw_your_key_here"
+  --from-literal=GATEWAY_API_KEYS="<GATEWAY_API_KEY>"
 
-kubectl patch deployment control-plane-api -n stoa-system \
+kubectl patch deployment stoa-control-plane-api -n stoa-system \
   --type='json' \
   -p='[{"op": "add", "path": "/spec/template/spec/containers/0/env/-", "value": {"name": "GATEWAY_API_KEYS", "valueFrom": {"secretKeyRef": {"name": "stoa-gateway-api-keys", "key": "GATEWAY_API_KEYS"}}}}]'
 
-kubectl rollout status deployment/control-plane-api -n stoa-system
+kubectl rollout status deployment/stoa-control-plane-api -n stoa-system
 ```
 
 ### Registration Returns 401
 
 **Cause**: Gateway API key doesn't match any key in `GATEWAY_API_KEYS`.
 
-**Fix**: Verify the key matches:
+**Fix**: Check that the Secret contains `GATEWAY_API_KEYS`, then compare its value with the gateway credential through your secret manager without printing either value:
 ```bash
-kubectl get secret stoa-gateway-api-keys -n stoa-system \
-  -o jsonpath='{.data.GATEWAY_API_KEYS}' | base64 -d
+kubectl describe secret stoa-gateway-api-keys -n stoa-system
 ```
 
 ## Security Considerations
