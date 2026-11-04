@@ -19,13 +19,13 @@ function HomepageHeader() {
         </Heading>
         <p className="hero__subtitle">
           <Translate id="homepage.hero.tagline">
-            Modernize Your API Gateway — MCP, Multi-Tenant, European Sovereign
+            Sovereign iPaaS — API &amp; integration platform
           </Translate>
         </p>
         <p className={styles.heroDescription}>
           <Translate id="homepage.hero.description">
-            The European Agent Gateway — govern AI-to-API interactions with
-            MCP support, multi-tenant isolation, and NIS2/DORA compliance.
+            Manage APIs and integrations on your own infrastructure, with
+            MCP support and multi-tenant isolation.
           </Translate>
         </p>
         <div className={styles.buttons}>
@@ -117,7 +117,7 @@ const FeatureList: FeatureItem[] = [
     icon: '🇪🇺',
     descriptionId: 'homepage.feature.sovereign.desc',
     descriptionDefault:
-      'European hosting available. NIS2 and DORA supportive features. Host in EU with full data residency control.',
+      'European hosting available on request. NIS2 and DORA supportive features. Host in EU with full data residency control.',
   },
   {
     titleId: 'homepage.feature.openSource.title',
@@ -332,7 +332,7 @@ function CTASection() {
         </Heading>
         <p>
           <Translate id="homepage.cta.subtitle">
-            Deploy STOA in your infrastructure or try our managed cloud.
+            Run STOA locally. Hosted access is available on request.
           </Translate>
         </p>
         <div className={styles.ctaButtons}>
@@ -343,8 +343,8 @@ function CTASection() {
           </Link>
           <Link
             className="button button--secondary button--lg"
-            href="https://console.gostoa.dev/signup">
-            <Translate id="homepage.cta.btn.cloud">☁️ Try STOA Cloud</Translate>
+            href="mailto:sales@gostoa.dev">
+            <Translate id="homepage.cta.btn.cloud">☁️ Request Hosted Access</Translate>
           </Link>
           <Link
             className="button button--outline button--lg"
@@ -362,7 +362,7 @@ export default function Home(): JSX.Element {
     <Layout
       title={translate({
         id: 'homepage.layout.title',
-        message: 'STOA Platform Docs — The European Agent Gateway | Define Once, Expose Everywhere',
+        message: 'STOA Docs — Sovereign iPaaS — API & integration platform',
       })}
       description={translate({
         id: 'homepage.layout.description',
