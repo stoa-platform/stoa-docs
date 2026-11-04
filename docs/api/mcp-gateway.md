@@ -52,7 +52,7 @@ Simple HTTP endpoints for tool operations. The gateway exposes two REST-style in
 | **MCP-style** | `POST /mcp/tools/list` — object with `tools` | `POST /mcp/tools/call` | `name` |
 | **REST v1** | `GET /mcp/v1/tools` — flat JSON array | `POST /mcp/v1/tools/invoke` | `tool` |
 
-### List Tools (MCP-style)
+### List Tools (MCP-style) {#list-tools}
 
 ```http
 POST /mcp/tools/list
@@ -88,7 +88,7 @@ Content-Type: application/json
 }
 ```
 
-### Invoke Tool (MCP-style)
+### Invoke Tool (MCP-style) {#invoke-tool}
 
 ```http
 POST /mcp/tools/call

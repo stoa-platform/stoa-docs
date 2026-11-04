@@ -52,7 +52,7 @@ Endpoints HTTP simples pour les opérations sur les outils. Le gateway expose de
 | **Style MCP** | `POST /mcp/tools/list` — objet avec `tools` | `POST /mcp/tools/call` | `name` |
 | **REST v1** | `GET /mcp/v1/tools` — tableau JSON plat | `POST /mcp/v1/tools/invoke` | `tool` |
 
-### Lister les Outils (style MCP)
+### Lister les Outils (style MCP) {#lister-les-outils}
 
 ```http
 POST /mcp/tools/list
@@ -88,7 +88,7 @@ Content-Type: application/json
 }
 ```
 
-### Invoquer un Outil (style MCP)
+### Invoquer un Outil (style MCP) {#invoquer-un-outil}
 
 ```http
 POST /mcp/tools/call
