@@ -51,7 +51,7 @@ endpoints:
           expected_output_contains: { id: sku-1234 }
 ```
 
-Serialized as JSON, this document is accepted unchanged by the gateway's `POST /admin/contracts` endpoint. A `published` contract must declare at least one endpoint with a `backend_url`.
+Serialized as JSON, this document is accepted unchanged by the gateway's `POST /admin/contracts` endpoint. A `published` contract must declare at least one endpoint, each with a `backend_url`, unless it carries an `llm_config`.
 
 ## UAC in the GitOps Flow
 
@@ -68,7 +68,7 @@ flowchart TB
 
 ## UAC Components
 
-### Contract
+### Contract {#api-identity}
 
 | Field | Required | Description |
 |-------|----------|-------------|
@@ -81,6 +81,10 @@ flowchart TB
 | `required_policies` | No | Policies derived from the classification (recomputed on upsert) |
 | `source_spec_url`, `spec_hash` | No | Source OpenAPI URL and hash used for drift detection |
 | `llm_config` | No | LLM backend configuration for AI-powered contracts |
+
+### Policies {#policies}
+
+<a id="auth-configuration"></a>
 
 Classification drives the required policies: `H` requires `rate-limit` and `auth-jwt`; `VH` adds `mtls` and `audit-logging`; `VVH` adds `data-encryption` and `geo-restriction`.
 

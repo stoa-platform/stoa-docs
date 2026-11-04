@@ -51,7 +51,7 @@ endpoints:
           expected_output_contains: { id: sku-1234 }
 ```
 
-Sérialisé en JSON, ce document est accepté tel quel par l'endpoint `POST /admin/contracts` de la passerelle. Un contrat `published` doit déclarer au moins un endpoint avec un `backend_url`.
+Sérialisé en JSON, ce document est accepté tel quel par l'endpoint `POST /admin/contracts` de la passerelle. Un contrat `published` doit déclarer au moins un endpoint, chacun avec un `backend_url`, sauf s'il porte un `llm_config`.
 
 ## Le UAC dans le flux GitOps {#uac-in-the-gitops-flow}
 
@@ -68,7 +68,7 @@ flowchart TB
 
 ## Composants du UAC {#uac-components}
 
-### Contrat {#contract}
+### Contrat {#identité-api}
 
 | Champ | Requis | Description |
 |-------|--------|-------------|
@@ -82,9 +82,13 @@ flowchart TB
 | `source_spec_url`, `spec_hash` | Non | URL de la spécification OpenAPI source et son hash pour la détection de dérive |
 | `llm_config` | Non | Configuration du backend LLM pour les contrats pilotés par IA |
 
+### Politiques {#politiques}
+
+<a id="configuration-dauthentification"></a>
+
 La classification détermine les politiques requises : `H` exige `rate-limit` et `auth-jwt` ; `VH` ajoute `mtls` et `audit-logging` ; `VVH` ajoute `data-encryption` et `geo-restriction`.
 
-### Point d'entrée (Endpoint) {#endpoint}
+### Point d'entrée (Endpoint) {#point-dentrée-endpoint}
 
 Les opérations sont listées sous `endpoints[]`. Chaque entrée devient une route REST et, une fois projetée, un outil MCP.
 
