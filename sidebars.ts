@@ -88,6 +88,7 @@ const sidebars: SidebarsConfig = {
         'reference/hardware-requirements',
         'reference/performance-benchmarks',
         'reference/benchmark-methodology',
+        'architecture/data-plane',
         'reference/configuration',
         'reference/mcp-tools',
         'reference/cli',
