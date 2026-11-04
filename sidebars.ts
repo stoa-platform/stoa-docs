@@ -95,6 +95,7 @@ const sidebars: SidebarsConfig = {
         'reference/rbac-permissions',
         'reference/oauth-discovery',
         'reference/quotas',
+        'reference/platform-security',
         'reference/security-configuration',
         'reference/exit-strategy',
         'architecture/delivery-process',
