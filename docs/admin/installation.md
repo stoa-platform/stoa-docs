@@ -125,7 +125,7 @@ stoaGateway:
   controlPlaneUrl: "http://stoa-control-plane-api.stoa-system.svc.cluster.local:80"
 
   # Gateway mode (ADR-024)
-  mode: edge-mcp               # Options: edge-mcp, sidecar, proxy, shadow, connect
+  mode: edge-mcp               # Options: edge-mcp, sidecar, proxy, shadow
 
   # Auto-registration (ADR-028)
   autoRegister: true
@@ -147,6 +147,8 @@ stoaGateway:
   logLevel: info                # Options: trace, debug, info, warn, error
   logFormat: json               # Options: json, pretty, compact
 ```
+
+The chart comment also lists `connect`, but the Rust runtime does not accept it for `STOA_GATEWAY_MODE`. Use `edge-mcp`, `sidecar`, `proxy`, or `shadow` for `stoaGateway.mode`.
 
 Helm can roll back configuration and other resources, but a mutable tag cannot reliably restore the previous image version.
 
@@ -363,17 +365,13 @@ stoa-gateway-<REPLICASET>-<POD_2>      1/1     Running   0          <AGE>
 <EnvSetup />
 
 ```bash
-curl -s "${STOA_GATEWAY_URL}/health" | jq
+curl --fail --silent --show-error "${STOA_GATEWAY_URL}/health"
 ```
 
 Expected:
 
-```json
-{
-  "status": "healthy",
-  "version": "2.0.0",
-  "mode": "edge-mcp"
-}
+```text
+OK
 ```
 
 ### 3. Verify CRDs

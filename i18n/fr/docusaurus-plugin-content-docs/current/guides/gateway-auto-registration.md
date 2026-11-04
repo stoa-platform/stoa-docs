@@ -158,9 +158,12 @@ Le chart `stoa-platform` ne déploie pas l’API du Plan de Contrôle et ne prop
 |----------|----------|---------|-------------|
 | `STOA_CONTROL_PLANE_URL` | Oui | - | URL de l'API du Plan de Contrôle |
 | `STOA_CONTROL_PLANE_API_KEY` | Oui | - | Secret partagé pour l'authentification |
-| `STOA_GATEWAY_MODE` | Non | `edge-mcp` | Mode gateway : `edge-mcp`, `sidecar`, `proxy`, `shadow`, `connect` |
+| `STOA_GATEWAY_MODE` | Non | `edge-mcp` | Mode gateway : `edge-mcp`, `sidecar`, `proxy`, `shadow` |
 | `STOA_ENVIRONMENT` | Non | `dev` | Identifiant d'environnement pour le regroupement |
-| `STOA_TENANT_ID` | Non | - | Restriction optionnelle au tenant |
+
+Le commentaire du chart mentionne aussi `connect`, mais le runtime Rust ne l’accepte pas pour `STOA_GATEWAY_MODE`. Utilisez `edge-mcp`, `sidecar`, `proxy` ou `shadow` pour `stoaGateway.mode`.
+
+Le gateway Rust s’enregistre avec `tenant_id: null` (à l’échelle de la plateforme) ; `STOA_TENANT_ID` n’est pas un paramètre pris en charge par le runtime et ne fournit pas d’isolation par tenant.
 
 ### Payload d'Enregistrement
 
@@ -196,9 +199,11 @@ Toutes les 30 secondes :
 
 L'identité du gateway est déterministe : `{hostname}-{mode_normalized}-{environment}`
 
+La normalisation du mode supprime uniquement les traits de soulignement ; le trait d’union de `edge-mcp` est conservé.
+
 | Nom d'Hôte | Mode | Environnement | Nom Dérivé |
 |----------|------|-------------|--------------|
-| `stoa-gw-abc123` | `edge-mcp` | `prod` | `stoa-gw-abc123-edgemcp-prod` |
+| `stoa-gw-abc123` | `edge-mcp` | `prod` | `stoa-gw-abc123-edge-mcp-prod` |
 | `kong-sidecar-xyz` | `sidecar` | `staging` | `kong-sidecar-xyz-sidecar-staging` |
 
 Cela permet :
@@ -308,7 +313,7 @@ Après l'enregistrement, les gateways apparaissent dans **Console > Gateways** a
 |--------|---------|--------|
 | ONLINE | Heartbeat reçu dans les 90s | Point vert pulsant |
 | OFFLINE | Pas de heartbeat depuis > 90s | Point gris |
-| DEGRADED | En ligne mais taux d'erreur > 5% | Badge orange dans le panneau de détail |
+| DEGRADED | Statut de l’instance signalé comme dégradé par le Plan de Contrôle | Badge de statut jaune |
 
 ### Panneau de Détail du Gateway
 
@@ -323,7 +328,7 @@ Cliquez sur une carte de gateway pour ouvrir le panneau de détail affichant les
 | Taux d'Erreur | `health_details.error_rate` | `2,0%` |
 | Enregistré le | `health_details.registered_at` | `2026-02-06` |
 
-Lorsque le taux d'erreur dépasse 5%, le panneau affiche un badge d'avertissement dégradé.
+Chaque heartbeat accepté définit le statut de l’instance sur `ONLINE`. Un taux d’erreur supérieur à 5% met en évidence la métrique du taux d’erreur dans le panneau de détail ; il ne définit pas le statut de l’instance sur `DEGRADED`.
 
 ## Sonde de Préparation Approfondie
 
@@ -337,7 +342,7 @@ Cela empêche Kubernetes d'acheminer le trafic vers des gateways qui ne peuvent 
 
 ## Récupération de Configuration
 
-Après l'enregistrement, les gateways récupèrent périodiquement leur configuration depuis le Plan de Contrôle :
+Le Plan de Contrôle expose un endpoint de configuration pour les gateways enregistrés :
 
 ```
 GET /v1/internal/gateways/{id}/config
@@ -348,7 +353,7 @@ La réponse inclut :
 - **pending_deployments** — Déploiements d'API ciblant ce gateway
 - **pending_policies** — Politiques de limitation de débit, contrôle d'accès et gouvernance
 
-Cela permet au Plan de Contrôle de pousser les modifications de configuration aux gateways sans nécessiter de redémarrage.
+Le cycle d’enregistrement du gateway Rust enregistre l’instance et envoie des heartbeats. Il ne consulte pas automatiquement cet endpoint et n’applique pas les déploiements et politiques en attente qu’il retourne.
 
 ## Dépannage
 

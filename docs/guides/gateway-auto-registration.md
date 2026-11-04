@@ -158,9 +158,12 @@ The `stoa-platform` chart does not deploy the Control Plane API or expose a `con
 |----------|----------|---------|-------------|
 | `STOA_CONTROL_PLANE_URL` | Yes | - | Control Plane API URL |
 | `STOA_CONTROL_PLANE_API_KEY` | Yes | - | Shared secret for authentication |
-| `STOA_GATEWAY_MODE` | No | `edge-mcp` | Gateway mode: `edge-mcp`, `sidecar`, `proxy`, `shadow`, `connect` |
+| `STOA_GATEWAY_MODE` | No | `edge-mcp` | Gateway mode: `edge-mcp`, `sidecar`, `proxy`, `shadow` |
 | `STOA_ENVIRONMENT` | No | `dev` | Environment identifier for grouping |
-| `STOA_TENANT_ID` | No | - | Optional tenant restriction |
+
+The chart comment also lists `connect`, but the Rust runtime does not accept it for `STOA_GATEWAY_MODE`. Use `edge-mcp`, `sidecar`, `proxy`, or `shadow` for `stoaGateway.mode`.
+
+The Rust gateway registers with `tenant_id: null` (platform-wide); `STOA_TENANT_ID` is not a supported runtime setting and does not provide tenant isolation.
 
 ### Registration Payload
 
@@ -196,9 +199,11 @@ Every 30 seconds:
 
 Gateway identity is deterministic: `{hostname}-{mode_normalized}-{environment}`
 
+Mode normalization removes underscores only; the hyphen in `edge-mcp` is preserved.
+
 | Hostname | Mode | Environment | Derived Name |
 |----------|------|-------------|--------------|
-| `stoa-gw-abc123` | `edge-mcp` | `prod` | `stoa-gw-abc123-edgemcp-prod` |
+| `stoa-gw-abc123` | `edge-mcp` | `prod` | `stoa-gw-abc123-edge-mcp-prod` |
 | `kong-sidecar-xyz` | `sidecar` | `staging` | `kong-sidecar-xyz-sidecar-staging` |
 
 This enables:
@@ -308,7 +313,7 @@ After registration, gateways appear at **Console > Gateways** with automatic 30-
 |--------|---------|--------|
 | ONLINE | Heartbeat received within 90s | Pulsing green dot |
 | OFFLINE | No heartbeat for > 90s | Gray dot |
-| DEGRADED | Online but error rate > 5% | Orange badge in detail panel |
+| DEGRADED | Instance status reported as degraded by the Control Plane | Yellow status badge |
 
 ### Gateway Detail Panel
 
@@ -323,7 +328,7 @@ Click a gateway card to open the detail panel showing heartbeat metrics:
 | Error Rate | `health_details.error_rate` | `2.0%` |
 | Registered At | `health_details.registered_at` | `2026-02-06` |
 
-When the error rate exceeds 5%, the panel displays a degraded warning badge.
+Each accepted heartbeat sets the instance status to `ONLINE`. An error rate above 5% highlights the Error Rate metric in the detail panel; it does not set the instance status to `DEGRADED`.
 
 ## Deep Readiness Probe
 
@@ -337,7 +342,7 @@ This prevents Kubernetes from routing traffic to gateways that cannot enforce po
 
 ## Config Fetch
 
-After registration, gateways periodically fetch their configuration from the Control Plane:
+The Control Plane exposes a configuration endpoint for registered gateways:
 
 ```
 GET /v1/internal/gateways/{id}/config
@@ -348,7 +353,7 @@ The response includes:
 - **pending_deployments** — API deployments targeted at this gateway
 - **pending_policies** — Rate limiting, access control, and governance policies
 
-This enables the Control Plane to push configuration changes to gateways without requiring a restart.
+The Rust gateway registration lifecycle registers the instance and sends heartbeats. It does not automatically poll this endpoint or apply its pending deployments and policies.
 
 ## Troubleshooting
 
