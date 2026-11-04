@@ -21,50 +21,37 @@ Le UAC fournit une définition unique que STOA traduit dans le format natif de c
 
 ## Structure du UAC {#uac-structure}
 
-Une définition UAC capture tout ce qui est nécessaire pour déployer une API :
+Un contrat UAC est un document JSON validé par le JSON Schema UAC v1 (`uac_contract_v1_schema.json` dans l'API Control Plane, reflété par les types Rust de la passerelle). Le YAML est utilisé ici pour la lisibilité et se convertit 1:1 en JSON :
 
 ```yaml
-apiName: petstore
-apiVersion: 1.0.0
-tenant: acme
-displayName: Petstore API
-description: Manage pets in the store
+name: catalog-api                 # kebab-case, unique au sein du tenant
+version: 1.0.0                    # version sémantique
+tenant_id: example                # tenant propriétaire
+display_name: Catalog API
+description: Read access to the product catalog
+classification: H                 # H | VH | VVH (niveau de risque TIC aligné DORA)
+required_policies: [rate-limit, auth-jwt]   # dérivées de la classification
+status: published                 # draft | published | deprecated
 
-# Spécification API
-spec:
-  format: openapi3
-  url: https://api.example.com/v1/openapi.json
-
-# Point d'entrée backend
-endpoint:
-  url: https://backend.acme.internal/pets
-  method: REST
-  timeout: 30s
-
-# Contrôle d'accès
-auth:
-  type: oauth2
-  scopes:
-    - read:pets
-    - write:pets
-
-# Politiques
-policies:
-  - type: rate_limit
-    config:
-      requests_per_minute: 600
-  - type: cors
-    config:
-      allowed_origins: ["https://app.acme.com"]
-  - type: logging
-    config:
-      level: info
-
-# Visibilité portail
-portal:
-  visible: true
-  categories: ["pets", "demo"]
+endpoints:
+  - path: /catalog/items/{item_id}
+    methods: [GET]
+    backend_url: https://backend.example.local/v1/catalog
+    operation_id: get_catalog_item
+    # Métadonnées LLM optionnelles : pilotent la projection en outil MCP
+    llm:
+      summary: Fetch a catalog item by id.
+      intent: Use when an agent needs read-only details about a known item.
+      tool_name: catalog_get_item
+      side_effects: read            # none | read | write | destructive
+      safe_for_agents: true
+      requires_human_approval: false
+      examples:
+        - input: { item_id: sku-1234 }
+          expected_output_contains: { id: sku-1234 }
 ```
+
+Sérialisé en JSON, ce document est accepté tel quel par l'endpoint `POST /admin/contracts` de la passerelle. Un contrat `published` doit déclarer au moins un endpoint, chacun avec un `backend_url`, sauf s'il porte un `llm_config`.
 
 ## Le UAC dans le flux GitOps {#uac-in-the-gitops-flow}
 
@@ -81,45 +68,54 @@ flowchart TB
 
 ## Composants du UAC {#uac-components}
 
-### Identité API
+### Contrat {#identité-api}
 
 | Champ | Requis | Description |
 |-------|--------|-------------|
-| `apiName` | Oui | Identifiant unique de l'API au sein du tenant |
-| `apiVersion` | Oui | Chaîne de version sémantique |
-| `tenant` | Oui | ID du tenant propriétaire |
-| `displayName` | Non | Nom lisible par un humain |
-| `description` | Non | Description de l'API |
+| `name` | Oui | Nom unique du contrat au sein du tenant (kebab-case) |
+| `version` | Oui | Version sémantique (`MAJEUR.MINEUR.CORRECTIF`) |
+| `tenant_id` | Oui | Identifiant du tenant propriétaire |
+| `classification` | Oui | Niveau de risque TIC : `H`, `VH` ou `VVH` |
+| `status` | Oui | Cycle de vie : `draft`, `published` ou `deprecated` |
+| `display_name`, `description` | Non | Nom et description lisibles par un humain |
+| `required_policies` | Non | Politiques dérivées de la classification (recalculées à chaque upsert) |
+| `source_spec_url`, `spec_hash` | Non | URL de la spécification OpenAPI source et son hash pour la détection de dérive |
+| `llm_config` | Non | Configuration du backend LLM pour les contrats pilotés par IA |
 
-### Point d'entrée (Endpoint)
+### Politiques {#politiques}
+
+<a id="configuration-dauthentification"></a>
+
+La classification détermine les politiques requises : `H` exige `rate-limit` et `auth-jwt` ; `VH` ajoute `mtls` et `audit-logging` ; `VVH` ajoute `data-encryption` et `geo-restriction`.
+
+### Point d'entrée (Endpoint) {#point-dentrée-endpoint}
+
+Les opérations sont listées sous `endpoints[]`. Chaque entrée devient une route REST et, une fois projetée, un outil MCP.
 
 | Champ | Requis | Description |
 |-------|--------|-------------|
-| `url` | Oui | URL du service backend |
-| `method` | Non | Protocole (REST, GraphQL, gRPC) |
-| `timeout` | Non | Timeout de requête |
+| `path` | Oui | Motif de chemin URL, par ex. `/catalog/items/{item_id}` |
+| `methods` | Oui | Méthodes HTTP autorisées (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`) |
+| `backend_url` | Oui | URL du backend vers lequel les requêtes sont relayées |
+| `operation_id` | Non | operationId OpenAPI, utilisé pour nommer l'outil MCP |
+| `input_schema`, `output_schema` | Non | JSON Schema des corps de requête et de réponse |
+| `llm` | Non | Métadonnées LLM pour la projection en outil MCP (voir ci-dessous) |
 
-### Politiques
+### Métadonnées LLM {#llm-metadata}
 
-Les politiques sont appliquées dans l'ordre et traduites en plugins/handlers natifs de la passerelle :
+`endpoint.llm` est optionnel en v1 : un contrat `published` dont un endpoint en est dépourvu reçoit un avertissement de validation, tandis qu'un bloc malformé est une erreur. Lorsqu'il est présent, tous les champs sont requis :
 
-| Type de politique | Description |
-|-------------------|-------------|
-| `rate_limit` | Limitation de débit par consommateur |
-| `cors` | Règles de partage de ressources cross-origin |
-| `jwt` | Validation JWT et extraction de claims |
-| `ip_filter` | Liste d'autorisation/blocage d'IP |
-| `logging` | Niveau de journalisation des requêtes/réponses |
-| `transform` | Règles de transformation des en-têtes/corps |
+| Champ | Description |
+|-------|-------------|
+| `summary` | Résumé court de l'outil, lisible par un humain |
+| `intent` | Quand un agent doit utiliser cet endpoint |
+| `tool_name` | Nom MCP stable, unique au sein du contrat |
+| `side_effects` | `none`, `read`, `write` ou `destructive` |
+| `safe_for_agents` | Si des agents autonomes peuvent appeler l'endpoint |
+| `requires_human_approval` | Si une étape d'approbation humaine précède l'invocation |
+| `examples` | Au moins un exemple avec `input` et un `expected_output_contains` optionnel |
 
-### Configuration d'authentification
-
-| Type d'auth | Description |
-|-------------|-------------|
-| `oauth2` | OAuth 2.0 avec scopes |
-| `api_key` | Clé API dans l'en-tête ou les paramètres |
-| `basic` | Authentification HTTP Basic |
-| `none` | API publique (sans auth) |
+Règle dure : `side_effects: destructive` exige `requires_human_approval: true`. Le validateur rejette le contrat dans le cas contraire.
 
 ## Traduction par le Gateway Adapter {#gateway-adapter-translation}
 
@@ -138,6 +134,8 @@ class GatewayAdapterInterface:
 ```
 
 L'adapter garantit des opérations **idempotentes** — synchroniser le même UAC deux fois produit des résultats identiques sur la passerelle.
+
+**Entrée adapter héritée.** Le dictionnaire `api_spec` passé à `sync_api` est l'état désiré du déploiement, une structure plate indexée par `api_name`/`apiName` que le Control Plane dérive pour chaque adapter. Ce n'est pas le format de contrat UAC présenté ci-dessus et il n'est pas accepté par les endpoints de contrats.
 
 ## Mode Shadow (futur) {#shadow-mode-future}
 
