@@ -57,13 +57,17 @@ Les gateways STOA peuvent s'enregistrer automatiquement auprès du Plan de Contr
 Déployez un gateway STOA avec enregistrement automatique :
 
 ```bash
-# Configuration minimale (2 variables d'environnement)
+# Minimal registration configuration (not a complete Ready deployment)
 export STOA_CONTROL_PLANE_URL="https://api.<YOUR_DOMAIN>"
 export STOA_CONTROL_PLANE_API_KEY="<GATEWAY_API_KEY>"
 
-# Démarrer le gateway
+# Start the gateway
 ./stoa-gateway
 ```
+
+:::warning L'enregistrement ne garantit pas la readiness
+Les deux variables ci-dessus configurent uniquement l'enregistrement. `STOA_POLICY_BOOT_TENANTS` vaut une liste vide par défaut ; cet exemple laisse donc `/ready` renvoyer HTTP 503 même si l'enregistrement réussit. Avant de démarrer un gateway qui doit devenir Ready, définissez aussi `STOA_POLICY_BOOT_TENANTS="<TENANT_ID>"` (identifiants de tenants existants séparés par des virgules s'il y en a plusieurs) et configurez les dépendances du chargement des politiques : services Control Plane et Keycloak accessibles, client de service Keycloak utilisant `private_key_jwt` avec une clé de signature montée, et autorisation de lire les permissions d'outils des tenants. La clé API d'enregistrement ou un secret client Keycloak seul ne peut pas authentifier ces lectures de politiques. Une politique d'outils complète et fraîche doit être chargée, ainsi que le jeu de clés de confiance des politiques s'il est configuré. Consultez [Politiques au Démarrage et Readiness](../admin/installation.md#politiques-au-démarrage-et-readiness) pour le paramètre Helm `extraEnv` et la configuration de la clé de signature. Tous les autres contrôles de readiness doivent également réussir.
+:::
 
 Le gateway va :
 1. Dériver l'identité depuis le nom d'hôte + mode + environnement

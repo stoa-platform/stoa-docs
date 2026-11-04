@@ -46,6 +46,8 @@ Consultez [Ressources Matérielles](/docs/reference/hardware-requirements) pour 
 
 ## Installation Rapide
 
+Cet exemple minimal installe les ressources du gateway mais **ne constitue pas un déploiement Ready complet**. Terminez la configuration des politiques au démarrage ci-dessous avant d’attendre `1/1 Ready`.
+
 ```bash
 # Ajouter le dépôt Helm STOA
 helm repo add stoa https://charts.gostoa.dev
@@ -73,6 +75,23 @@ L'API du Control Plane, la Console, le Portail et Keycloak ne sont **pas** insta
 
 Avant de réactiver les ServiceMonitors, installez les CRDs de Prometheus Operator, dont `servicemonitors.monitoring.coreos.com`. Avant de définir `gatewaySync.enabled=true`, rendez accessibles l'API du Control Plane (`gatewaySync.backendUrl`, endpoints `/health/live` et `/openapi.json`) et l'API d'administration webMethods (`gatewaySync.gatewayUrl`), puis créez le Secret désigné par `gatewaySync.credentialsSecret` avec les clés `username` et `password`. Ce paramètre active aussi un hook Helm post-installation/post-mise à jour ; la synchronisation périodique attend une API existante correspondant à `gatewaySync.apiName` et `gatewaySync.apiVersion`.
 :::
+
+### Politiques au Démarrage et Readiness
+
+`STOA_POLICY_BOOT_TENANTS` vaut une liste vide par défaut et le chart ne le définit pas. Avec la commande minimale ci-dessus, `/ready` renvoie HTTP 503 et les pods restent `0/1 Ready`, même si les services externes sont accessibles. Le chart sonde `/ready` ; une réponse positive de `/health` ou l'auto-enregistrement ne satisfait pas cette condition de readiness.
+
+Ajoutez les tenants de démarrage via `stoaGateway.extraEnv` dans votre fichier de valeurs et passez-le avec `-f my-values.yaml` lors de l'installation ou de la mise à jour :
+
+```yaml
+stoaGateway:
+  extraEnv:
+    - name: STOA_POLICY_BOOT_TENANTS
+      value: "<TENANT_ID>"
+```
+
+Remplacez `<TENANT_ID>` par un tenant existant dont le gateway peut lire les permissions d'outils ; plusieurs identifiants peuvent être séparés par des virgules. Ce paramètre seul ne suffit pas : le gateway doit charger une politique d'outils complète et fraîche depuis le Control Plane. Fournissez des services Control Plane et Keycloak accessibles, puis configurez le client de service Keycloak du gateway pour l'authentification `private_key_jwt` avec sa clé de signature montée (`STOA_KEYCLOAK_CLIENT_KEY_PATH`, ainsi que `STOA_KEYCLOAK_CLIENT_KEY_ID` si nécessaire). Cette identité de service doit être autorisée à lire les permissions d'outils du tenant. La clé API d'enregistrement et un secret client Keycloak ne remplacent pas cette authentification par clé de signature pour lire les politiques. Si `STOA_POLICY_TRUST_JWKS_FILE` est configuré, son jeu de clés de confiance doit également être chargé avec succès.
+
+Le chargeur de démarrage récupère et actualise les permissions d'outils des tenants en arrière-plan. Des paramètres manquants, un échec du chargement initial ou une politique périmée maintiennent la readiness en échec. N'attendez `1/1 Ready` qu'après le chargement d'une politique fraîche et la réussite des autres contrôles de readiness, dont la santé du Control Plane et la découverte OIDC lorsqu'elle est activée. Les paramètres `policies.enabled` et `policies.path` du chart ne renseignent pas les tenants de démarrage et ne remplacent pas ce chargement des politiques d'outils.
 
 ## Référence du Chart Helm
 
@@ -352,13 +371,15 @@ spec:
 kubectl get pods -n stoa-system
 ```
 
-Sortie attendue :
+Sortie attendue pour l’exemple minimal avant la configuration des politiques au démarrage :
 
 ```
 NAME                                 READY   STATUS    RESTARTS   AGE
-stoa-gateway-<REPLICASET>-<POD_1>      1/1     Running   0          <AGE>
-stoa-gateway-<REPLICASET>-<POD_2>      1/1     Running   0          <AGE>
+stoa-gateway-<REPLICASET>-<POD_1>      0/1     Running   0          <AGE>
+stoa-gateway-<REPLICASET>-<POD_2>      0/1     Running   0          <AGE>
 ```
+
+Après la configuration des politiques au démarrage et la réussite de tous les contrôles de readiness, la colonne `READY` doit passer à `1/1` pour chaque pod. `/health` ci-dessous vérifie uniquement la liveness ; il peut renvoyer `OK` alors que `/ready` renvoie HTTP 503.
 
 ### 2. Vérifier la Santé du Gateway
 

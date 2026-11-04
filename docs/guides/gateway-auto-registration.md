@@ -57,13 +57,17 @@ STOA gateways can automatically register with the Control Plane at startup, elim
 Deploy a STOA gateway with automatic registration:
 
 ```bash
-# Minimal configuration (2 env vars)
+# Minimal registration configuration (not a complete Ready deployment)
 export STOA_CONTROL_PLANE_URL="https://api.<YOUR_DOMAIN>"
 export STOA_CONTROL_PLANE_API_KEY="<GATEWAY_API_KEY>"
 
 # Start the gateway
 ./stoa-gateway
 ```
+
+:::warning Registration is not readiness
+The two variables above configure registration only. `STOA_POLICY_BOOT_TENANTS` defaults to an empty list, so this example leaves `/ready` returning HTTP 503 even if registration succeeds. Before starting a gateway that must become Ready, also set `STOA_POLICY_BOOT_TENANTS="<TENANT_ID>"` (comma-separated for multiple existing tenants) and configure policy-loading dependencies: reachable Control Plane and Keycloak services, a Keycloak service client using `private_key_jwt` with a mounted signing key, and authorization to read the tenants' tool permissions. The registration API key or a Keycloak client secret alone cannot authenticate these policy reads. A complete, fresh tool policy must load, and a configured policy trust set must load successfully. See [Startup Policy and Readiness](../admin/installation.md#startup-policy-and-readiness) for the Helm `extraEnv` setting and signing-key configuration. All other readiness checks must also pass.
+:::
 
 The gateway will:
 1. Derive identity from hostname + mode + environment

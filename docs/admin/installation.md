@@ -46,6 +46,8 @@ See [Hardware Requirements](/docs/reference/hardware-requirements) for detailed 
 
 ## Quick Install
 
+This minimal example installs the gateway resources but is **not a complete Ready deployment**. Complete the startup policy setup below before expecting `1/1 Ready`.
+
 ```bash
 # Add the STOA Helm repository
 helm repo add stoa https://charts.gostoa.dev
@@ -73,6 +75,23 @@ The Control Plane API, Console, Portal and Keycloak are **not** installed by thi
 
 Before re-enabling the ServiceMonitors, install the Prometheus Operator CRDs, including `servicemonitors.monitoring.coreos.com`. Before setting `gatewaySync.enabled=true`, make the Control Plane API (`gatewaySync.backendUrl`, endpoints `/health/live` and `/openapi.json`) and the webMethods administration API (`gatewaySync.gatewayUrl`) reachable, then create the Secret named by `gatewaySync.credentialsSecret` with `username` and `password` keys. This setting also enables a Helm post-install/post-upgrade hook; the periodic sync expects an existing API matching `gatewaySync.apiName` and `gatewaySync.apiVersion`.
 :::
+
+### Startup Policy and Readiness
+
+`STOA_POLICY_BOOT_TENANTS` defaults to an empty list, and the chart does not set it. With the minimal command above, `/ready` returns HTTP 503 and the pods remain `0/1 Ready`, even if the external services are reachable. The chart probes `/ready`; a successful `/health` response or auto-registration does not satisfy this readiness gate.
+
+Add startup tenants through `stoaGateway.extraEnv` in your values file and pass it with `-f my-values.yaml` when installing or upgrading:
+
+```yaml
+stoaGateway:
+  extraEnv:
+    - name: STOA_POLICY_BOOT_TENANTS
+      value: "<TENANT_ID>"
+```
+
+Replace `<TENANT_ID>` with an existing tenant whose tool permissions the gateway can read; multiple tenant IDs can be comma-separated. This setting alone is insufficient: the gateway must load a complete, fresh tool policy from the Control Plane. Provide reachable Control Plane and Keycloak services, and configure the gateway's Keycloak service client for `private_key_jwt` authentication with its mounted signing key (`STOA_KEYCLOAK_CLIENT_KEY_PATH`, plus `STOA_KEYCLOAK_CLIENT_KEY_ID` when needed). That service identity must be authorized to read the tenant's tool permissions. The registration API key and a Keycloak client secret do not replace this signing-key authentication for policy reads. If `STOA_POLICY_TRUST_JWKS_FILE` is configured, its trust set must also load successfully.
+
+The startup loader fetches and refreshes tenant tool permissions in the background. Missing inputs, a failed initial policy load, or a stale policy keep readiness failed. Only expect `1/1 Ready` after a fresh policy has loaded and the other readiness checks, including Control Plane health and OIDC discovery when enabled, pass. The chart's `policies.enabled` and `policies.path` settings do not populate startup tenants or replace this tool-policy load.
 
 ## Helm Chart Reference
 
@@ -352,13 +371,15 @@ spec:
 kubectl get pods -n stoa-system
 ```
 
-Expected output:
+Expected output for the minimal example before startup policy setup:
 
 ```
 NAME                                 READY   STATUS    RESTARTS   AGE
-stoa-gateway-<REPLICASET>-<POD_1>      1/1     Running   0          <AGE>
-stoa-gateway-<REPLICASET>-<POD_2>      1/1     Running   0          <AGE>
+stoa-gateway-<REPLICASET>-<POD_1>      0/1     Running   0          <AGE>
+stoa-gateway-<REPLICASET>-<POD_2>      0/1     Running   0          <AGE>
 ```
+
+After completing the startup policy setup and passing all readiness checks, the `READY` column should become `1/1` for each pod. `/health` below checks liveness only; it can return `OK` while `/ready` returns HTTP 503.
 
 ### 2. Verify Gateway Health
 
