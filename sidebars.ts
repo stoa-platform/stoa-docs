@@ -147,6 +147,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Deployment',
       items: [
+        'deployment/sovereign',
         'deployment/hybrid',
         'deployment/prerequisites',
       ],
