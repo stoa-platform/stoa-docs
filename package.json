@@ -57,7 +57,7 @@
     "serialize-javascript": "^7.0.5",
     "picomatch": "^2.3.2",
     "dompurify": "^3.4.0",
-    "brace-expansion": "^1.1.13",
+    "brace-expansion": "^1.1.21",
     "follow-redirects": "^1.16.0",
     "express": { "path-to-regexp": "^0.1.13" }
   },
