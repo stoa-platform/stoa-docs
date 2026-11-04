@@ -575,6 +575,9 @@
   "homepage.quickstart.title": {
     "message": "⚡ Démarrage rapide"
   },
+  "homepage.quickstart.language": {
+    "message": "Langage du code"
+  },
   "homepage.quickstart.subtitle": {
     "message": "De zéro à un appel API en 3 étapes — fonctionne avec cURL, Python, TypeScript ou Claude.ai"
   },
