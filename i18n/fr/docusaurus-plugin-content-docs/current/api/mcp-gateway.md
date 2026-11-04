@@ -15,13 +15,13 @@ Référence complète des endpoints MCP du STOA Gateway.
 
 ## Vue d'Ensemble
 
-Le STOA Gateway implémente la spécification [Model Context Protocol](https://modelcontextprotocol.io) (MCP) version `2025-03-26`, avec compatibilité ascendante pour `2024-11-05`.
+Le STOA Gateway implémente la spécification [Model Context Protocol](https://modelcontextprotocol.io) (MCP). La version supportée la plus récente, `2025-11-25`, est la version par défaut ; `2025-03-26` et `2024-11-05` restent supportées pour la compatibilité ascendante.
 
 Deux modes d'accès :
 
 | Mode | Transport | Cas d'usage |
 |------|-----------|-------------|
-| **REST** | HTTP POST | Scripts, intégrations simples, appels ponctuels |
+| **REST** | HTTP GET/POST | Scripts, intégrations simples, appels ponctuels |
 | **Protocole MCP** | SSE (JSON-RPC) | Agents IA, streaming, sessions |
 
 ## Authentification
@@ -45,17 +45,24 @@ Endpoints publics (aucune authentification requise) : `initialize`, `ping` et la
 
 ## Endpoints REST
 
-Endpoints HTTP simples pour les opérations sur les outils.
+Endpoints HTTP simples pour les opérations sur les outils. Le gateway expose deux interfaces de style REST. Toutes deux passent par le même pipeline d'exécution (auth, politiques, métrologie), mais leurs formats de requête et de réponse diffèrent : ne les mélangez pas.
 
-### Lister les Outils
+| Interface | Lister les outils | Invoquer un outil | Champ nom de l'outil |
+|-----------|-------------------|-------------------|----------------------|
+| **Style MCP** | `POST /mcp/tools/list` — objet avec `tools` | `POST /mcp/tools/call` | `name` |
+| **REST v1** | `GET /mcp/v1/tools` — tableau JSON plat | `POST /mcp/v1/tools/invoke` | `tool` |
+
+### Lister les Outils (style MCP) {#lister-les-outils}
 
 ```http
-POST /mcp/v1/tools
+POST /mcp/tools/list
 Authorization: Bearer <token>
 Content-Type: application/json
+
+{}
 ```
 
-**Réponse :**
+**Réponse** (`next_cursor` n'est présent qu'en cas de pagination) :
 
 ```json
 {
@@ -81,10 +88,10 @@ Content-Type: application/json
 }
 ```
 
-### Invoquer un Outil
+### Invoquer un Outil (style MCP) {#invoquer-un-outil}
 
 ```http
-POST /mcp/v1/tools/invoke
+POST /mcp/tools/call
 Authorization: Bearer <token>
 Content-Type: application/json
 
@@ -108,6 +115,46 @@ Content-Type: application/json
 }
 ```
 
+### Lister les Outils (REST v1)
+
+```http
+GET /mcp/v1/tools
+Authorization: Bearer <token>
+```
+
+Aucun corps de requête. La réponse est un tableau JSON plat contenant les mêmes définitions d'outils, sans l'enveloppe `tools` :
+
+```json
+[
+  {
+    "name": "get-weather",
+    "description": "Returns current weather for a given city",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q": { "type": "string", "description": "City name" }
+      },
+      "required": ["q"]
+    }
+  }
+]
+```
+
+### Invoquer un Outil (REST v1)
+
+```http
+POST /mcp/v1/tools/invoke
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "tool": "get-weather",
+  "arguments": { "q": "Paris" }
+}
+```
+
+La requête désigne l'outil par `tool`, et non `name`. La réponse est la même charge utile `content` / `isError` que `/mcp/tools/call`.
+
 ---
 
 ## Endpoints du Protocole MCP (JSON-RPC sur SSE)
@@ -127,7 +174,7 @@ Content-Type: application/json
   "jsonrpc": "2.0",
   "method": "initialize",
   "params": {
-    "protocolVersion": "2025-03-26",
+    "protocolVersion": "2025-11-25",
     "capabilities": {
       "tools": {}
     },
@@ -146,7 +193,7 @@ Content-Type: application/json
 {
   "jsonrpc": "2.0",
   "result": {
-    "protocolVersion": "2025-03-26",
+    "protocolVersion": "2025-11-25",
     "capabilities": {
       "tools": { "listChanged": true },
       "tokenOptimization": {
@@ -156,13 +203,15 @@ Content-Type: application/json
       "elicitation": {}
     },
     "serverInfo": {
-      "name": "stoa-gateway",
-      "version": "0.1.0"
+      "name": "STOA Gateway",
+      "version": "<gateway-version>"
     }
   },
   "id": 1
 }
 ```
+
+Négociation de version : le gateway lit `params.protocolVersion` ; une valeur supportée est renvoyée telle quelle, tandis qu'une valeur inconnue ou absente retombe sur la version par défaut `2025-11-25`. Versions supportées : `2025-11-25`, `2025-03-26`, `2024-11-05`.
 
 ### Lister les Outils (JSON-RPC)
 

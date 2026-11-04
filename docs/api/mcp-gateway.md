@@ -15,13 +15,13 @@ Complete API reference for the STOA Gateway MCP endpoints.
 
 ## Overview
 
-The STOA Gateway implements the [Model Context Protocol](https://modelcontextprotocol.io) (MCP) specification version `2025-03-26`, with backward compatibility for `2024-11-05`.
+The STOA Gateway implements the [Model Context Protocol](https://modelcontextprotocol.io) (MCP) specification. The latest supported version, `2025-11-25`, is the default; `2025-03-26` and `2024-11-05` remain supported for backward compatibility.
 
 Two access patterns:
 
 | Pattern | Transport | Use Case |
 |---------|-----------|----------|
-| **REST** | HTTP POST | Scripts, simple integrations, one-shot calls |
+| **REST** | HTTP GET/POST | Scripts, simple integrations, one-shot calls |
 | **MCP Protocol** | SSE (JSON-RPC) | AI agents, streaming, session-based |
 
 ## Authentication
@@ -45,17 +45,24 @@ Public endpoints (no auth required): `initialize`, `ping`, and OAuth discovery.
 
 ## REST Endpoints
 
-Simple HTTP endpoints for tool operations.
+Simple HTTP endpoints for tool operations. The gateway exposes two REST-style interfaces. Both go through the same execution pipeline (auth, policy, metering), but their request and response shapes differ, so do not mix them:
 
-### List Tools
+| Interface | List tools | Invoke tool | Tool name field |
+|-----------|------------|-------------|-----------------|
+| **MCP-style** | `POST /mcp/tools/list` — object with `tools` | `POST /mcp/tools/call` | `name` |
+| **REST v1** | `GET /mcp/v1/tools` — flat JSON array | `POST /mcp/v1/tools/invoke` | `tool` |
+
+### List Tools (MCP-style) {#list-tools}
 
 ```http
-POST /mcp/v1/tools
+POST /mcp/tools/list
 Authorization: Bearer <token>
 Content-Type: application/json
+
+{}
 ```
 
-**Response:**
+**Response** (`next_cursor` is only present when paginated):
 
 ```json
 {
@@ -81,10 +88,10 @@ Content-Type: application/json
 }
 ```
 
-### Invoke Tool
+### Invoke Tool (MCP-style) {#invoke-tool}
 
 ```http
-POST /mcp/v1/tools/invoke
+POST /mcp/tools/call
 Authorization: Bearer <token>
 Content-Type: application/json
 
@@ -108,6 +115,46 @@ Content-Type: application/json
 }
 ```
 
+### List Tools (REST v1)
+
+```http
+GET /mcp/v1/tools
+Authorization: Bearer <token>
+```
+
+No request body. The response is a flat JSON array of the same tool definitions, without the `tools` wrapper:
+
+```json
+[
+  {
+    "name": "get-weather",
+    "description": "Returns current weather for a given city",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "q": { "type": "string", "description": "City name" }
+      },
+      "required": ["q"]
+    }
+  }
+]
+```
+
+### Invoke Tool (REST v1)
+
+```http
+POST /mcp/v1/tools/invoke
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "tool": "get-weather",
+  "arguments": { "q": "Paris" }
+}
+```
+
+The request names the tool with `tool`, not `name`. The response is the same `content` / `isError` payload as `/mcp/tools/call`.
+
 ---
 
 ## MCP Protocol Endpoints (JSON-RPC over SSE)
@@ -127,7 +174,7 @@ Content-Type: application/json
   "jsonrpc": "2.0",
   "method": "initialize",
   "params": {
-    "protocolVersion": "2025-03-26",
+    "protocolVersion": "2025-11-25",
     "capabilities": {
       "tools": {}
     },
@@ -146,7 +193,7 @@ Content-Type: application/json
 {
   "jsonrpc": "2.0",
   "result": {
-    "protocolVersion": "2025-03-26",
+    "protocolVersion": "2025-11-25",
     "capabilities": {
       "tools": { "listChanged": true },
       "tokenOptimization": {
@@ -156,13 +203,15 @@ Content-Type: application/json
       "elicitation": {}
     },
     "serverInfo": {
-      "name": "stoa-gateway",
-      "version": "0.1.0"
+      "name": "STOA Gateway",
+      "version": "<gateway-version>"
     }
   },
   "id": 1
 }
 ```
+
+Version negotiation: the gateway reads `params.protocolVersion`; a supported value is echoed back unchanged, while an unknown or missing value falls back to the default `2025-11-25`. Supported versions: `2025-11-25`, `2025-03-26`, `2024-11-05`.
 
 ### List Tools (JSON-RPC)
 

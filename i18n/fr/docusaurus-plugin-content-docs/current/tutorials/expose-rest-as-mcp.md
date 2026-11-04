@@ -56,9 +56,11 @@ STOA transforme automatiquement vos opérations OpenAPI en outils MCP :
 - Les schémas de réponse deviennent des descriptions de sortie d'outil
 
 ```bash
-# Vérifier que les outils MCP sont listés
-curl ${STOA_GATEWAY_URL}/mcp/tools/list \
-  -H "Authorization: Bearer $TOKEN"
+# Vérifier que les outils MCP sont listés (POST avec un corps JSON vide)
+curl -X POST ${STOA_GATEWAY_URL}/mcp/tools/list \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
 ```
 
 Réponse attendue :
