@@ -39,12 +39,14 @@ Deploy STOA Platform on any Kubernetes cluster using Helm. This guide covers pre
 | Profile | Nodes | CPU (total) | RAM (total) | Use Case |
 |---------|-------|-------------|-------------|----------|
 | **Starter** | 1 | 4 vCPU | 8 GB | Development, evaluation |
-| **Standard** | 3 | 12 vCPU | 24 GB | Small production (up to 100 APIs) |
-| **Enterprise** | 5+ | 24+ vCPU | 48+ GB | Large production (100+ APIs) |
+| **Standard** | 3 | 12 vCPU | 24 GB | Small production |
+| **Enterprise** | 5+ | 24+ vCPU | 48+ GB | Large production |
 
 See [Hardware Requirements](/docs/reference/hardware-requirements) for detailed sizing guidance.
 
 ## Quick Install
+
+This minimal example installs the gateway resources but is **not a complete Ready deployment**. Complete the startup policy setup below before expecting `1/1 Ready`.
 
 ```bash
 # Add the STOA Helm repository
@@ -54,11 +56,42 @@ helm repo update
 # Create namespace
 kubectl create namespace stoa-system
 
-# Install with default values
+# Install the gateway without monitoring or the external gateway sync hook
 helm install stoa-platform stoa/stoa-platform \
   -n stoa-system \
-  --set stoaGateway.keycloakUrl="https://auth.<YOUR_DOMAIN>"
+  --set stoa.domain="<YOUR_DOMAIN>" \
+  --set stoaGateway.keycloakUrl="https://auth.<YOUR_DOMAIN>" \
+  --set stoaGateway.controlPlaneUrl="https://api.<YOUR_DOMAIN>" \
+  --set stoaGateway.serviceMonitor.enabled=false \
+  --set controlPlaneApi.serviceMonitor.enabled=false \
+  --set gateway.edgeMcp.enabled=false \
+  --set gatewaySync.enabled=false
 ```
+
+:::note What this chart installs
+With default values, the `stoa-platform` chart installs the **STOA Gateway** (Deployment, Service, policies ConfigMap), the gateway OpenAPI sync CronJob and hook, three ServiceMonitors and an internal Secret (`stoa-internal-keys`, generated at install; its `gateway-consumer-key` is passed to the gateway as `GATEWAY_API_KEYS`). The minimal example above disables the ServiceMonitors and both the sync CronJob and hook. The legacy `gateway.edgeMcp.enabled` setting controls one ServiceMonitor; disabling it does not disable the Rust gateway.
+
+The Control Plane API, Console, Portal and Keycloak are **not** installed by this chart: replace the `controlPlaneUrl` and `keycloakUrl` placeholders with existing service URLs. To enable auto-registration, also provide the `STOA_CONTROL_PLANE_API_KEY` key in the Secret named by `stoaGateway.secretName` (see [Gateway Auto-Registration](/docs/guides/gateway-auto-registration)). Without this key, the gateway runs in standalone mode.
+
+Before re-enabling the ServiceMonitors, install the Prometheus Operator CRDs, including `servicemonitors.monitoring.coreos.com`. Before setting `gatewaySync.enabled=true`, make the Control Plane API (`gatewaySync.backendUrl`, endpoints `/health/live` and `/openapi.json`) and the webMethods administration API (`gatewaySync.gatewayUrl`) reachable, then create the Secret named by `gatewaySync.credentialsSecret` with `username` and `password` keys. This setting also enables a Helm post-install/post-upgrade hook; the periodic sync expects an existing API matching `gatewaySync.apiName` and `gatewaySync.apiVersion`.
+:::
+
+### Startup Policy and Readiness
+
+`STOA_POLICY_BOOT_TENANTS` defaults to an empty list, and the chart does not set it. With the minimal command above, `/ready` returns HTTP 503 and the pods remain `0/1 Ready`, even if the external services are reachable. The chart probes `/ready`; a successful `/health` response or auto-registration does not satisfy this readiness gate.
+
+Add startup tenants through `stoaGateway.extraEnv` in your values file and pass it with `-f my-values.yaml` when installing or upgrading:
+
+```yaml
+stoaGateway:
+  extraEnv:
+    - name: STOA_POLICY_BOOT_TENANTS
+      value: "<TENANT_ID>"
+```
+
+Replace `<TENANT_ID>` with an existing tenant whose tool permissions the gateway can read; multiple tenant IDs can be comma-separated. This setting alone is insufficient: the gateway must load a complete, fresh tool policy from the Control Plane. Provide reachable Control Plane and Keycloak services, and configure the gateway's Keycloak service client for `private_key_jwt` authentication with its mounted signing key (`STOA_KEYCLOAK_CLIENT_KEY_PATH`, plus `STOA_KEYCLOAK_CLIENT_KEY_ID` when needed). That service identity must be authorized to read the tenant's tool permissions. The registration API key and a Keycloak client secret do not replace this signing-key authentication for policy reads. If `STOA_POLICY_TRUST_JWKS_FILE` is configured, its trust set must also load successfully.
+
+The startup loader fetches and refreshes tenant tool permissions in the background. Missing inputs, a failed initial policy load, or a stale policy keep readiness failed. Only expect `1/1 Ready` after a fresh policy has loaded and the other readiness checks, including Control Plane health and OIDC discovery when enabled, pass. The chart's `policies.enabled` and `policies.path` settings do not populate startup tenants or replace this tool-policy load.
 
 ## Helm Chart Reference
 
@@ -99,7 +132,7 @@ stoaGateway:
   enabled: true
   image:
     repository: ghcr.io/stoa-platform/stoa-gateway
-    tag: latest
+    tag: latest                 # Pin an immutable tag to reliably restore the previous image
   replicas: 2
 
   # Keycloak OIDC
@@ -108,7 +141,7 @@ stoaGateway:
   keycloakClientId: stoa-mcp-gateway
 
   # Control Plane connection
-  controlPlaneUrl: "http://control-plane-api.stoa-system.svc.cluster.local:8000"
+  controlPlaneUrl: "http://stoa-control-plane-api.stoa-system.svc.cluster.local:80"
 
   # Gateway mode (ADR-024)
   mode: edge-mcp               # Options: edge-mcp, sidecar, proxy, shadow
@@ -121,26 +154,30 @@ stoaGateway:
   resources:
     requests:
       cpu: 100m
-      memory: 64Mi
+      memory: 128Mi
     limits:
       cpu: 500m
-      memory: 256Mi
+      memory: 512Mi
 
   # Secrets
   secretName: stoa-gateway-secrets
 
   # Logging
   logLevel: info                # Options: trace, debug, info, warn, error
-  logFormat: json               # Options: json, text
+  logFormat: json               # Options: json, pretty, compact
 ```
+
+The chart comment also lists `connect`, but the Rust runtime does not accept it for `STOA_GATEWAY_MODE`. Use `edge-mcp`, `sidecar`, `proxy`, or `shadow` for `stoaGateway.mode`.
+
+Helm can roll back configuration and other resources, but a mutable tag cannot reliably restore the previous image version.
 
 ### OPA Policies
 
 ```yaml
 stoaGateway:
-  opa:
+  policies:
     enabled: true
-    policyPath: /etc/stoa/policies/default.rego
+    path: /etc/stoa/policies/default.rego
 ```
 
 ### Kafka/Redpanda Metering
@@ -150,14 +187,15 @@ stoaGateway:
   kafka:
     enabled: false
     brokers: "redpanda.stoa-system.svc.cluster.local:9092"
-    topic: stoa.metering
+    meteringTopic: stoa.metering
+    errorsTopic: stoa.errors
 ```
 
 ### Kubernetes Watcher
 
 ```yaml
 stoaGateway:
-  k8sWatcher:
+  k8s:
     enabled: false              # Enable CRD watching for Tool/ToolSet
 ```
 
@@ -173,19 +211,19 @@ stoaGateway:
 
 ### Sidecar Mode
 
-For deploying alongside third-party gateways (Kong, webMethods, Envoy):
+For deploying alongside third-party gateways (Kong, webMethods, Gravitee):
 
 ```yaml
 stoaSidecar:
   enabled: false
-  gatewayType: webmethods      # Options: webmethods, kong, envoy, apigee, generic
+  targetGateway: webmethods    # Options: webmethods, kong, gravitee, agentgateway, apigee, aws_apigateway, azure_apim
   resources:
     requests:
       cpu: 50m
-      memory: 32Mi
+      memory: 64Mi
     limits:
       cpu: 200m
-      memory: 128Mi
+      memory: 256Mi
 ```
 
 ### Grafana OIDC
@@ -202,14 +240,14 @@ grafana:
 ### OpenAPI Sync CronJob
 
 ```yaml
-gatewayOpenapiSync:
+gatewaySync:
   enabled: true
   schedule: "0 */6 * * *"      # Every 6 hours
 ```
 
 ## Custom Resource Definitions
 
-STOA ships 4 CRDs that must be applied before or alongside the Helm chart:
+STOA ships 5 CRDs (Tool, ToolSet, GatewayInstance, GatewayBinding and Skill) that must be applied before or alongside the Helm chart:
 
 ```bash
 kubectl apply -f charts/stoa-platform/crds/
@@ -224,11 +262,11 @@ apiVersion: gostoa.dev/v1alpha1
 kind: Tool
 metadata:
   name: billing-list-invoices
-  namespace: tenant-acme
+  namespace: <TENANT_NAMESPACE>
 spec:
   displayName: List Invoices
   description: Retrieve all invoices for the current billing period
-  endpoint: https://billing.internal/v1/invoices
+  endpoint: https://billing.<YOUR_DOMAIN>/v1/invoices
   method: GET
   inputSchema:
     type: object
@@ -252,10 +290,10 @@ apiVersion: gostoa.dev/v1alpha1
 kind: ToolSet
 metadata:
   name: internal-mcp-server
-  namespace: tenant-acme
+  namespace: <TENANT_NAMESPACE>
 spec:
   upstream:
-    url: http://mcp-server.internal:3000/mcp/sse
+    url: https://mcp.<YOUR_DOMAIN>/mcp/sse
     transport: sse
     auth:
       type: bearer
@@ -279,7 +317,7 @@ spec:
   displayName: Kong Production
   gatewayType: kong
   environment: prod
-  baseUrl: https://kong-admin.internal:8001
+  baseUrl: https://kong-admin.<YOUR_DOMAIN>:8001
   capabilities: [rest, rate_limiting]
   mode: edge-mcp
 ```
@@ -308,6 +346,23 @@ spec:
         per_minute: 5000
 ```
 
+### Skill CRD (`skills.gostoa.dev/v1alpha1`)
+
+Defines agent instructions with an explicit scope:
+
+```yaml
+apiVersion: gostoa.dev/v1alpha1
+kind: Skill
+metadata:
+  name: api-guidance
+  namespace: <TENANT_NAMESPACE>
+spec:
+  name: API Guidance
+  scope: tenant
+  instructions: Use the documented API contracts when selecting tools.
+  enabled: true
+```
+
 ## Post-Install Verification
 
 ### 1. Check Pod Status
@@ -316,30 +371,28 @@ spec:
 kubectl get pods -n stoa-system
 ```
 
-Expected output:
+Expected output for the minimal example before startup policy setup:
 
 ```
 NAME                                 READY   STATUS    RESTARTS   AGE
-stoa-gateway-xxx-yyy                 1/1     Running   0          2m
-control-plane-api-xxx-yyy            1/1     Running   0          2m
+stoa-gateway-<REPLICASET>-<POD_1>      0/1     Running   0          <AGE>
+stoa-gateway-<REPLICASET>-<POD_2>      0/1     Running   0          <AGE>
 ```
+
+After completing the startup policy setup and passing all readiness checks, the `READY` column should become `1/1` for each pod. `/health` below checks liveness only; it can return `OK` while `/ready` returns HTTP 503.
 
 ### 2. Verify Gateway Health
 
 <EnvSetup />
 
 ```bash
-curl -s "${STOA_GATEWAY_URL}/health" | jq
+curl --fail --silent --show-error "${STOA_GATEWAY_URL}/health"
 ```
 
 Expected:
 
-```json
-{
-  "status": "healthy",
-  "version": "2.0.0",
-  "mode": "edge-mcp"
-}
+```text
+OK
 ```
 
 ### 3. Verify CRDs
@@ -351,10 +404,11 @@ kubectl get crd | grep gostoa.dev
 Expected:
 
 ```
-gatewaybindings.gostoa.dev    2026-01-15T10:00:00Z
-gatewayinstances.gostoa.dev   2026-01-15T10:00:00Z
-tools.gostoa.dev              2026-01-15T10:00:00Z
-toolsets.gostoa.dev           2026-01-15T10:00:00Z
+gatewaybindings.gostoa.dev    <CREATED_AT>
+gatewayinstances.gostoa.dev   <CREATED_AT>
+skills.gostoa.dev             <CREATED_AT>
+tools.gostoa.dev              <CREATED_AT>
+toolsets.gostoa.dev           <CREATED_AT>
 ```
 
 ### 4. Verify Metrics Endpoint
@@ -388,7 +442,7 @@ kubectl delete namespace stoa-system
 
 # Optional: remove CRDs (destroys all custom resources)
 kubectl delete crd tools.gostoa.dev toolsets.gostoa.dev \
-  gatewayinstances.gostoa.dev gatewaybindings.gostoa.dev
+  gatewayinstances.gostoa.dev gatewaybindings.gostoa.dev skills.gostoa.dev
 ```
 
 ## Troubleshooting
