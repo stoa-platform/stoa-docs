@@ -85,6 +85,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Reference',
       items: [
+        'architecture/gateway-adapter-pattern',
         'reference/hardware-requirements',
         'reference/performance-benchmarks',
         'reference/benchmark-methodology',
