@@ -125,17 +125,19 @@ argocd:
 
 ```bash
 # Server
-STOA_GATEWAY_HOST=0.0.0.0
-STOA_GATEWAY_PORT=8080
+STOA_HOST=0.0.0.0
+STOA_PORT=8080
+STOA_ENVIRONMENT=dev           # dev | staging | prod
 STOA_GATEWAY_MODE=edge-mcp     # edge-mcp | sidecar | proxy | shadow
 
 # Control Plane connection
-CONTROL_PLANE_URL=https://api.<YOUR_DOMAIN>
-CONTROL_PLANE_API_KEY=secret
+STOA_CONTROL_PLANE_URL=https://api.<YOUR_DOMAIN>
+STOA_CONTROL_PLANE_API_KEY=secret
 
-# Authentication
-STOA_AUTH_ISSUER=https://auth.<YOUR_DOMAIN>/realms/stoa
-STOA_AUTH_AUDIENCE=stoa-mcp-gateway
+# Authentication (token issuer = STOA_KEYCLOAK_URL/realms/STOA_KEYCLOAK_REALM)
+STOA_KEYCLOAK_URL=https://auth.<YOUR_DOMAIN>
+STOA_KEYCLOAK_REALM=stoa
+STOA_MCP_AUDIENCE=<MCP_AUDIENCE>  # Required, no default (see note below)
 
 # Admin API
 STOA_ADMIN_ENABLED=true
@@ -164,6 +166,10 @@ STOA_ACCESS_LOG_ENABLED=true
 KAFKA_BROKERS=redpanda:9092
 KAFKA_TOPIC=stoa-events
 ```
+
+:::note MCP audience is mandatory
+`STOA_MCP_AUDIENCE` has no default value. It is the resource audience (`aud` claim) that every MCP access token must carry. When it is unset or empty, the MCP entrypoints reject all authenticated requests, and a gateway started with `STOA_ENVIRONMENT=prod` refuses to start. Set it to the audience configured on your identity provider client.
+:::
 
 ### Helm Values
 

@@ -125,17 +125,19 @@ argocd:
 
 ```bash
 # Serveur
-STOA_GATEWAY_HOST=0.0.0.0
-STOA_GATEWAY_PORT=8080
+STOA_HOST=0.0.0.0
+STOA_PORT=8080
+STOA_ENVIRONMENT=dev           # dev | staging | prod
 STOA_GATEWAY_MODE=edge-mcp     # edge-mcp | sidecar | proxy | shadow
 
 # Connexion au Control Plane
-CONTROL_PLANE_URL=https://api.<YOUR_DOMAIN>
-CONTROL_PLANE_API_KEY=secret
+STOA_CONTROL_PLANE_URL=https://api.<YOUR_DOMAIN>
+STOA_CONTROL_PLANE_API_KEY=secret
 
-# Authentification
-STOA_AUTH_ISSUER=https://auth.<YOUR_DOMAIN>/realms/stoa
-STOA_AUTH_AUDIENCE=stoa-mcp-gateway
+# Authentification (émetteur du token = STOA_KEYCLOAK_URL/realms/STOA_KEYCLOAK_REALM)
+STOA_KEYCLOAK_URL=https://auth.<YOUR_DOMAIN>
+STOA_KEYCLOAK_REALM=stoa
+STOA_MCP_AUDIENCE=<MCP_AUDIENCE>  # Obligatoire, sans valeur par défaut (voir note ci-dessous)
 
 # API Admin
 STOA_ADMIN_ENABLED=true
@@ -164,6 +166,10 @@ STOA_ACCESS_LOG_ENABLED=true
 KAFKA_BROKERS=redpanda:9092
 KAFKA_TOPIC=stoa-events
 ```
+
+:::note L'audience MCP est obligatoire
+`STOA_MCP_AUDIENCE` n'a pas de valeur par défaut. C'est l'audience de ressource (claim `aud`) que chaque token d'accès MCP doit porter. Si elle est absente ou vide, les points d'entrée MCP rejettent toutes les requêtes authentifiées, et une gateway démarrée avec `STOA_ENVIRONMENT=prod` refuse de démarrer. Définissez-la sur l'audience configurée sur le client de votre fournisseur d'identité.
+:::
 
 ### Valeurs Helm
 

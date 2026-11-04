@@ -10,14 +10,14 @@ keywords: [security, configuration, JWT, CORS, hardening, Kubernetes]
 Ce guide couvre les paramètres de sécurité introduits dans les **Correctifs de Sécurité P0 Team Coca** (ADR-018).
 
 :::tip Résumé
-Toutes les fonctionnalités de sécurité sont **activées par défaut** avec des paramètres sécurisés. Vous n'avez besoin de les configurer que si vous personnalisez votre environnement.
+Toutes les fonctionnalités de sécurité sont **activées par défaut** avec des paramètres sécurisés. Vous n'avez besoin de les configurer que si vous personnalisez votre environnement. Une exception : `STOA_MCP_AUDIENCE` n'a pas de valeur par défaut et doit être définie explicitement.
 :::
 
 ## Référence Rapide
 
 | Fonctionnalité | Paramètre | Défaut | Rollback |
 |---------|---------|---------|----------|
-| Audience JWT | `ALLOWED_AUDIENCES` | `stoa-mcp-gateway,account` | Définir à `""` |
+| Audience JWT | `STOA_MCP_AUDIENCE` | aucune (obligatoire) | Pas de désactivation ; corriger la valeur |
 | CORS | `CORS_ORIGINS` | Liste blanche | Définir à `"*"` |
 | Limites SSE | `SSE_LIMITER_ENABLED` | `true` | Définir à `false` |
 | Proxies de Confiance | `SSE_TRUSTED_PROXIES` | `""` (aucun) | Configurer les CIDRs |
@@ -28,38 +28,35 @@ Toutes les fonctionnalités de sécurité sont **activées par défaut** avec de
 
 ### Ce que ça Fait
 
-Valide que les tokens JWT ont été émis spécifiquement pour le MCP Gateway, empêchant la réutilisation des tokens d'autres clients Keycloak.
+Valide que les tokens d'accès MCP portent l'audience de ressource (claim `aud`) configurée pour cette gateway, empêchant la réutilisation des tokens d'autres clients du fournisseur d'identité.
 
 ### Configuration
 
 ```bash
-# Variables d'environnement
-ALLOWED_AUDIENCES=stoa-mcp-gateway,account
-
-# Ou dans settings.py
-allowed_audiences: str = "stoa-mcp-gateway,account"
+# Variable d'environnement (obligatoire, sans valeur par défaut)
+STOA_MCP_AUDIENCE=<MCP_AUDIENCE>
 ```
 
 ### Paramètres
 
 | Paramètre | Type | Défaut | Description |
 |---------|------|---------|-------------|
-| `ALLOWED_AUDIENCES` | string | `stoa-mcp-gateway,account` | Liste d'audiences JWT valides séparées par des virgules |
+| `STOA_MCP_AUDIENCE` | string | aucune (obligatoire) | Audience de ressource unique que les tokens d'accès MCP doivent porter. Absente ou vide : les points d'entrée MCP rejettent toutes les requêtes authentifiées, et une gateway avec `STOA_ENVIRONMENT=prod` refuse de démarrer. |
 
 ### Configuration Keycloak
 
-Assurez-vous que votre client Keycloak est configuré pour inclure l'audience :
+Assurez-vous que votre client Keycloak inclut l'audience dans les tokens d'accès. La valeur mappée doit correspondre exactement à `STOA_MCP_AUDIENCE` :
 
 ```json
 {
-  "clientId": "stoa-mcp-gateway",
+  "clientId": "<MCP_CLIENT_ID>",
   "protocolMappers": [
     {
       "name": "audience-mapper",
       "protocol": "openid-connect",
       "protocolMapper": "oidc-audience-mapper",
       "config": {
-        "included.client.audience": "stoa-mcp-gateway",
+        "included.client.audience": "<MCP_AUDIENCE>",
         "access.token.claim": "true"
       }
     }
@@ -72,20 +69,15 @@ Assurez-vous que votre client Keycloak est configuré pour inclure l'audience :
 ```bash
 # Décoder un token et vérifier l'audience
 echo $TOKEN | cut -d. -f2 | base64 -d | jq '.aud'
-# Doit inclure : "stoa-mcp-gateway"
+# Doit inclure la valeur de STOA_MCP_AUDIENCE
 ```
 
 ### Rollback
 
-Si la validation JWT casse l'authentification :
-
-```bash
-# Désactiver la validation de l'audience (temporaire !)
-export ALLOWED_AUDIENCES=""
-```
+Il n'existe pas d'interrupteur pour désactiver la validation de l'audience. Si l'authentification casse, corrigez `STOA_MCP_AUDIENCE` pour qu'elle corresponde au claim `aud` émis par votre fournisseur d'identité, puis redémarrez la gateway.
 
 :::warning
-Désactiver la validation de l'audience est un risque de sécurité. À utiliser uniquement pour le débogage.
+Une `STOA_MCP_AUDIENCE` vide n'est pas un contournement. La gateway la traite comme une configuration manquante : les points d'entrée MCP rejettent toutes les requêtes authentifiées, et le démarrage échoue quand `STOA_ENVIRONMENT=prod`.
 :::
 
 ---
@@ -367,12 +359,12 @@ Alertes recommandées :
 
 ### Erreurs de Validation JWT
 
-**Symptôme :** `401 Unauthorized` avec le message "Invalid audience"
+**Symptôme :** `401 Unauthorized` sur les endpoints MCP. Le message dépend du chemin : les routes REST MCP (par exemple `/mcp/tools/list`, `/mcp/tools/call`) renvoient "Invalid audience" et la gateway journalise `Invalid audience: expected <value>` ; les handlers de transport MCP partagés (HTTP streamable, SSE, WebSocket) renvoient un "Invalid token" générique sans journaliser ce détail
 
 **Solution :**
 1. Vérifier l'audience du token : `echo $TOKEN | cut -d. -f2 | base64 -d | jq '.aud'`
 2. Vérifier la configuration du mapper client Keycloak
-3. Désactiver temporairement : `ALLOWED_AUDIENCES=""`
+3. Confirmer que `STOA_MCP_AUDIENCE` est définie et correspond exactement au claim `aud` (valeur unique, sensible à la casse)
 
 ### Erreurs CORS
 
