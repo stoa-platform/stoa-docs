@@ -165,6 +165,7 @@ const sidebars: SidebarsConfig = {
         'admin/upgrade',
         'admin/security-hardening',
         'admin/secret-rotation',
+        'admin/incident-response',
         'admin/openshift',
       ],
     },
