@@ -50,6 +50,7 @@ const sidebars: SidebarsConfig = {
         'guides/environment-management',
         'guides/multi-gateway-setup',
         'guides/gateway-modes',
+        'guides/companion-usage',
         'guides/mtls-configuration',
         'guides/webhooks',
         'guides/service-accounts',

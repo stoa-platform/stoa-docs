@@ -96,6 +96,8 @@ Startup checks that refuse to boot include: port `0`; `mtls.enabled` with an emp
 
 Typed gateway env the template sets (non-secret): `STOA_PORT` `8080`, `STOA_HOST` `0.0.0.0`, `STOA_CONTROL_PLANE_URL`, `STOA_KEYCLOAK_URL`, `STOA_KEYCLOAK_REALM`, `STOA_KEYCLOAK_CLIENT_ID`, `STOA_LOG_LEVEL`, `STOA_LOG_FORMAT`, `STOA_GATEWAY_MODE`, `STOA_AUTO_REGISTER`, `STOA_ENVIRONMENT`, plus policy, Kubernetes watcher, Kafka, and `STOA_OTEL_ENDPOINT` when those blocks are enabled.
 
+That list is the main gateway Deployment. The sidecar template sets `STOA_PORT` to `8081` and `STOA_HOST` to `127.0.0.1`. The process binds `0.0.0.0` and `config.port`; `STOA_HOST` is not the listen address. See [Companion usage](../guides/companion-usage.md).
+
 The values comment on `secretName` also names `JWT_SECRET` and `ADMIN_API_TOKEN`. The Deployment and the ExternalSecret do not project those keys. Set them with `extraEnv` from a Secret if you need them, or expect the gateway defaults (admin API stays closed without `STOA_ADMIN_API_TOKEN`).
 
 `values.yaml` defaults that operators miss when they trust the chart README instead of the file:

@@ -271,6 +271,12 @@ Pour des logs structurés, définissez `LOG_LEVEL=debug` avant de démarrer l'ag
 
 ---
 
+## Compagnon et stoa-connect
+
+`stoa-connect` est le chemin GitOps pour une passerelle tierce. Il synchronise l'état souhaité vers l'API d'administration (adaptateurs webMethods, Kong, Gravitee et Envoy dans le dépôt `stoa`) et reste hors du chemin de requête client.
+
+Le compagnon est une autre intégration. Le même binaire Rust, avec `STOA_GATEWAY_MODE=sidecar`, répond à `POST /authz` pour un hôte dans le même pod ou pour un appel depuis une application. L'hôte conserve l'authentification, le routage et l'application du verdict. Ce chemin n'est pas une démo Kong ou webMethods enregistrée en conditions réelles. Les adaptateurs mesh sont des notes de conception. Voir [Usage du compagnon](./companion-usage.md).
+
 ## Étapes suivantes
 
 - **Configuration multi-passerelles** — gérez plusieurs passerelles depuis un seul Plan de Contrôle (bientôt disponible)

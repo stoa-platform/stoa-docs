@@ -50,7 +50,7 @@ STOA is a cloud-native API gateway and management platform built on Kubernetes. 
 └──────────────────────────────────────────────────────────────┘
 ```
 
-The **Control Plane** handles API catalog management, authentication, and observability. The **Data Plane** runs your gateway (Rust-based STOA Gateway or a sidecar alongside existing gateways) close to your APIs.
+The **Control Plane** handles API catalog management, authentication, and observability. The **Data Plane** runs the STOA Gateway close to your APIs. A same-pod [companion](/docs/guides/companion-usage) can answer allow or deny when a host calls it. Synchronization to a third-party gateway is [`stoa-connect`](/docs/guides/stoa-connect-quickstart).
 
 ## Quick Start
 

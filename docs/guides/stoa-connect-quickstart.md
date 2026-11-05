@@ -271,6 +271,12 @@ For structured logs, set `LOG_LEVEL=debug` before starting the agent.
 
 ---
 
+## Companion versus stoa-connect
+
+`stoa-connect` is the GitOps path for a third-party gateway. It syncs desired state to the gateway admin API (webMethods, Kong, Gravitee, and Envoy adapters in the `stoa` repository) and stays off the client request path.
+
+The companion is a different integration. The same Rust binary, with `STOA_GATEWAY_MODE=sidecar`, answers `POST /authz` for a host in the same pod or for an application callout. The host keeps authentication, routing, and enforcement. That path is not a recorded live Kong or webMethods demo. Mesh adapters are design notes. See [Companion usage](./companion-usage.md).
+
 ## Next Steps
 
 - **Multi-Gateway Setup** — manage multiple gateways from a single Control Plane (coming soon)

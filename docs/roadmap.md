@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: "STOA Platform Roadmap: Features & Milestones"
-description: "STOA Platform public roadmap — upcoming features for the open-source AI-native API gateway with MCP support, LLM proxy, sidecar mode, CLI, and multi-vendor adapters"
+description: "STOA Platform public roadmap — upcoming features for the open-source AI-native API gateway with MCP support, LLM proxy, CLI, and multi-vendor adapters"
 keywords: [roadmap, features, release plan, MCP gateway, API management, STOA, open source, LLM proxy]
 ---
 

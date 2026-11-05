@@ -108,13 +108,13 @@ STOA's unified architecture supports four deployment modes under a single codeba
 flowchart TB
     subgraph Modes["STOA Gateway Modes"]
         EdgeMCP["🟢 edge-mcp<br/>MCP protocol, SSE<br/><b>Production now</b>"]
-        Sidecar["🟡 sidecar<br/>Behind Kong/Envoy/Apigee<br/><b>Q2 2026</b>"]
+        Sidecar["🟡 sidecar<br/>POST /authz for a host<br/><b>Runtime present</b>"]
         Proxy["🟡 proxy<br/>Inline enforcement<br/><b>Q3 2026</b>"]
         Shadow["⚪ shadow<br/>Passive traffic capture<br/><b>Deferred</b>"]
     end
 
     EdgeMCP ---|"AI agents<br/>connect directly"| Agent["🤖 AI Agent"]
-    Sidecar ---|"sits behind<br/>existing gateway"| Kong["Kong / Apigee"]
+    Sidecar ---|"host calls<br/>POST /authz"| Kong["Host gateway"]
     Proxy ---|"inline policy<br/>enforcement"| Backend["Backend APIs"]
     Shadow ---|"passive<br/>observation"| Traffic["Live Traffic"]
 ```
@@ -123,17 +123,11 @@ Each mode uses the same Rust binary — the mode is selected at startup via conf
 
 ### 3. Coexistence, Not Replacement
 
-STOA is designed to sit alongside your existing gateway. In sidecar mode, STOA deploys behind Kong or Apigee, adding AI governance without disrupting current API traffic:
+Keeping a third-party gateway in place is [`stoa-connect`](../stoa-connect-quickstart.md): the agent syncs desired state and stays off the request path. The companion is separate. With `STOA_GATEWAY_MODE=sidecar` it answers `POST /authz` and does not mount MCP routes or evaluate OPA. A same-pod chart exists. A live Kong or Apigee call is not demonstrated. See [Companion usage](../companion-usage.md).
 
-```
-┌─────────────┐     ┌────────────────┐     ┌──────────────┐
-│  REST Apps  │────►│  Kong / Apigee │────►│ Backend APIs │
-└─────────────┘     └────────────────┘     └──────────────┘
-                           │
-┌─────────────┐     ┌──────▼───────┐
-│  AI Agents  │────►│ STOA Gateway │ (sidecar mode)
-└─────────────┘     │  MCP + OPA   │
-                    └──────────────┘
+```text
+Client → host gateway → POST /authz → STOA companion
+                └── on 200 → backend
 ```
 
 ### 4. Head-to-Head Comparison
@@ -148,7 +142,7 @@ STOA is designed to sit alongside your existing gateway. In sidecar mode, STOA d
 | **Policy Engine** | Plugins (Lua) | Apigee policies | OPA (Rego) |
 | **Developer Portal** | Kong Dev Portal (Enterprise) | Apigee Portal | STOA Portal (OSS) |
 | **Open Source** | Core: Yes (Apache 2.0) | No | Yes (Apache 2.0) |
-| **REST/gRPC Routing** | Yes | Yes | Via sidecar/proxy mode |
+| **REST/gRPC Routing** | Yes | Yes | Companion answers allow/deny; it does not route. See [Companion usage](../companion-usage.md) |
 | **Deployment** | Any | Google Cloud | Any (K8s-native) |
 | **Token Metering** | N/A | N/A | Per-agent, per-tool |
 | **Circuit Breaking** | Plugin | Built-in | Built-in (per-upstream) |
