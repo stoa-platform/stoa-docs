@@ -7,8 +7,8 @@ keywords: [STOA, API gateway, MCP, documentation, getting started, open source, 
 
 # Getting Started with STOA
 
-:::info Early Access — Private Beta
-STOA Platform is currently in private beta. [Request access](mailto:christophe@hlfh.io) to get started, or explore the [Architecture Overview](/docs/concepts/architecture) and [Enterprise Use Cases](/docs/use-cases) to learn more.
+:::info Hosted access on request
+Evaluate STOA by running it locally with the [Quickstart guide](/docs/guides/quickstart). Hosted access is available on request through [our team](mailto:sales@gostoa.dev). You can also explore the [Architecture Overview](/docs/concepts/architecture) and [Enterprise Use Cases](/docs/use-cases) to learn more.
 :::
 
 Welcome to **STOA Platform** — an open-source, AI-native API management platform designed for the MCP era.
@@ -54,15 +54,7 @@ The **Control Plane** handles API catalog management, authentication, and observ
 
 ## Quick Start
 
-Once you have beta access, you can interact with STOA in three ways:
-
-| Path | URL | Best For |
-|------|-----|----------|
-| **Console UI** | [console.gostoa.dev](https://console.gostoa.dev) | Visual management, API catalog, observability |
-| **REST API** | [api.gostoa.dev/v1](https://api.gostoa.dev/v1) | Automation, CI/CD pipelines, scripting |
-| **MCP Gateway** | [mcp.gostoa.dev](https://mcp.gostoa.dev) | AI agents (Claude, GPT, custom agents) |
-
-See the [Quickstart Guide](/docs/guides/quickstart) for a step-by-step walkthrough.
+There is one startup path: run STOA locally with the Docker Compose stack of the main repository. The [Quickstart Guide](/docs/guides/quickstart) lists every required variable by name (set your own values in `.env`; none is provided), validates the configuration statically with `docker compose config --quiet`, then starts an explicit service set. Hosted access is available on request.
 
 ## Key Differentiators
 
@@ -87,7 +79,7 @@ See the [Quickstart Guide](/docs/guides/quickstart) for a step-by-step walkthrou
 
 - [Tutorials](/docs/tutorials) — Hands-on guides: expose a REST API as MCP tool, self-service subscription, Oracle OAM bridge
 - [Architecture Overview](/docs/concepts/architecture) — Understand STOA's component architecture
-- [Quick Start Guide](/docs/guides/quickstart) — Deploy your first tenant and register an API
+- [Quick Start Guide](/docs/guides/quickstart) — Run STOA locally, create the first administrator and register an API
 - [Authentication Setup](/docs/guides/authentication) — Configure Keycloak OIDC
 - [MCP Gateway Concepts](/docs/concepts/mcp-gateway) — Learn how AI agents interact with STOA
 - [Migration Guides](/docs/guides/migration) — Migrate from webMethods, Kong, Apigee, or Oracle OAM
