@@ -38,7 +38,7 @@ Ce répertoire contient les décisions architecturales importantes pour la Plate
 | [002](./adr-002-stoactl-cli.md) | Conception du CLI stoactl | 📋 |
 | [007](./adr-007-gitops-argocd.md) | GitOps avec Argo CD | ✅ |
 | [025](./adr-025-gateway-resilience-zombie.md) | Résilience du Gateway — Patron Anti-Nœud Zombie | 📋 |
-| [026](./adr-026-multi-iam-federation.md) | Patron de Fédération Multi-IAM — Zéro Stockage Utilisateur | ✅ |
+| [026](./adr-026-multi-iam-federation.md) | Patron de Fédération Multi-IAM — Zéro Stockage Utilisateur | 🔄 |
 
 ### 🔐 Sécurité & Conformité
 
@@ -46,6 +46,7 @@ Ce répertoire contient les décisions architecturales importantes pour la Plate
 |:---:|-------|:------:|
 | [011](./adr-011-api-security-modes.md) | Sélection du Mode de Sécurité API — mTLS / OAuth2 / Hybride | ✅ |
 | [018](./adr-018-security-hardening-p0.md) | Durcissement Sécurité P0 — Pentest Team Coca | ✅ |
+| [074](./adr-074-tenant-model.md) | Modèle de tenant — un realm, des groupes de tenant, un claim tenant_id | ✅ |
 
 ### 🤖 MCP & Gateway IA
 

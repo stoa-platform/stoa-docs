@@ -9,7 +9,13 @@ keywords: [IAM federation, Keycloak, identity brokering, LDAP, SAML, OIDC, multi
 
 ## Status
 
-Accepted
+Superseded by [ADR-074](./adr-074-tenant-model.md)
+
+:::note Superseded
+The platform does not run the realm-per-organization model described below. [ADR-074](./adr-074-tenant-model.md) records the delivered tenant model: one Keycloak realm, one group per tenant and a `tenant_id` token claim.
+
+The multi-IAM federation demo built for this record remains available as evidence of the pattern: [demo walkthrough](https://github.com/stoa-platform/stoa/tree/main/scripts/demo-federation) and [demo stack](https://github.com/stoa-platform/stoa/tree/main/deploy/demo-federation). The rest of this page is kept unchanged for history.
+:::
 
 ## Date
 

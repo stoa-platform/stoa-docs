@@ -45,7 +45,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [011](./adr-011-api-security-modes.md) | API Security Mode Selection — mTLS / OAuth2 / Hybrid | ✅ |
 | [015](./adr-015-token-optimization-architecture.md) | Token Optimization Architecture | 📋 |
 | [018](./adr-018-security-hardening-p0.md) | Security Hardening P0 — Team Coca Pentest | ✅ |
-| [026](./adr-026-multi-iam-federation.md) | Multi-IAM Federation Pattern — Zero User Storage | ✅ |
+| [026](./adr-026-multi-iam-federation.md) | Multi-IAM Federation Pattern — Zero User Storage | 🔄 |
 | [027](./adr-027-x509-header-authentication.md) | X.509 Header Authentication | ✅ |
 | [028](./adr-028-rfc8705-certificate-binding.md) | RFC 8705 Certificate Binding | ✅ |
 | [029](./adr-029-mtls-certificate-lifecycle.md) | mTLS Certificate Lifecycle | ✅ |
@@ -53,6 +53,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [044](./adr-044-mcp-oauth-gateway-proxy.md) | MCP OAuth 2.1 Gateway Proxy Architecture | ✅ |
 | [054](./adr-054-rbac-taxonomy-v2.md) | RBAC Taxonomy v2 — Persona Roles & Display Names | ✅ |
 | [056](./adr-056-fapi-2-architecture.md) | FAPI 2.0 Security Architecture | ✅ |
+| [074](./adr-074-tenant-model.md) | Tenant Model — One Realm, Tenant Groups, tenant_id Claim | ✅ |
 
 ### MCP & AI Gateway
 
