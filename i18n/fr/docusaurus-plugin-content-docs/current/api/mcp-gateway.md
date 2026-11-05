@@ -36,7 +36,10 @@ TOKEN=$(curl -s -X POST "${STOA_AUTH_URL}/realms/stoa/protocol/openid-connect/to
   -d "grant_type=client_credentials" | jq -r '.access_token')
 
 # Utiliser le token
-curl -H "Authorization: Bearer ${TOKEN}" "${STOA_GATEWAY_URL}/mcp/v1/tools"
+curl -X POST "${STOA_GATEWAY_URL}/mcp/tools/list" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{}'
 ```
 
 Endpoints publics (aucune authentification requise) : `initialize`, `ping` et la découverte OAuth.
@@ -45,14 +48,18 @@ Endpoints publics (aucune authentification requise) : `initialize`, `ping` et la
 
 ## Endpoints REST
 
-Endpoints HTTP simples pour les opérations sur les outils. Le gateway expose deux interfaces de style REST. Toutes deux passent par le même pipeline d'exécution (auth, politiques, métrologie), mais leurs formats de requête et de réponse diffèrent : ne les mélangez pas.
+Endpoints HTTP simples pour les opérations sur les outils. La famille d'endpoints REST est `/mcp/tools/*` : elle reprend les formats de requête et de réponse des méthodes MCP `tools/list` et `tools/call`, et passe par le même pipeline d'exécution (auth, politiques, métrologie).
 
-| Interface | Lister les outils | Invoquer un outil | Champ nom de l'outil |
-|-----------|-------------------|-------------------|----------------------|
-| **Style MCP** | `POST /mcp/tools/list` — objet avec `tools` | `POST /mcp/tools/call` | `name` |
-| **REST v1** | `GET /mcp/v1/tools` — tableau JSON plat | `POST /mcp/v1/tools/invoke` | `tool` |
+| Opération | Endpoint | Champ nom de l'outil |
+|-----------|----------|----------------------|
+| Lister les outils | `POST /mcp/tools/list` | — |
+| Invoquer un outil | `POST /mcp/tools/call` | `name` |
 
-### Lister les Outils (style MCP) {#lister-les-outils}
+:::note Alias hérités
+Le gateway route encore `GET /mcp/v1/tools` et `POST /mcp/v1/tools/invoke` pour d'anciens clients de démonstration. Ils délèguent au même pipeline que `/mcp/tools/call`. Utilisez `/mcp/tools/list` et `/mcp/tools/call` pour les nouvelles intégrations.
+:::
+
+### Lister les Outils {#lister-les-outils}
 
 ```http
 POST /mcp/tools/list
@@ -88,7 +95,7 @@ Content-Type: application/json
 }
 ```
 
-### Invoquer un Outil (style MCP) {#invoquer-un-outil}
+### Invoquer un Outil {#invoquer-un-outil}
 
 ```http
 POST /mcp/tools/call
@@ -114,46 +121,6 @@ Content-Type: application/json
   "isError": false
 }
 ```
-
-### Lister les Outils (REST v1)
-
-```http
-GET /mcp/v1/tools
-Authorization: Bearer <token>
-```
-
-Aucun corps de requête. La réponse est un tableau JSON plat contenant les mêmes définitions d'outils, sans l'enveloppe `tools` :
-
-```json
-[
-  {
-    "name": "get-weather",
-    "description": "Returns current weather for a given city",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
-        "q": { "type": "string", "description": "City name" }
-      },
-      "required": ["q"]
-    }
-  }
-]
-```
-
-### Invoquer un Outil (REST v1)
-
-```http
-POST /mcp/v1/tools/invoke
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "tool": "get-weather",
-  "arguments": { "q": "Paris" }
-}
-```
-
-La requête désigne l'outil par `tool`, et non `name`. La réponse est la même charge utile `content` / `isError` que `/mcp/tools/call`.
 
 ---
 
@@ -441,40 +408,107 @@ Les sessions SSE ont un TTL configurable (par défaut : 30 minutes). Les session
 
 ### Statistiques des Sessions (Admin)
 
-```http
-GET /admin/sessions/stats
-Authorization: Bearer <admin-token>
-```
-
-```json
-{
-  "active_sessions": 12,
-  "zombie_sessions": 0,
-  "total_created": 1543
-}
-```
+Les statistiques de sessions sont exposées par l'API d'administration : voir [`GET /admin/sessions/stats`](/docs/api/gateway-admin-api#get-adminsessionsstats) dans la référence de l'API Admin du Gateway.
 
 ---
 
 ## Réponses d'Erreur
 
-| Statut | Erreur | Cause |
-|--------|--------|-------|
-| `401` | `Unauthorized` | Token JWT manquant ou expiré |
-| `403` | `Forbidden` | Politique OPA a refusé l'action |
-| `404` | `Tool not found` | Nom d'outil absent du registre |
-| `429` | `Rate limited` | Quota consumer dépassé |
-| `500` | `Tool execution failed` | L'endpoint backend a retourné une erreur |
-| `502` | `Backend unreachable` | L'endpoint backend est indisponible |
+### Erreurs d'outil (REST)
 
-Les erreurs JSON-RPC suivent la spécification MCP :
+Les rejets et échecs d'exécution du gateway sur `/mcp/tools/list` et `/mcp/tools/call` renvoient un statut HTTP hors 2xx avec un corps de résultat d'outil contenant `isError: true`. Le tableau ci-dessous concerne ces échecs HTTP après le contrôle JWT ; les erreurs d'authentification utilisent un corps différent (voir ci-dessous) :
+
+```json
+{
+  "content": [
+    { "type": "text", "text": "Tool 'unknown-tool' not found" }
+  ],
+  "isError": true
+}
+```
+
+| Statut | Cause |
+|--------|-------|
+| `400` | Requête rejetée avant exécution |
+| `403` | Appel d'outil rejeté par une politique ou par les permissions |
+| `404` | Nom d'outil introuvable pour le tenant de l'appelant |
+| `429` | Limite de débit ou quota dépassé |
+| `500` | Échec de l'exécution de l'outil |
+| `503` | Une dépendance requise est indisponible |
+
+Un outil peut aussi signaler une erreur applicative dans un résultat terminé, par exemple une réponse GraphQL en erreur. Dans ce cas, `/mcp/tools/call` renvoie **HTTP 200 avec `isError: true`**. Les clients doivent vérifier `isError` même lorsque la requête HTTP réussit.
+
+### Erreurs d'authentification
+
+Les requêtes rejetées par le contrôle JWT sur `/mcp/tools/*` n'atteignent jamais le handler d'outil. Leurs corps utilisent `error` et `message`, sans les champs `content` et `isError` d'un résultat d'outil.
+
+L'absence d'en-tête Authorization renvoie `401` avec `WWW-Authenticate: Bearer resource_metadata="/.well-known/oauth-protected-resource"` et ce corps :
+
+```json
+{
+  "error": "unauthorized",
+  "message": "Missing Authorization header"
+}
+```
+
+Un en-tête Authorization malformé ou un jeton invalide renvoie aussi `401`, avec `error: "unauthorized"` et un `message` décrivant l'échec (par exemple, `Malformed Authorization header` ou `Token expired`). Ces réponses ajoutent `error="invalid_token"` au challenge :
+
+```http
+WWW-Authenticate: Bearer error="invalid_token", resource_metadata="/.well-known/oauth-protected-resource"
+```
+
+Un jeton rejeté en raison de l'absence d'un claim de tenant requis renvoie `403`, sans en-tête `WWW-Authenticate`, avec ce corps :
+
+```json
+{
+  "error": "forbidden",
+  "message": "A tenant claim is required"
+}
+```
+
+### Erreurs JSON-RPC
+
+Sur le transport du protocole MCP, les erreurs de protocole et les appels d'outil rejetés utilisent l'objet `error` de JSON-RPC 2.0. Un `tools/call` rejeté passe par le même pipeline que `POST /mcp/tools/call` : le message est `Tool call rejected`, et `data` porte le statut HTTP (`httpStatus`) et le corps d'erreur REST (`result`) :
 
 ```json
 {
   "jsonrpc": "2.0",
   "error": {
-    "code": -32602,
-    "message": "Tool not found: unknown-tool"
+    "code": -32601,
+    "message": "Tool call rejected",
+    "data": {
+      "httpStatus": 404,
+      "result": {
+        "content": [
+          { "type": "text", "text": "Tool 'unknown-tool' not found" }
+        ],
+        "isError": true
+      }
+    }
+  },
+  "id": 3
+}
+```
+
+| Statut HTTP de l'appel d'outil | `code` JSON-RPC |
+|--------------------------------|-----------------|
+| `400`, `401`, `403`, `503` | `-32001` |
+| `404` | `-32601` |
+| `429` | `-32029` |
+| Autre | `-32603` |
+
+Pour `400` et `503`, `data` porte `requestId` à la place de `httpStatus` et `result`.
+
+Une erreur applicative d'outil renvoyée avec HTTP 200 reste dans le champ `result` JSON-RPC, avec `isError: true` ; elle ne devient pas une erreur `Tool call rejected`. Les clients doivent vérifier `result.isError` :
+
+```json
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "content": [
+      { "type": "text", "text": "GraphQL endpoint returned an error" }
+    ],
+    "isError": true
   },
   "id": 3
 }

@@ -50,7 +50,7 @@ go install github.com/stoa-platform/stoactl@latest
 | `stoactl bridge` | Convert OpenAPI spec to MCP Tool CRDs |
 | `stoactl doctor` | Run diagnostic checks |
 | `stoactl apply` | Create or update a resource from a YAML file |
-| `stoactl get` | List resources (apis, deployments, tools) |
+| `stoactl get` | List resources (apis, tenants, subscriptions, gateways) |
 | `stoactl delete` | Delete a resource |
 | `stoactl auth` | Authentication commands |
 | `stoactl config` | Manage CLI contexts |
@@ -355,15 +355,17 @@ List resources from the control plane.
 stoactl get <resource-type>
 ```
 
-**Resource types:** `apis`, `deployments`, `tools`
+**Resource types:** `apis`, `tenants`, `subscriptions`, `gateways`
 
 **Example:**
 
 ```bash
 stoactl get apis
-stoactl get tools
-stoactl get deployments
+stoactl get api payment-api
+stoactl get subscriptions
 ```
+
+To list deployments, use [`stoactl deploy list`](#stoactl-deploy-list).
 
 ### `stoactl delete`
 
@@ -376,7 +378,6 @@ stoactl delete <resource-type> <name>
 **Example:**
 
 ```bash
-stoactl delete tool list-pets
 stoactl delete api payment-api
 ```
 
@@ -406,12 +407,12 @@ Remove stored credentials.
 stoactl auth logout
 ```
 
-### `stoactl auth whoami`
+### `stoactl auth status`
 
 Display current authentication status.
 
 ```bash
-stoactl auth whoami
+stoactl auth status
 ```
 
 ### `stoactl auth rotate-key`
@@ -548,9 +549,6 @@ stoactl bridge your-api.yaml --namespace default --output ./tools/
 
 # 6. Register tools
 for f in tools/*.yaml; do stoactl apply -f "$f"; done
-
-# 7. Verify
-stoactl get tools
 ```
 
 ---

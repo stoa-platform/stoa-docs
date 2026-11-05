@@ -82,29 +82,7 @@ curl -s "${STOA_API_URL}/v1/tenants" \
 
 ## Format d'Erreur
 
-Toutes les erreurs suivent un format cohérent :
-
-```json
-{
-  "detail": "API not found",
-  "status_code": 404,
-  "error_code": "API_NOT_FOUND"
-}
-```
-
-Les erreurs de validation (422) incluent des détails au niveau des champs :
-
-```json
-{
-  "detail": [
-    {
-      "loc": ["body", "name"],
-      "msg": "field required",
-      "type": "value_error.missing"
-    }
-  ]
-}
-```
+Toutes les erreurs utilisent un format unique : un objet JSON avec un champ `detail`. Voir la section Réponses d'Erreur de la page [API Control Plane](/docs/api/control-plane) pour la description complète, y compris les erreurs de validation (`422`) et de limite de débit (`429`).
 
 ## Pagination
 
