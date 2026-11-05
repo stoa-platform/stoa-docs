@@ -249,7 +249,7 @@ All STOA images are published to GitHub Container Registry (GHCR).
 
 ### Air-Gapped / Private Registry
 
-For a full, verifiable offline procedure (pinned images, transfer bundle, checksums, Helm install without outbound pulls), see [Offline Installation](./offline-install.md).
+For a full, verifiable offline procedure (pinned images, transfer bundle, checksums, Helm install without outbound pulls), see [Offline Installation](./offline-install).
 
 Short form — mirror then override the registry (prefer a release pin over `latest`):
 

@@ -7,12 +7,12 @@ keywords: [deployment, offline, air-gapped, private registry, helm, mirror, sove
 
 # Offline Installation
 
-This page is a **verifiable procedure** for installing STOA when the target site must not open outbound connections to the Internet. It complements [Sovereign Deployment](./sovereign.md) (topology and isolation) and [Deployment Prerequisites](./prerequisites.md) (ports, DNS, sizing). The hosted public platform was shut down on 2026-05-23; STOA is installed on the operator's own infrastructure ([ADR-037](../architecture/adr/adr-037-deployment-modes-sovereign-first.md)).
+This page is a **verifiable procedure** for installing STOA when the target site must not open outbound connections to the Internet. It complements [Sovereign Deployment](./sovereign) (topology and isolation) and [Deployment Prerequisites](./prerequisites) (ports, DNS, sizing). The hosted public platform was shut down on 2026-05-23; STOA is installed on the operator's own infrastructure ([ADR-037](../architecture/adr/adr-037-deployment-modes-sovereign-first)).
 
 :::info Scope of this guide
 - **In scope:** preparing a mirror bundle on a connected machine, transferring it, loading images into an on-site registry, installing with Helm against that registry, and a post-install checklist that needs no Internet.
 - **Out of scope:** choosing the operator's registry product, TLS termination at the site edge, and day-2 operations (backup, key rotation, incident response) — see the related tickets under CAB-2288.
-- **Data plane:** [ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane.md) decides upstream Envoy configured only over xDS. Mirror the pinned Envoy image your chart references, in addition to the STOA images listed below. The Link xDS server is decided but not yet implemented (ADR-073 §7).
+- **Data plane:** [ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane) decides upstream Envoy configured only over xDS. Mirror the pinned Envoy image your chart references, in addition to the STOA images listed below. The Link xDS server is decided but not yet implemented (ADR-073 §7).
 :::
 
 Names below are placeholders (`registry.example.com`, `stoa` namespace). No real hostnames, IP addresses, or credentials appear in this document.
@@ -23,13 +23,13 @@ Names below are placeholders (`registry.example.com`, `stoa` namespace). No real
 |-------|---------|-----|
 | Prepare the bundle | Connected machine (build or bastion with registry pull rights) | Operator |
 | Transfer | Removable media, approved file transfer, or a one-way diode — **no** live pull from the public Internet on the target site | Operator |
-| Install and run | Target site with **no** required outbound Internet ([ADR-037](../architecture/adr/adr-037-deployment-modes-sovereign-first.md), [ADR-073 Mitigations](../architecture/adr/adr-073-adopt-envoy-data-plane.md)) | Operator |
+| Install and run | Target site with **no** required outbound Internet ([ADR-037](../architecture/adr/adr-037-deployment-modes-sovereign-first), [ADR-073 Mitigations](../architecture/adr/adr-073-adopt-envoy-data-plane)) | Operator |
 
 If the site can pull from a private registry that itself is fed by a controlled mirror pipeline, reuse the same image list and Helm overrides; the transfer step becomes “promote through the mirror” instead of “copy media”.
 
 ## 2. Inputs you need before starting
 
-- Kubernetes cluster meeting [Deployment Prerequisites](./prerequisites.md) (CPU/RAM, storage, DNS inside the site).
+- Kubernetes cluster meeting [Deployment Prerequisites](./prerequisites) (CPU/RAM, storage, DNS inside the site).
 - An on-site OCI registry reachable from the cluster (`registry.example.com` in the examples).
 - Helm 3 and a kubeconfig for the target cluster (used only on the install workstation).
 - A written list of **pinned** image references (tag or digest) matching the STOA release you install — do **not** use floating `latest` for an offline cut.
@@ -124,7 +124,7 @@ done
 
 ## 5. Install with Helm (no outbound pulls)
 
-Minimal values (registry only — complete the rest from [Prerequisites](./prerequisites.md) and your site policy):
+Minimal values (registry only — complete the rest from [Prerequisites](./prerequisites) and your site policy):
 
 ```yaml
 # values-offline-example.yaml — placeholders only
@@ -155,8 +155,8 @@ Run these on site. Every step should succeed without outbound access.
 - [ ] `kubectl -n stoa get pods` shows the expected workloads Ready (names depend on the chart).
 - [ ] Images on running pods resolve under `registry.example.com/stoa/…:${PIN}` (or your chosen registry), not a public registry.
 - [ ] Control Plane API health endpoint responds on the in-cluster or ingress URL you configured.
-- [ ] No Installation or runtime configuration requires calling hosts outside the site perimeter ([ADR-037](../architecture/adr/adr-037-deployment-modes-sovereign-first.md)).
-- [ ] Envoy (or current gateway) admin interface remains on loopback only ([ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane.md)).
+- [ ] No Installation or runtime configuration requires calling hosts outside the site perimeter ([ADR-037](../architecture/adr/adr-037-deployment-modes-sovereign-first)).
+- [ ] Envoy (or current gateway) admin interface remains on loopback only ([ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane)).
 
 If a pod stays `ImagePullBackOff`, fix the registry mirror or pull secret — do not open temporary Internet access as a workaround without a recorded exception.
 
@@ -164,7 +164,7 @@ If a pod stays `ImagePullBackOff`, fix the registry mirror or pull secret — do
 
 | Topic | Page |
 |-------|------|
-| Sovereign topology and isolation | [Sovereign Deployment](./sovereign.md) |
-| Ports, DNS, sizing, short private-registry note | [Deployment Prerequisites](./prerequisites.md) |
-| Sovereign-first modes | [ADR-037](../architecture/adr/adr-037-deployment-modes-sovereign-first.md) |
-| Envoy data plane and offline JWKS / image mirroring | [ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane.md) |
+| Sovereign topology and isolation | [Sovereign Deployment](./sovereign) |
+| Ports, DNS, sizing, short private-registry note | [Deployment Prerequisites](./prerequisites) |
+| Sovereign-first modes | [ADR-037](../architecture/adr/adr-037-deployment-modes-sovereign-first) |
+| Envoy data plane and offline JWKS / image mirroring | [ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane) |
