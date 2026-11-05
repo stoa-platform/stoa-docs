@@ -101,6 +101,7 @@ const sidebars: SidebarsConfig = {
         'reference/security-configuration',
         'reference/exit-strategy',
         'architecture/delivery-process',
+        'architecture/ai-assisted-delivery-guardrails',
         'reference/changelog',
         'reference/glossary',
         'reference/troubleshooting',
