@@ -12,6 +12,8 @@ keywords:
 
 # Upgrade Guide
 
+For the full upgrade → verify → rollback → uninstall checklist, see [Maintenance Cycle](./maintenance).
+
 How to upgrade STOA Platform between versions with zero downtime.
 
 ## Upgrade Strategy
@@ -87,6 +89,8 @@ curl -s https://mcp.<YOUR_DOMAIN>/health
 
 ## Rolling Back
 
+Prefer the ordered checklist in [Maintenance Cycle](./maintenance) §5. Summary:
+
 ### Helm Rollback
 
 ```bash
@@ -95,16 +99,25 @@ helm history stoa-platform -n stoa-system
 
 # Rollback to previous revision
 helm rollback stoa-platform <REVISION> -n stoa-system
+kubectl rollout status deploy -n stoa-system --timeout=5m
 ```
+
+Re-run the post-upgrade verification controls after rollback.
 
 ### Database Rollback
 
-If migrations need reverting:
+:::warning Destructive
+`alembic downgrade` can destroy or reshape data. If the migration already backfilled or dropped data, **restore PostgreSQL from the pre-upgrade backup** instead of downgrading ([Backup and Recovery](./backup-recovery), [Maintenance Cycle](./maintenance) §5.2).
+:::
+
+Only when release notes document a safe downgrade:
 
 ```bash
 kubectl exec -n stoa-system deploy/control-plane-api -- \
   alembic downgrade -1
 ```
+
+Then confirm Helm revision and application health before closing the change.
 
 ## Version Compatibility
 
@@ -142,6 +155,7 @@ spec:
 
 ## Related
 
+- [Maintenance Cycle](./maintenance) -- Verifiable upgrade / rollback / uninstall controls
 - [Installation Guide](/docs/admin/installation) -- Initial deployment
 - [Backup & Recovery](/docs/admin/backup-recovery) -- Pre-upgrade backups
 - [Changelog](/docs/reference/changelog) -- Release notes

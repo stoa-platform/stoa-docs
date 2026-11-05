@@ -162,6 +162,7 @@ const sidebars: SidebarsConfig = {
         'admin/keycloak',
         'admin/monitoring',
         'admin/backup-recovery',
+        'admin/maintenance',
         'admin/upgrade',
         'admin/security-hardening',
         'admin/secret-rotation',
