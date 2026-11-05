@@ -9,7 +9,13 @@ keywords: [fédération IAM, Keycloak, courtage d'identité, LDAP, SAML, OIDC, m
 
 ## Statut
 
-Accepté
+Remplacé par [ADR-074](./adr-074-tenant-model.md)
+
+:::note Remplacé
+La plateforme n'exploite pas le modèle « un realm par organisation » décrit ci-dessous. L'[ADR-074](./adr-074-tenant-model.md) consigne le modèle de tenant livré : un seul realm Keycloak, un groupe par tenant et un claim `tenant_id` dans le jeton.
+
+La démo de fédération multi-IAM construite pour cet enregistrement reste disponible comme preuve du modèle : [parcours de la démo](https://github.com/stoa-platform/stoa/tree/main/scripts/demo-federation) et [pile de la démo](https://github.com/stoa-platform/stoa/tree/main/deploy/demo-federation). Le reste de cette page est conservé tel quel pour l'historique.
+:::
 
 ## Date
 
