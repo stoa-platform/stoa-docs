@@ -735,10 +735,10 @@
     "message": "1. Préparer votre configuration locale"
   },
   "homepage.local.variables": {
-    "message": "Modifiez .env et remplacez les identifiants fournis avant de continuer. Variables requises :"
+    "message": "Modifiez .env avant de continuer. Chaque variable ci-dessous est déclarée vide dans .env.example et est obligatoire pour Compose : donnez votre propre valeur à chacune, et ajoutez vous-même OPENSEARCH_PASSWORD, absente de .env.example."
   },
   "homepage.local.credentials": {
-    "message": "Configurez aussi GRAFANA_PASSWORD et GRAFANA_OIDC_CLIENT_SECRET. Gardez OPENSEARCH_PASSWORD cohérent avec OPENSEARCH_ADMIN_PASSWORD. Le guide explique les paramètres d'accès à la passerelle."
+    "message": "Keycloak importe les realms de démonstration de la fédération à chaque démarrage : leurs variables sont donc obligatoires même sans le profil federation. GRAFANA_OIDC_CLIENT_SECRET est aussi nécessaire pour la connexion à Grafana via Keycloak. Le guide explique chaque variable."
   },
   "homepage.local.validate": {
     "message": "2. Valider la configuration"
@@ -750,6 +750,6 @@
     "message": "3. Démarrer les services locaux sélectionnés"
   },
   "homepage.local.next": {
-    "message": "Cette liste explicite de services exclut Promtail. Suivez le guide pour vérifier les accès locaux. L'initialisation des données de démonstration n'a pas encore été vérifiée pour ce parcours et reste à venir. L'offre hébergée est disponible sur demande."
+    "message": "Cette liste explicite de services démarre la stack applicative et ses dépendances d'observabilité sans Promtail, qui lit les journaux de tous les conteneurs de la machine. Le guide explique comment créer le premier administrateur et se connecter ; le chargement des données de démonstration n'est pas vérifié en exécution. L'offre hébergée est disponible sur demande."
   }
 }

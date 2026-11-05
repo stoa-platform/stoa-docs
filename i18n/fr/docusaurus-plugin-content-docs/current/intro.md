@@ -7,8 +7,8 @@ keywords: [STOA, passerelle API, MCP, documentation, démarrage, open source, pa
 
 # Premiers pas avec STOA
 
-:::info Accès anticipé — Bêta privée
-STOA Platform est actuellement en bêta privée. [Demandez l'accès](mailto:christophe@hlfh.io) pour démarrer, ou explorez la [Vue d'ensemble de l'architecture](/docs/concepts/architecture) et les [Cas d'usage entreprise](/docs/use-cases) pour en savoir plus.
+:::info Offre hébergée sur demande
+Évaluez STOA en le lançant localement avec le [guide de démarrage rapide](/docs/guides/quickstart). L'offre hébergée est disponible sur demande auprès de [notre équipe](mailto:sales@gostoa.dev). Vous pouvez aussi explorer la [Vue d'ensemble de l'architecture](/docs/concepts/architecture) et les [Cas d'usage entreprise](/docs/use-cases) pour en savoir plus.
 :::
 
 Bienvenue sur **STOA Platform** — une plateforme de gestion d'API open source et AI-native, conçue pour l'ère MCP.
@@ -54,15 +54,7 @@ Le **Plan de contrôle** gère le catalogue d'API, l'authentification et l'obser
 
 ## Démarrage rapide
 
-Une fois que vous avez accès à la bêta, vous pouvez interagir avec STOA de trois façons :
-
-| Chemin | URL | Idéal pour |
-|--------|-----|-----------|
-| **Console UI** | [console.gostoa.dev](https://console.gostoa.dev) | Gestion visuelle, catalogue d'API, observabilité |
-| **API REST** | [api.gostoa.dev/v1](https://api.gostoa.dev/v1) | Automatisation, pipelines CI/CD, scripting |
-| **MCP Gateway** | [mcp.gostoa.dev](https://mcp.gostoa.dev) | Agents IA (Claude, GPT, agents personnalisés) |
-
-Consultez le [Guide de démarrage rapide](/docs/guides/quickstart) pour un parcours étape par étape.
+Il n'y a qu'un seul parcours de démarrage : lancer STOA localement avec la stack Docker Compose du dépôt principal. Le [Guide de démarrage rapide](/docs/guides/quickstart) liste chaque variable obligatoire par son nom (donnez vos propres valeurs dans `.env` ; aucune n'est fournie), valide la configuration statiquement avec `docker compose config --quiet`, puis démarre un ensemble explicite de services. L'offre hébergée est disponible sur demande.
 
 ## Différenciateurs clés
 
@@ -87,7 +79,7 @@ Consultez le [Guide de démarrage rapide](/docs/guides/quickstart) pour un parco
 
 - [Tutoriels](/docs/tutorials) — Guides pratiques : exposer une API REST comme outil MCP, souscription en libre-service, pont Oracle OAM
 - [Vue d'ensemble de l'architecture](/docs/concepts/architecture) — Comprendre l'architecture des composants de STOA
-- [Guide de démarrage rapide](/docs/guides/quickstart) — Déployer votre premier tenant et enregistrer une API
+- [Guide de démarrage rapide](/docs/guides/quickstart) — Lancer STOA localement, créer le premier administrateur et enregistrer une API
 - [Configuration de l'authentification](/docs/guides/authentication) — Configurer Keycloak OIDC
 - [Concepts MCP Gateway](/docs/concepts/mcp-gateway) — Comprendre comment les agents IA interagissent avec STOA
 - [Guides de migration](/docs/guides/migration) — Migrer depuis webMethods, Kong, Apigee ou Oracle OAM
