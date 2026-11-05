@@ -421,14 +421,17 @@ You should see Prometheus-format metrics starting with `stoa_`.
 
 ## Upgrade
 
+Follow [Upgrade](./upgrade) and the checklist in [Maintenance Cycle](./maintenance). Short form:
+
 ```bash
 helm repo update
 helm upgrade stoa-platform stoa/stoa-platform \
   -n stoa-system \
-  -f my-values.yaml
+  -f my-values.yaml \
+  --version <NEW_VERSION>
 ```
 
-CRD updates require manual application (Helm does not upgrade CRDs):
+CRD updates require manual application **before** the Helm upgrade (Helm does not upgrade CRDs):
 
 ```bash
 kubectl apply -f charts/stoa-platform/crds/
@@ -436,14 +439,18 @@ kubectl apply -f charts/stoa-platform/crds/
 
 ## Uninstall
 
+Use the ordered teardown and retention decisions in [Maintenance Cycle](./maintenance) §6. Short form:
+
 ```bash
 helm uninstall stoa-platform -n stoa-system
 kubectl delete namespace stoa-system
 
-# Optional: remove CRDs (destroys all custom resources)
+# Optional — ONLY with explicit OK: remove CRDs (destroys all related CRs)
 kubectl delete crd tools.gostoa.dev toolsets.gostoa.dev \
   gatewayinstances.gostoa.dev gatewaybindings.gostoa.dev skills.gostoa.dev
 ```
+
+Do not delete CRDs or external database volumes unless the change ticket records a data-retention decision. Prefer [Helm rollback](./upgrade#rolling-back) when the goal is to restore service.
 
 ## Troubleshooting
 
@@ -457,6 +464,8 @@ kubectl delete crd tools.gostoa.dev toolsets.gostoa.dev \
 
 ## Related
 
+- [Maintenance Cycle](./maintenance) -- Upgrade, rollback, and uninstall controls
+- [Upgrade Guide](/docs/admin/upgrade) -- Version compatibility and zero-downtime notes
 - [Keycloak Administration](/docs/admin/keycloak) -- Realm setup and OIDC clients
 - [Monitoring Setup](/docs/admin/monitoring) -- Prometheus, Grafana, and alerting
 - [Hardware Requirements](/docs/reference/hardware-requirements) -- Sizing guide
