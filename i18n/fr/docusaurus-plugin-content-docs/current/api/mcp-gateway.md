@@ -416,7 +416,7 @@ Les statistiques de sessions sont exposées par l'API d'administration : voir [`
 
 ### Erreurs d'outil (REST)
 
-`/mcp/tools/list` et `/mcp/tools/call` renvoient les erreurs au même format qu'un résultat d'outil, avec `isError: true` et un statut HTTP hors 2xx :
+Les rejets et échecs d'exécution du gateway sur `/mcp/tools/list` et `/mcp/tools/call` renvoient un statut HTTP hors 2xx avec un corps de résultat d'outil contenant `isError: true`. Le tableau ci-dessous concerne ces échecs HTTP après le contrôle JWT ; les erreurs d'authentification utilisent un corps différent (voir ci-dessous) :
 
 ```json
 {
@@ -436,9 +436,13 @@ Les statistiques de sessions sont exposées par l'API d'administration : voir [`
 | `500` | Échec de l'exécution de l'outil |
 | `503` | Une dépendance requise est indisponible |
 
+Un outil peut aussi signaler une erreur applicative dans un résultat terminé, par exemple une réponse GraphQL en erreur. Dans ce cas, `/mcp/tools/call` renvoie **HTTP 200 avec `isError: true`**. Les clients doivent vérifier `isError` même lorsque la requête HTTP réussit.
+
 ### Erreurs d'authentification
 
-Les requêtes rejetées par le contrôle JWT sur `/mcp/tools/*` n'atteignent jamais le handler d'outil. Elles renvoient `401` avec l'en-tête `WWW-Authenticate: Bearer resource_metadata="/.well-known/oauth-protected-resource"` et ce corps :
+Les requêtes rejetées par le contrôle JWT sur `/mcp/tools/*` n'atteignent jamais le handler d'outil. Leurs corps utilisent `error` et `message`, sans les champs `content` et `isError` d'un résultat d'outil.
+
+L'absence d'en-tête Authorization renvoie `401` avec `WWW-Authenticate: Bearer resource_metadata="/.well-known/oauth-protected-resource"` et ce corps :
 
 ```json
 {
@@ -447,9 +451,24 @@ Les requêtes rejetées par le contrôle JWT sur `/mcp/tools/*` n'atteignent jam
 }
 ```
 
+Un en-tête Authorization malformé ou un jeton invalide renvoie aussi `401`, avec `error: "unauthorized"` et un `message` décrivant l'échec (par exemple, `Malformed Authorization header` ou `Token expired`). Ces réponses ajoutent `error="invalid_token"` au challenge :
+
+```http
+WWW-Authenticate: Bearer error="invalid_token", resource_metadata="/.well-known/oauth-protected-resource"
+```
+
+Un jeton rejeté en raison de l'absence d'un claim de tenant requis renvoie `403`, sans en-tête `WWW-Authenticate`, avec ce corps :
+
+```json
+{
+  "error": "forbidden",
+  "message": "A tenant claim is required"
+}
+```
+
 ### Erreurs JSON-RPC
 
-Sur le transport du protocole MCP, les erreurs utilisent l'objet `error` de JSON-RPC 2.0. Un `tools/call` rejeté passe par le même pipeline que `POST /mcp/tools/call` : le message est `Tool call rejected`, et `data` porte le statut HTTP (`httpStatus`) et le corps d'erreur REST (`result`) :
+Sur le transport du protocole MCP, les erreurs de protocole et les appels d'outil rejetés utilisent l'objet `error` de JSON-RPC 2.0. Un `tools/call` rejeté passe par le même pipeline que `POST /mcp/tools/call` : le message est `Tool call rejected`, et `data` porte le statut HTTP (`httpStatus`) et le corps d'erreur REST (`result`) :
 
 ```json
 {
@@ -479,6 +498,21 @@ Sur le transport du protocole MCP, les erreurs utilisent l'objet `error` de JSON
 | Autre | `-32603` |
 
 Pour `400` et `503`, `data` porte `requestId` à la place de `httpStatus` et `result`.
+
+Une erreur applicative d'outil renvoyée avec HTTP 200 reste dans le champ `result` JSON-RPC, avec `isError: true` ; elle ne devient pas une erreur `Tool call rejected`. Les clients doivent vérifier `result.isError` :
+
+```json
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "content": [
+      { "type": "text", "text": "GraphQL endpoint returned an error" }
+    ],
+    "isError": true
+  },
+  "id": 3
+}
+```
 
 ---
 

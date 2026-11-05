@@ -416,7 +416,7 @@ Session statistics are exposed by the admin API: see [`GET /admin/sessions/stats
 
 ### Tool errors (REST)
 
-`/mcp/tools/list` and `/mcp/tools/call` return errors in the same shape as a tool result, with `isError: true` and a non-2xx HTTP status:
+Gateway rejections and execution failures on `/mcp/tools/list` and `/mcp/tools/call` return a non-2xx HTTP status with a tool-result body containing `isError: true`. The table below covers these HTTP failures after the JWT gate; authentication errors use a different body (see below):
 
 ```json
 {
@@ -436,9 +436,13 @@ Session statistics are exposed by the admin API: see [`GET /admin/sessions/stats
 | `500` | Tool execution failed |
 | `503` | A required dependency is unavailable |
 
+A tool can also report an application-level error in a completed result, such as a GraphQL error response. In that case, `/mcp/tools/call` returns **HTTP 200 with `isError: true`**. Clients must inspect `isError` even when the HTTP request succeeds.
+
 ### Authentication errors
 
-Requests rejected by the JWT gate on `/mcp/tools/*` never reach the tool handler. They return `401` with a `WWW-Authenticate: Bearer resource_metadata="/.well-known/oauth-protected-resource"` header and this body:
+Requests rejected by the JWT gate on `/mcp/tools/*` never reach the tool handler. Their bodies use `error` and `message`, without the tool-result `content` and `isError` fields.
+
+A missing Authorization header returns `401` with `WWW-Authenticate: Bearer resource_metadata="/.well-known/oauth-protected-resource"` and this body:
 
 ```json
 {
@@ -447,9 +451,24 @@ Requests rejected by the JWT gate on `/mcp/tools/*` never reach the tool handler
 }
 ```
 
+A malformed Authorization header or an invalid token also returns `401`, with `error: "unauthorized"` and a `message` describing the failure (for example, `Malformed Authorization header` or `Token expired`). These responses add `error="invalid_token"` to the challenge:
+
+```http
+WWW-Authenticate: Bearer error="invalid_token", resource_metadata="/.well-known/oauth-protected-resource"
+```
+
+A token rejected because a required tenant claim is missing returns `403`, without a `WWW-Authenticate` header, and this body:
+
+```json
+{
+  "error": "forbidden",
+  "message": "A tenant claim is required"
+}
+```
+
 ### JSON-RPC errors
 
-On the MCP protocol transport, errors use the JSON-RPC 2.0 `error` object. A rejected `tools/call` runs through the same pipeline as `POST /mcp/tools/call`: the message is `Tool call rejected`, and `data` carries the HTTP status (`httpStatus`) and the REST error body (`result`):
+On the MCP protocol transport, protocol errors and rejected tool calls use the JSON-RPC 2.0 `error` object. A rejected `tools/call` runs through the same pipeline as `POST /mcp/tools/call`: the message is `Tool call rejected`, and `data` carries the HTTP status (`httpStatus`) and the REST error body (`result`):
 
 ```json
 {
@@ -479,6 +498,21 @@ On the MCP protocol transport, errors use the JSON-RPC 2.0 `error` object. A rej
 | Other | `-32603` |
 
 For `400` and `503`, `data` carries `requestId` instead of `httpStatus` and `result`.
+
+An application-level tool error returned with HTTP 200 stays in the JSON-RPC `result`, with `isError: true`; it does not become a `Tool call rejected` error. Clients must inspect `result.isError`:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "content": [
+      { "type": "text", "text": "GraphQL endpoint returned an error" }
+    ],
+    "isError": true
+  },
+  "id": 3
+}
+```
 
 ---
 
