@@ -37,7 +37,7 @@ Le STOA Gateway (Rust) est le composant principal du plan de données, remplaça
 | mTLS | **Production** | Tokens liés au certificat (RFC 8705) |
 | Authentification OIDC | **Production** | Validation JWT Keycloak |
 | En-têtes de Sécurité | **Production** | En-têtes recommandés OWASP, liste de blocage SSRF |
-| Mode Sidecar | **Planifié (Q2 2026)** | Fonctionner aux côtés de gateways existants (Kong, Envoy, etc.) |
+| Mode sidecar | **Runtime présent** | `POST /authz` sur le moteur de décision partagé. Aucun appel tiers réel enregistré. Voir [Usage du compagnon](/docs/guides/companion-usage) |
 | Mode Proxy | **Planifié (Q3 2026)** | Proxy transparent pour les backends legacy |
 | Mode Shadow | **Planifié** | Miroir de trafic pour la validation |
 
@@ -82,7 +82,7 @@ Consultez la [Feuille de Route](/docs/roadmap) complète pour les fonctionnalit�
 
 ### Court Terme (Q1-Q2 2026)
 
-- Mode sidecar du gateway pour la coexistence avec les gateways existants
+- Les appels compagnon vers une passerelle tierce réelle et les adaptateurs mesh ne sont pas démontrés ([Usage du compagnon](/docs/guides/companion-usage))
 - Born GitOps — workflows d'approbation appartenant aux tenants (ADR-040)
 - Disponibilité générale de l'outil CLI
 - Provider Terraform

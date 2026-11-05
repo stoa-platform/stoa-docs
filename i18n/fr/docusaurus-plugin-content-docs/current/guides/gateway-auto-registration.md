@@ -75,40 +75,32 @@ Le gateway va :
 3. Démarrer la boucle heartbeat (toutes les 30 secondes)
 4. Apparaître dans la Console à `/gateways`
 
-### Niveau 2 : Mode Sidecar
+### Niveau 2 : mode sidecar
 
-Déployez STOA comme sidecar aux côtés d'un gateway tiers :
+Un compagnon de même pod est un second conteneur qui répond à `POST /authz`. L'enregistrement utilise les mêmes variables de plan de contrôle que tout autre processus STOA. Le dépôt ne livre pas de plugin Kong, Envoy ou webMethods, et `KONG_PLUGINS` / `KONG_EXT_AUTHZ_URL` ne sont pas une configuration Kong démontrée. L'hôte doit envoyer le corps JSON décrit dans [Usage du compagnon](./companion-usage.md).
 
 ```yaml
-# Exemple de déploiement Kubernetes
+# Colocation illustrative seulement. Le conteneur hôte doit lui-même
+# appeler POST http://127.0.0.1:8081/authz. Épinglez le digest d'image
+# de votre version ; ne vous fiez pas à un tag flottant.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kong-with-stoa-sidecar
+  name: host-with-stoa-sidecar
 spec:
   selector:
     matchLabels:
-      app: kong-with-stoa-sidecar
+      app: host-with-stoa-sidecar
   template:
     metadata:
       labels:
-        app: kong-with-stoa-sidecar
+        app: host-with-stoa-sidecar
     spec:
       containers:
-        # Gateway principal (Kong)
-        - name: kong
-          image: kong:3.5
-          env:
-            - name: KONG_PLUGINS
-              value: "ext-authz"
-            - name: KONG_EXT_AUTHZ_URL
-              value: "http://localhost:8081/authz"
-          ports:
-            - containerPort: 8000
-
-        # STOA sidecar
+        - name: gateway
+          image: <your-gateway-image>
         - name: stoa-sidecar
-          image: ghcr.io/stoa-platform/stoa-gateway:latest
+          image: ghcr.io/stoa-platform/stoa-gateway
           env:
             - name: STOA_GATEWAY_MODE
               value: "sidecar"
@@ -122,8 +114,10 @@ spec:
                   name: stoa-sidecar-secrets
                   key: STOA_CONTROL_PLANE_API_KEY
           ports:
-            - containerPort: 8081  # endpoint ext_authz
+            - containerPort: 8081
 ```
+
+`/authz` fait confiance au `user` JSON et ne valide pas de jeton. Le processus se lie à `0.0.0.0` et à `STOA_PORT`. Placer les conteneurs dans un même pod ne prouve pas, à lui seul, que l'hôte appelle localhost. Voir [Usage du compagnon](./companion-usage.md). La synchronisation GitOps vers l'API d'administration est [stoa-connect](./stoa-connect-quickstart.md).
 
 ## Configuration du Plan de Contrôle
 
@@ -258,45 +252,21 @@ Le template de déploiement injecte le secret comme variable d'environnement :
 Remplacez `<VAULT_GATEWAY_PATH>` par un chemin Vault contenant `STOA_CONTROL_PLANE_API_KEY` et `STOA_KEYCLOAK_CLIENT_SECRET`. L’ExternalSecret utilise ces noms exacts pour les propriétés Vault et les clés du Secret Kubernetes. Des propriétés manquantes empêchent la synchronisation du secret ; sans `STOA_CONTROL_PLANE_API_KEY`, le gateway ignore l’auto-enregistrement.
 :::
 
-### STOA Sidecar (Niveau 2)
+### Sidecar STOA (niveau 2)
 
-Configuration complète dans `charts/stoa-platform/values.yaml` :
+Le chart de plateforme ne rend le pod de même pod que si les deux drapeaux ci-dessous sont vrais. `stoaSidecar.enabled` vaut `false` par défaut. Le chart ajoute `EXT_AUTHZ_URL=http://localhost:8081/authz` sur le conteneur cible. Il lit la clé de secret `STOA_CONTROL_PLANE_API_KEY` (`optional: true`). `stoaSidecar.image` est `ghcr.io/stoa-platform/stoa-gateway` épinglé par digest dans `values.yaml`, c'est-à-dire l'image de passerelle publiée. Le profil de build léger non publié n'est pas celui que le chart exécute.
 
 ```yaml
 stoaSidecar:
   enabled: true
-  targetGateway: webmethods  # or kong, gravitee, agentgateway, apigee, aws_apigateway, azure_apim
-
-  image:
-    repository: ghcr.io/stoa-platform/stoa-gateway
-    tag: latest
-
-  replicas: 2
-  environment: prod
-
-  # Connexion au Plan de Contrôle
-  controlPlaneUrl: "http://stoa-control-plane-api.stoa-system.svc.cluster.local:80"
-  secretName: stoa-sidecar-secrets  # Must contain STOA_CONTROL_PLANE_API_KEY
-
-  # Keycloak OIDC (pour la validation des tokens)
-  keycloakUrl: "https://auth.<YOUR_DOMAIN>"
-  keycloakRealm: stoa
-  keycloakClientId: stoa-sidecar
-
-  # Application des politiques
-  policyEnabled: true
-
-  # Conteneur du gateway principal (s'exécute en parallèle)
   mainGateway:
     enabled: true
     image:
-      repository: softwareag/webmethods-api-gateway
-      tag: "10.15"
-    port: 9072
-    env:
-      - name: EXT_AUTHZ_ENABLED
-        value: "true"
+      repository: "<your-gateway-repository>"
+      digest: "<your-gateway-digest>"
 ```
+
+Le chart injecte aussi les variables Keycloak et `policyEnabled`. `POST /authz` ne valide pas les jetons et n'évalue pas les politiques du plan de contrôle ni OPA. Fournissez vous-même l'image cible. Cette documentation ne nomme pas d'image webMethods. Détails et limites : [Usage du compagnon](./companion-usage.md) et [webMethods et le compagnon](./migration/webmethods-sidecar.md).
 
 ## Console
 
@@ -459,4 +429,5 @@ kubectl describe secret stoa-gateway-api-keys -n stoa-system
 - [ADR-036 : Enregistrement Automatique du Gateway](../architecture/adr/adr-036-gateway-auto-registration.md) — Décision d'architecture
 - [ADR-024 : Architecture Gateway Unifiée](../architecture/adr/adr-024-gateway-unified-modes.md) — Modes du gateway
 - [ADR-035 : Pattern Adaptateur Gateway](../architecture/adr/adr-035-gateway-adapter-pattern.md) — Comment le CP orchestre les gateways
-- [Intégration Sidecar WebMethods](./migration/webmethods-sidecar.md) — Guide spécifique pour WebMethods
+- [Usage du compagnon](./companion-usage.md) — Compagnon allow/deny, appel applicatif et limites mesh
+- [webMethods et le compagnon](./migration/webmethods-sidecar.md) — Pourquoi un sidecar webMethods réel n'est pas démontré

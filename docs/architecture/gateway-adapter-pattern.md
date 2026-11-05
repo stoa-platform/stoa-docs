@@ -75,6 +75,7 @@ This keeps third-party API translation distinct from the Envoy configuration pat
 - [Single deployment path](./adr/adr-059-simplified-deployment-sse.md)
 - [Envoy data plane decision](./adr/adr-073-adopt-envoy-data-plane.md)
 - [Hybrid gateway adapter guide: bring your own gateway](../guides/hybrid-gateway-adapter.md)
+- [Companion usage](../guides/companion-usage.md) — `POST /authz` next to a host. Separate from these management-API adapters. GitOps sync of a third-party gateway remains `stoa-connect`.
 
 [python-interface]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/control-plane-api/src/adapters/gateway_adapter_interface.py
 [registry]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/control-plane-api/src/adapters/registry.py

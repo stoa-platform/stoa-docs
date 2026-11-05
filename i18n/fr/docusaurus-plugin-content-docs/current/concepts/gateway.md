@@ -25,7 +25,7 @@ flowchart TB
     subgraph modes[" "]
         direction LR
         EM["--mode=edge-mcp<br/>✅ Production"]
-        SC["--mode=sidecar<br/>📋 T2 2026"]
+        SC["STOA_GATEWAY_MODE=sidecar<br/>Runtime présent"]
         PX["--mode=proxy<br/>📋 T3 2026"]
         SH["--mode=shadow<br/>⏸️ Reporté"]
     end
@@ -74,38 +74,17 @@ stoa-gateway --mode=edge-mcp --port=3001
 
 ---
 
-### Mode Sidecar (prévu T2 2026)
+### Mode sidecar (runtime compagnon)
 
-**Statut** : 📋 Prévu
+**Statut** : runtime présent. Le packaging dans le même pod existe dans le chart Helm et est désactivé par défaut. Aucun appel de passerelle tierce en conditions réelles n'est enregistré.
 
-Déployez STOA derrière des passerelles API existantes pour ajouter observabilité et gouvernance sans remplacer l'infrastructure.
+Le même binaire démarre avec `STOA_GATEWAY_MODE=sidecar` et répond à `POST /authz`. L'hôte conserve l'authentification, le routage et l'application du verdict. Le moteur de décision n'évalue pas OPA et n'émet pas d'événements de métrologie Kafka. Les adaptateurs mesh sont des notes de conception.
 
-**Cas d'usage** :
-- Ajouter les capacités STOA à Kong, Envoy ou Apigee
-- Migration progressive depuis les passerelles legacy
-- Exigences de conformité entreprise
+Les options `--mode`, `--primary-gateway` et `--metering-enabled` ne sont pas l'interrupteur du runtime. Voir [Usage du compagnon](../guides/companion-usage.md) pour le corps de requête, les trois formes d'intégration et les limites. La synchronisation GitOps vers une passerelle existante est [stoa-connect](../guides/stoa-connect-quickstart.md).
 
-**Fonctionnalités** :
-- Injection d'observabilité (traces OpenTelemetry)
-- Événements de métrologie vers Kafka pour la facturation
-- Validation de conformité UAC
-- Capture de snapshots d'erreurs pour le débogage
-
-**Exemple** :
-```bash
-stoa-gateway --mode=sidecar \
-  --primary-gateway=kong \
-  --metering-enabled=true
-```
-
-**Architecture** :
-```mermaid
-flowchart LR
-    C[Client] --> K[Kong]
-    K --> S["stoa-gateway<br/>(sidecar)"]
-    S --> B[Backend]
-    S -.-> KF["Kafka<br/>(métrologie)"]
-    S -.-> OT["OpenTelemetry<br/>(traces)"]
+```text
+Client → passerelle hôte → POST /authz → stoa-gateway (sidecar)
+                └── sur 200 → backend
 ```
 
 ---
@@ -213,6 +192,7 @@ Voir la [Référence des outils MCP](../reference/mcp-tools) pour le schéma com
 
 ## Documentation associée
 
+- [Usage du compagnon](../guides/companion-usage.md)
 - [ADR-024 : Architecture unifiée de la passerelle](../architecture/adr/adr-024-gateway-unified-modes)
 - [Spécification du protocole MCP](https://modelcontextprotocol.io/)
 - [Référence API de la passerelle MCP](../api/mcp-gateway)

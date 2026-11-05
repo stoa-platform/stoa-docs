@@ -1,7 +1,7 @@
 ---
 sidebar_position: 16
 title: "Gateway Modes"
-description: "STOA Gateway deployment modes — edge-mcp, sidecar, proxy, and shadow mode configuration, capabilities, and use cases (ADR-024)."
+description: "STOA Gateway runtime modes — edge-mcp, sidecar, proxy, and shadow. Sidecar is the companion allow/deny endpoint; see Companion usage for integration limits."
 keywords:
   - gateway modes
   - edge-mcp
@@ -22,7 +22,7 @@ STOA Gateway supports 4 deployment modes (defined in [ADR-024](/docs/architectur
 | Mode | Port | MCP Support | Use Case | Status |
 |------|------|-------------|----------|--------|
 | **edge-mcp** | 8080 | Yes | Standalone MCP gateway with full protocol support | Production |
-| **sidecar** | 8081 | No | Policy enforcement alongside existing gateways | Q2 2026 |
+| **sidecar** | 8081 in the chart (binary default 8080) | No | Allow or deny on `POST /authz` for a host that calls it | Runtime present |
 | **proxy** | 8082 | No | Inline request/response transformation | Q3 2026 |
 | **shadow** | 8083 | No | Passive traffic capture and UAC generation | Q4 2026 |
 
@@ -43,8 +43,8 @@ graph TB
 |-----------|----------|---------|-------|--------|
 | MCP protocol (SSE) | Yes | No | No | No |
 | Tool discovery/invocation | Yes | No | No | No |
-| JWT authentication | Yes | Yes | Yes | No |
-| Rate limiting | Yes | Yes | Yes | No |
+| JWT authentication | Yes | No. `/authz` trusts the JSON `user` | Yes | No |
+| Rate limiting | Yes | Optional, in-memory, per process | Yes | No |
 | Circuit breaker | Yes | No | Yes | No |
 | Request transformation | No | No | Yes | No |
 | Traffic capture | No | No | No | Yes |
@@ -105,44 +105,36 @@ stoaGateway:
 
 ## Sidecar Mode
 
-Deploys alongside an existing API gateway (Kong, webMethods, Envoy) to add STOA policy enforcement without replacing the primary gateway.
+Starts the same binary with `STOA_GATEWAY_MODE=sidecar`. The process exposes `POST /authz` and does not mount MCP routes. The host keeps authentication, routing, and enforcement. A same-pod Helm template exists and is off by default. Live calls from Kong, webMethods, or Envoy are not demonstrated in the repository.
+
+Read [Companion usage](./companion-usage.md) for the three integration shapes (same-pod gateway, application callout, mesh) and the current limits. Mesh adapters are design notes only.
 
 ### Configuration
 
 ```bash
 STOA_GATEWAY_MODE=sidecar
-
-# Sidecar specific settings
-STOA_UPSTREAM_TYPE=generic       # Options: generic, webmethods, kong, envoy, apigee
-STOA_USER_INFO_HEADER=X-User-Info
-STOA_TENANT_ID_HEADER=X-Tenant-ID
-STOA_DECISION_FORMAT=StatusCode  # Options: StatusCode, JsonBody, EnvoyExtAuthz, KongPlugin
+STOA_PORT=8081
 ```
 
-### Decision Format
+`STOA_UPSTREAM_TYPE`, `STOA_USER_INFO_HEADER`, and `STOA_TENANT_ID_HEADER` are read into sidecar settings and are not used by `/authz`. `STOA_DECISION_FORMAT` is not read. The response format is status code only: `200`, `401`, `403`, or `429`, with an empty body. JSON, Envoy, and Kong formatters exist in the binary and cannot be selected.
 
-The sidecar responds to auth/policy checks in a format compatible with the host gateway:
-
-| Format | Compatible With | Response |
-|--------|----------------|----------|
-| `StatusCode` | Any gateway | 200 (allow) or 403 (deny) |
-| `JsonBody` | Custom integrations | JSON with `allowed: true/false` and `reason` |
-| `EnvoyExtAuthz` | Envoy, Istio | ext_authz gRPC/HTTP response |
-| `KongPlugin` | Kong | Kong plugin-compatible response |
+The HTTP listener binds `0.0.0.0` and `STOA_PORT`. `STOA_HOST` does not change that bind. The chart's `STOA_HOST=127.0.0.1` does not make `/authz` loopback-only.
 
 ### Exposed Routes
 
 | Path | Method | Purpose |
 |------|--------|---------|
-| `/authz` | POST | Authorization decision endpoint |
-| `/health` | GET | Health check |
-| `/metrics` | GET | Prometheus metrics |
+| `/authz` | POST | Allow or deny from the shared decision engine |
+| `/health`, `/ready` | GET | Health and readiness |
+| `/metrics` | GET | Generic Prometheus metrics for the process |
+
+There is no `stoa_sidecar_*` metric in the gateway source.
 
 ### When to Use
 
-- Adding STOA RBAC/rate-limiting to an existing Kong or Envoy deployment
-- Gradual migration from a legacy gateway
-- Environments where replacing the gateway is not feasible
+- A host in the same pod can build the JSON body and call `POST /authz` before it forwards.
+- An application can make the same callout. That is not a same-pod companion deployment.
+- GitOps synchronization of Kong, Gravitee, webMethods, or Envoy is [`stoa-connect`](./stoa-connect-quickstart.md), which stays off the request path.
 
 ## Proxy Mode
 
@@ -250,10 +242,10 @@ graph TD
 | Scenario | Recommended Mode |
 |----------|-----------------|
 | Greenfield MCP deployment | `edge-mcp` |
-| Adding policies to existing Kong | `sidecar` |
+| Allow or deny beside a host that calls `POST /authz` | Companion (`sidecar` runtime). See [Companion usage](./companion-usage.md) |
 | API transformation layer | `proxy` |
 | Legacy API discovery | `shadow` → then `edge-mcp` |
-| Gradual migration from webMethods | `shadow` → `sidecar` → `edge-mcp` |
+| Keep a third-party gateway and sync desired state | [`stoa-connect`](./stoa-connect-quickstart.md). A same-pod companion is a separate callout and is not a recorded webMethods integration |
 
 ## Runtime Configuration
 
@@ -282,12 +274,13 @@ The gateway listens on the mode's default port (8080-8083) unless overridden.
 |---------|-------|-----|
 | "Unknown mode" on startup | Invalid `STOA_GATEWAY_MODE` value | Use: `edge-mcp`, `sidecar`, `proxy`, or `shadow` |
 | MCP endpoints return 404 | Wrong mode selected | Only `edge-mcp` serves MCP routes |
-| Sidecar not enforcing policies | Decision format mismatch | Match `STOA_DECISION_FORMAT` to host gateway |
+| Sidecar answers with a status and an empty body | `/authz` format is fixed to status code | Send the JSON body in [Companion usage](./companion-usage.md). `STOA_DECISION_FORMAT` is not read |
 | Shadow not capturing traffic | Capture method requires infra | Use `Inline` if no Envoy/Kafka available |
 | Proxy dropping WebSocket | Passthrough disabled | Set `STOA_WEBSOCKET_PASSTHROUGH=true` |
 
 ## Related
 
+- [Companion usage](./companion-usage.md) -- Same-pod, application, and mesh limits
 - [Multi-Gateway Orchestration](/docs/guides/multi-gateway-setup) -- Multi-gateway adapter pattern
 - [MCP Gateway API](/docs/api/mcp-gateway) -- Edge-MCP protocol reference
 - [Gateway Admin API](/docs/api/gateway-admin-api) -- Admin endpoints

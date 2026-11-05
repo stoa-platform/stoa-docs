@@ -75,6 +75,7 @@ La traduction des API tierces reste ainsi distincte du chemin de configuration E
 - [Chemin de déploiement unique](./adr/adr-059-simplified-deployment-sse.md)
 - [Décision sur le plan de données Envoy](./adr/adr-073-adopt-envoy-data-plane.md)
 - [Guide de l'adaptateur de passerelle hybride : apportez votre propre passerelle](../guides/hybrid-gateway-adapter.md)
+- [Usage du compagnon](../guides/companion-usage.md) — `POST /authz` à côté d'un hôte. Distinct de ces adaptateurs d'API de gestion. La synchro GitOps d'une passerelle tierce reste `stoa-connect`.
 
 [python-interface]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/control-plane-api/src/adapters/gateway_adapter_interface.py
 [registry]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/control-plane-api/src/adapters/registry.py

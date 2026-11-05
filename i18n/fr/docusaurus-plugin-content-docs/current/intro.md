@@ -50,7 +50,7 @@ STOA est une passerelle API et une plateforme de gestion cloud-native construite
 └──────────────────────────────────────────────────────────────┘
 ```
 
-Le **Plan de contrôle** gère le catalogue d'API, l'authentification et l'observabilité. Le **Plan de données** exécute votre passerelle (STOA Gateway en Rust ou un sidecar à côté des passerelles existantes) au plus près de vos API.
+Le **Plan de contrôle** gère le catalogue d'API, l'authentification et l'observabilité. Le **Plan de données** exécute la passerelle STOA au plus près de vos API. Un [compagnon](/docs/guides/companion-usage) dans le même pod peut répondre allow ou deny lorsqu'un hôte l'appelle. La synchronisation vers une passerelle tierce est [`stoa-connect`](/docs/guides/stoa-connect-quickstart).
 
 ## Démarrage rapide
 

@@ -37,7 +37,7 @@ The STOA Gateway (Rust) is the primary data plane component, replacing the earli
 | mTLS | **Production** | Certificate-bound tokens (RFC 8705) |
 | OIDC Authentication | **Production** | Keycloak JWT validation |
 | Security Headers | **Production** | OWASP recommended headers, SSRF blocklist |
-| Sidecar Mode | **Planned (Q2 2026)** | Run alongside existing gateways (Kong, Envoy, etc.) |
+| Sidecar mode | **Runtime present** | `POST /authz` on the shared decision engine. No live third-party call recorded. See [Companion usage](/docs/guides/companion-usage) |
 | Proxy Mode | **Planned (Q3 2026)** | Transparent proxy for legacy backends |
 | Shadow Mode | **Planned** | Traffic mirroring for validation |
 
@@ -82,7 +82,7 @@ See the full [Roadmap](/docs/roadmap) for upcoming features and priorities.
 
 ### Near-Term (Q1-Q2 2026)
 
-- Gateway sidecar mode for existing gateway coexistence
+- Live third-party companion callouts and mesh adapters are not demonstrated ([Companion usage](/docs/guides/companion-usage))
 - Born GitOps — tenant-owned approval workflows (ADR-040)
 - CLI tool general availability
 - Terraform provider

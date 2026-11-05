@@ -150,7 +150,7 @@ Valeurs valides pour `gateway_type` :
 |------|-------------|
 | `stoa` | STOA Gateway (générique) |
 | `stoa_edge_mcp` | STOA en mode edge-mcp |
-| `stoa_sidecar` | STOA en mode sidecar |
+| `stoa_sidecar` | STOA en mode d'exécution sidecar. Une étiquette, pas la preuve d'un appel dans le même pod. Voir [Usage du compagnon](./companion-usage.md) |
 | `stoa_proxy` | STOA en mode proxy |
 | `stoa_shadow` | STOA en mode shadow |
 | `kong` | Kong (DB-less) |

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: "Feuille de Route STOA Platform : Fonctionnalités & Jalons"
-description: "Feuille de route publique de la Plateforme STOA — fonctionnalités à venir pour le gateway API open source natif IA avec support MCP, proxy LLM, mode sidecar, CLI et adapters multi-fournisseurs"
+description: "Feuille de route publique de la Plateforme STOA — fonctionnalités à venir pour le gateway API open source natif IA avec support MCP, proxy LLM, CLI et adapters multi-fournisseurs"
 keywords: [roadmap, features, release plan, MCP gateway, API management, STOA, open source, LLM proxy]
 ---
 

@@ -98,6 +98,8 @@ Les contrôles de démarrage qui refusent le boot incluent : port `0` ; `mtls.en
 
 Env typé que le template pose (hors secret) : `STOA_PORT` `8080`, `STOA_HOST` `0.0.0.0`, `STOA_CONTROL_PLANE_URL`, `STOA_KEYCLOAK_URL`, `STOA_KEYCLOAK_REALM`, `STOA_KEYCLOAK_CLIENT_ID`, `STOA_LOG_LEVEL`, `STOA_LOG_FORMAT`, `STOA_GATEWAY_MODE`, `STOA_AUTO_REGISTER`, `STOA_ENVIRONMENT`, plus politique, watcher Kubernetes, Kafka et `STOA_OTEL_ENDPOINT` quand ces blocs sont activés.
 
+Cette liste est le Deployment de la passerelle principale. Le template sidecar pose `STOA_PORT` à `8081` et `STOA_HOST` à `127.0.0.1`. Le processus se lie à `0.0.0.0` et à `config.port` ; `STOA_HOST` n'est pas l'adresse d'écoute. Voir [Usage du compagnon](../guides/companion-usage.md).
+
 Le commentaire de `secretName` dans les valeurs cite aussi `JWT_SECRET` et `ADMIN_API_TOKEN`. Le Deployment et l'ExternalSecret ne projettent pas ces clés. Les poser via `extraEnv` depuis un Secret si vous en avez besoin, ou accepter les défauts du gateway (l'API admin reste fermée sans `STOA_ADMIN_API_TOKEN`).
 
 Défauts de `values.yaml` que l'on manque en faisant confiance au README du chart plutôt qu'au fichier :

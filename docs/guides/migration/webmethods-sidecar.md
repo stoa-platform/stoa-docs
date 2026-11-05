@@ -1,265 +1,43 @@
 ---
-sidebar_label: WebMethods + STOA Sidecar
-title: "WebMethods + STOA Sidecar"
-description: "Deploy Software AG webMethods API Gateway with STOA sidecar for policy enforcement, rate limiting, and usage metering."
-keywords: [webMethods, sidecar, migration, Software AG, API gateway]
+sidebar_label: webMethods and the companion
+title: "webMethods and the STOA companion"
+description: "What a same-pod STOA companion does next to a host gateway, and why this repository does not demonstrate a live webMethods integration."
+keywords: [webMethods, sidecar, companion, migration, API gateway]
 ---
 
-# WebMethods Gateway + STOA Sidecar Integration
+# webMethods and the STOA companion
 
-This guide explains how to deploy Software AG webMethods API Gateway with STOA sidecar for policy enforcement, rate limiting, and usage metering.
+A same-pod STOA companion can answer `POST /authz` for a host that calls it. This repository does not demonstrate that call with Software AG webMethods API Gateway. There is no recorded live webMethods run, no webMethods plugin in the tree, and no GitOps `GatewayInstance` with deployment mode `sidecar`.
 
-:::info ADR Reference
-This integration uses [ADR-036: Gateway Auto-Registration](../../architecture/adr/adr-036-gateway-auto-registration.md) and [ADR-035: Gateway Adapter Pattern](../../architecture/adr/adr-035-gateway-adapter-pattern.md).
-:::
+Use this page to avoid the older recipe on this URL. That recipe described OPA policy evaluation, JWT validation, a Kafka usage pipeline, a console row for a live sidecar, and Prometheus series named `stoa_sidecar_*`. None of those are what `POST /authz` does on current `main`. The decision engine stages are identity, tenant, an optional in-memory rate limit, and scopes. The `/authz` router does not set required scopes, does not evaluate OPA, and does not emit a Kafka metering event. `stoa_sidecar_*` names do not appear in the gateway source.
 
-## Architecture Overview
+The behavior, the three usage patterns, and the full limit list are in [Companion usage](../companion-usage.md). The snapshot is public `stoa` commit `a97147e97edfa7c843b3c81dc14c6c039ee45908` (2026-11-05).
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Kubernetes Pod                           │
-│  ┌──────────────────────┐    ┌───────────────────────────────┐  │
-│  │   webMethods API     │    │      STOA Sidecar             │  │
-│  │      Gateway         │    │    (sidecar mode)             │  │
-│  │                      │    │                               │  │
-│  │  ┌────────────────┐  │    │  ┌─────────────────────────┐  │  │
-│  │  │   ext_authz    │──┼────┼──│  /authz endpoint       │  │  │
-│  │  │   filter       │  │    │  │  - OPA policies        │  │  │
-│  │  └────────────────┘  │    │  │  - Rate limiting       │  │  │
-│  │                      │    │  │  - Token validation    │  │  │
-│  │  Port: 9072          │    │  └─────────────────────────┘  │  │
-│  │  (API traffic)       │    │                               │  │
-│  └──────────────────────┘    │  Port: 8081                   │  │
-│                              │  (internal only)              │  │
-│                              │                               │  │
-│                              │  ┌─────────────────────────┐  │  │
-│                              │  │  Auto-registration      │  │  │
-│                              │  │  → Control Plane        │  │  │
-│                              │  └─────────────────────────┘  │  │
-│                              └───────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-```
+## What to use for webMethods today
 
-## Prerequisites
+[`stoa-connect`](../stoa-connect-quickstart.md) is the GitOps path. The Go agent talks to the webMethods admin API and to the Control Plane. It is not on the client request path. The third-party gateway enforces the desired state the agent pushed. Adapters for webMethods, Kong, Gravitee, and Envoy live under `stoa-go/internal/connect/adapters/`.
 
-1. STOA Control Plane deployed and accessible
-2. Keycloak realm `stoa` configured
-3. Gateway API keys configured in Control Plane (see [Gateway Auto-Registration Guide](../gateway-auto-registration.md))
+A STOA process with `STOA_GATEWAY_MODE=sidecar` that targets a remote webMethods gateway is classified `connect` / `remote-agent`, not a same-pod companion.
 
-## Deployment
+## What the chart will render
 
-### 1. Create Secrets
+`charts/stoa-platform/templates/stoa-sidecar-deployment.yaml` renders a two-container pod when `stoaSidecar.enabled=true` and `stoaSidecar.mainGateway.enabled=true`. `stoaSidecar.enabled` defaults to `false`. The template sets:
 
-```bash
-kubectl create secret generic stoa-sidecar-secrets \
-  --namespace stoa-system \
-  --from-literal=control-plane-api-key="gw_your_api_key_here" \
-  --from-literal=keycloak-client-secret="your_keycloak_secret"
-```
+- `STOA_GATEWAY_MODE=sidecar` and `STOA_PORT=8081` on `stoa-sidecar`
+- `EXT_AUTHZ_URL=http://localhost:8081/authz` on the target container
+- `STOA_HOST=127.0.0.1`
 
-### 2. Configure Helm Values
+The binary binds `0.0.0.0` and the port. `STOA_HOST` is not the listen address, so the chart comment that the port is localhost-only does not match the process. The main gateway Service does not publish port `8081`. With the chart default `stoaSidecar.serviceMonitor.enabled=true`, a separate ClusterIP Service does publish `8081`, and that listener also serves `/authz`.
 
-Create a `values-webmethods.yaml` file:
+`stoaSidecar.image` is the published `ghcr.io/stoa-platform/stoa-gateway` image, pinned by digest. The CI job that builds a lighter profile (`FEATURES=` and `NO_DEFAULT_FEATURES=true`) does not push that image, and the chart does not reference it.
 
-```yaml
-stoaSidecar:
-  enabled: true
-  targetGateway: webmethods
+The template reads the API key from the secret key `STOA_CONTROL_PLANE_API_KEY`, with `optional: true`. A secret that only contains `control-plane-api-key` does not populate the variable, and the pod still starts. The chart also injects Keycloak settings and `STOA_POLICY_ENABLED`. Those values do not make `/authz` validate tokens.
 
-  # STOA Sidecar configuration
-  image:
-    repository: 848853684735.dkr.ecr.eu-west-1.amazonaws.com/apim/stoa-gateway
-    tag: latest
+Supply your own webMethods image repository and digest if you render a target container. This site does not publish a webMethods image name, tag, or pull secret. Whether webMethods honors `EXT_AUTHZ_URL` or `apigw_ext_authz_*` is not shown in the repository. The host must send the JSON body documented in [Companion usage](../companion-usage.md). Forwarding the original request unchanged does not match `POST /authz`.
 
-  environment: prod
-  controlPlaneUrl: "https://api.<YOUR_DOMAIN>"
-  keycloakUrl: "https://auth.<YOUR_DOMAIN>"
-  keycloakRealm: stoa
-  keycloakClientId: stoa-sidecar
-  secretName: stoa-sidecar-secrets
+## Related
 
-  # webMethods Gateway configuration
-  mainGateway:
-    enabled: true
-    image:
-      repository: softwareag/webmethods-api-gateway
-      tag: "10.15"
-    port: 9072
-    env:
-      - name: JAVA_OPTS
-        value: "-Xms1g -Xmx2g"
-      - name: SAG_IS_LICENSE_KEY
-        valueFrom:
-          secretKeyRef:
-            name: webmethods-license
-            key: license-key
-      # Enable ext_authz to point to STOA sidecar
-      - name: apigw_ext_authz_enabled
-        value: "true"
-      - name: apigw_ext_authz_url
-        value: "http://127.0.0.1:8081/authz"
-    resources:
-      requests:
-        cpu: 1000m
-        memory: 2Gi
-      limits:
-        cpu: 4000m
-        memory: 8Gi
-```
-
-### 3. Deploy
-
-```bash
-helm upgrade --install stoa-webmethods ./charts/stoa-platform \
-  --namespace stoa-system \
-  --values values-webmethods.yaml
-```
-
-## How It Works
-
-### 1. Auto-Registration
-
-When the pod starts, the STOA sidecar automatically registers with the Control Plane:
-
-```json
-POST /v1/internal/gateways/register
-{
-  "hostname": "webmethods-with-stoa-sidecar-xyz",
-  "mode": "sidecar",
-  "version": "0.1.0",
-  "environment": "prod",
-  "capabilities": ["ext_authz", "rate_limiting", "metering", "oidc"],
-  "admin_url": "http://10.0.1.50:8081"
-}
-```
-
-### 2. Request Flow
-
-1. **Client** → webMethods Gateway (port 9072)
-2. webMethods → **ext_authz** → STOA sidecar (port 8081)
-3. STOA sidecar evaluates:
-   - OPA policies (loaded from Control Plane)
-   - Rate limits (per tenant/API/user)
-   - JWT token validation (via Keycloak)
-4. **Decision** returned to webMethods (allow/deny)
-5. If allowed, webMethods → **Backend API**
-6. STOA sidecar → **Kafka** (usage metrics)
-
-### 3. Heartbeat
-
-The sidecar sends heartbeats every 30 seconds:
-
-```json
-POST /v1/internal/gateways/{gateway_id}/heartbeat
-{
-  "uptime_seconds": 3600,
-  "routes_count": 0,
-  "policies_count": 5,
-  "requests_total": 10000,
-  "error_rate": 0.01
-}
-```
-
-## Monitoring
-
-### Console View
-
-The webMethods + STOA sidecar appears in the STOA Console at `/gateways`:
-
-| Name | Type | Status | Environment |
-|------|------|--------|-------------|
-| webmethods-prod-abc123 | stoa_sidecar | ONLINE | prod |
-
-### Prometheus Metrics
-
-The sidecar exposes Prometheus metrics at `http://localhost:8081/metrics`:
-
-```prometheus
-stoa_sidecar_requests_total{tenant="acme",api="billing",status="allowed"} 9500
-stoa_sidecar_requests_total{tenant="acme",api="billing",status="denied"} 500
-stoa_sidecar_policy_evaluation_duration_seconds_bucket{le="0.01"} 9800
-stoa_sidecar_rate_limit_hits_total{tenant="acme"} 150
-```
-
-## Policies
-
-### Creating a Rate Limit Policy
-
-```bash
-curl -X POST ${STOA_API_URL}/v1/admin/policies \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "rate-limit-100rpm",
-    "policy_type": "rate_limit",
-    "scope": "api",
-    "config": {
-      "requests_per_minute": 100,
-      "burst_size": 10
-    },
-    "priority": 100
-  }'
-```
-
-### Binding Policy to Gateway
-
-```bash
-curl -X POST ${STOA_API_URL}/v1/admin/policies/bindings \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "policy_id": "UUID_FROM_ABOVE",
-    "gateway_instance_id": "UUID_OF_WEBMETHODS_SIDECAR"
-  }'
-```
-
-## Troubleshooting
-
-### Sidecar Not Registering
-
-Check logs:
-```bash
-kubectl logs -n stoa-system deployment/webmethods-with-stoa-sidecar -c stoa-sidecar
-```
-
-Verify Control Plane URL is reachable:
-```bash
-kubectl exec -n stoa-system deployment/webmethods-with-stoa-sidecar -c stoa-sidecar -- \
-  curl -s http://control-plane-api.stoa-system.svc.cluster.local:8000/health
-```
-
-### ext_authz Errors
-
-Check webMethods logs for ext_authz connection issues:
-```bash
-kubectl logs -n stoa-system deployment/webmethods-with-stoa-sidecar -c webmethods
-```
-
-Test ext_authz endpoint directly:
-```bash
-kubectl exec -n stoa-system deployment/webmethods-with-stoa-sidecar -c webmethods -- \
-  curl -s http://127.0.0.1:8081/authz -X POST -H "Content-Type: application/json" -d '{}'
-```
-
-### Gateway Shows OFFLINE
-
-If the gateway shows OFFLINE in Console but is running:
-
-1. Check heartbeat is being sent:
-   ```bash
-   kubectl logs -n stoa-system deployment/webmethods-with-stoa-sidecar -c stoa-sidecar | grep heartbeat
-   ```
-
-2. Verify Control Plane API key:
-   ```bash
-   kubectl get secret stoa-sidecar-secrets -n stoa-system -o jsonpath='{.data.control-plane-api-key}' | base64 -d
-   ```
-
-3. Ensure the API key is in the `GATEWAY_API_KEYS` list in Control Plane config.
-
-## Related Documentation
-
-- [Gateway Auto-Registration Guide](../gateway-auto-registration.md) — Full registration setup
-- [ADR-036: Gateway Auto-Registration](../../architecture/adr/adr-036-gateway-auto-registration.md) — Architecture decision
-- [ADR-024: Unified Gateway Architecture](../../architecture/adr/adr-024-gateway-unified-modes.md) — Gateway modes
-- [WebMethods to STOA Migration](./ibm-webmethods.md) — Full migration guide
+- [Companion usage](../companion-usage.md)
+- [Connect a third-party gateway with stoa-connect](../stoa-connect-quickstart.md)
+- [Gateway auto-registration](../gateway-auto-registration.md)
+- [webMethods migration guide](./ibm-webmethods.md)

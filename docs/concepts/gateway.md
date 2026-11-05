@@ -24,7 +24,7 @@ flowchart TB
     subgraph modes[" "]
         direction LR
         EM["--mode=edge-mcp<br/>✅ Production"]
-        SC["--mode=sidecar<br/>📋 Q2 2026"]
+        SC["STOA_GATEWAY_MODE=sidecar<br/>Runtime present"]
         PX["--mode=proxy<br/>📋 Q3 2026"]
         SH["--mode=shadow<br/>⏸️ Deferred"]
     end
@@ -69,38 +69,17 @@ stoa-gateway --mode=edge-mcp --port=3001
 
 ---
 
-### Sidecar Mode (Planned Q2 2026)
+### Sidecar mode (companion runtime)
 
-**Status**: 📋 Planned
+**Status**: runtime present. Same-pod packaging exists in the Helm chart and is off by default. No live third-party gateway call is recorded.
 
-Deploy STOA behind existing API gateways to add observability and governance without replacing infrastructure.
+The same binary starts with `STOA_GATEWAY_MODE=sidecar` and answers `POST /authz`. The host keeps authentication, routing, and enforcement. The decision engine does not evaluate OPA and does not emit Kafka metering events. Mesh adapters are design notes.
 
-**Use Cases**:
-- Add STOA capabilities to Kong, Envoy, or Apigee
-- Gradual migration from legacy gateways
-- Enterprise compliance requirements
+The flags `--mode`, `--primary-gateway`, and `--metering-enabled` are not the runtime switch. See [Companion usage](../guides/companion-usage.md) for the request body, the three integration shapes, and the limits. GitOps sync to an existing gateway is [stoa-connect](../guides/stoa-connect-quickstart.md).
 
-**Features**:
-- Observability injection (OpenTelemetry traces)
-- Metering events to Kafka for billing
-- UAC compliance validation
-- Error snapshot capture for debugging
-
-**Example**:
-```bash
-stoa-gateway --mode=sidecar \
-  --primary-gateway=kong \
-  --metering-enabled=true
-```
-
-**Architecture**:
-```mermaid
-flowchart LR
-    C[Client] --> K[Kong]
-    K --> S["stoa-gateway<br/>(sidecar)"]
-    S --> B[Backend]
-    S -.-> KF["Kafka<br/>(metering)"]
-    S -.-> OT["OpenTelemetry<br/>(traces)"]
+```text
+Client → host gateway → POST /authz → stoa-gateway (sidecar)
+                └── on 200 → backend
 ```
 
 ---
@@ -205,10 +184,12 @@ See [MCP Tools Reference](../reference/mcp-tools) for full schema.
 | Framework | Tokio + axum |
 | Status | Production (since Feb 2026) |
 | Active Mode | edge-mcp |
-| Planned Modes | sidecar (Q2 2026), proxy (Q3 2026), shadow (deferred) |
+| Sidecar | Runtime present. Limits in [Companion usage](../guides/companion-usage.md) |
+| Planned Modes | proxy (Q3 2026), shadow (deferred) |
 
 ## Related Documentation
 
+- [Companion usage](../guides/companion-usage.md)
 - [ADR-024: Unified Gateway Architecture](../architecture/adr/adr-024-gateway-unified-modes)
 - [MCP Protocol Specification](https://modelcontextprotocol.io/)
 - [MCP Gateway API Reference](../api/mcp-gateway)

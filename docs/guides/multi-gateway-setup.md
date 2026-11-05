@@ -150,7 +150,7 @@ Valid `gateway_type` values:
 |------|-------------|
 | `stoa` | STOA Gateway (generic) |
 | `stoa_edge_mcp` | STOA in edge-mcp mode |
-| `stoa_sidecar` | STOA in sidecar mode |
+| `stoa_sidecar` | STOA in sidecar runtime mode. A label, not proof of a same-pod callout. See [Companion usage](./companion-usage.md) |
 | `stoa_proxy` | STOA in proxy mode |
 | `stoa_shadow` | STOA in shadow mode |
 | `kong` | Kong (DB-less) |
