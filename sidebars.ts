@@ -151,6 +151,7 @@ const sidebars: SidebarsConfig = {
         'deployment/sovereign',
         'deployment/hybrid',
         'deployment/prerequisites',
+        'deployment/offline-install',
       ],
     },
     {

@@ -249,14 +249,17 @@ All STOA images are published to GitHub Container Registry (GHCR).
 
 ### Air-Gapped / Private Registry
 
-For environments without internet access:
+For a full, verifiable offline procedure (pinned images, transfer bundle, checksums, Helm install without outbound pulls), see [Offline Installation](./offline-install.md).
+
+Short form — mirror then override the registry (prefer a release pin over `latest`):
 
 ```bash
-# Pull and re-tag for your private registry
+# Pull and re-tag for your private registry (replace PIN with the release tag or digest)
+PIN=1.2.3
 for img in control-plane-api control-plane-ui portal stoa-gateway keycloak; do
-  docker pull ghcr.io/stoa-platform/$img:latest
-  docker tag ghcr.io/stoa-platform/$img:latest your-registry.internal/$img:latest
-  docker push your-registry.internal/$img:latest
+  docker pull ghcr.io/stoa-platform/$img:$PIN
+  docker tag ghcr.io/stoa-platform/$img:$PIN registry.example.com/stoa/$img:$PIN
+  docker push registry.example.com/stoa/$img:$PIN
 done
 ```
 
@@ -264,9 +267,9 @@ Then override in Helm values:
 
 ```yaml
 global:
-  imageRegistry: your-registry.internal
+  imageRegistry: registry.example.com/stoa
   imagePullSecrets:
-    - name: your-registry-secret
+    - name: site-registry-pull
 ```
 
 ---
