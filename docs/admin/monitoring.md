@@ -17,6 +17,8 @@ import EnvSetup from '@site/docs/_partials/_env-setup.mdx';
 
 STOA integrates with Prometheus and Grafana for metrics collection, dashboards, and alerting. This guide covers setup, custom metrics, SLO rules, and alert configuration.
 
+For how to triage and exit an active incident using these alerts, see [Incident Response](./incident-response).
+
 ## Architecture
 
 ```mermaid
