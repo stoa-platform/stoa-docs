@@ -1,9 +1,17 @@
 # ADR-057: Product Lineup — STOA Gateway, STOA Link, STOA Connect
 
-- **Status**: Accepted
+- **Status**: Accepted — Amended by ADR-073 (2026-10-23)
 - **Date**: 2026-03-14
 - **Decision Makers**: Christophe Aboulicam
-- **Related**: ADR-024 (Gateway Modes), CAB-1817 (STOA Connect MEGA), CAB-1783 (STOA Link deployment)
+- **Related**: ADR-024 (Gateway Modes), ADR-073 (Envoy data plane — amends this record)
+
+> **Amendment — 2026-11-05 (ADR-073 §7, decision of 2026-10-23):** [ADR-073](./adr-073-adopt-envoy-data-plane.md) moves the STOA data plane to upstream Envoy and settles the meaning of "STOA Link". The lineup below is kept as the record of the decision of 2026-03-14; the following points apply from 2026-10-23:
+>
+> - **STOA Link is the agent installed on the customer site** — the `stoa-connect` binary (Go). It keeps the outbound SSE connection to the Control Plane, applies the desired state to third-party gateways, reports `SYNCED` / `FAILED`, and serves the local xDS configuration to Envoy. The "STOA Link" (Rust sidecar runtime) and "STOA Connect" (Go agent) entries of this record merge into this single product; there is no separate Connect product.
+> - **A sidecar is only one way to deploy Envoy, not a product.** "STOA Gateway" designates the Envoy-based data plane with its STOA external services, whether deployed standalone or as a sidecar next to a third-party gateway or workload. The Rust sidecar runtime described below is no longer a target; the Rust gateway enters maintenance (ADR-073 §9).
+> - **The `/api/v1/links/…` endpoints of ADR-059 and the registration protocol below do not change.** The `gateway_mode` value used by Envoy instances is set by the ADR-024 revision; any new value still requires an ADR.
+> - The product table, the diagram, the decision matrix and the criteria table (including its latency, size and install-time figures) describe the three-runtime lineup as decided in March 2026 and must be read as historical context, not current state. The "Shared Code (Go monorepo)" section remains accurate: `cmd/stoa-connect/` is the Link agent.
+> - *Implementation status:* the Link xDS server is decided but not yet implemented; today's agent synchronises third-party gateways over REST / SSE.
 
 ## Context
 

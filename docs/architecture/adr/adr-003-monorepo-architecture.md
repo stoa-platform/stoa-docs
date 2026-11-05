@@ -11,7 +11,7 @@ keywords: [monorepo, architecture, polyglot, Python, TypeScript, Rust, microserv
 
 | Field | Value |
 |-------|-------|
-| **Status** | Accepted |
+| **Status** | Accepted — Amended by ADR-073 (2026-10-23) |
 | **Date** | 2026-02-06 |
 | **Linear** | N/A (Foundational) |
 
@@ -21,6 +21,13 @@ keywords: [monorepo, architecture, polyglot, Python, TypeScript, Rust, microserv
 > - Product boundaries across `stoactl`, `stoa-link`, and `stoa-connect` are governed by ADR-057.
 > - Active deployment topology follows the single SSE path defined in ADR-059.
 > - Active AI-context hierarchy follows ADR-062 (`CLAUDE.md` hierarchy + on-demand `.claude/docs/`), not the earlier `.claude/rules/` model.
+
+> **Amendment — 2026-11-05 (ADR-073 §7, decision of 2026-10-23):** [ADR-073](./adr-073-adopt-envoy-data-plane.md) moves the STOA data plane to upstream Envoy and settles the meaning of "STOA Link". For this record:
+>
+> - The data plane is governed by ADR-073: upstream Envoy, configured only over xDS, with STOA logic in external services called by Envoy and the MCP module behind Envoy. `stoa-gateway/` (Rust) remains in the tree but enters maintenance (ADR-073 §9); it is no longer the strategic data plane.
+> - `stoa-link` and `stoa-connect` designate the **same agent**: STOA Link, installed on the customer site, binary `stoa-connect`. A sidecar is only one way to deploy Envoy, not a separate product. Product boundaries stay governed by ADR-057 as amended by ADR-073.
+> - The single SSE deployment path of ADR-059 and its `/api/v1/links/…` endpoints are unchanged; for Envoy targets, Link publishes the xDS resources.
+> - The monorepo decision itself (hybrid monorepo plus satellite repositories) is unchanged.
 
 ## Context
 

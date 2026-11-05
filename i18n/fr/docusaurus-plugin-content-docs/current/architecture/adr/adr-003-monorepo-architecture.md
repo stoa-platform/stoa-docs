@@ -11,9 +11,16 @@ keywords: [monorepo, architecture, polyglotte, Python, TypeScript, Rust, microse
 
 | Champ | Valeur |
 |-------|--------|
-| **Statut** | Accepté |
+| **Statut** | Accepté — Amendé par ADR-073 (2026-10-23) |
 | **Date** | 2026-02-06 |
 | **Linear** | N/A (Fondamental) |
+
+> **Amendement — 2026-11-05 (ADR-073 §7, décision du 2026-10-23) :** [ADR-073](./adr-073-adopt-envoy-data-plane.md) fait évoluer le plan de données STOA vers Envoy amont et précise le sens de « STOA Link ». Pour cet ADR :
+>
+> - Le plan de données est régi par ADR-073 : Envoy amont, configuré uniquement via xDS, avec la logique STOA dans des services externes appelés par Envoy et le module MCP derrière Envoy. `stoa-gateway/` (Rust) reste dans l’arborescence mais passe en maintenance (ADR-073 §9) ; il n’est plus le plan de données stratégique. Les sections ci-dessous sur les gateways et leur topologie constituent un contexte historique, pas l’état actuel ; les références à `mcp-gateway/` (Python), retiré depuis, sont également historiques.
+> - `stoa-link` et `stoa-connect` désignent le **même agent** : STOA Link, installé chez le client, binaire `stoa-connect`. Un sidecar est uniquement une topologie de déploiement d’Envoy, pas un produit distinct. Les frontières produit restent régies par ADR-057 tel qu’amendé par ADR-073.
+> - Le chemin de déploiement SSE unique d’ADR-059 et ses endpoints `/api/v1/links/…` restent inchangés ; pour les cibles Envoy, Link publie les ressources xDS.
+> - La décision monorepo elle-même (monorepo hybride et dépôts satellites) reste inchangée.
 
 ## Contexte
 

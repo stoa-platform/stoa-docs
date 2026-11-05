@@ -1,6 +1,6 @@
 ---
 title: "ADR-057 : Gamme Produit — STOA Gateway, STOA Link, STOA Connect"
-description: "Formalise la gamme de trois produits runtime de STOA : Gateway (K8s full MCP), Link (sidecar K8s) et Connect (agent Go léger pour environnements sans K8s). Définit les frontières, la matrice de choix et le protocole d'enregistrement partagé."
+description: "Conserve la gamme produit historique de STOA et son amendement par ADR-073 : Gateway désigne le plan de données Envoy et Link l’agent Go stoa-connect installé chez le client."
 keywords: [gateway, link, connect, sidecar, go, rust, produit, déploiement, on-prem, bare-metal, mcp]
 ---
 
@@ -10,10 +10,18 @@ keywords: [gateway, link, connect, sidecar, go, rust, produit, déploiement, on-
 
 | Champ | Valeur |
 |-------|--------|
-| **Statut** | Accepté |
+| **Statut** | Accepté — Amendé par ADR-073 (2026-10-23) |
 | **Date** | 2026-03-14 |
 | **Décideurs** | Christophe Aboulicam |
-| **Liens** | ADR-024 (Modes Gateway), CAB-1817 (STOA Connect MEGA), CAB-1783 (déploiement STOA Link) |
+| **Liens** | ADR-024 (Modes Gateway), ADR-073 (plan de données Envoy — amende cet ADR) |
+
+> **Amendement — 2026-11-05 (ADR-073 §7, décision du 2026-10-23) :** [ADR-073](./adr-073-adopt-envoy-data-plane.md) fait évoluer le plan de données STOA vers Envoy amont et précise le sens de « STOA Link ». La gamme ci-dessous est conservée comme trace de la décision du 2026-03-14 ; les points suivants s’appliquent depuis le 2026-10-23 :
+>
+> - **STOA Link est l’agent installé chez le client** — le binaire `stoa-connect` (Go). Il maintient la connexion SSE sortante vers le Control Plane, applique l’état souhaité aux gateways tierces, rapporte `SYNCED` / `FAILED` et sert la configuration xDS locale à Envoy. Les entrées « STOA Link » (runtime sidecar Rust) et « STOA Connect » (agent Go) de cet ADR fusionnent en un seul produit ; Connect n’est plus un produit distinct.
+> - **Un sidecar est uniquement une topologie de déploiement d’Envoy, pas un produit.** « STOA Gateway » désigne le plan de données fondé sur Envoy avec ses services externes STOA, déployé de manière autonome ou en sidecar auprès d’une gateway tierce ou d’une charge applicative. Le runtime sidecar Rust décrit ci-dessous n’est plus une cible ; le gateway Rust passe en maintenance (ADR-073 §9).
+> - **Les endpoints `/api/v1/links/…` d’ADR-059 et le protocole d’enregistrement ci-dessous restent inchangés.** La valeur `gateway_mode` utilisée par les instances Envoy relève de la révision d’ADR-024 ; toute nouvelle valeur nécessite toujours un ADR.
+> - Le tableau des produits, le diagramme, la matrice de décision et le tableau des critères (y compris les chiffres de latence, de taille et de temps d’installation) décrivent la gamme de trois runtimes décidée en mars 2026 et doivent être lus comme un contexte historique, pas comme l’état actuel. La section « Code Partagé (monorepo Go) » reste exacte : `cmd/stoa-connect/` est l’agent Link.
+> - *État d’implémentation :* le serveur xDS de Link est décidé mais pas encore implémenté ; l’agent actuel synchronise les gateways tierces via REST / SSE.
 
 ## Contexte
 
