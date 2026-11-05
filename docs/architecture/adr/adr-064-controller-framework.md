@@ -5,13 +5,20 @@ sidebar_position: 64
 
 # ADR-064: Controller framework — keep ad-hoc Python workers, defer kopf and Go
 
-- **Status**: Accepted
+- **Status**: Accepted — Amended by ADR-073 (2026-10-23)
 - **Date**: 2026-04-16
 - **Deciders**: Christophe, Claude Code
-- **Relates to**: ADR-057 (product lineup — stoactl, stoa-link, stoa-connect), ADR-059 (simplified deployment SSE), ADR-063 (SDD L1 + stoa-impact MCP)
+- **Relates to**: ADR-057 (product lineup — stoactl, stoa-link, stoa-connect), ADR-059 (simplified deployment SSE), ADR-063 (SDD L1 + stoa-impact MCP), ADR-073 (Envoy data plane — amends this record)
 - **Parent ticket**: CAB-2053 Phase 7 (feature freeze + CLI-first stabilization)
 
 > **Clarification — 2026-04-24:** This framework decision does not re-enable deployment paths removed by ADR-059. The active deployment path remains the single SSE flow defined by ADR-059. Deprecated paths — direct Control Plane push, inline sync (`_try_inline_sync`), permanent polling deployment loops, and `SyncEngine`-based deployment — must remain retired unless a future ADR explicitly reverses ADR-059. Keeping ad-hoc Python workers as the reconciler pattern (this ADR) is about *how* workers are written; it does not revive *which* deployment paths are allowed.
+
+> **Amendment — 2026-11-05 (ADR-073 §7, decision of 2026-10-23):** [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) moves the STOA data plane to upstream Envoy. For this record:
+>
+> - **Naming.** "STOA Link" is the agent installed on the customer site, binary `stoa-connect` (Go). Where this record says `stoa-connect`, read STOA Link. The Rust sidecar runtime of the original ADR-057 is no longer a product: a sidecar is only one way to deploy Envoy.
+> - **Go re-evaluation trigger, recorded.** The local xDS server that serves Envoy its configuration lives in STOA Link, outside the CP API process — the slot this record already assigns to `stoa-connect` (Decision §4; "Adjustments applied", item 3). It is a new responsibility of the existing Go agent, not a move of any CP API worker to Go. The UAC → xDS translation runs in a dedicated control-plane component, separate from the CP API process (ADR-073 §2).
+> - **Scope protection unchanged.** The nine CP API workers stay as they are. The deployment paths retired by ADR-059 are not re-enabled: Console → CP API → SSE → STOA Link → (third-party gateway, or xDS → Envoy) → callback stays the single deployment path for every target, and the `/api/v1/links/…` endpoints do not change.
+> - *Implementation status:* the Link xDS server is decided but not yet implemented.
 
 ## Context
 
@@ -127,5 +134,6 @@ Small, incremental, reversible. Keeps the team shipping and leaves future framew
 
 - ADR-057 — Product lineup (stoactl, stoa-link, stoa-connect).
 - ADR-059 — Simplified deployment via SSE.
+- ADR-073 — Adopt Envoy as the STOA data plane (amends this record, 2026-10-23).
 - `control-plane-api/src/workers/` — current nine workers.
 - [kopf project](https://kopf.readthedocs.io/) — for reference, not adopted.
