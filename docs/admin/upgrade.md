@@ -155,6 +155,7 @@ spec:
 
 ## Related
 
+- [Configuration sources](/docs/reference/config-sources) -- Change a Helm value without fighting a second manifest
 - [Maintenance Cycle](./maintenance) -- Verifiable upgrade / rollback / uninstall controls
 - [Installation Guide](/docs/admin/installation) -- Initial deployment
 - [Backup & Recovery](/docs/admin/backup-recovery) -- Pre-upgrade backups

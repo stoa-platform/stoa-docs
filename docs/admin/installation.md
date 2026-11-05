@@ -470,4 +470,5 @@ Do not delete CRDs or external database volumes unless the change ticket records
 - [Monitoring Setup](/docs/admin/monitoring) -- Prometheus, Grafana, and alerting
 - [Hardware Requirements](/docs/reference/hardware-requirements) -- Sizing guide
 - [Configuration Reference](/docs/reference/configuration) -- Environment variables
+- [Configuration sources](/docs/reference/config-sources) -- Which layer owns a setting, and how to change it
 - [Hybrid Deployment](/docs/deployment/hybrid) -- Multi-cloud architecture

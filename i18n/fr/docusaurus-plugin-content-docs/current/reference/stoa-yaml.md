@@ -196,6 +196,7 @@ La CLI valide `stoa.yaml` avant l'envoi à l'API et retourne des erreurs lisible
 
 ## Voir Aussi
 
+- [Sources de configuration](/docs/reference/config-sources) — les valeurs Helm, l'env du processus et les secrets sont une autre couche que ce fichier
 - [Référence CLI stoactl](/docs/reference/cli) — `stoactl deploy`, `stoactl logs`, `stoactl deploy list`
 - [ADR-045 : Spec API Déclarative stoa.yaml](/docs/architecture/adr/adr-045-stoa-yaml-declarative-spec) — Justification de la conception et exemples
 - [Guide de Déploiement](/docs/guides/environment-management) — Gestion des environnements

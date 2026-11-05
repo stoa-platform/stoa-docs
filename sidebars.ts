@@ -91,6 +91,7 @@ const sidebars: SidebarsConfig = {
         'reference/benchmark-methodology',
         'architecture/data-plane',
         'reference/configuration',
+        'reference/config-sources',
         'reference/mcp-tools',
         'reference/cli',
         'reference/stoa-yaml',
