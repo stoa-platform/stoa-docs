@@ -373,51 +373,48 @@ DELETE /tenants/{tenant_id}/webhooks/{webhook_id}
 
 ## Réponses d'Erreur
 
-Format d'erreur standard :
+Chaque réponse d'erreur est un objet JSON avec un champ `detail` :
 
 ```json
 {
-  "error": {
-    "code": "validation_error",
-    "message": "Paramètres de requête invalides",
-    "details": [
-      {
-        "field": "tier",
-        "message": "Valeur de tier invalide"
-      }
-    ]
-  }
+  "detail": "Conflict: a resource with this identifier already exists."
 }
 ```
 
-### Codes d'Erreur
+Les erreurs de validation de requête (`422`) utilisent le même champ `detail`, qui contient alors une liste d'erreurs par champ, chacune avec `loc`, `msg` et `type` :
 
-| Code | Statut HTTP | Description |
-|------|-------------|-------------|
-| `validation_error` | 400 | Données de requête invalides |
-| `unauthorized` | 401 | Token manquant ou invalide |
-| `forbidden` | 403 | Permissions insuffisantes |
-| `not_found` | 404 | Ressource introuvable |
-| `conflict` | 409 | La ressource existe déjà |
-| `rate_limited` | 429 | Trop de requêtes |
-| `internal_error` | 500 | Erreur serveur |
+```json
+{
+  "detail": [
+    {
+      "loc": ["body", "name"],
+      "msg": "<message de validation>",
+      "type": "<type d'erreur>"
+    }
+  ]
+}
+```
+
+Les requêtes limitées en débit (`429`) conservent le champ `detail` et ajoutent `error`, `message`, `retry_after_seconds` et `documentation`.
+
+### Codes de Statut
+
+| Statut HTTP | Description |
+|-------------|-------------|
+| 400 | Requête invalide |
+| 401 | Token manquant ou invalide |
+| 403 | Permissions insuffisantes |
+| 404 | Ressource introuvable |
+| 409 | La ressource existe déjà |
+| 422 | Échec de validation de la requête |
+| 429 | Limite de débit dépassée |
+| 500 | Erreur interne du serveur |
+| 502 | Un service amont est indisponible |
+| 503 | Service de base de données indisponible |
 
 ## Limites de Débit
 
-L'API du Control Plane a des limites de débit :
-
-- **Tier Gratuit** : 100 requêtes/heure
-- **Starter** : 1 000 requêtes/heure
-- **Business** : 10 000 requêtes/heure
-- **Entreprise** : Personnalisé
-
-En-têtes inclus dans la réponse :
-
-```
-X-RateLimit-Limit: 1000
-X-RateLimit-Remaining: 987
-X-RateLimit-Reset: 1673276400
-```
+Lorsqu'une limite de débit est dépassée, l'API renvoie `429` avec les en-têtes `Retry-After` et `X-RateLimit-Limit`, et le corps d'erreur décrit dans la section Réponses d'Erreur ci-dessus.
 
 ---
 

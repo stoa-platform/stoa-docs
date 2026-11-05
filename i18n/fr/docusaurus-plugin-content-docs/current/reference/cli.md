@@ -50,7 +50,7 @@ go install github.com/stoa-platform/stoactl@latest
 | `stoactl bridge` | Convertir une spec OpenAPI en CRDs Tool MCP |
 | `stoactl doctor` | Lancer des vérifications de diagnostic |
 | `stoactl apply` | Créer ou mettre à jour une ressource depuis un fichier YAML |
-| `stoactl get` | Lister les ressources (apis, deployments, tools) |
+| `stoactl get` | Lister les ressources (apis, tenants, subscriptions, gateways) |
 | `stoactl delete` | Supprimer une ressource |
 | `stoactl auth` | Commandes d'authentification |
 | `stoactl config` | Gérer les contextes CLI |
@@ -355,15 +355,17 @@ Lister les ressources depuis le control plane.
 stoactl get <resource-type>
 ```
 
-**Types de ressources :** `apis`, `deployments`, `tools`
+**Types de ressources :** `apis`, `tenants`, `subscriptions`, `gateways`
 
 **Exemple :**
 
 ```bash
 stoactl get apis
-stoactl get tools
-stoactl get deployments
+stoactl get api payment-api
+stoactl get subscriptions
 ```
+
+Pour lister les déploiements, utilisez [`stoactl deploy list`](#stoactl-deploy-list).
 
 ### `stoactl delete`
 
@@ -376,7 +378,6 @@ stoactl delete <resource-type> <name>
 **Exemple :**
 
 ```bash
-stoactl delete tool list-pets
 stoactl delete api payment-api
 ```
 
@@ -406,12 +407,12 @@ Supprimer les identifiants stockés.
 stoactl auth logout
 ```
 
-### `stoactl auth whoami`
+### `stoactl auth status`
 
 Afficher le statut d'authentification actuel.
 
 ```bash
-stoactl auth whoami
+stoactl auth status
 ```
 
 ### `stoactl auth rotate-key`
@@ -548,9 +549,6 @@ stoactl bridge your-api.yaml --namespace default --output ./tools/
 
 # 6. Enregistrer les tools
 for f in tools/*.yaml; do stoactl apply -f "$f"; done
-
-# 7. Vérifier
-stoactl get tools
 ```
 
 ---

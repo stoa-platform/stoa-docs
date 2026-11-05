@@ -373,51 +373,48 @@ DELETE /tenants/{tenant_id}/webhooks/{webhook_id}
 
 ## Error Responses
 
-Standard error format:
+Every error response is a JSON object with a `detail` field:
 
 ```json
 {
-  "error": {
-    "code": "validation_error",
-    "message": "Invalid request parameters",
-    "details": [
-      {
-        "field": "tier",
-        "message": "Invalid tier value"
-      }
-    ]
-  }
+  "detail": "Conflict: a resource with this identifier already exists."
 }
 ```
 
-### Error Codes
+Request validation errors (`422`) use the same `detail` field, holding a list of field errors, each with `loc`, `msg` and `type`:
 
-| Code | HTTP Status | Description |
-|------|-------------|-------------|
-| `validation_error` | 400 | Invalid request data |
-| `unauthorized` | 401 | Missing or invalid token |
-| `forbidden` | 403 | Insufficient permissions |
-| `not_found` | 404 | Resource not found |
-| `conflict` | 409 | Resource already exists |
-| `rate_limited` | 429 | Too many requests |
-| `internal_error` | 500 | Server error |
+```json
+{
+  "detail": [
+    {
+      "loc": ["body", "name"],
+      "msg": "<validation message>",
+      "type": "<error type>"
+    }
+  ]
+}
+```
+
+Rate-limited requests (`429`) keep the `detail` field and add `error`, `message`, `retry_after_seconds` and `documentation`.
+
+### Status Codes
+
+| HTTP Status | Description |
+|-------------|-------------|
+| 400 | Invalid request |
+| 401 | Missing or invalid token |
+| 403 | Insufficient permissions |
+| 404 | Resource not found |
+| 409 | Resource already exists |
+| 422 | Request validation failed |
+| 429 | Rate limit exceeded |
+| 500 | Internal server error |
+| 502 | An upstream service is unavailable |
+| 503 | Database service unavailable |
 
 ## Rate Limits
 
-Control Plane API has rate limits:
-
-- **Free tier**: 100 requests/hour
-- **Starter**: 1,000 requests/hour
-- **Business**: 10,000 requests/hour
-- **Enterprise**: Custom
-
-Headers included in response:
-
-```
-X-RateLimit-Limit: 1000
-X-RateLimit-Remaining: 987
-X-RateLimit-Reset: 1673276400
-```
+When a rate limit is exceeded, the API returns `429` with the `Retry-After` and `X-RateLimit-Limit` headers, and the error body described in [Error Responses](#error-responses).
 
 ---
 
