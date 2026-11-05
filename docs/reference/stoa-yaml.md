@@ -196,6 +196,7 @@ The CLI validates `stoa.yaml` before sending to the API and returns human-readab
 
 ## Related
 
+- [Configuration sources](/docs/reference/config-sources) — Helm values, process env, and secrets are a different layer than this file
 - [stoactl CLI Reference](/docs/reference/cli) — `stoactl deploy`, `stoactl logs`, `stoactl deploy list`
 - [ADR-045: stoa.yaml Declarative API Spec](/docs/architecture/adr/adr-045-stoa-yaml-declarative-spec) — Design rationale and examples
 - [Deployment Guide](/docs/guides/environment-management) — Managing environments

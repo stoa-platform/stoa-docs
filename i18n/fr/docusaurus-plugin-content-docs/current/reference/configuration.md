@@ -9,6 +9,10 @@ keywords: [configuration, reference, environment variables, Helm, settings]
 
 Référence de configuration complète pour STOA Platform.
 
+:::warning Exemples, pas les défauts rendus par le chart
+Les blocs de cette page sont des exemples. Ils ne sont pas un rendu de `charts/stoa-platform` sur `main` de `stoa`. La provenance, l'ordre de surcharge et la procédure de changement sûr sont dans [Sources de configuration](/docs/reference/config-sources).
+:::
+
 ## Control Plane API
 
 ### Variables d'Environnement
@@ -484,6 +488,7 @@ spec:
 
 ## Voir Aussi
 
+- [Sources de configuration](/docs/reference/config-sources) -- Provenance, précédence et changements sûrs
 - [Guide d'Installation](/docs/admin/installation) -- Déploiement du chart Helm
 - [Configuration de Sécurité](/docs/reference/security-configuration) -- JWT, CORS, limites SSE
 - [Monitoring et Alertes](/docs/admin/monitoring) -- Configuration Prometheus

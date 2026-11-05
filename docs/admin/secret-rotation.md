@@ -157,6 +157,7 @@ Rollback means **restore service with the previous credential**, not “force th
 
 ## 7. Related
 
+- [Configuration sources](../reference/config-sources) — which Secret, ExternalSecret, or values key actually reaches the process
 - [API Key Rotation](../guides/api-key-rotation) — consumer keys and gateway cache
 - [Consumer Onboarding](../guides/consumer-onboarding) — certificate rotate
 - [Security Hardening](./security-hardening) — secrets architecture and cadence table
