@@ -144,6 +144,7 @@ The demo is not part of the product tenant model. It uses its own mock gateway, 
 | RFC 8693 token exchange for scoped API tokens | Delivered in a different form. The control plane API exchanges a token through an API consumer's client in the `stoa` realm (`POST /v1/consumers/{tenant_id}/{consumer_id}/token-exchange`); the exchanged token carries the consumer's `tenant_id`. MCP federation sub-accounts can also have a token exchange client ([ADR-046](./adr-046-mcp-federation-architecture.md)). The per-organization, cross-realm exchange is shown in the federation demo only. |
 | Zero user storage | Not delivered. Users are stored in the `stoa` realm. |
 
+The realm-creation (tenant provisioning) route was removed in [stoa PR #3045](https://github.com/stoa-platform/stoa/pull/3045) as part of this model.
 ADR-026 stays published, marked as superseded, for history.
 
 ## Evidence

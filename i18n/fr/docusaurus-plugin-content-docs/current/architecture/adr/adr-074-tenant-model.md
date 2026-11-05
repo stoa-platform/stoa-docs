@@ -144,6 +144,7 @@ La démo ne fait pas partie du modèle de tenant du produit. Elle utilise sa pro
 | Échange de jetons RFC 8693 pour des jetons d'API à portée restreinte | Livré sous une autre forme. L'API du plan de contrôle échange un jeton via le client d'un consommateur d'API dans le realm `stoa` (`POST /v1/consumers/{tenant_id}/{consumer_id}/token-exchange`) ; le jeton obtenu porte le `tenant_id` du consommateur. Les sous-comptes de fédération MCP peuvent aussi disposer d'un client d'échange de jetons ([ADR-046](./adr-046-mcp-federation-architecture.md)). L'échange par organisation, entre realms, n'est montré que dans la démo de fédération. |
 | Zéro stockage utilisateur | Non livré. Les utilisateurs sont stockés dans le realm `stoa`. |
 
+La route de création de realm (provisionnement de tenant) a été supprimée dans la [PR stoa #3045](https://github.com/stoa-platform/stoa/pull/3045) dans le cadre de ce modèle.
 L'ADR-026 reste publiée, marquée comme remplacée, pour l'historique.
 
 ## Preuves
