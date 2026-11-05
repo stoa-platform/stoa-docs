@@ -193,6 +193,8 @@ Infisical (self-hosted) → K8s Secrets → Pod env vars
 
 See [Secrets Management](/docs/reference/security-configuration) for detailed configuration.
 
+For the full operations procedure (pre-checks, dual-credential windows, verification controls, and rollback), see [Secret and Key Rotation](./secret-rotation).
+
 ### Secret Rotation Checklist
 
 | Secret | Rotation Frequency | Method |
