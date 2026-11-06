@@ -47,6 +47,7 @@ Ce répertoire contient les décisions architecturales importantes pour la Plate
 | [011](./adr-011-api-security-modes.md) | Sélection du Mode de Sécurité API — mTLS / OAuth2 / Hybride | ✅ |
 | [018](./adr-018-security-hardening-p0.md) | Durcissement Sécurité P0 — Pentest Team Coca | ✅ |
 | [074](./adr-074-tenant-model.md) | Modèle de tenant — un realm, des groupes de tenant, un claim tenant_id | ✅ |
+| [075](./adr-075-secrets-backend-openbao.md) | Socle de secrets — OpenBao via l'API Vault | ✅ |
 
 ### 🤖 MCP & Gateway IA
 
@@ -123,6 +124,7 @@ Ce répertoire contient les décisions architecturales importantes pour la Plate
 | **Gateway v1** | webMethods | Kong, APISIX | Expertise legacy |
 | **Gateway v2** | Rust + eBPF | Go, C++ | Performance, sécurité |
 | **Recherche** | OpenSearch | Elasticsearch | Apache 2.0, sans AWS |
+| **Secrets** | OpenBao (API Vault) | HashiCorp Vault, Infisical | MPL 2.0, audit inclus, API Vault conservée |
 
 ## Principes Directeurs
 
