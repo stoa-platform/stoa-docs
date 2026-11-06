@@ -91,7 +91,7 @@ Before the first real secret is written:
 
 - The unseal procedure and the restore test are rehearsed before the first real secret.
 - Operational tooling moves in small pull requests. The Infisical instance is removed after its last consumer has moved.
-- STOA runs OpenBao as a separate service and does not modify it, so the MPL 2.0 obligations stay limited to publishing the upstream source.
+- STOA runs OpenBao as a separate service and does not modify it, so its MPL 2.0 obligations stay limited to telling recipients where to get the upstream source.
 - The product path stays on the generic Vault API, and the CI compatibility job guards it. HashiCorp Vault therefore stays usable by customers.
 
 ### Follow-up

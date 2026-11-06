@@ -91,7 +91,7 @@ Avant l'écriture du premier vrai secret :
 
 - La procédure de descellement et le test de restauration sont répétés avant le premier vrai secret.
 - L'outillage d'exploitation migre par petites pull requests. L'instance Infisical est retirée après le départ de son dernier consommateur.
-- STOA exploite OpenBao comme un service distinct et ne le modifie pas : les obligations de la MPL 2.0 se limitent à publier la source amont.
+- STOA exploite OpenBao comme un service distinct et ne le modifie pas : les obligations de la MPL 2.0 se limitent à indiquer où obtenir la source amont.
 - Le parcours produit reste sur l'API générique de Vault, et la tâche de compatibilité en CI le protège. HashiCorp Vault reste donc utilisable par les clients.
 
 ### Suites
