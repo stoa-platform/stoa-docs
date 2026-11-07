@@ -40,7 +40,7 @@ flowchart TB
 
     subgraph Auth["🔐 Sécurité"]
         KC["Keycloak<br/>keycloak.stoa.cab-i.com<br/>OIDC + RBAC"]
-        Vault["HashiCorp Vault<br/>Clés API, Certs, Identifiants DB"]
+        Vault["OpenBao (API Vault)<br/>Clés API, Certs, Identifiants DB"]
     end
 
     subgraph Gateway["🌐 API Gateway"]
@@ -304,7 +304,7 @@ Jan 2026       Fév 2026       Mar 2026       Q2 2026        Q3 2026
 | Stockage objet | MinIO | MinIO / S3 |
 | Cache | En mémoire | Redis |
 | Auth | Keycloak | Keycloak |
-| Secrets | HashiCorp Vault | HashiCorp Vault |
+| Secrets | HashiCorp Vault | OpenBao (API Vault, [ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) |
 | Observabilité | Prometheus, Grafana, Loki | Prometheus, Grafana, Loki |
 | GitOps | ArgoCD + Gateway Adapters | ArgoCD + Argo Rollouts |
 | Infrastructure | Kubernetes (EKS), Helm | Kubernetes, Helm, Terraform |
@@ -323,7 +323,7 @@ Principes de sécurité clés :
 - Kafka/Redpanda : **zéro exposition externe** (ADR-017)
 - Isolation multi-tenant via contexte JWT (ADR-016)
 - GitOps avec Argo CD pour la config déclarative ([ADR-015](/docs/architecture/adr/adr-015-token-optimization-architecture))
-- Tous les secrets gérés via HashiCorp Vault
+- Tous les secrets gérés dans le socle de secrets : OpenBao par défaut, accessible par l'API Vault ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao))
 
 ---
 

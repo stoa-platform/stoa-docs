@@ -28,6 +28,7 @@ STOA is not affiliated with, endorsed by, or sponsored by any of the companies o
 | Redis | Redis Ltd. |
 | Docker | Docker, Inc. |
 | HashiCorp Vault, Terraform | HashiCorp, Inc. |
+| OpenBao | OpenBao a Series of LF Projects, LLC (The Linux Foundation) |
 | Kong | Kong Inc. |
 | Apigee, Google Cloud Platform, GCP | Google LLC |
 | Amazon Web Services, AWS | Amazon.com, Inc. |

@@ -55,10 +55,10 @@ User (Console)
 
 ### Platform-Level Key
 
-STOA uses a **single platform-level Anthropic API key** stored in HashiCorp Vault and synced to Kubernetes via External Secrets Operator (ESO).
+STOA uses a **single platform-level Anthropic API key** stored in the secrets backend (OpenBao by default, reached through the Vault API, [ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) and synced to Kubernetes via External Secrets Operator (ESO).
 
 ```
-HashiCorp Vault
+OpenBao (Vault API)
   └── stoa/k8s/anthropic
         └── ANTHROPIC_API_KEY
               │
@@ -151,7 +151,7 @@ The chat agent is controlled by environment variables on the control-plane-api d
 
 | Variable | Source | Description |
 |----------|--------|-------------|
-| `ANTHROPIC_API_KEY` | Vault (`k8s/anthropic`) | API key for Anthropic |
+| `ANTHROPIC_API_KEY` | Secrets backend (`k8s/anthropic`) | API key for Anthropic |
 | `CHAT_AGENT_ENABLED` | ConfigMap | Enable/disable chat feature (`true`/`false`) |
 | `CHAT_AGENT_MODEL` | ConfigMap | Model to use (default: `claude-sonnet-4-6`) |
 | `CHAT_DEFAULT_DAILY_LIMIT` | ConfigMap | Default daily token limit per tenant |
