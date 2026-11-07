@@ -54,6 +54,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [054](./adr-054-rbac-taxonomy-v2.md) | RBAC Taxonomy v2 — Persona Roles & Display Names | ✅ |
 | [056](./adr-056-fapi-2-architecture.md) | FAPI 2.0 Security Architecture | ✅ |
 | [074](./adr-074-tenant-model.md) | Tenant Model — One Realm, Tenant Groups, tenant_id Claim | ✅ |
+| [075](./adr-075-secrets-backend-openbao.md) | Secrets Backend — OpenBao Through the Vault API | ✅ |
 
 ### MCP & AI Gateway
 
@@ -145,6 +146,7 @@ This directory contains important architectural decisions for STOA Platform.
 | **Gateway v1** | webMethods | Kong, APISIX | Legacy expertise |
 | **Gateway v2** | Rust (Pingora) | Go, C++ | Performance, safety |
 | **Search** | OpenSearch | Elasticsearch | Apache 2.0, AWS-free |
+| **Secrets** | OpenBao (Vault API) | HashiCorp Vault, Infisical | MPL 2.0, audit included, Vault API kept |
 
 ## Guiding Principles
 
