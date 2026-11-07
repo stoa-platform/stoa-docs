@@ -24,6 +24,8 @@ keywords: [chat agent, Anthropic, Messages API, MCP tools, portal, token meterin
 - **ADR-046**: MCP Federation Architecture — chat-originated tool calls respect sub-account policies
 - **ADR-047**: MCP Skills System — skills context injected into chat tool execution
 
+> **Update — 2026-11-07 ([ADR-075](./adr-075-secrets-backend-openbao.md)):** Infisical is retired. The encryption key that section 5 (Per-Tenant API Keys) places "in Infisical" now lives in the secrets backend, reached through the Vault API (OpenBao by default; HashiCorp Vault supported). The text below is kept as the record of the original decision.
+
 ## Context
 
 STOA provides enterprise-grade MCP tool access through the gateway, but users today must configure an external MCP client (Claude Desktop, custom Python scripts, or IDE extensions) to interact with their tools. This creates three problems:

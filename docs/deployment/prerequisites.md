@@ -176,7 +176,7 @@ STOA requires **5 subdomains** pointing to your ingress controller's external IP
 | Subdomain | Service | When needed |
 |-----------|---------|-------------|
 | `grafana.<YOUR_DOMAIN>` | Grafana | If deploying observability stack |
-| `vault.<YOUR_DOMAIN>` | Vault/Infisical | If deploying secrets manager |
+| `vault.<YOUR_DOMAIN>` | Secrets backend (OpenBao or HashiCorp Vault) | If deploying a secrets backend |
 
 ### DNS Configuration
 

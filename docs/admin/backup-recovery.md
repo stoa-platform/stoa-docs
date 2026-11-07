@@ -22,7 +22,7 @@ This guide covers backup strategies, disaster recovery procedures, and restore w
 |-----------|------|--------|-----------|
 | PostgreSQL | APIs, subscriptions, consumers, tenants | `pg_dump` | Daily |
 | Keycloak | Realm config, users, clients | Realm export | Weekly |
-| Infisical/Vault | Platform secrets | Provider backup | Weekly |
+| Secrets backend (OpenBao or HashiCorp Vault) | Platform secrets | Provider backup | Weekly |
 | Helm values | Deployment configuration | Git (IaC) | Every change |
 | CRDs | Tool, ToolSet, GatewayInstance, GatewayBinding | `kubectl get -o yaml` | Daily |
 | Grafana | Dashboards, datasources | JSON export or Git | Every change |

@@ -172,7 +172,7 @@ stoa/
 - **Ne jamais modifier manuellement les ressources du cluster** — Toutes les modifications via des PRs Git
 - **Utiliser des PRs pour tous les changements** — Revue de code + validation CI avant fusion
 - **Séparation des environnements** — Dev pour l'expérimentation, staging pour la validation, prod via promotion
-- **Secrets via Infisical** — Ne jamais stocker les secrets dans Git ; utiliser la gestion externe des secrets
+- **Secrets dans un socle de secrets** — Ne jamais stocker les secrets dans Git ; utiliser la gestion externe des secrets via l'API Vault (OpenBao par défaut ; HashiCorp Vault pris en charge)
 - **Surveiller le statut de sync ArgoCD** — Dashboard Grafana avec alertes sync/santé
 - **Rollback via Git** — `git revert` le commit problématique, ArgoCD se synchronise automatiquement
 

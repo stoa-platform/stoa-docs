@@ -176,7 +176,7 @@ STOA nécessite **5 sous-domaines** pointant vers l'IP externe ou le load balanc
 | Sous-domaine | Service | Quand Nécessaire |
 |--------------|---------|-----------------|
 | `grafana.<YOUR_DOMAIN>` | Grafana | Si déploiement de la stack d'observabilité |
-| `vault.<YOUR_DOMAIN>` | Vault/Infisical | Si déploiement du gestionnaire de secrets |
+| `vault.<YOUR_DOMAIN>` | Socle de secrets (OpenBao ou HashiCorp Vault) | Si déploiement d'un socle de secrets |
 
 ### Configuration DNS
 

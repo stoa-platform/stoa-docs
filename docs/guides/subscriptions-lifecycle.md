@@ -101,7 +101,7 @@ curl -X POST "${STOA_API_URL}/v1/subscriptions" \
 ```
 
 :::warning Save Your API Key
-The `api_key` field is only returned once. Copy it to a secure location (e.g., Infisical, environment variable). It cannot be retrieved later — only rotated.
+The `api_key` field is only returned once. Copy it to a secure location (e.g., a secrets manager such as OpenBao or HashiCorp Vault, or an environment variable). It cannot be retrieved later — only rotated.
 :::
 
 ### Via Developer Portal
