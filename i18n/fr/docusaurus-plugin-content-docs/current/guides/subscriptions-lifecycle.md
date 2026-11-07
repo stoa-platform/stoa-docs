@@ -101,7 +101,7 @@ curl -X POST "${STOA_API_URL}/v1/subscriptions" \
 ```
 
 :::warning Sauvegardez Votre Clé API
-Le champ `api_key` n'est retourné qu'une seule fois. Copiez-le dans un endroit sécurisé (par exemple Infisical, variable d'environnement). Il ne pourra pas être récupéré ultérieurement — seulement renouvelé.
+Le champ `api_key` n'est retourné qu'une seule fois. Copiez-le dans un endroit sécurisé (par exemple un gestionnaire de secrets comme OpenBao ou HashiCorp Vault, ou une variable d'environnement). Il ne pourra pas être récupéré ultérieurement — seulement renouvelé.
 :::
 
 ### Via le Portail Développeur

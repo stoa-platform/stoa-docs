@@ -184,12 +184,14 @@ The gateway automatically adds these headers to every response:
 ### Recommended Architecture
 
 ```
-Infisical (self-hosted) → K8s Secrets → Pod env vars
+Secrets backend (OpenBao or HashiCorp Vault) → K8s Secrets → Pod env vars
 ```
 
 - Never hardcode secrets in code, Helm values, or ConfigMaps
 - Use `secretRef` in pod specs to reference K8s Secrets
-- Rotate secrets via Infisical; pods pick up changes on restart
+- Rotate secrets in the secrets backend; pods pick up changes on restart
+
+The secrets backend is reached through the Vault HTTP API: OpenBao by default, with HashiCorp Vault supported for sites that already run it ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)).
 
 See [Secrets Management](/docs/reference/security-configuration) for detailed configuration.
 
@@ -199,7 +201,7 @@ For the full operations procedure (pre-checks, dual-credential windows, verifica
 
 | Secret | Rotation Frequency | Method |
 |--------|-------------------|--------|
-| Database password | 90 days | Infisical + pod restart |
+| Database password | 90 days | Secrets backend + pod restart |
 | Keycloak client secrets | 90 days | Keycloak Admin + config update |
 | Gateway admin token | 90 days | K8s Secret + pod restart |
 | TLS certificates | Auto (cert-manager) | cert-manager handles renewal |
@@ -238,7 +240,7 @@ For the full operations procedure (pre-checks, dual-credential windows, verifica
 - [ ] Token lifespans shortened (5min access, 15min idle)
 - [ ] SSRF blocklist active (default)
 - [ ] Security headers active (default)
-- [ ] Secrets in Infisical/Vault (not in env or ConfigMap)
+- [ ] Secrets in the secrets backend, OpenBao or HashiCorp Vault (not in env or ConfigMap)
 - [ ] RBAC roles assigned (no default admin access)
 - [ ] Audit trail enabled (OpenSearch)
 - [ ] Alerting configured (Alertmanager)

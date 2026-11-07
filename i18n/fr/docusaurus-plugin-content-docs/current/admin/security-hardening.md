@@ -184,12 +184,14 @@ Le gateway ajoute automatiquement ces en-têtes à chaque réponse :
 ### Architecture Recommandée
 
 ```
-Infisical (auto-hébergé) → Secrets K8s → Variables d'env des pods
+Socle de secrets (OpenBao ou HashiCorp Vault) → Secrets K8s → Variables d'env des pods
 ```
 
 - Ne jamais coder les secrets en dur dans le code, les valeurs Helm ou les ConfigMaps
 - Utiliser `secretRef` dans les specs de pods pour référencer les Secrets K8s
-- Effectuer la rotation des secrets via Infisical ; les pods récupèrent les changements au redémarrage
+- Effectuer la rotation des secrets dans le socle de secrets ; les pods récupèrent les changements au redémarrage
+
+Le socle de secrets est accessible par l'API HTTP de Vault : OpenBao par défaut, HashiCorp Vault pris en charge pour les sites qui l'exploitent déjà ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)).
 
 Voir [Gestion des Secrets](/docs/reference/security-configuration) pour la configuration détaillée.
 
@@ -197,7 +199,7 @@ Voir [Gestion des Secrets](/docs/reference/security-configuration) pour la confi
 
 | Secret | Fréquence de Rotation | Méthode |
 |--------|-----------------------|--------|
-| Mot de passe de base de données | 90 jours | Infisical + redémarrage des pods |
+| Mot de passe de base de données | 90 jours | Socle de secrets + redémarrage des pods |
 | Secrets clients Keycloak | 90 jours | Admin Keycloak + mise à jour de config |
 | Token admin du Gateway | 90 jours | Secret K8s + redémarrage des pods |
 | Certificats TLS | Automatique (cert-manager) | cert-manager gère le renouvellement |
@@ -236,7 +238,7 @@ Voir [Gestion des Secrets](/docs/reference/security-configuration) pour la confi
 - [ ] Durées de vie des tokens réduites (5min accès, 15min inactivité)
 - [ ] Liste de blocage SSRF active (par défaut)
 - [ ] En-têtes de sécurité actifs (par défaut)
-- [ ] Secrets dans Infisical/Vault (pas dans env ou ConfigMap)
+- [ ] Secrets dans le socle de secrets, OpenBao ou HashiCorp Vault (pas dans env ou ConfigMap)
 - [ ] Rôles RBAC attribués (pas d'accès admin par défaut)
 - [ ] Piste d'audit activée (OpenSearch)
 - [ ] Alerting configuré (Alertmanager)

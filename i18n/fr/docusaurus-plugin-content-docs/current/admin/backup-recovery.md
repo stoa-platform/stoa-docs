@@ -22,7 +22,7 @@ Ce guide couvre les stratégies de sauvegarde, les procédures de reprise après
 |-----------|---------|--------|-----------|
 | PostgreSQL | APIs, abonnements, consommateurs, tenants | `pg_dump` | Quotidien |
 | Keycloak | Config realm, utilisateurs, clients | Export du realm | Hebdomadaire |
-| Infisical/Vault | Secrets de la plateforme | Sauvegarde fournisseur | Hebdomadaire |
+| Socle de secrets (OpenBao ou HashiCorp Vault) | Secrets de la plateforme | Sauvegarde fournisseur | Hebdomadaire |
 | Valeurs Helm | Configuration de déploiement | Git (IaC) | À chaque changement |
 | CRDs | Tool, ToolSet, GatewayInstance, GatewayBinding | `kubectl get -o yaml` | Quotidien |
 | Grafana | Tableaux de bord, sources de données | Export JSON ou Git | À chaque changement |

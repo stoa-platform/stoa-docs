@@ -113,7 +113,7 @@ Uninstall is irreversible for in-cluster state once PVCs and CRDs are gone. Pref
 
 - [ ] **Data retention** — Keep PostgreSQL PVC / external DB snapshots? Keep Keycloak export?
 - [ ] **DNS / ingress** — Who removes public DNS for `api.example.com` / gateway hostnames?
-- [ ] **Secrets** — Rotate or destroy site secrets in Infisical after teardown ([Secret and Key Rotation](./secret-rotation))
+- [ ] **Secrets** — Rotate or destroy site secrets in the secrets backend (OpenBao or HashiCorp Vault) after teardown ([Secret and Key Rotation](./secret-rotation))
 - [ ] **CRDs** — Deleting CRDs destroys all CRs cluster-wide for those APIs — confirm no other namespace still needs them
 
 ### 6.2 Ordered teardown

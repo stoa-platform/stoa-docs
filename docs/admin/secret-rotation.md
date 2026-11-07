@@ -2,7 +2,7 @@
 sidebar_position: 6
 title: Secret and Key Rotation
 description: Operate secret and credential rotation on a STOA site — pre-checks, dual-credential windows, verification controls, and rollback — without publishing live secrets.
-keywords: [rotation, secrets, API keys, TLS, Infisical, rollback, operations, on-premises]
+keywords: [rotation, secrets, API keys, TLS, OpenBao, HashiCorp Vault, rollback, operations, on-premises]
 ---
 
 # Secret and Key Rotation
@@ -37,7 +37,7 @@ Recommended cadence (align with your policy; defaults from hardening): database,
 
 Record the answers in the change ticket before you touch production.
 
-1. **Inventory** — Name the secret family, where the current value lives (Infisical / Vault / K8s Secret / IdP), and every consumer of that value (Deployments, CronJobs, external callers).
+1. **Inventory** — Name the secret family, where the current value lives (secrets backend / K8s Secret / IdP), and every consumer of that value (Deployments, CronJobs, external callers).
 2. **Blast radius** — List namespaces and services that will restart or reconnect. Prefer one family per change window.
 3. **Dual-credential plan** — If the product supports a grace period (API keys, consumer certs), set `grace_period_hours` explicitly. If it does not, define an ordered cutover (new secret live → update all consumers → revoke old) and a maximum time-to-revoke.
 4. **Backup / restore point** — Confirm a recent successful backup ([Backup and Recovery](./backup-recovery)) and note the Helm revision (`helm history stoa-platform -n stoa-system`) in case config rollback is needed.
@@ -76,22 +76,24 @@ During grace, both certificates are accepted. Distribute the matching private ke
 
 **Control:** handshake with the new cert succeeds; handshake with the old cert succeeds only until grace ends.
 
-### 3.3 Platform secrets via Infisical → Kubernetes
+### 3.3 Platform secrets via the secrets backend → Kubernetes
 
 Pattern from [Security Hardening](./security-hardening):
 
 ```text
-Infisical (self-hosted) → Kubernetes Secret → Pod env / volume → restart
+Secrets backend (OpenBao or HashiCorp Vault) → Kubernetes Secret → Pod env / volume → restart
 ```
+
+The secrets backend is reached through the Vault HTTP API: OpenBao by default, or a HashiCorp Vault you already run ([ADR-075](../architecture/adr/adr-075-secrets-backend-openbao)).
 
 Operator sequence:
 
-1. Write the **new** value in Infisical (or your site secret store). Keep the old value readable until post-controls pass.
+1. Write the **new** value in the secrets backend (or your site secret store). Keep the old value readable until post-controls pass.
 2. Sync or apply the Kubernetes Secret in `stoa-system` (name is site-local — do not publish real names).
 3. Restart only the Deployments that consume that Secret (`kubectl rollout restart deployment/<name> -n stoa-system`).
 4. Watch rollout: `kubectl rollout status deployment/<name> -n stoa-system`.
 5. Run §5 verification controls.
-6. Only then revoke or delete the old value in Infisical.
+6. Only then revoke or delete the old value in the secrets backend.
 
 Never commit the new secret to Git, Helm `values.yaml`, or ConfigMaps.
 
@@ -148,7 +150,7 @@ Fail any control → go to §6 before revoking the old credential.
 Rollback means **restore service with the previous credential**, not “force the new one”.
 
 1. **Stop revoking** — If the old credential is still valid (grace or dual), leave it valid.
-2. **Restore Secret** — Re-apply the previous Kubernetes Secret from the secret store history (Infisical version / sealed backup). Do not invent a third value mid-incident.
+2. **Restore Secret** — Re-apply the previous Kubernetes Secret from the secret store history (secrets backend version history / sealed backup). Do not invent a third value mid-incident.
 3. **Restart** — `kubectl rollout restart` on the affected Deployments; wait for Ready.
 4. **Helm** — If the rotation shipped as a values change, `helm rollback stoa-platform <REVISION> -n stoa-system` ([Upgrade](./upgrade)).
 5. **API key / cert grace** — If callers were updated to a bad new key, point them back to the old key while grace remains; open a new rotation later with a fresh new key.
