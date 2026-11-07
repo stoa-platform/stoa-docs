@@ -61,7 +61,7 @@ STOA prend en charge l'orchestration de plusieurs vendors de gateway via le [Pat
 | Base de données | PostgreSQL (managé) | **Production** |
 | Observabilité | Prometheus + Grafana | **Production** |
 | Gestion des logs | OpenSearch 2.11 | **Production** |
-| Secrets | HashiCorp Vault | **Partiel** (K8s Secrets utilisés sur Hetzner/OVH) |
+| Secrets | OpenBao (API Vault, [ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) | **Partiel** (K8s Secrets utilisés sur Hetzner/OVH) |
 | GitOps | ArgoCD | **Production** (staging Hetzner) |
 | CI/CD | GitHub Actions | **Production** |
 | Registre de conteneurs | GHCR | **Production** |

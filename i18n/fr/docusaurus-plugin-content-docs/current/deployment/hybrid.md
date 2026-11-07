@@ -68,7 +68,7 @@ flowchart TB
 | **Identifiants** | Clés API, tokens, certificats | AES-256 au repos (Vault) |
 | **Identités Utilisateurs** | Annuaire Oracle OAM/OIM | Contrôles existants |
 | **Logs Bruts** | Détails complets des transactions | Contrôlés par le client |
-| **Secrets** | Données HashiCorp Vault | AES-256-GCM |
+| **Secrets** | Données du socle de secrets (OpenBao ou HashiCorp Vault) | AES-256-GCM |
 
 ### Ce Qui Va dans le Cloud
 
@@ -284,7 +284,7 @@ kubectl get pods -n stoa-system
 # 1. Installer les prérequis
 helm install postgresql bitnami/postgresql -n stoa-system
 helm install opensearch opensearch/opensearch -n stoa-system
-helm install vault hashicorp/vault -n stoa-system
+helm install openbao openbao/openbao -n stoa-system  # dépôt : https://openbao.github.io/openbao-helm
 
 # 2. Installer la stack complète STOA
 helm install stoa stoa/stoa-full \
