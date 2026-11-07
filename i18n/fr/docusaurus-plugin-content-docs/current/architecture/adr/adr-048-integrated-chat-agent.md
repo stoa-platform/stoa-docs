@@ -24,7 +24,7 @@ keywords: [agent chat, Anthropic, Messages API, outils MCP, portal, facturation 
 - **ADR-046** : Architecture de Fédération MCP — les appels d'outils issus du chat respectent les politiques de sous-compte
 - **ADR-047** : Système MCP Skills — le contexte des skills est injecté dans l'exécution des outils chat
 
-> **Mise à jour — 2026-11-07 ([ADR-075](./adr-075-secrets-backend-openbao.md)) :** Infisical est retiré. La clé de chiffrement que la section 5 (API Keys par Tenant) place « dans Infisical » vit désormais dans le socle de secrets, accessible par l'API Vault (OpenBao par défaut ; HashiCorp Vault pris en charge). Le texte ci-dessous est conservé comme trace de la décision d'origine.
+> **Mise à jour — 2026-11-07 ([ADR-075](./adr-075-secrets-backend-openbao.md)) :** Infisical est retiré. La clé de chiffrement que la section 5 (API Keys par Tenant) place « dans Infisical » rejoint le socle de secrets, accessible par l'API Vault (OpenBao par défaut ; HashiCorp Vault pris en charge). Le texte ci-dessous est conservé comme trace de la décision d'origine.
 
 ## Contexte
 
