@@ -150,7 +150,7 @@ sequenceDiagram
 
 ### Gestion des Secrets
 
-STOA s'intègre avec **HashiCorp Vault** pour la gestion des secrets :
+STOA s'intègre avec un socle de secrets accessible par l'API HTTP de Vault : **OpenBao** par défaut, ou un **HashiCorp Vault** que vous exploitez déjà ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) :
 
 - Génération de secrets dynamiques pour les identifiants de bases de données
 - Rotation automatique des identifiants

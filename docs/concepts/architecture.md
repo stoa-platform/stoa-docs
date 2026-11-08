@@ -35,7 +35,7 @@ flowchart TB
         KC["Keycloak"]
         PG["PostgreSQL"]
         Kafka["Kafka/Redpanda"]
-        Vault["HashiCorp Vault"]
+        Vault["OpenBao (Vault API)"]
     end
 
     subgraph MCP["🔧 MCP Servers"]
@@ -136,9 +136,9 @@ Identity and access management providing:
 - Multi-factor authentication
 - User federation
 
-### HashiCorp Vault
+### Secrets Backend (OpenBao)
 
-Secrets management for:
+Reached through the Vault HTTP API: OpenBao by default, or a HashiCorp Vault you already run ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)). Secrets management for:
 - API key encryption
 - Database credentials
 - TLS certificates
@@ -238,7 +238,7 @@ kubectl get pods -n stoa-system
 | Event Streaming | Kafka/Redpanda | Internal events |
 | Streaming | Kafka/Redpanda | Internal events |
 | Auth | Keycloak | OIDC/OAuth2 |
-| Secrets | HashiCorp Vault | Encryption, credentials |
+| Secrets | OpenBao or HashiCorp Vault (Vault API) | Encryption, credentials |
 | Observability | Prometheus, Grafana, Loki | Metrics, logs |
 | Infrastructure | Kubernetes, Helm, ArgoCD | Deployment |
 

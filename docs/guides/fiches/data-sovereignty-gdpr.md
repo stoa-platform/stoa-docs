@@ -87,7 +87,7 @@ STOA default: EU cloud (metadata) + On-prem (payloads)
 | **In Transit** | TLS 1.3 (external), mTLS (internal) |
 | **At Rest** | AES-256 (databases), AES-256-GCM (Vault) |
 | **Field-Level** | PII field encryption in logs |
-| **Secrets** | HashiCorp Vault with automatic rotation |
+| **Secrets** | OpenBao or HashiCorp Vault (Vault API) with automatic rotation |
 
 ## Objections & Answers
 

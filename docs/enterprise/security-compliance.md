@@ -150,7 +150,7 @@ sequenceDiagram
 
 ### Secrets Management
 
-STOA integrates with **HashiCorp Vault** for secrets management:
+STOA integrates with a secrets backend reached through the Vault HTTP API: **OpenBao** by default, or a **HashiCorp Vault** you already run ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)):
 
 - Dynamic secrets generation for database credentials
 - Automatic credential rotation
