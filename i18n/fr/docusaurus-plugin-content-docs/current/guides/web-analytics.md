@@ -1,8 +1,8 @@
 ---
 sidebar_position: 4
-title: "Analytics Web"
-description: "Analytics web respectueux de la vie privée pour la documentation STOA via Vercel Analytics — conforme RGPD, sans cookies."
-keywords: [analytics, Vercel, privacy, GDPR, tracking]
+title: "Mesure d’audience"
+description: "Comment STOA Docs mesure les visites et les replays masqués après votre accord."
+keywords: [analytics, Google Analytics, consentement, confidentialité]
 custom_edit_url: null
 ---
 
@@ -10,74 +10,40 @@ custom_edit_url: null
   <meta name="robots" content="noindex, nofollow" />
 </head>
 
-# Analytics Web
+# Mesure d’audience
 
-Suivez les visiteurs et les pages vues de votre déploiement STOA avec Vercel Analytics.
+STOA Docs utilise Google Analytics pour comprendre quelles pages de documentation sont utiles et si les visiteurs accèdent au démarrage rapide ou aux dépôts GitHub de STOA. Microsoft Clarity peut aussi fournir des replays masqués des interactions. Les deux services ne se chargent qu’après votre choix **Autoriser** dans le panneau de mesure d’audience.
 
-## Vue d'Ensemble
+## Votre choix
 
-La documentation STOA utilise [Vercel Analytics](https://vercel.com/docs/analytics) pour des analytics web respectueux de la vie privée :
+Vous pouvez **Refuser** et utiliser toute la documentation. Le bouton permanent **Paramètres d’audience** permet de modifier votre choix à tout moment. L’accord comme le refus sont conservés pendant six mois calendaires, puis le site pose à nouveau la question. Si votre navigateur bloque le stockage local, votre choix s’applique uniquement à la session de la page en cours.
 
-- **Suivi des Visiteurs** — Compter les visiteurs uniques
-- **Pages Vues** — Surveiller l'engagement sur les pages
-- **Vie Privée d'Abord** — Sans cookies, conforme RGPD
-- **Données en Temps Réel** — Informations instantanées
+Avant l’accord, après un refus ou à l’expiration de votre choix, le site ne charge ni Google Analytics ni Clarity et n’envoie pas leurs événements de mesure. Le retrait de l’accord désactive aussi une balise déjà chargée et supprime les cookies de mesure `_ga`, `_clck` et `_clsk` accessibles sur Docs et son domaine parent. Si Clarity était chargé, la page se recharge pour terminer ce contexte d’enregistrement. Il n’efface pas les rapports historiques agrégés. Votre choix concerne ce site ; un autre site STOA autorisé peut créer à nouveau des cookies de mesure.
 
-## Démarrage
+## Informations mesurées
 
-Pour commencer à compter les visiteurs et les pages vues, suivez ces étapes.
+- Une visite de page après l’accord, puis un événement par nouveau chemin de documentation.
+- Un clic sur un lien de démarrage rapide.
+- Un clic vers l’organisation ou un dépôt GitHub STOA.
 
-### Étape 1 : Installer le Package
+Les événements contiennent une adresse de page nettoyée, un libellé de site fixe et la langue de l’interface. Les paramètres d’URL, fragments, recherches, contenus de formulaires, textes des liens, adresses e-mail et identifiants d’utilisateurs sont exclus. Les adresses de provenance externes sont réduites à leur origine. Le stockage publicitaire, la personnalisation publicitaire et les signaux Google sont désactivés.
 
-Installez `@vercel/analytics` dans votre projet :
+La documentation et le site de présentation STOA utilisent le flux de mesure STOA existant. Le nom d’hôte et le champ `site_section` distinguent leurs visites. Le flux de rapports historique est ainsi conservé.
 
-```bash npm2yarn
-npm i @vercel/analytics
-```
+## Replays masqués des interactions
 
-### Étape 2 : Ajouter le Composant React
+Clarity utilise le masquage strict du contenu, renforcé par un attribut `data-clarity-mask` couvrant la page et les champs de formulaire. Aucun identifiant utilisateur de l’application ne lui est transmis. L’enregistrement s’arrête au focus d’un champ de saisie et reste exclu des pages dédiées à la recherche, aux retours et aux démonstrations. Il ne démarre pas si l’adresse initiale de la page ou sa provenance contient des paramètres ou un fragment.
 
-Importez et utilisez le composant React `<Analytics/>` dans le layout de votre application :
+Les replays masqués contiennent toujours des données d’interaction et de navigation ; ils ne sont pas présentés comme anonymes. Les règles de nettoyage d’URL ci-dessus concernent les événements Google explicites et ne remplacent pas les métadonnées propres à Clarity.
 
-```tsx
-import { Analytics } from "@vercel/analytics/next"
+## Ancienne intégration Vercel Analytics
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en">
-      <body>
-        {children}
-        <Analytics />
-      </body>
-    </html>
-  )
-}
-```
+Le composant Vercel Analytics a été retiré du site. Google Analytics et l’enregistreur Clarity facultatif dépendent de votre choix commun. Les rapports historiques Vercel restent distincts et ne sont pas additionnés aux chiffres Google Analytics.
 
-### Étape 3 : Déployer et Visiter Votre Site
+## Notes de déploiement
 
-Déployez vos modifications et visitez le déploiement pour collecter vos pages vues.
+L’identifiant public de mesure est configuré dans `src/analytics/config.ts` ; une valeur vide désactive la mesure. Le module Google Analytics automatique de Docusaurus n’est pas utilisé. Il ne faut pas ajouter une seconde balise.
 
-:::tip
-Si vous ne voyez pas de données après 30 secondes, vérifiez la présence de bloqueurs de contenu et essayez de naviguer entre les pages de votre site.
-:::
+Les visites sont mesurées avec le cycle de navigation Docusaurus. Les pages vues automatiques lors des changements d’historique et la mesure automatique des clics sortants doivent rester désactivées dans le flux pour éviter les doublons. Les événements explicites du site sont `page_view`, `quickstart_click` et `github_click`.
 
-## Consulter les Analytics
-
-Une fois déployé, accédez à votre tableau de bord analytics à :
-
-```
-https://vercel.com/[your-team]/[your-project]/analytics
-```
-
-## Référence Complémentaire
-
-Pour des exemples complets et une configuration avancée, consultez la [documentation Vercel Analytics](https://vercel.com/docs/analytics).
-
----
-
-Besoin d'aide ? Rejoignez notre [communauté Discord](https://discord.gostoa.dev) ou consultez les [Issues GitHub](https://github.com/stoa-platform/stoa/issues).
+Le [guide d’exploitation du dépôt](https://github.com/stoa-platform/stoa-docs/blob/main/maintenance/analytics-consent.md) décrit les vérifications et le retour arrière. Le chargement d’un script ne prouve pas à lui seul la réception des événements ; celle-ci doit être confirmée dans Google Analytics.

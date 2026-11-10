@@ -113,6 +113,9 @@ const config: Config = {
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
+  // GA4 is loaded by this client module only after an explicit audience choice.
+  clientModules: [require.resolve('./src/analytics/client.ts')],
+
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'stoa-platform', // Usually your GitHub org/user name.
@@ -161,11 +164,6 @@ const config: Config = {
         },
         theme: {
           customCss: './src/css/custom.css',
-        },
-        // Google Analytics
-        gtag: {
-          trackingID: 'G-8PL054C7RH',
-          anonymizeIP: true,
         },
         sitemap: {
           lastmod: 'date',
