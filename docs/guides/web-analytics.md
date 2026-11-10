@@ -1,79 +1,45 @@
 ---
 sidebar_position: 4
 title: "Web Analytics"
-description: "Privacy-friendly web analytics for STOA documentation using Vercel Analytics — GDPR compliant, no cookies."
-keywords: [analytics, Vercel, privacy, GDPR, tracking]
+description: "How STOA Docs measures visits and masked session replays after your permission."
+keywords: [analytics, Google Analytics, consent, privacy]
 custom_edit_url: null
 ---
 
 # Web Analytics
 
-Track visitors and page views on your STOA deployment using Vercel Analytics.
+STOA Docs uses Google Analytics to understand which documentation pages are useful and whether visitors reach the quick start or the STOA GitHub repositories. Microsoft Clarity can also provide masked replays of page interactions. Both load only after you choose **Allow** in the audience panel.
 
-## Overview
+## Your choice
 
-STOA documentation uses [Vercel Analytics](https://vercel.com/docs/analytics) for privacy-friendly web analytics:
+You can **Decline** and continue using all documentation. The permanent **Audience settings** button lets you change your choice at any time. Acceptance and refusal are saved for six calendar months, then the site asks again. If your browser blocks local storage, your choice applies only to the current page session.
 
-- **Visitor Tracking** - Count unique visitors
-- **Page Views** - Monitor page engagement
-- **Privacy-First** - No cookies, GDPR compliant
-- **Real-Time Data** - Instant insights
+Before acceptance, after refusal, or once your choice expires, the site does not load Google Analytics or Clarity, or send their measurement events. Withdrawing permission also disables an already loaded tag and removes accessible `_ga`, `_clck` and `_clsk` measurement cookies on Docs and its parent domain. If Clarity was loaded, the page reloads to end that recording context. It does not erase historical aggregate reports. Your choice applies to this website; another STOA website with permission may create measurement cookies again.
 
-## Getting Started
+## What is measured
 
-To start counting visitors and page views, follow these steps.
+- A page visit after permission, then one event for each new documentation path.
+- A click on a quick-start guide link.
+- A click on a STOA GitHub organisation or repository link.
 
-### Step 1: Install the Package
+The events contain a clean page address, a fixed site label and the interface language. Query strings, URL fragments, search text, form content, link text, email addresses and user IDs are not included. External referral addresses are reduced to their origin. Advertising storage, advertising personalisation and Google signals are disabled.
 
-Install `@vercel/analytics` in your project:
+The documentation and the STOA marketing website use the existing STOA measurement stream. Hostname and the `site_section` field distinguish their traffic. This preserves the historical reporting stream.
 
-```bash npm2yarn
-npm i @vercel/analytics
-```
+## Masked interaction replays
 
-### Step 2: Add the React Component
+Clarity uses strict content masking, including a `data-clarity-mask` attribute covering the page and form fields. It does not receive an application user ID. Recording stops when you focus a text-entry field, and is excluded from dedicated search, feedback and demo pages. It is not started on pages whose initial address or referrer has query parameters or a fragment.
 
-Import and use the `<Analytics/>` React component into your app's layout:
+Masked replays still contain interaction and navigation data; they are not described as anonymous. The URL cleaning rules above apply to the explicit Google events, not a replacement of Clarity's own metadata.
 
-```tsx
-import { Analytics } from "@vercel/analytics/next"
+## Previous Vercel Analytics integration
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en">
-      <body>
-        {children}
-        <Analytics />
-      </body>
-    </html>
-  )
-}
-```
+The site's previous Vercel Analytics component has been removed. Google Analytics and the optional Clarity replay recorder are controlled by your shared choice. Historical Vercel reports remain separate and are not combined with Google Analytics counts.
 
-### Step 3: Deploy & Visit Your Site
+## Deployment notes
 
-Deploy your changes and visit the deployment to collect your page views.
+The public measurement ID is configured in `src/analytics/config.ts`; an empty value disables measurement. The automatic Docusaurus Google Analytics preset is not used. Do not add a second tag.
 
-:::tip
-If you don't see data after 30 seconds, check for content blockers and try navigating between pages on your site.
-:::
+Page visits are measured with the Docusaurus route lifecycle. The stream's automatic pageviews on history changes and automatic outbound-click tracking must remain disabled to avoid duplicate events. The site's explicit events are `page_view`, `quickstart_click` and `github_click`.
 
-## Viewing Analytics
-
-Once deployed, access your analytics dashboard at:
-
-```
-https://vercel.com/[your-team]/[your-project]/analytics
-```
-
-## Further Reference
-
-For full examples and advanced configuration, refer to the [Vercel Analytics documentation](https://vercel.com/docs/analytics).
-
----
-
-Need help? Join our [Discord community](https://discord.gostoa.dev) or check [GitHub Issues](https://github.com/stoa-platform/stoa/issues).
+See the repository's [audience measurement runbook](https://github.com/stoa-platform/stoa-docs/blob/main/maintenance/analytics-consent.md) for verification and rollback. A loaded script alone does not demonstrate that events were received; ingestion must be confirmed in Google Analytics.
