@@ -12,11 +12,11 @@ custom_edit_url: null
 
 # Mesure d’audience
 
-STOA Docs utilise Google Analytics pour comprendre quelles pages de documentation sont utiles et si les visiteurs accèdent au démarrage rapide ou aux dépôts GitHub de STOA. Microsoft Clarity peut aussi fournir des replays masqués des interactions. Les deux services ne se chargent qu’après votre choix **Autoriser** dans le panneau de mesure d’audience.
+STOA Docs utilise Google Analytics pour comprendre quelles pages de documentation sont utiles et si les visiteurs accèdent au démarrage rapide ou aux dépôts GitHub de STOA. Microsoft Clarity peut aussi fournir des replays masqués des interactions. Les deux services ne se chargent qu’après votre choix **Accepter** dans le panneau de mesure d’audience.
 
 ## Votre choix
 
-Vous pouvez **Refuser** et utiliser toute la documentation. Le bouton permanent **Paramètres d’audience** permet de modifier votre choix à tout moment. L’accord comme le refus sont conservés pendant six mois calendaires, puis le site pose à nouveau la question. Si votre navigateur bloque le stockage local, votre choix s’applique uniquement à la session de la page en cours.
+Vous pouvez **Refuser** et utiliser toute la documentation. Le bouton permanent **Cookies** permet de modifier votre choix à tout moment. L’accord comme le refus sont conservés pendant six mois calendaires, puis le site pose à nouveau la question. Si votre navigateur bloque le stockage local, votre choix s’applique uniquement à la session de la page en cours.
 
 Avant l’accord, après un refus ou à l’expiration de votre choix, le site ne charge ni Google Analytics ni Clarity et n’envoie pas leurs événements de mesure. Le retrait de l’accord désactive aussi une balise déjà chargée et supprime les cookies de mesure `_ga`, `_clck` et `_clsk` accessibles sur Docs et son domaine parent. Si Clarity était chargé, la page se recharge pour terminer ce contexte d’enregistrement. Il n’efface pas les rapports historiques agrégés. Votre choix concerne ce site ; un autre site STOA autorisé peut créer à nouveau des cookies de mesure.
 

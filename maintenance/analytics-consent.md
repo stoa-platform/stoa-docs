@@ -14,7 +14,13 @@ The preset's automatic `gtag` integration is removed. A single Docusaurus client
 module loads Google and a configured Clarity project only after a valid acceptance. No Google preconnect, tag
 request, event or denied-consent ping is sent by this integration before consent
 or following a saved refusal. A permanent, bilingual audience-settings button
-supports acceptance and refusal with equal prominence.
+supports acceptance and refusal with equal prominence. The compact, bottom-edge
+panel is approximately 420 px wide, has no page overlay, and keeps provider,
+replay, six-month retention and withdrawal details in a native collapsed
+“Learn more / En savoir plus” section. This presentation does not change the
+consent record, collection gates, events or routes. The panel follows the active
+Docusaurus light/dark surfaces, with a subtle green STOA accent and identical
+styling for acceptance and refusal.
 
 The choice is stored in local storage under `stoa.docs.analytics-consent.v2` for
 six calendar months. It is renewed only by a new explicit choice. Expired or
