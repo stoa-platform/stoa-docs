@@ -8,11 +8,11 @@ custom_edit_url: null
 
 # Web Analytics
 
-STOA Docs uses Google Analytics to understand which documentation pages are useful and whether visitors reach the quick start or the STOA GitHub repositories. Microsoft Clarity can also provide masked replays of page interactions. Both load only after you choose **Allow** in the audience panel.
+STOA Docs uses Google Analytics to understand which documentation pages are useful and whether visitors reach the quick start or the STOA GitHub repositories. Microsoft Clarity can also provide masked replays of page interactions. Both load only after you choose **Accept** in the audience panel.
 
 ## Your choice
 
-You can **Decline** and continue using all documentation. The permanent **Audience settings** button lets you change your choice at any time. Acceptance and refusal are saved for six calendar months, then the site asks again. If your browser blocks local storage, your choice applies only to the current page session.
+You can **Reject** and continue using all documentation. The permanent **Cookies** button lets you change your choice at any time. Acceptance and refusal are saved for six calendar months, then the site asks again. If your browser blocks local storage, your choice applies only to the current page session.
 
 Before acceptance, after refusal, or once your choice expires, the site does not load Google Analytics or Clarity, or send their measurement events. Withdrawing permission also disables an already loaded tag and removes accessible `_ga`, `_clck` and `_clsk` measurement cookies on Docs and its parent domain. If Clarity was loaded, the page reloads to end that recording context. It does not erase historical aggregate reports. Your choice applies to this website; another STOA website with permission may create measurement cookies again.
 

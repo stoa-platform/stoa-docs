@@ -141,7 +141,7 @@ The shared historical STOA GA4 stream is configured in `src/analytics/config.ts`
 Hostname and `site_section: docs` distinguish Docs traffic. Google Analytics
 and optional Microsoft Clarity masked session replays load only after an explicit
 audience choice, with no advertising consent. The
-permanent **Audience settings / Paramètres d’audience** button lets visitors
+permanent **Cookies** button lets visitors
 change that choice. Acceptance and refusal both expire after six calendar months.
 The previous Vercel Analytics runtime integration is removed so this choice
 controls the site's audience measurement. Historical dashboards are unchanged.
