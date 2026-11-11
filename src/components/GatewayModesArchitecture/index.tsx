@@ -2,6 +2,7 @@
 // Copyright 2024-2026 CAB Ingenierie / Christophe ABOULICAM
 import React, { useState } from 'react';
 import { useColorMode } from '@docusaurus/theme-common';
+import useVisualMotion from '../useVisualMotion';
 
 type TabId = 'architecture' | 'modes' | 'migration' | 'status';
 type ModeId = 'edge-mcp' | 'sidecar' | 'proxy' | 'shadow';
@@ -202,6 +203,7 @@ export default function GatewayModesArchitecture(): JSX.Element {
   const { colorMode } = useColorMode();
   const C = colorMode === 'dark' ? darkColors : lightColors;
   const [activeTab, setActiveTab] = useState<TabId>('architecture');
+  const visualMotion = useVisualMotion(activeTab);
   const [activeMode, setActiveMode] = useState<ModeId>('edge-mcp');
 
   const modeColor = (id: ModeId): string => {
@@ -225,7 +227,7 @@ export default function GatewayModesArchitecture(): JSX.Element {
   };
 
   return (
-    <div style={{
+    <div ref={visualMotion} style={{
       fontFamily: 'var(--ifm-font-family-base)', background: C.bg, color: C.text,
       padding: '24px', borderRadius: '12px', margin: '1.5rem 0',
       border: `1px solid ${C.border}`,
@@ -276,12 +278,12 @@ export default function GatewayModesArchitecture(): JSX.Element {
       <div style={{ display: 'grid' }}>
 
       {/* Architecture Tab */}
-      <div style={{
+      <div data-visual-panel={activeTab === 'architecture' ? '' : undefined} style={{
         gridRow: 1, gridColumn: 1,
         visibility: activeTab === 'architecture' ? 'visible' : 'hidden',
       }}>
         <div>
-          <div style={{
+          <div data-visual-scene style={{
             background: C.surface, border: `1px solid ${C.border}`, borderRadius: '12px',
             padding: '24px', marginBottom: '16px', overflowX: 'auto',
           }}>
@@ -304,7 +306,7 @@ export default function GatewayModesArchitecture(): JSX.Element {
             </div>
 
             <div style={{ textAlign: 'center', color: C.textDim, marginBottom: '12px', fontSize: '16px' }}>
-              {'\u2193'} --mode=
+              <span data-visual-arrow="down">{'\u2193'}</span> --mode=
             </div>
 
             {/* 4 mode boxes */}
@@ -341,7 +343,7 @@ export default function GatewayModesArchitecture(): JSX.Element {
                     ))}
                   </div>
                   <div style={{ textAlign: 'center', marginTop: '8px' }}>
-                    <span style={{ color: C.textDim, fontSize: '10px' }}>{'\u2193'}</span>
+                    <span data-visual-arrow="down" style={{ color: C.textDim, fontSize: '10px' }}>{'\u2193'}</span>
                     <div style={{ fontSize: '10px', color: C.textDim, marginTop: '2px' }}>{m.targets}</div>
                   </div>
                 </div>
@@ -350,7 +352,7 @@ export default function GatewayModesArchitecture(): JSX.Element {
           </div>
 
           {/* Complexity gradient */}
-          <div style={{
+          <div data-visual-scene style={{
             background: `linear-gradient(135deg, ${C.shadowGlow}, ${C.edgeMcpGlow})`,
             border: `1px solid ${C.border}`, borderRadius: '8px', padding: '16px',
           }}>
@@ -370,7 +372,7 @@ export default function GatewayModesArchitecture(): JSX.Element {
                     </div>
                   </div>
                   {i < modes.length - 1 && (
-                    <span style={{ color: C.textDim, fontSize: '14px', margin: '0 4px' }}>{'\u2192'}</span>
+                    <span data-visual-arrow="right" style={{ color: C.textDim, fontSize: '14px', margin: '0 4px' }}>{'\u2192'}</span>
                   )}
                 </React.Fragment>
               ))}
@@ -480,7 +482,7 @@ export default function GatewayModesArchitecture(): JSX.Element {
       </div>
 
       {/* Migration Tab */}
-      <div style={{
+      <div data-visual-panel={activeTab === 'migration' ? '' : undefined} style={{
         gridRow: 1, gridColumn: 1,
         visibility: activeTab === 'migration' ? 'visible' : 'hidden',
       }}>
@@ -492,9 +494,9 @@ export default function GatewayModesArchitecture(): JSX.Element {
             Shadow {'\u2192'} Proxy Migration Path
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+          <div data-visual-scene style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
             {migrationSteps.map((step, i) => (
-              <div key={i} style={{
+              <div key={i} data-visual-step="" style={{
                 background: C.surface, border: `1px solid ${C.border}`, borderRadius: '8px',
                 padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '16px',
               }}>
@@ -543,18 +545,18 @@ export default function GatewayModesArchitecture(): JSX.Element {
       </div>
 
       {/* Roadmap Tab */}
-      <div style={{
+      <div data-visual-panel={activeTab === 'status' ? '' : undefined} style={{
         gridRow: 1, gridColumn: 1,
         visibility: activeTab === 'status' ? 'visible' : 'hidden',
       }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div data-visual-scene style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {([
             { phase: 'Phase 1', time: 'Now', title: 'ADR + Documentation', done: true },
             { phase: 'Phase 2', time: 'Q2 2026', title: 'Rust gateway + edge-mcp port', done: false },
             { phase: 'Phase 3', time: 'Q3 2026', title: 'Proxy + Sidecar modes', done: false },
             { phase: 'Phase 4', time: 'Q4 2026', title: 'Shadow mode (after security review)', done: false },
           ]).map((p, i) => (
-            <div key={i} style={{
+            <div key={i} data-visual-step="" style={{
               background: C.surface, border: `1px solid ${C.border}`, borderRadius: '8px',
               padding: '16px', display: 'flex', alignItems: 'center', gap: '16px',
               opacity: p.done ? 0.7 : 1,
