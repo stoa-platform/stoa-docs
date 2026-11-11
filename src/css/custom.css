@@ -29,3 +29,14 @@
   --ifm-color-primary-lightest: #e0e7ff;
   --docusaurus-highlighted-code-line-bg: rgba(129, 140, 248, 0.3);
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .navbar__logo img {
+    transition: transform 160ms ease-out;
+  }
+
+  .navbar__brand:hover .navbar__logo img,
+  .navbar__brand:focus-visible .navbar__logo img {
+    transform: translateY(-1px) scale(1.04);
+  }
+}
