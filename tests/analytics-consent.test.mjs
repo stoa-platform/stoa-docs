@@ -5,7 +5,7 @@ import {CONSENT_STORAGE_KEY, createAnalyticsController, installRouterGuard, sixM
 const require = createRequire(import.meta.url);
 const {createMemoryHistory} = require('history');
 
-function browser(saved) {
+function browser(saved, search = '?token=secret', clarityProjectId = '') {
   let clock = Date.UTC(2026, 0, 31, 12);
   const values = new Map(saved ? [[CONSENT_STORAGE_KEY, saved]] : []);
   const windowListeners = new Map();
@@ -38,7 +38,7 @@ function browser(saved) {
     set: value => cookies.push(value),
   });
   const win = {
-    location: {origin: 'https://docs.gostoa.dev', protocol: 'https:', hostname: 'docs.gostoa.dev', pathname: '/docs/intro', search: '?token=secret', hash: '#secret'},
+    location: {origin: 'https://docs.gostoa.dev', protocol: 'https:', hostname: 'docs.gostoa.dev', pathname: '/docs/intro', search, hash: '#secret'},
     document, localStorage,
     addEventListener: (name, fn) => windowListeners.set(name, fn),
     removeEventListener: name => windowListeners.delete(name),
@@ -47,7 +47,7 @@ function browser(saved) {
   };
   win.location.replace = url => replacements.push(url);
   win.history = {replaceState: () => { win.location.hash = ''; }};
-  const controller = createAnalyticsController(win, 'G-DOCSTEST1', () => clock);
+  const controller = createAnalyticsController(win, 'G-DOCSTEST1', () => clock, clarityProjectId);
   const commands = () => (win.dataLayer ?? []).map(item => Array.from(item));
   const events = () => commands().filter(item => item[0] === 'event');
   return {win, controller, scripts, cookies, timers, values, replacements, masks, windowListeners, documentListeners, commands, events,
@@ -88,6 +88,51 @@ test('acceptance loads one tag and emits one cleaned pageview after load', () =>
   assert.equal(config.cookie_domain, undefined);
   assert.equal(config.cookie_update, false);
   assert.equal(JSON.stringify(b.events()).includes('secret'), false);
+});
+
+test('social attribution uses allowlisted landing parameters only after acceptance', () => {
+  const landing = '?utm_source=linkedin&utm_medium=social&utm_campaign=docs&utm_content=company_profile&token=private';
+  const b = browser(undefined, landing, 'testclarity12');
+  b.win.location.hash = '';
+  b.win.document.referrer = 'https://www.linkedin.com/';
+  b.controller.start();
+  assert.equal(b.scripts.length, 0);
+  assert.equal(b.commands().length, 0);
+  b.controller.choose('refused');
+  assert.equal(b.scripts.length, 0);
+  b.controller.choose('accepted');
+  assert.deepEqual(b.scripts.map(script => script.id), ['stoa-docs-ga4']);
+  b.load();
+  const commands = b.commands();
+  const index = commands.findIndex(command => command[0] === 'config');
+  const config = commands[index][2];
+  assert.deepEqual(Object.fromEntries(Object.entries(config).filter(([key]) => key.startsWith('campaign_'))), {
+    campaign_source: 'linkedin', campaign_medium: 'social', campaign_name: 'docs', campaign_content: 'company_profile',
+  });
+  assert.equal(commands[index + 1][1], 'page_view');
+  assert.equal(config.page_location, 'https://docs.gostoa.dev/docs/intro');
+  assert.equal(config.page_referrer, 'https://www.linkedin.com/');
+  assert.doesNotMatch(JSON.stringify(commands), /utm_|token|private/);
+  b.win.location.search = '?utm_source=x&utm_medium=social&utm_campaign=docs';
+  b.controller.routeChanged('/docs/next');
+  assert.equal(b.commands().filter(command => command[0] === 'config').length, 1);
+  assert.equal(b.events()[1][2].page_location, 'https://docs.gostoa.dev/docs/next');
+});
+
+test('unrecognised or ambiguous campaign fields do not transmit user-supplied values', () => {
+  for (const [search, expected] of [
+    ['?utm_source=x&utm_medium=social&utm_campaign=docs&utm_content=private', {campaign_source: 'x', campaign_medium: 'social', campaign_name: 'docs'}],
+    ['?utm_source=private&utm_medium=social&utm_campaign=docs', {}],
+    ['?utm_source=x&utm_medium=private&utm_campaign=docs', {}],
+    ['?utm_source=x&utm_medium=social&utm_campaign=private', {}],
+    ['?utm_source=x&utm_source=private&utm_medium=social&utm_campaign=docs', {}],
+  ]) {
+    const b = browser(undefined, search);
+    b.controller.start(); b.controller.choose('accepted'); b.load();
+    const config = b.commands().find(command => command[0] === 'config')[2];
+    assert.deepEqual(Object.fromEntries(Object.entries(config).filter(([key]) => key.startsWith('campaign_'))), expected);
+    assert.doesNotMatch(JSON.stringify(b.commands()), /utm_|private/);
+  }
 });
 
 test('SPA pageviews deduplicate query/hash and repeated hooks but retain back navigation', () => {
@@ -166,6 +211,29 @@ test('useful clicks send fixed names only; other links and refused clicks do not
   assert.equal(JSON.stringify(b.events()).includes('private'), false);
   b.controller.choose('refused'); click('https://github.com/stoa-platform/stoa');
   assert.equal(b.events().length, 3);
+});
+
+test('only exact approved social links emit fixed events and only with consent', () => {
+  const b = browser();
+  const company = 'https://www.linkedin.com/company/10041472/';
+  const profile = 'https://www.linkedin.com/in/christophe-aboulicam/';
+  const x = 'https://x.com/caboulicam';
+  b.controller.start();
+  const click = href => b.documentListeners.get('click')({button: 0, target: {closest: () => ({href})}});
+  click(company);
+  assert.equal(b.events().length, 0);
+  b.controller.choose('accepted'); b.load();
+  click(company); click(profile); click(x);
+  click(`${company}?token=private`);
+  click(`${profile}#private`);
+  click('https://www.linkedin.com/company/other/');
+  click('https://x.com/other');
+  assert.deepEqual(b.events().map(c => c[1]), [
+    'page_view', 'social_linkedin_company_click', 'social_linkedin_profile_click', 'social_x_profile_click',
+  ]);
+  assert.doesNotMatch(JSON.stringify(b.events()), /www\.linkedin\.com|x\.com|caboulicam|private/);
+  b.controller.choose('refused'); click(x);
+  assert.equal(b.events().length, 4);
 });
 
 test('cross-tab refusal disables a loaded tag and expiry timers stay within browser limits', () => {

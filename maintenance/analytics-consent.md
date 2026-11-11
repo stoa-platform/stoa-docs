@@ -96,6 +96,7 @@ SDK can continue cookieless recording and its denied branch restarts internally.
 | `page_view` | Accepted initial page, then each changed pathname | Clean page URL, clean referrer, fixed title `STOA Docs`, `site_section: docs`, locale |
 | `quickstart_click` | Link to the EN/FR quickstart or stoactl quickstart | Same fixed page context; no target URL or link text |
 | `github_click` | Link to `github.com/stoa-platform` or its repositories | Same fixed page context; no target URL or link text |
+| `social_linkedin_company_click`, `social_linkedin_profile_click`, `social_x_profile_click` | Click on the exact configured LinkedIn CAB Ingénierie, LinkedIn Christophe Aboulicam or X profile URL | Same fixed page context |
 
 URLs contain origin and pathname only. Query strings and fragments are omitted.
 External referrers are reduced to their origin. Internal referrers use a clean
@@ -103,6 +104,15 @@ pathname. Search text, form values, link text, user IDs and email addresses are
 not included. Repeated callbacks or hash/query-only changes do not count as new
 pages; going from A to B and back to A counts all three visits. The page visited
 before consent is not replayed: acceptance counts the current page once.
+
+Use tagged links to identify social arrivals in GA4. For example, share
+`https://docs.gostoa.dev/?utm_source=linkedin&utm_medium=social&utm_campaign=docs&utm_content=post`.
+The landing page accepts `linkedin` or `x` as the source, `social` as the medium,
+and `docs` as the campaign. Optional content is `company_profile`,
+`personal_profile` or `post`. Only these fixed values are sent as campaign
+configuration after consent. The page and referrer URLs stay clean. The replay
+guard also applies to tagged URLs. For outbound clicks, report by the three
+event names above. For arrivals, use the session source, medium and campaign.
 
 ## Vercel Analytics replacement
 
@@ -134,6 +144,9 @@ dashboards are unchanged and must not be combined with GA counts.
    Docs hostname. Loading a script successfully
    alone does not prove ingestion.
 6. Compare routes, robots and existing sitemap entries against the base revision.
+7. Open a tagged social link and accept analytics. Confirm the campaign fields
+   reach GA4 and Clarity stays off on the tagged landing page. On a clean page,
+   check that the three social links produce separate events after acceptance.
 
 ## Rollback
 
