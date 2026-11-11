@@ -22,15 +22,17 @@ Lorsque vous renouvelez une clé, STOA n'invalide pas immédiatement l'ancienne.
 
 ```mermaid
 gantt
-    title Key Rotation Timeline
-    dateFormat HH:mm
-    axisFormat %H:%M
-    section Old Key
-    Valid           :done, 00:00, 12:00
-    Grace Period    :active, 12:00, 36:00
-    Expired         :crit, 36:00, 48:00
-    section New Key
-    Valid           :done, 12:00, 48:00
+    title Chronologie de la rotation de clé
+    dateFormat YYYY-MM-DD HH:mm
+    axisFormat Jour %d %Hh
+    tickInterval 12hour
+    todayMarker off
+    section Ancienne clé
+    Valide :done, 2000-01-01 00:00, 12h
+    Période de grâce :active, 2000-01-01 12:00, 24h
+    Expirée :crit, 2000-01-02 12:00, 12h
+    section Nouvelle clé
+    Valide :done, 2000-01-01 12:00, 36h
 ```
 
 | Phase | Ancienne Clé | Nouvelle Clé | Durée |

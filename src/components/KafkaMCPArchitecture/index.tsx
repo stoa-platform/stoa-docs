@@ -2,6 +2,7 @@
 // Copyright 2024-2026 CAB Ingenierie / Christophe ABOULICAM
 import React, { useState } from 'react';
 import { useColorMode } from '@docusaurus/theme-common';
+import useVisualMotion from '../useVisualMotion';
 
 type TabId = 'architecture' | 'topics' | 'phases' | 'usecases';
 type PhaseId = 'p1' | 'p2' | 'p3' | 'p4';
@@ -242,11 +243,12 @@ export default function KafkaMCPArchitecture(): JSX.Element {
   const C = colorMode === 'dark' ? darkColors : lightColors;
   const [activePhase, setActivePhase] = useState<PhaseId>('p1');
   const [activeTab, setActiveTab] = useState<TabId>('architecture');
+  const visualMotion = useVisualMotion(activeTab);
 
   const topicColors = [C.accent, C.mcp, C.danger, C.uac, C.sse, C.accent, C.mcp, C.uac];
 
   return (
-    <div style={{
+    <div ref={visualMotion} style={{
       fontFamily: 'var(--ifm-font-family-base)', background: C.bg, color: C.text,
       padding: '24px', borderRadius: '12px', margin: '1.5rem 0',
       border: `1px solid ${C.border}`,
@@ -296,12 +298,12 @@ export default function KafkaMCPArchitecture(): JSX.Element {
       <div style={{ display: 'grid' }}>
 
       {/* Architecture Tab */}
-      <div style={{
+      <div data-visual-panel={activeTab === 'architecture' ? '' : undefined} style={{
         gridRow: 1, gridColumn: 1,
         visibility: activeTab === 'architecture' ? 'visible' : 'hidden',
       }}>
         <div>
-          <div style={{
+          <div data-visual-scene style={{
             background: C.surface, border: `1px solid ${C.border}`, borderRadius: '12px',
             padding: '24px', marginBottom: '24px', overflowX: 'auto',
           }}>
@@ -320,13 +322,13 @@ export default function KafkaMCPArchitecture(): JSX.Element {
             }}>
               <ComponentBox C={C} title="Control Plane" subtitle="api.lifecycle events" icon={'\ud83c\udf9b\ufe0f'}
                 color={C.accent} items={['API CRUD', 'Policy changes', 'Config updates']} glow={C.accentGlow} />
-              <span style={{ color: C.kafka, textAlign: 'center', fontSize: '16px' }}>{'\u2192'}</span>
+              <span data-visual-arrow="right" style={{ color: C.kafka, textAlign: 'center', fontSize: '16px' }}>{'\u2192'}</span>
               <ComponentBox C={C} title="Kafka / Redpanda" subtitle="event backbone" icon={'\ud83d\udce1'}
                 color={C.kafka} items={['8 topic families', 'Multi-partition', 'Retention 7d']} glow={C.kafkaGlow} />
-              <span style={{ color: C.sse, textAlign: 'center', fontSize: '16px' }}>{'\u2192'}</span>
+              <span data-visual-arrow="right" style={{ color: C.sse, textAlign: 'center', fontSize: '16px' }}>{'\u2192'}</span>
               <ComponentBox C={C} title="SSE Bridge" subtitle="kafka \u2192 sse adapter" icon={'\ud83d\udd17'}
                 color={C.sse} items={['Tenant filtering', 'Backpressure', 'Reconnection']} glow={C.sseGlow} />
-              <span style={{ color: C.mcp, textAlign: 'center', fontSize: '16px' }}>{'\u2192'}</span>
+              <span data-visual-arrow="right" style={{ color: C.mcp, textAlign: 'center', fontSize: '16px' }}>{'\u2192'}</span>
               <ComponentBox C={C} title="MCP Gateway" subtitle="agent notifications" icon={'\ud83e\udd16'}
                 color={C.mcp} items={['notifications/send', 'tools/list refresh', 'Real-time push']} glow={C.mcpGlow} />
             </div>
@@ -339,7 +341,7 @@ export default function KafkaMCPArchitecture(): JSX.Element {
               <div />
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <span style={{ color: C.textDim, fontSize: '10px' }}>fan-out</span>
-                <span style={{ color: C.textDim }}>{'\u2193'}</span>
+                <span data-visual-arrow="down" style={{ color: C.textDim }}>{'\u2193'}</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
                 {[
@@ -441,17 +443,17 @@ consumers:
       </div>
 
       {/* Phases Tab */}
-      <div style={{
+      <div data-visual-panel={activeTab === 'phases' ? '' : undefined} style={{
         gridRow: 1, gridColumn: 1,
         visibility: activeTab === 'phases' ? 'visible' : 'hidden',
       }}>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
           {/* Phase selector */}
-          <div style={{
+          <div data-visual-scene style={{
             width: '220px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '6px',
           }}>
             {phases.map((phase) => (
-              <button key={phase.id} onClick={() => setActivePhase(phase.id)} style={{
+              <button key={phase.id} onClick={() => setActivePhase(phase.id)} data-visual-step="" style={{
                 textAlign: 'left', padding: '12px',
                 border: `1px solid ${activePhase === phase.id ? C[phase.badgeColor] + '55' : C.border}`,
                 borderRadius: '8px',
@@ -533,13 +535,13 @@ consumers:
       </div>
 
       {/* Use Cases Tab */}
-      <div style={{
+      <div data-visual-panel={activeTab === 'usecases' ? '' : undefined} style={{
         gridRow: 1, gridColumn: 1,
         visibility: activeTab === 'usecases' ? 'visible' : 'hidden',
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {useCases.map((uc, i) => (
-            <div key={i} style={{
+            <div key={i} data-visual-scene style={{
               background: C.surface, border: `1px solid ${C.border}`, borderRadius: '8px', padding: '16px',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
@@ -564,7 +566,7 @@ consumers:
                     }}>
                       {step}
                     </span>
-                    {j < arr.length - 1 && <span style={{ color: C.textDim }}> {'\u2192'} </span>}
+                    {j < arr.length - 1 && <span data-visual-arrow="right" style={{ color: C.textDim }}> {'\u2192'} </span>}
                   </span>
                 ))}
               </div>

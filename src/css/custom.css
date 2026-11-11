@@ -40,3 +40,38 @@
     transform: translateY(-1px) scale(1.04);
   }
 }
+
+.footer__item:has(> .docs-social-link) {
+  display: inline-block;
+  margin-right: 0.3rem;
+}
+
+.footer__link-item.docs-social-link {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  margin-top: 0.4rem;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 20%);
+  border-radius: 0.5rem;
+}
+
+.footer__link-item.docs-social-link:hover,
+.footer__link-item.docs-social-link:focus-visible {
+  background: rgb(255 255 255 / 11%);
+  border-color: rgb(255 255 255 / 48%);
+}
+
+.footer__link-item.docs-social-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.docs-social-link img {
+  display: block;
+  object-fit: contain;
+}
+
+[data-visual-arrow] {
+  display: inline-block;
+}

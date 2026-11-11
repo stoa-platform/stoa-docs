@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2024-2026 CAB Ingénierie / Christophe ABOULICAM
 import React, { useState } from 'react';
+import useVisualMotion from '../useVisualMotion';
 
 // Color palette - Security-focused dark theme with cyan accents
 const colors = {
@@ -588,6 +589,7 @@ const MCPGatewayFlow = () => (
 // ============================================================
 export default function ArchitectureDiagrams() {
   const [activeTab, setActiveTab] = useState(0);
+  const visualMotion = useVisualMotion(activeTab, 'svg');
 
   const diagrams = [
     { name: 'Global', component: GlobalArchitecture },
@@ -629,7 +631,7 @@ export default function ArchitectureDiagrams() {
       </div>
 
       {/* Content */}
-      <ActiveComponent />
+      <div ref={visualMotion}><ActiveComponent /></div>
     </div>
   );
 }

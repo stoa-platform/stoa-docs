@@ -2,6 +2,7 @@
 // Copyright 2024-2026 CAB Ingenierie / Christophe ABOULICAM
 import React, { useState } from 'react';
 import { useColorMode } from '@docusaurus/theme-common';
+import useVisualMotion from '../useVisualMotion';
 
 type TabId = 'architecture' | 'promotion' | 'tenants' | 'roadmap';
 type EnvId = 'dev' | 'staging' | 'prod';
@@ -179,6 +180,7 @@ export default function GitOpsArchitecture(): React.ReactElement {
   const { colorMode } = useColorMode();
   const C = colorMode === 'dark' ? darkColors : lightColors;
   const [activeTab, setActiveTab] = useState<TabId>('architecture');
+  const visualMotion = useVisualMotion(activeTab);
   const [activeEnv, setActiveEnv] = useState<EnvId>('prod');
   const [activeStep, setActiveStep] = useState(0);
 
@@ -269,8 +271,8 @@ export default function GitOpsArchitecture(): React.ReactElement {
         </div>
 
         {/* ArgoCD Sync arrows */}
-        <div style={{ textAlign: 'center', padding: '8px 0', color: C.argocd, fontSize: '12px', fontWeight: 600 }}>
-          {'\u25BC'} ArgoCD Sync {'\u25BC'}
+        <div data-visual-scene style={{ textAlign: 'center', padding: '8px 0', color: C.argocd, fontSize: '12px', fontWeight: 600 }}>
+          <span data-visual-arrow="down">{'\u25BC'}</span> ArgoCD Sync <span data-visual-arrow="down">{'\u25BC'}</span>
         </div>
 
         {/* Environment clusters */}
@@ -357,9 +359,9 @@ export default function GitOpsArchitecture(): React.ReactElement {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div data-visual-scene style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {promotionSteps.map((step, i) => (
-            <div key={step.number} style={{
+            <div key={step.number} data-visual-step="" style={{
               background: activeStep === i ? C.accentGlow : C.surface,
               border: `1px solid ${activeStep === i ? C.borderActive : C.border}`,
               borderRadius: '8px',
@@ -390,7 +392,7 @@ export default function GitOpsArchitecture(): React.ReactElement {
                   <div style={{ fontSize: '12px', color: C.textMuted }}>{step.description}</div>
                 </div>
                 {i < promotionSteps.length - 1 && (
-                  <div style={{ color: C.textDim, fontSize: '16px' }}>{'\u25B6'}</div>
+                  <div data-visual-arrow="right" style={{ color: C.textDim, fontSize: '16px' }}>{'\u25B6'}</div>
                 )}
               </div>
               {activeStep === i && (
@@ -420,7 +422,7 @@ export default function GitOpsArchitecture(): React.ReactElement {
           <div style={{ fontWeight: 700, fontSize: '13px', color: C.console, marginBottom: '8px' }}>
             Console Workflow Visibility
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+          <div data-visual-scene style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
             {[
               { label: 'PR Created', icon: '\u{1F4DD}' },
               { label: 'Approved', icon: '\u2705' },
@@ -441,7 +443,7 @@ export default function GitOpsArchitecture(): React.ReactElement {
                   {state.icon} {state.label}
                 </div>
                 {i < arr.length - 1 && (
-                  <span style={{ color: C.textDim, alignSelf: 'center', fontSize: '12px' }}>{'\u2192'}</span>
+                  <span data-visual-arrow="right" style={{ color: C.textDim, alignSelf: 'center', fontSize: '12px' }}>{'\u2192'}</span>
                 )}
               </React.Fragment>
             ))}
@@ -610,9 +612,9 @@ export default function GitOpsArchitecture(): React.ReactElement {
         </div>
 
         {/* Timeline */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div data-visual-scene style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {roadmapPhases.map((phase, i) => (
-            <div key={phase.id} style={{
+            <div key={phase.id} data-visual-step="" style={{
               background: C.surface,
               border: `1px solid ${C.border}`,
               borderRadius: '8px',
@@ -690,7 +692,7 @@ export default function GitOpsArchitecture(): React.ReactElement {
   }
 
   return (
-    <div style={containerStyle}>
+    <div ref={visualMotion} style={containerStyle}>
       {/* Tab bar */}
       <div style={tabBarStyle}>
         {tabs.map(tab => (
@@ -718,16 +720,16 @@ export default function GitOpsArchitecture(): React.ReactElement {
 
       {/* Panels — CSS Grid overlay for stable height */}
       <div style={gridStyle}>
-        <div style={panelStyle(activeTab === 'architecture')}>
+        <div data-visual-panel={activeTab === 'architecture' ? '' : undefined} style={panelStyle(activeTab === 'architecture')}>
           <ArchitecturePanel />
         </div>
-        <div style={panelStyle(activeTab === 'promotion')}>
+        <div data-visual-panel={activeTab === 'promotion' ? '' : undefined} style={panelStyle(activeTab === 'promotion')}>
           <PromotionPanel />
         </div>
         <div style={panelStyle(activeTab === 'tenants')}>
           <TenantsPanel />
         </div>
-        <div style={panelStyle(activeTab === 'roadmap')}>
+        <div data-visual-panel={activeTab === 'roadmap' ? '' : undefined} style={panelStyle(activeTab === 'roadmap')}>
           <RoadmapPanel />
         </div>
       </div>
