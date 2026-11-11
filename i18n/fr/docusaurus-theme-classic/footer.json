@@ -31,6 +31,18 @@
     "message": "Discord",
     "description": "The label of footer link with label=Discord linking to https://discord.gostoa.dev"
   },
+  "link.item.label.LinkedIn CAB Ingénierie": {
+    "message": "LinkedIn CAB Ingénierie",
+    "description": "The label of the footer link to the CAB Ingénierie LinkedIn page"
+  },
+  "link.item.label.LinkedIn Christophe Aboulicam": {
+    "message": "LinkedIn Christophe Aboulicam",
+    "description": "The label of the footer link to Christophe Aboulicam's LinkedIn profile"
+  },
+  "link.item.label.X @caboulicam": {
+    "message": "X @caboulicam",
+    "description": "The label of the footer link to Christophe Aboulicam's X profile"
+  },
   "link.item.label.Blog": {
     "message": "Blog",
     "description": "The label of footer link with label=Blog linking to /blog"

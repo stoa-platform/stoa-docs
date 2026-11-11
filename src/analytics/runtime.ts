@@ -1,3 +1,5 @@
+import {socialLinks} from '../social-links.mjs';
+
 export type ConsentChoice = 'accepted' | 'refused' | 'unknown';
 type SavedChoice = {version: 2; choice: 'accepted' | 'refused'; expiresAt: number};
 type Gtag = (...args: unknown[]) => void;
@@ -29,6 +31,23 @@ export function sixMonthsFrom(timestamp: number): number {
   return date.getTime();
 }
 
+function socialCampaign(search: string) {
+  const params = new URLSearchParams(search);
+  if (['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].some(name => params.getAll(name).length > 1)) return {};
+  const source = params.get('utm_source');
+  if ((source !== 'linkedin' && source !== 'x') ||
+      params.get('utm_medium') !== 'social' || params.get('utm_campaign') !== 'docs') return {};
+
+  const content = params.get('utm_content');
+  return {
+    campaign_source: source,
+    campaign_medium: 'social',
+    campaign_name: 'docs',
+    ...(content === 'company_profile' || content === 'personal_profile' || content === 'post'
+      ? {campaign_content: content} : {}),
+  };
+}
+
 export function createAnalyticsController(win: AnalyticsWindow, measurementId: string, now = Date.now, clarityProjectId = '') {
   const configured = /^G-[A-Z0-9]+$/.test(measurementId);
   const clarityConfigured = /^[a-z0-9]{6,20}$/i.test(clarityProjectId);
@@ -45,6 +64,7 @@ export function createAnalyticsController(win: AnalyticsWindow, measurementId: s
   let googleConfigured = false;
   let lastPage: string | null = null;
   let currentPath = win.location.pathname;
+  const landingCampaign = socialCampaign(win.location.search);
   let expiryTimer: number | undefined;
   let clarityLoading = false;
   let clarityLoaded = false;
@@ -259,7 +279,7 @@ export function createAnalyticsController(win: AnalyticsWindow, measurementId: s
       if (!googleConfigured) {
         win.gtag?.('js', new Date(now()));
         win.gtag?.('config', measurementId, {
-          ...pageParameters(), send_page_view: false,
+          ...pageParameters(), ...landingCampaign, send_page_view: false,
           allow_google_signals: false, allow_ad_personalization_signals: false,
           cookie_expires: Math.ceil((saved.expiresAt - now()) / 1000), cookie_update: false,
         });
@@ -299,6 +319,8 @@ export function createAnalyticsController(win: AnalyticsWindow, measurementId: s
     let name: string | undefined;
     if (target.origin === win.location.origin && /^(?:\/fr)?\/docs\/guides\/(?:quickstart|stoactl-quickstart)\/?$/.test(target.pathname)) name = 'quickstart_click';
     if (target.origin === 'https://github.com' && /^\/stoa-platform(?:\/|$)/.test(target.pathname)) name = 'github_click';
+    const social = socialLinks.find(link => link.href === target.href);
+    if (social) name = `social_${social.category}_click`;
     if (name) win.gtag?.('event', name, pageParameters());
   }
 
