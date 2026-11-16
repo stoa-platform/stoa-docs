@@ -22,7 +22,7 @@ Track the real runtime state of each STOA Platform component in the `stoa-platfo
 | Envoy Data Plane | Upstream Envoy + xDS + `ext_authz` / `ext_proc` | **In Progress** | Target data plane configured over xDS by STOA Link, with STOA policy and MCP services running out-of-process ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
 | Console UI | React 18, TypeScript, Vite | **Production** | Admin dashboard for catalog, policies, observability, and tenant operations (`control-plane-ui` `v1.12.x`) |
 | Developer Portal | React 18, TypeScript, Vite | **Production** | Self-service API & MCP tool discovery, subscriptions, and credentials (`portal` `v1.3.x`) |
-| Auth Layer | Keycloak 26 | **Production** | Single `stoa` realm, one group per tenant, `tenant_id` JWT claim ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)), OIDC/LDAP/SAML brokering |
+| Auth Layer | Keycloak 26 | **Production** | Single `stoa` realm, one group per tenant, and `tenant_id` JWT claim ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)); multi-IdP OIDC/LDAP/SAML brokering shown in the separate federation demo |
 | CLI (`stoactl`) | Go, Cobra (`stoa-go`) | **Production** | Declarative GitOps reconciliation, OpenAPI-to-MCP bridge, and resource management (`stoa-go` `v0.3.x`, [CLI Reference](/docs/reference/cli)) |
 | STOA Link (`stoa-connect`) | Go (`stoa-go`) | **Production / Expanding** | On-site outbound SSE agent syncing third-party gateways and serving loopback mTLS ADS/xDS snapshots to Envoy ([ADR-057](/docs/architecture/adr/adr-057-product-lineup-gateway-link-connect), [ADR-059](/docs/architecture/adr/adr-059-simplified-deployment-sse)) |
 | Kubernetes Operator (`stoa-operator`) | Python, Kopf | **Beta** | Reconciles `GatewayInstance` and `GatewayBinding` CRDs against the Control Plane API (standalone manifests; CI integration in progress) |
@@ -63,11 +63,12 @@ STOA orchestrates external gateways through Control Plane management adapters ([
 |-----------|------------|--------|-------|
 | Helm Chart (`charts/stoa-platform`) | Helm 3.12+ | **Gateway-scoped** | Installs STOA Gateway, 5 CRDs, and optional sync/monitoring resources from repository checkout; Control Plane, Console, Portal, Keycloak, and PostgreSQL are deployed separately ([Installation Guide](/docs/admin/installation)) |
 | Observability Chart (`charts/stoa-observability`) | Grafana Alloy, Tempo, Blackbox, Prometheus, Grafana | **Production** | OTLP telemetry pipeline and dashboards |
-| Database | PostgreSQL 16 | **Production** | Shared schema with `tenant_id` scoping; automated backup/restore verified in CI |
-| Event Backbone | Redpanda / Kafka | **Production** | Metering & deployment events; 3-broker failover verified in CI |
-| Audit & Log Search | OpenSearch 2.x | **Production** | Dual-write audit trail and log indexing |
-| Secrets Backend | OpenBao (Vault API, [ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) | **Production** | Default in reference deployments via `hvac` and External Secrets Operator; compatible with HashiCorp Vault |
-| GitOps & CI/CD | ArgoCD + GitHub Actions + GHCR | **Production** | SAST, container/OS-layer scans, SBOMs, digest pinning, and failover proofs |
+| Database | PostgreSQL 15 / 16 | **Production** | Shared schema with `tenant_id` scoping; automated backup/restore verified in CI on disposable PostgreSQL 16 |
+| Event Backbone | Redpanda / Kafka | **Production** | Metering & deployment events; 3-broker / RF3 failover sizing proven in Docker Compose (`k8s/redpanda` manifest remains single-replica) |
+| Audit & Log Search | OpenSearch 2.11 | **Production** | Dual-write audit trail and log indexing |
+| Secrets Backend | OpenBao (Vault API, [ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) | **Partial** | OpenBao `2.7.2` active in CI (`hvac`), Compose (`bao agent`), and self-hosted Vault API; Kubernetes Secrets still used for parts of cluster workloads |
+| Identity HA Proof | Keycloak HA checker | **Not proven in-repo** | Static checker (`deploy/keycloak/ha-proof`) reports `HA_STATIC=fail` on single-replica in-repo definitions; Kubernetes HA StatefulSet/PDB lives outside this chart |
+| GitOps & CI/CD | ArgoCD + GitHub Actions + GHCR | **Production** | SAST, container/OS-layer scans, SBOMs, digest pinning, and regression guards |
 
 ## Automated Test Suite (November 2026)
 
@@ -80,7 +81,7 @@ Test counts below reflect automated tests present on `main` in `stoa-platform/st
 | Console UI | `vitest` | 192 | **1,760+** |
 | Developer Portal | `vitest` | 104 | **980** |
 | `stoa-go` (`stoactl` + `stoa-connect`) | `go test` (CLI, connect loops, adapters, Envoy ADS) | 85 | **490+** |
-| End-to-End & Resilience | Playwright BDD + CI recovery/HA proofs | — | Smoke, critical CUJs, PG restore, Redpanda & Keycloak HA |
+| End-to-End & Resilience | Playwright BDD + CI backup/failover checks | — | Smoke, critical CUJs, disposable PG 16 restore, 3-broker Redpanda failover sizing, static identity HA check |
 
 ## Roadmap & Architecture Decisions
 

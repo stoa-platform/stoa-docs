@@ -22,7 +22,7 @@ Suivez l'état réel au runtime de chaque composant de la plateforme STOA dans l
 | Plan de Données Envoy | Envoy upstream + xDS + `ext_authz` / `ext_proc` | **En cours** | Plan de données cible configuré en xDS par STOA Link, avec les services de politiques et le module MCP hors processus ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
 | Console UI | React 18, TypeScript, Vite | **Production** | Interface d'administration pour le catalogue, les politiques, l'observabilité et l'exploitation multi-tenant (`control-plane-ui` `v1.12.x`) |
 | Developer Portal | React 18, TypeScript, Vite | **Production** | Découverte en libre-service des APIs et outils MCP, abonnements et identifiants (`portal` `v1.3.x`) |
-| Couche d'Authentification | Keycloak 26 | **Production** | Unique realm `stoa`, un groupe par tenant, claim JWT `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)), fédération OIDC/LDAP/SAML |
+| Couche d'Authentification | Keycloak 26 | **Production** | Unique realm `stoa`, un groupe par tenant et claim JWT `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) ; fédération multi-IdP OIDC/LDAP/SAML démontrée dans la démo de fédération séparée |
 | CLI (`stoactl`) | Go, Cobra (`stoa-go`) | **Production** | Réconciliation GitOps déclarative, pont OpenAPI vers MCP et gestion des ressources (`stoa-go` `v0.3.x`, [Référence CLI](/docs/reference/cli)) |
 | STOA Link (`stoa-connect`) | Go (`stoa-go`) | **Production / En extension** | Agent sur site à flux SSE sortant synchronisant les passerelles tierces et servant les snapshots ADS/xDS mTLS loopback à Envoy ([ADR-057](/docs/architecture/adr/adr-057-product-lineup-gateway-link-connect), [ADR-059](/docs/architecture/adr/adr-059-simplified-deployment-sse)) |
 | Opérateur Kubernetes (`stoa-operator`) | Python, Kopf | **Bêta** | Réconcilie les CRDs `GatewayInstance` et `GatewayBinding` auprès du Control Plane API (manifestes autonomes ; intégration CI en cours) |
@@ -63,11 +63,12 @@ STOA orchestre les passerelles externes via les adaptateurs d'administration du 
 |-----------|-------------|--------|-------|
 | Chart Helm (`charts/stoa-platform`) | Helm 3.12+ | **Périmètre Gateway** | Déploie le STOA Gateway, les 5 CRDs et les ressources optionnelles de synchronisation/monitoring depuis un clone du dépôt ; le Control Plane, la Console, le Portail, Keycloak et PostgreSQL se déploient séparément ([Guide d'installation](/docs/admin/installation)) |
 | Chart Observabilité (`charts/stoa-observability`) | Grafana Alloy, Tempo, Blackbox, Prometheus, Grafana | **Production** | Pipeline OTLP et tableaux de bord |
-| Base de données | PostgreSQL 16 | **Production** | Schéma partagé filtré par `tenant_id` ; sauvegarde et restauration vérifiées en CI |
-| Bus d'événements | Redpanda / Kafka | **Production** | Métrologie et événements de déploiement ; tolérance à la perte d'un broker sur 3 prouvée en CI |
-| Audit & Recherche de logs | OpenSearch 2.x | **Production** | Piste d'audit en double écriture et indexation des journaux |
-| Backend de secrets | OpenBao (API Vault, [ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) | **Production** | Par défaut dans les déploiements de référence via `hvac` et External Secrets Operator ; compatible HashiCorp Vault |
-| GitOps & CI/CD | ArgoCD + GitHub Actions + GHCR | **Production** | SAST, scans d'images sans cache OS, SBOMs, épinglage par digest et preuves de résilience |
+| Base de données | PostgreSQL 15 / 16 | **Production** | Schéma partagé filtré par `tenant_id` ; sauvegarde et restauration vérifiées en CI sur PostgreSQL 16 jetable |
+| Bus d'événements | Redpanda / Kafka | **Production** | Métrologie et événements de déploiement ; dimensionnement 3-brokers / RF3 prouvé sous Docker Compose (`k8s/redpanda` reste mono-réplica) |
+| Audit & Recherche de logs | OpenSearch 2.11 | **Production** | Piste d'audit en double écriture et indexation des journaux |
+| Backend de secrets | OpenBao (API Vault, [ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) | **Partiel** | OpenBao `2.7.2` actif en CI (`hvac`), Compose (`bao agent`) et API Vault auto-hébergée ; Kubernetes Secrets encore utilisés sur une partie des workloads cluster |
+| Preuve HA Identité | Vérificateur HA Keycloak | **Non prouvée dans le dépôt** | Le contrôle statique (`deploy/keycloak/ha-proof`) renvoie `HA_STATIC=fail` sur les définitions mono-réplica du dépôt ; le StatefulSet/PDB HA vit hors de ce chart |
+| GitOps & CI/CD | ArgoCD + GitHub Actions + GHCR | **Production** | SAST, scans d'images sans cache OS, SBOMs, épinglage par digest et gardes de non-régression |
 
 ## Suite de Tests Automatisés (Novembre 2026)
 
@@ -80,7 +81,7 @@ Les volumes ci-dessous reflètent les tests automatisés présents sur `main` da
 | Console UI | `vitest` | 192 | **1 760+** |
 | Developer Portal | `vitest` | 104 | **980** |
 | `stoa-go` (`stoactl` + `stoa-connect`) | `go test` (CLI, boucles connect, adaptateurs, ADS Envoy) | 85 | **490+** |
-| Bout-en-bout & Résilience | Playwright BDD + preuves HA/reprise en CI | — | Smoke, parcours critiques, restauration PG, HA Redpanda & Keycloak |
+| Bout-en-bout & Résilience | Playwright BDD + contrôles sauvegarde/failover CI | — | Smoke, parcours critiques, restauration PG 16 jetable, dimensionnement failover Redpanda 3-brokers, contrôle statique HA identité |
 
 ## Feuille de Route & Décisions d'Architecture
 
