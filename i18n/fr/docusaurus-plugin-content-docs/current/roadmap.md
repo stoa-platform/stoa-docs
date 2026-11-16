@@ -1,113 +1,101 @@
 ---
 sidebar_position: 5
-title: "Feuille de Route STOA Platform : Fonctionnalités & Jalons"
-description: "Feuille de route publique de la Plateforme STOA — fonctionnalités à venir pour le gateway API open source natif IA avec support MCP, proxy LLM, CLI et adapters multi-fournisseurs"
-keywords: [roadmap, features, release plan, MCP gateway, API management, STOA, open source, LLM proxy]
+title: "Feuille de route STOA Platform : Fonctionnalités & Jalons"
+description: "Feuille de route publique de STOA Platform — capacités livrées, transition vers le plan de données Envoy + STOA Link xDS (ADR-073), chantiers planifiés et pistes écartées."
+keywords: [roadmap, feuille de route, fonctionnalités, MCP gateway, Envoy, xDS, STOA Link, API management, STOA, open source, LLM proxy]
 ---
 
 # Feuille de Route
 
-Notre vision pour la Plateforme STOA — construire le gateway pour l'ère de l'IA.
+Notre feuille de route d'ingénierie pour STOA Platform — passerelle API et plan de contrôle open source pour les applications d'entreprise et les agents IA.
 
-:::info Document Vivant
-Cette feuille de route reflète nos priorités actuelles et peut évoluer en fonction des retours de la communauté et des besoins du marché. Des idées à partager ? [Rejoignez la discussion sur Discord](https://discord.gostoa.dev).
+:::info Document Évolutif
+Dernière révision : **novembre 2026**. Les priorités évoluent selon les retours d'exploitation, les décisions d'architecture et les besoins de la communauté. Participez aux échanges sur [Discord](https://discord.gostoa.dev) ou [GitHub Discussions](https://github.com/stoa-platform/stoa/discussions).
 :::
 
-:::tip Dernière Version
-**[v2.2.0](/blog/release-v2.2.0)** (Mars 2026) — Proxy LLM, Inscription Self-Service, Système de Skills, MCP 2025-11-25, OAuth 2.1 DPoP et 12 nouveaux endpoints API.
+:::tip Releases & Versionnement
+Depuis avril 2026, STOA publie des **releases indépendantes par composant** (`control-plane-api`, `control-plane-ui`, `portal`, `stoa-gateway`, `stoa-go`) plutôt que des versions monolithiques `vX.Y.Z` (dernière release monolithique : **[v2.3.0](/blog/release-v2.3.0)**, mars 2026). Suivez les versions publiées dans les [Notes de version](/docs/reference/changelog) et la maturité de chaque brique dans le [Statut d'implémentation](/docs/concepts/implementation-status).
 :::
 
 ---
 
 ## Disponible Aujourd'hui
 
-**Plateforme Core, MCP Gateway, Proxy LLM & Support Multi-Fournisseurs**
+**Plan de Contrôle, Passerelle MCP, Posture de Sécurité & Fédération Multi-Passerelles**
 
-| Fonctionnalité | Statut | Depuis |
-|----------------|--------|--------|
-| Control Plane API (Python/FastAPI) | Disponible | v0.1.0 |
-| STOA Gateway (Rust/Tokio/axum) | Disponible | v0.2.0 |
-| Protocole MCP 2025-11-25 — découverte d'outils, ressources, prompts, completion | Disponible | v2.2.0 |
-| Portail Développeur — découverte d'API et inscription en self-service | Disponible | v0.1.0 |
-| Console Admin — catalogue API, observabilité, opérations tenant | Disponible | v0.1.0 |
-| Architecture Multi-Tenant — isolation au niveau namespace | Disponible | v0.1.0 |
-| SSO Keycloak — OIDC, fédération LDAP, multi-realm | Disponible | v0.1.0 |
-| Proxy LLM — routage multi-fournisseurs (OpenAI, Azure, Mistral) | Disponible | v2.2.0 |
-| Gestion des Coûts LLM — budgets par tenant, application, tableau de bord | Disponible | v2.2.0 |
-| Inscription Self-Service — provisioning tenant, limites d'essai | Disponible | v2.2.0 |
-| Système de Skills — CRUD natif gateway avec circuit breaker | Disponible | v2.2.0 |
-| UAC (Universal API Contract) — validateur JSON Schema, transformation OpenAPI | Disponible | v2.2.0 |
-| OAuth 2.1 — liaison DPoP, gestion DCR RFC 7592 | Disponible | v2.2.0 |
-| Rate Limiting — quotas par consommateur | Disponible | v0.2.0 |
-| Circuit Breaker — par upstream avec zombie reaper | Disponible | v0.2.0 |
-| mTLS — tokens liés aux certificats (RFC 8705) | Disponible | v0.2.0 |
-| En-têtes de Sécurité — bonnes pratiques OWASP, liste de blocage SSRF | Disponible | v0.2.0 |
-| Masquage PII — middleware + endpoints admin | Disponible | v2.2.0 |
-| Scanner de Posture de Sécurité | Disponible | v2.2.0 |
-| Adapters Gateway — webMethods, Kong, Gravitee, Apigee, AWS, Azure APIM | Disponible | v2.2.0 |
-| Auto-Enregistrement Gateway — heartbeat zéro configuration | Disponible | v0.2.0 |
-| Observabilité — Prometheus, Grafana, OpenSearch | Disponible | v0.1.0 |
-| Gateway Arena — lab de benchmark continu (20 dimensions enterprise) | Disponible | v2.2.0 |
-| Vérification Continue de la Plateforme — 3 CUJs toutes les 15 min | Disponible | v2.2.0 |
-| W3C Traceparent — propagation du tracing distribué | Disponible | v2.2.0 |
-| Charts Helm — déploiement complet de la plateforme | Disponible | v0.1.0 |
-| Moteur de Politiques OPA | Disponible | v0.1.0 |
-| Onboarding Consommateurs — modèle de données, sync Keycloak, quotas | Disponible | v0.2.0 |
-| Born GitOps — cycle de vie API déclaratif (ADR-040) | Disponible | v0.2.0 |
-| Piste d'Audit — double écriture PG + pipeline OpenSearch | Disponible | v2.2.0 |
-| Intégration ArgoCD — déploiement GitOps sur OVH + Hetzner | Disponible | v0.2.0 |
-| CRDs — Tool, ToolSet, GatewayInstance, GatewayBinding | Disponible | v0.2.0 |
-| Pipeline de Métriques d'Utilisation | Disponible | v2.2.0 |
-| Facturation — budgets, consommateurs, API de modèles | Disponible | v2.2.0 |
-| Gestion du Cycle de Vie des Contrats | Disponible | v2.2.0 |
-| Endpoints de Gouvernance des Données | Disponible | v2.2.0 |
-| Réconciliation SCIM vers Gateway | Disponible | v2.2.0 |
-| Framework i18n (Console) | Disponible | v2.2.0 |
-| Assistant de Chat IA Intégré | Disponible | v2.2.0 |
-| Export/Import Tenant (Reprise après Sinistre) | Disponible | v2.2.0 |
-| Documentation — 100+ guides, références, ADRs et docs API | Disponible | v2.2.0 |
+| Capacité | Statut | Référence / Notes |
+|----------|--------|-------------------|
+| Control Plane API (Python/FastAPI) | Disponible | `control-plane-api` (`v1.14.x`) — catalogue, contrats UAC, abonnements, promotions, piste d'audit |
+| Console d'Administration & Portail Développeur (React/TypeScript) | Disponible | `control-plane-ui` (`v1.12.x`, i18n) et `portal` (`v1.3.x`) |
+| STOA Gateway — runtime `edge-mcp` (Rust/Tokio/axum) | Disponible | `stoa-gateway` (`v0.9.x`) — plan de données MCP & API en production ; entre en maintenance selon l'[ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) |
+| Multi-Tenancy à Realm Unique & SSO Keycloak | Disponible | Un seul realm `stoa`, un groupe par tenant, claim `tenant_id`, fédération OIDC/LDAP/SAML ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) + isolation par namespace Kubernetes |
+| Autorisation d'Outils Fail-Closed & Politiques Signées | Disponible | Permissions *deny-by-default*, artefacts signés par le Control Plane avec expiration stricte, sonde `/ready` conditionnée par `policyBootTenants` ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) |
+| Backend de Secrets OpenBao (API HTTP Vault) | Disponible | Backend unifié via OpenBao (`hvac` + External Secrets Operator), compatible HashiCorp Vault ; retrait d'Infisical ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) |
+| Protocole MCP 2025-11-25 | Disponible | Découverte d'outils, transports Streamable HTTP & SSE, ressources, prompts, complétion, découverte paresseuse ([ADR-051](/docs/architecture/adr/adr-051-lazy-mcp-discovery)) |
+| UAC (Universal API Contract) | Disponible | Schéma de contrat unique, validation JSON Schema, projection OpenAPI vers MCP ([ADR-067](/docs/architecture/adr/adr-067-uac-as-llm-optimized-executable-contract)) |
+| Proxy LLM, Garde-fous & Maîtrise des Coûts | Disponible | Routage multi-fournisseurs (OpenAI, Azure, Anthropic, Mistral), masquage PII, garde-fous d'injection et de budget tokens, budgets par tenant ([ADR-050](/docs/architecture/adr/adr-050-guardrails-token-budget-state), [ADR-053](/docs/architecture/adr/adr-053-llm-cost-aware-routing)) |
+| Système de Skills & Assistant Chat IA Intégré | Disponible | Skills natifs gateway avec circuit breaker ([ADR-047](/docs/architecture/adr/adr-047-mcp-skills-system)) et assistant IA par tenant dans la Console et le Portail ([ADR-048](/docs/architecture/adr/adr-048-integrated-chat-agent)) |
+| OAuth 2.1, mTLS & Jetons Liés à l'Émetteur | Disponible | Découverte OAuth & proxy DCR ([ADR-044](/docs/architecture/adr/adr-044-mcp-oauth-gateway-proxy)), jetons liés au certificat RFC 8705 ([ADR-039](/docs/architecture/adr/adr-039-mtls-cert-bound-tokens)), DPoP RFC 9449, politiques OPA, en-têtes OWASP & blocage SSRF |
+| Rate Limiting, Circuit Breaker & Métrologie | Disponible | Quotas glissants par consommateur, circuit breaker anti-zombie ([ADR-025](/docs/architecture/adr/adr-025-gateway-resilience-zombie)), métrologie Kafka/Redpanda, APIs de facturation et de gouvernance des données |
+| Outil CLI (`stoactl`) | Disponible | CLI déclaratif Go/Cobra dans `stoa-go` (`v0.3.x`) — `apply`, `reconcile`, `deploy`, `bridge`, `mcp`, `gateway`, `audit`, `doctor` ([Référence CLI](/docs/reference/cli)) |
+| STOA Link (`stoa-connect`) & Adaptateurs Gateway | Disponible | Synchronisation sortante SSE ([ADR-059](/docs/architecture/adr/adr-059-simplified-deployment-sse)) & adaptateurs Control Plane ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern)) pour webMethods, Kong, Gravitee, Apigee, AWS API Gateway, Azure APIM, ainsi qu'un premier mode ADS/xDS loopback pour Envoy |
+| Mode Compagnon Gateway (`sidecar`) | Runtime présent | Endpoint allow/deny `POST /authz` dans `stoa-gateway` ; voir [Usage du compagnon](/docs/guides/companion-usage) pour le périmètre et les limites actuelles |
+| Chart Kubernetes Gateway, CRDs & Opérateur | Disponible | `charts/stoa-platform` déploie le STOA Gateway et 5 CRDs (`Tool`, `ToolSet`, `Skill`, `GatewayInstance`, `GatewayBinding`) ; `charts/stoa-observability` (chart parapluie `charts/stoa-stack`) couvre la télémétrie ; `stoa-operator` (Python/Kopf) réconcilie les CRDs gateway ([Guide d'installation](/docs/admin/installation)) |
+| Observabilité, Preuves HA & Runbooks d'Exploitation | Disponible | Prometheus, Grafana, audit double écriture OpenSearch, W3C Traceparent, Gateway Arena, preuves CI de sauvegarde/bascule (PostgreSQL, Redpanda 3-brokers, HA Keycloak), guides d'[installation hors ligne](/docs/deployment/offline-install), [maintenance](/docs/admin/maintenance), [rotation des secrets](/docs/admin/secret-rotation) et [réponse à incident](/docs/admin/incident-response) |
+| Site Public, Tarification & Documentation | Disponible | Site bilingue EN/FR sur [gostoa.dev](https://gostoa.dev), 180+ pages de documentation et 66 ADRs |
 
 ---
 
 ## En Cours
 
-**Opérateur GitOps, Mode Sidecar & Expérience Développeur**
+**Transition du Plan de Données vers Envoy (ADR-073), Boucle xDS & Packaging Plateforme**
 
-| Fonctionnalité | Statut |
-|----------------|--------|
-| Opérateur de Réconciliation GitOps — opérateur K8s remplaçant AWX (ADR-042) | En cours |
-| Mode Sidecar Gateway — coexistence avec Kong, Envoy, etc. (ADR-024) | En cours |
-| Outil CLI (`stoactl`) — gestion style kubectl (Go/Cobra) | En cours |
-| Landing Page & Tarification (gostoa.dev) | En cours |
+| Chantier | Statut | Détails |
+|----------|--------|---------|
+| Plan de Données Envoy & Services Externes ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) | En cours | Adoption d'Envoy upstream non modifié comme plan de données cible, couplé à un adaptateur d'autorisation `ext_authz` fail-closed, un service `ext_proc` et le module MCP placé derrière Envoy |
+| Boucle xDS STOA Link & Traduction des Politiques ([ADR-057](/docs/architecture/adr/adr-057-product-lineup-gateway-link-connect), [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) | En cours | Extension du serveur ADS loopback mTLS de `stoa-connect` (`CDS`/`LDS`/`RDS` + `cors`, `rate_limit`, `ip_filter`) avec la génération de snapshots UAC → xDS côté Control Plane et les politiques v1 restantes (`jwt_validation`, OIDC, quotas consommateurs, cache, transformations) |
+| Publication d'API Protégée de Bout en Bout via le Control Plane | En cours | Alignement de la publication Control Plane (`POST /v1/tenants/{id}/apis`) sur les garanties JWT entrantes aujourd'hui prouvées via `POST /admin/contracts` |
+| Packaging Helm Complet & Distribution des Charts | En cours | Ajout des déploiements Control Plane API, Console et Portail Développeur dans les charts Kubernetes et publication d'artefacts Helm/OCI versionnés |
+| Intégration CI de l'Opérateur & Workflows d'Approbation GitOps | En cours | Intégration de `stoa-operator` dans les pipelines CI et finalisation des circuits d'approbation par tenant ([ADR-040](/docs/architecture/adr/adr-040-born-gitops-multi-environment)) |
 
 ---
 
 ## Planifié
 
-**Performance, Scalabilité & Écosystème**
+**Topologies de Plan de Données, Outillage de Migration & Écosystème**
 
-| Fonctionnalité | Statut |
-|----------------|--------|
-| Mode Proxy Gateway — proxy transparent pour les backends legacy | Planifié (T3 2026) |
-| Mode Shadow Gateway — miroir de trafic et génération UAC | Planifié (T4 2026) |
-| Provider Terraform | Planifié |
-| Import OpenAPI — auto-enregistrement depuis une spec | Planifié |
-| SDK (Python, TypeScript) | Planifié |
-| Déploiement Edge | Planifié |
-| Plugins WebAssembly | Planifié |
-| Cache des Réponses | Planifié |
-| Connecteurs MCP Pré-construits | Planifié |
-| Templates GitOps (ArgoCD) | Planifié |
-| Registre Helm Public | Planifié |
+| Fonctionnalité | Statut | Détails |
+|----------------|--------|---------|
+| Topologies Proxy & Shadow sur Envoy ([ADR-024](/docs/architecture/adr/adr-024-gateway-unified-modes), [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) | Planifié | Déclinaison des modes `proxy` (routage HTTP généré depuis UAC vers des backends existants) et `shadow` (miroir de trafic Envoy vers la découverte UAC) sous forme de profils xDS |
+| Outillage de Migration & Rollback Gateway Rust → Envoy | Planifié | Mode d'audit comparatif des décisions, runbooks de bascule et procédures de retour arrière avant la fin de support du gateway Rust ([ADR-073 §9](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
+| Provider Terraform / OpenTofu | Planifié | Gestion déclarative Infrastructure-as-Code des tenants, contrats UAC et liaisons gateway |
+| SDKs Clients Typés (Python, TypeScript) | Planifié | Bibliothèques clientes pour le Control Plane et les intégrations MCP |
+| Connecteurs MCP Pré-construits & Modèles ArgoCD | Planifié | Catalogue de connecteurs d'entreprise prêts à l'emploi et modèles GitOps multi-environnements |
+| Packaging Hors-Kubernetes / VM pour Envoy + STOA Link ([ADR-038](/docs/architecture/adr/adr-038-sidecar-deployment-strategies-vm)) | Planifié | Bundles systemd/VM autonomes pour les sites opérant sans Kubernetes |
 
 ---
 
-## En Réflexion
+## En Exploration
 
-- **Policy as Code** — Définir des politiques d'accès en langage naturel
-- **Marketplace** — Découvrir et partager des configurations d'outils MCP
-- **Multi-Cloud Natif** — Optimisations spécifiques aux fournisseurs
-- **Observabilité des Agents** — Traçage de bout en bout des workflows d'agents IA
+**Pistes de Recherche & Écosystème à Moyen/Long Terme**
+
+- **Aide à la Rédaction de Politiques** — Génération assistée de politiques d'accès OPA/UAC relues et approuvées par un opérateur
+- **Partage de Catalogues d'Outils MCP & Contrats UAC** — Définitions signées et réutilisables entre organisations
+- **Observabilité des Workflows d'Agents de Bout en Bout** — Traçage causal inter-outils et attribution fine des coûts sur les exécutions multi-étapes
+- **Interopérabilité Agent-à-Agent (A2A)** — Évaluation des endpoints expérimentaux de découverte et routage A2A (`/.well-known/agent.json`) derrière le plan de données Envoy
+
+---
+
+## Remplacé / Non Retenu
+
+Par souci de transparence sur l'évolution architecturale de la plateforme, les cibles affichées dans de précédentes versions de cette feuille de route et remplacées ou écartées par une décision d'architecture restent référencées ci-dessous :
+
+| Cible Précédemment Affichée | Statut | Justification & Référence |
+|-----------------------------|--------|---------------------------|
+| **Moteur de Connexion Pingora** (pool embarqué en Rust) | **Remplacé** | Livré derrière la feature Cargo `pingora` dans `stoa-gateway` (`v2.3.0`, [ADR-058](/docs/architecture/adr/adr-058-pingora-integration)) ; remplacé comme couche proxy stratégique par Envoy upstream dans l'[ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane). |
+| **Parsing HTTP & Évaluation UAC en eBPF (niveau noyau)** | **Non retenu** | Les crates prototypes (`stoa-ebpf/`) restent dans le dépôt à titre exploratoire, mais l'évaluation HTTP/politiques dans le noyau est écartée de la feuille de route au profit d'Envoy upstream + `ext_authz` ([ADR-073 §10](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)). |
+| **Plugins Gateway WebAssembly (Wasm) In-Process** | **Non retenu** | Le chargement de filtres Wasm, Lua ou personnalisés dans le processus Envoy est exclu afin de découpler le cycle de mise à jour de STOA de l'ABI d'Envoy ; les traitements spécifiques s'exécutent hors processus via `ext_authz` et `ext_proc` ([ADR-073 §1 & §10](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)). |
+| **Produit Sidecar Rust Distinct (runtime « STOA Link »)** | **Remplacé** | Fusionné avec `stoa-connect` en un unique agent Go installé sur site (**STOA Link**) ; le déploiement en sidecar devient une topologie d'Envoy plutôt qu'un binaire séparé ([ADR-057](/docs/architecture/adr/adr-057-product-lineup-gateway-link-connect), [ADR-073 §7](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)). |
 
 ---
 
@@ -122,4 +110,4 @@ Nous construisons en public et accueillons les contributions !
 
 ---
 
-*Cette feuille de route est directionnelle et sujette à modification. Pour les discussions sur la feuille de route enterprise, contactez [sales@gostoa.dev](mailto:sales@gostoa.dev).*
+*Cette feuille de route est directionnelle et sujette à évolution. Pour échanger sur la feuille de route enterprise, contactez [sales@gostoa.dev](mailto:sales@gostoa.dev). Toutes les marques citées appartiennent à leurs propriétaires respectifs ([Mentions sur les marques](/docs/legal/trademarks) — All trademarks are the property of their respective owners).*
