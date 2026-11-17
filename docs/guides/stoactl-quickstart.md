@@ -20,32 +20,38 @@ By the end of this guide, you'll have:
 ## Prerequisites
 
 - **Docker** (Docker Desktop or Docker Engine)
-- **stoactl** — the STOA CLI
+- **Go 1.25+** to build **stoactl** from [`stoa-platform/stoa/stoa-go`](https://github.com/stoa-platform/stoa/tree/main/stoa-go)
 
 ### Install stoactl
+
+:::warning Legacy install channels
+Do **not** use `go install github.com/stoa-platform/stoactl@latest` (frozen standalone repository at `v0.3.0`), `brew install stoa-platform/tap/stoactl` (tap formula stuck at `0.1.1`), or `https://get.gostoa.dev` (legacy bootstrap URLs). Monorepo GitHub Releases `stoa-go-v0.3.9` and `stoa-go-v0.3.10` publish **zero binary assets**; build `stoactl` from a verified monorepo checkout instead.
+:::
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 <Tabs>
-<TabItem value="macos" label="macOS (Homebrew)">
+<TabItem value="tag" label="Release tag (stoa-go-v0.3.10)">
 
 ```bash
-brew install stoa-platform/tap/stoactl
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout stoa-go-v0.3.10
+cd stoa-go
+make install   # installs stoactl into $(go env GOPATH)/bin
 ```
 
 </TabItem>
-<TabItem value="linux" label="Linux">
+<TabItem value="main" label="Verified main commit (639e8b9a)">
 
 ```bash
-curl -sSL https://get.gostoa.dev | sh
-```
-
-</TabItem>
-<TabItem value="go" label="From source (Go 1.22+)">
-
-```bash
-go install github.com/stoa-platform/stoactl@latest
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
+cd stoa-go
+go install -ldflags "-s -w -X github.com/stoa-platform/stoa-go/internal/cli/cmd.Version=0.3.10-main -X github.com/stoa-platform/stoa-go/internal/cli/cmd.Commit=639e8b9a" \
+  ./cmd/stoactl
 ```
 
 </TabItem>
@@ -218,7 +224,7 @@ stoactl bridge your-api.yaml --namespace default --dry-run
 
 ## What's Next?
 
-- **[Quick Start (Cloud)](/docs/guides/quickstart)** — Use the hosted STOA Platform
+- **[Quick Start (Local Stack)](/docs/guides/quickstart)** — Run the local STOA Platform Docker Compose stack
 - **[Gateway Configuration](/docs/reference/configuration)** — Customize your gateway
 - **[Tool CRD Reference](/docs/reference/crds/tool)** — Full Tool spec documentation
 - **[CLI Reference](/docs/reference/cli)** — All stoactl commands

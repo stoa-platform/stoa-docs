@@ -9,10 +9,16 @@ description: "Prepare the local STOA stack with Docker Compose, set every requir
 
 **Sovereign iPaaS — API & integration platform**
 
-This is the single startup path for STOA. It uses the Docker Compose stack of the main [stoa repository](https://github.com/stoa-platform/stoa/tree/main/deploy/docker-compose) and includes the Console, the Developer Portal, the control plane API, the gateway, Keycloak and the observability services (Prometheus, Grafana, Loki, Tempo, OpenSearch). Hosted access is **available on request** through [our team](mailto:sales@gostoa.dev).
+This guide covers the **full local platform stack** in [`stoa/deploy/docker-compose`](https://github.com/stoa-platform/stoa/tree/main/deploy/docker-compose), including the Console, the Developer Portal, the control plane API, the gateway, Keycloak, and the observability services (Prometheus, Grafana, Loki, Tempo, OpenSearch). Hosted access is **available on request** through [our team](mailto:sales@gostoa.dev).
+
+:::tip Two local Docker Compose paths in `stoa-platform/stoa`
+- **Minimal R1 Access Verifier (`quickstart/`, 5 containers):** Starts `postgres`, `keycloak`, `control-plane`, `gateway` (built locally from `stoa-gateway` without Kafka or Pingora), and `backend` (`nginx`) using digest-pinned images, with no Redpanda and no Redis. Running `./verify.sh` declares a route via `POST /admin/contracts` (`inboundAuth: jwt` — because `POST /v1/tenants/{id}/apis` on `main` does not yet attach inbound JWT enforcement on the gateway) and verifies `401` (no token), `401` (invalid Bearer token), and `200` (valid Keycloak client-credentials token) at runtime. See [`stoa/quickstart/README.md`](https://github.com/stoa-platform/stoa/blob/main/quickstart/README.md).
+- **Full Local Platform Stack (`deploy/docker-compose/`, 19 services via shortcut — this guide):** `deploy/docker-compose/docker-compose.yml` declares **35 services** in total (**28 outside profiles**, plus 7 under opt-in profiles `demo`, `monitoring-oidc`, `vault`, `federation`, and `seed`). The explicit target shortcut below starts **19 services** including dependencies.
+- The standalone `stoa-platform/stoa-quickstart` repository is legacy and not used by either path.
+:::
 
 :::info Validation scope
-The Compose configuration of the current `main` branch was validated statically with `docker compose config --quiet`, with every variable listed below set. No container was started. Startup, sign-in, demo data seeding and a first API call still require runtime verification; no startup duration is promised.
+The Compose configuration of the current `main` branch (`639e8b9a`) was validated statically with `docker compose config --quiet`, with every variable listed below set. No container was started for this 19-service stack. Startup, sign-in, demo data seeding and a first API call still require runtime verification; no startup duration is promised.
 :::
 
 ## Prerequisites
@@ -78,7 +84,7 @@ After resolving local conflicts, start this explicit service set:
 docker compose up -d nginx redpanda-init opensearch-init data-prepper tempo
 ```
 
-Through their declared dependencies, these five entries start 19 services: the application stack (PostgreSQL, Redpanda, Keycloak, the database migration job, the control plane API, the Console, the Portal, the gateway and the nginx reverse proxy), OpenSearch with its security and index initialization jobs, Prometheus, Grafana, Loki, Tempo and Data Prepper. The selection leaves out Promtail, which mounts the Docker socket and reads the logs of every container on the host, as well as the demo-only gateways, the traffic seeder and Alertmanager. Do not replace it with an unqualified `docker compose up -d`. The separate `stoa-quickstart` repository is not an alternative path in this guide.
+Through their declared `depends_on` dependencies, these five entries start **19 services** out of the **35 services** declared in `deploy/docker-compose/docker-compose.yml` (**28 outside profiles**): the application stack (PostgreSQL, Redpanda, Keycloak, the database migration job, the control plane API, the Console, the Portal, the gateway and the nginx reverse proxy), OpenSearch with its security and index initialization jobs, Prometheus, Grafana, Loki, Tempo and Data Prepper. The selection leaves out the remaining 9 non-profiled services — Promtail (which mounts the Docker socket and reads the logs of every container on the host), Alertmanager, the demo/link/connect gateways (`stoa-gateway-link`, `link-backend`, `link-proxy`, `stoa-gateway-connect`, `connect-proxy`, `echo-backend`), and `traffic-seeder` — as well as the 7 opt-in profiled services. Do not replace it with an unqualified `docker compose up -d`. The separate `stoa-quickstart` repository is not an alternative path in this guide.
 
 Follow the startup with `docker compose ps -a` until the long-running services report `healthy` and the one-shot jobs (`db-migrate`, `redpanda-init`, `opensearch-security-init`, `opensearch-init`) have exited with status 0. The repository script `scripts/demo/check-health.sh --wait` expects Promtail and Alertmanager and therefore never completes with this selection.
 

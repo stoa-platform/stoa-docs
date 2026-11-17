@@ -66,16 +66,12 @@ flowchart LR
 ### Implémentation Rapide
 
 ```bash
-# 1. Enregistrer votre API dans STOA
-stoa api register --name billing-api --upstream https://billing.internal
+# 1. Convertir votre spec OpenAPI en manifestes Tool MCP et les appliquer via stoactl
+stoactl bridge ./billing-openapi.yaml --namespace default --output ./tools/
+for f in tools/*.yaml; do stoactl apply -f "$f"; done
 
-# 2. Claude.ai la découvre automatiquement
-# Dans Claude : "Quelles APIs de facturation sont disponibles ?"
-# Claude appelle : stoa_catalog(action="search", query="billing")
-
-# 3. L'agent s'abonne et appelle
-# stoa_subscription(action="create", api_id="billing-api")
-# Appel direct via MCP Gateway avec audit complet
+# 2. L'agent IA découvre les outils enregistrés via MCP (Streamable HTTP / SSE)
+# Appel JSON-RPC tools/list et tools/call sur POST /mcp avec jeton Bearer JWT
 ```
 
 ---
@@ -229,11 +225,11 @@ flowchart TB
 
 | Aspect | Implémentation |
 |--------|----------------|
-| **Réseau** | Kubernetes NetworkPolicy par namespace |
-| **Données** | Schéma par tenant dans PostgreSQL |
-| **Auth** | Realm Keycloak séparé par tenant |
-| **Secrets** | Chemins Vault isolés |
-| **Quotas** | Rate limits indépendants |
+| **Auth** | Realm Keycloak unique (`stoa`), un groupe Keycloak par tenant et claim JWT `tenant_id` vérifié ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
+| **Données** | Schéma PostgreSQL partagé filtré logiquement par `tenant_id` |
+| **Politiques d'outils** | Politiques par tenant signées par le Control Plane en mode *fail-closed* ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) |
+| **Secrets** | Chemins Vault / OpenBao isolés par tenant ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) |
+| **Quotas** | Rate limits et budgets de tokens indépendants par tenant et par consommateur |
 
 ### Fonctionnalités de Conformité
 
@@ -248,28 +244,37 @@ flowchart TB
 
 ## Démarrer
 
-Prêt à mettre en œuvre ces cas d'usage ?
-
-:::info Accès Anticipé — Bêta Privée
-STOA Platform est actuellement en bêta privée. [Demandez l'accès](mailto:christophe@hlfh.io) pour déployer ces cas d'usage sur votre infrastructure, ou explorez la [Vue d'Ensemble de l'Architecture](/docs/concepts/architecture) pour comprendre comment fonctionne STOA.
-:::
+Prêt à évaluer ou déployer ces cas d'usage ? STOA Platform est open source (Apache 2.0) sur [`stoa-platform/stoa`](https://github.com/stoa-platform/stoa) ; l'accès hébergé est disponible sur demande via [sales@gostoa.dev](mailto:sales@gostoa.dev).
 
 <Tabs>
-  <TabItem value="saas" label="☁️ SaaS" default>
-    ```
-    1. Demander l'accès bêta → christophe@hlfh.io
-    2. Recevoir vos identifiants tenant
-    3. Se connecter sur https://console.gostoa.dev
-    4. Créer votre première API dans la Console
-    ```
+  <TabItem value="local" label="🐳 Évaluation Locale (Compose)" default>
+
+```bash
+# Vérificateur minimal d'accès R1 à 5 conteneurs (preuve 401/401/200 via POST /admin/contracts)
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa/quickstart
+# Définir les variables requises (POSTGRES_PASSWORD, KC_BOOTSTRAP_ADMIN_PASSWORD, etc.), puis :
+perl -e 'alarm shift; exec @ARGV' 300 docker compose up --wait
+./verify.sh
+```
+
+Pour la stack locale complète à 19 services (Console, Portail et Observabilité), suivez le [Guide de Démarrage Rapide](/docs/guides/quickstart).
+
   </TabItem>
-  <TabItem value="self-hosted" label="🏠 Auto-hébergé">
-    ```
-    1. Demander l'accès bêta → christophe@hlfh.io
-    2. Recevoir l'accès au chart Helm
-    3. helm repo add stoa https://charts.gostoa.dev
-    4. helm install stoa stoa/stoa-platform -n stoa-system
-    ```
+  <TabItem value="k8s" label="☸️ Gateway Auto-hébergé (Helm)">
+
+```bash
+# Installer le chart Helm gateway depuis un checkout du dépôt (pas d'index charts.gostoa.dev)
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
+helm upgrade --install stoa-platform ./charts/stoa-platform \
+  -n stoa-system --create-namespace \
+  -f my-values.yaml
+```
+
+Consultez le [Guide d'Installation](/docs/admin/installation) pour `stoaGateway.image.{repository,digest}`, `stoaGateway.policyBootTenants` et les prérequis Control Plane déployés séparément.
+
   </TabItem>
 </Tabs>
 

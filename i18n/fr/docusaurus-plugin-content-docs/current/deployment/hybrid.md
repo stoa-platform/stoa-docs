@@ -208,7 +208,7 @@ flowchart TB
 - Basculement inter-régions
 - Tableau de bord mondial unifié
 
-**Statut :** Feuille de route T4 2026
+**Statut :** Planifié
 
 ---
 
@@ -253,45 +253,71 @@ flowchart TB
 
 ## Démarrage
 
-### Démarrage Rapide Hybride
+### Déploiement Hybride du Gateway (Kubernetes)
 
-:::info Bêta Privée
-L'accès au dépôt est accordé aux participants bêta. [Demandez l'accès](mailto:christophe@hlfh.io) pour obtenir le chart Helm et les instructions de déploiement.
-:::
+Le chart `charts/stoa-platform` s'installe depuis un checkout de [`stoa-platform/stoa`](https://github.com/stoa-platform/stoa) (aucun index public `charts.gostoa.dev` n'est publié) et déploie le **STOA Gateway** ainsi que ses 5 CRDs. Pour relier une passerelle Kong, Gravitee ou webMethods existante sans Kubernetes, utilisez [`stoa-connect` (STOA Link)](/docs/guides/stoa-connect-quickstart). L'accès à un Control Plane hébergé est disponible sur demande via [sales@gostoa.dev](mailto:sales@gostoa.dev).
 
 ```bash
-# 1. Créer le namespace
-kubectl create namespace stoa-system
+# 1. Cloner le dépôt sur une révision vérifiée
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
 
-# 2. Ajouter le dépôt Helm STOA (fourni avec l'accès bêta)
-helm repo add stoa https://charts.gostoa.dev
-helm repo update
+# 2. Installer le STOA Gateway sur site face aux URLs Control Plane et Keycloak
+helm upgrade --install stoa-platform ./charts/stoa-platform \
+  -n stoa-system --create-namespace \
+  -f my-values.yaml
+```
 
-# 3. Installer avec la configuration hybride
-helm install stoa stoa/stoa-platform \
-  --namespace stoa-system \
-  --set mode=hybrid \
-  --set controlPlane.endpoint=https://api.<YOUR_DOMAIN> \
-  --set controlPlane.tenantId=YOUR_TENANT_ID
+Exemple minimal de `my-values.yaml` pour un gateway hybride (`stoaGateway.image` exige à la fois `repository` et `digest` ; consultez le [Guide d'installation](/docs/admin/installation) pour l'authentification `private_key_jwt` des politiques au démarrage) :
 
-# 4. Vérifier l'installation
+```yaml
+stoa:
+  domain: "<YOUR_DOMAIN>"
+
+stoaGateway:
+  controlPlaneUrl: "https://api.<YOUR_DOMAIN>"
+  keycloakUrl: "https://auth.<YOUR_DOMAIN>"
+  secretName: stoa-gateway-secrets
+  policyBootTenants:
+    - "<YOUR_TENANT_ID>"
+  serviceMonitor:
+    enabled: false
+  otelEndpoint: ""
+
+controlPlaneApi:
+  serviceMonitor:
+    enabled: false
+gateway:
+  edgeMcp:
+    enabled: false
+gatewaySync:
+  enabled: false
+```
+
+```bash
+# 3. Vérifier que les pods passent à 1/1 Ready après chargement des politiques
 kubectl get pods -n stoa-system
 ```
 
-### Démarrage Rapide Entièrement Sur Site
+### Stack Entièrement Sur Site
+
+Le chart `charts/stoa-platform` déploie **uniquement le STOA Gateway, les 5 CRDs et des hooks d'intégration optionnels** (`charts/stoa-observability` empaquette la télémétrie optionnelle Grafana Alloy/Tempo/Blackbox). Provisionnez PostgreSQL, Keycloak (realm unique `stoa`), OpenSearch, OpenBao (`openbao/openbao`, [ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) ainsi que les workloads Control Plane API / Console / Portail Développeur séparément avant d'installer le chart gateway :
 
 ```bash
-# 1. Installer les prérequis
-helm install postgresql bitnami/postgresql -n stoa-system
-helm install opensearch opensearch/opensearch -n stoa-system
-helm install openbao openbao/openbao -n stoa-system  # dépôt : https://openbao.github.io/openbao-helm
+# 1. Provisionner les briques d'infrastructure (exemples à adapter à vos opérateurs/charts)
+helm install openbao openbao/openbao -n openbao --create-namespace  # https://openbao.github.io/openbao-helm
 
-# 2. Installer la stack complète STOA
-helm install stoa stoa/stoa-full \
-  --namespace stoa-system \
-  --set mode=on-premises \
-  --values your-values.yaml
+# 2. Déployer Control Plane API, Console, Portail, PostgreSQL et Keycloak selon vos manifestes site
+#    (ou évaluer localement via deploy/docker-compose — voir /docs/guides/quickstart)
+
+# 3. Installer le STOA Gateway depuis le checkout du dépôt
+helm upgrade --install stoa-platform ./charts/stoa-platform \
+  -n stoa-system --create-namespace \
+  -f your-values.yaml
 ```
+
+Pour les sites isolés sans accès Internet sortant, suivez le guide [Installation hors ligne](/docs/deployment/offline-install).
 
 ---
 

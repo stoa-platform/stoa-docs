@@ -66,16 +66,12 @@ flowchart LR
 ### Quick Implementation
 
 ```bash
-# 1. Register your API in STOA
-stoa api register --name billing-api --upstream https://billing.internal
+# 1. Bridge your OpenAPI spec to MCP Tool manifests and apply via stoactl
+stoactl bridge ./billing-openapi.yaml --namespace default --output ./tools/
+for f in tools/*.yaml; do stoactl apply -f "$f"; done
 
-# 2. Claude.ai automatically discovers it
-# In Claude: "What billing APIs are available?"
-# Claude calls: stoa_catalog(action="search", query="billing")
-
-# 3. Agent subscribes and calls
-# stoa_subscription(action="create", api_id="billing-api")
-# Direct API call through MCP Gateway with full audit
+# 2. AI agent discovers registered tools over MCP (Streamable HTTP / SSE)
+# Client calls JSON-RPC tools/list and tools/call on POST /mcp with Bearer JWT
 ```
 
 ---
@@ -229,11 +225,11 @@ flowchart TB
 
 | Aspect | Implementation |
 |--------|----------------|
-| **Network** | Kubernetes NetworkPolicy per namespace |
-| **Data** | Schema-per-tenant in PostgreSQL |
-| **Auth** | Separate Keycloak realm per tenant |
-| **Secrets** | Isolated Vault paths |
-| **Quotas** | Independent rate limits |
+| **Auth** | Single Keycloak realm (`stoa`), one Keycloak group per tenant, and verified `tenant_id` JWT claim ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
+| **Data** | Shared PostgreSQL schema logically scoped by `tenant_id` |
+| **Tool Policies** | Fail-closed, Control Plane-signed per-tenant tool policies ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) |
+| **Secrets** | Tenant-scoped Vault / OpenBao paths ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) |
+| **Quotas** | Independent per-tenant and per-consumer rate limits and token budgets |
 
 ### Compliance Features
 
@@ -248,28 +244,37 @@ flowchart TB
 
 ## Getting Started
 
-Ready to implement these use cases?
-
-:::info Early Access — Private Beta
-STOA Platform is currently in private beta. [Request access](mailto:christophe@hlfh.io) to deploy these use cases on your infrastructure, or explore the [Architecture Overview](/docs/concepts/architecture) to understand how STOA works.
-:::
+Ready to evaluate or deploy these use cases? STOA Platform is open source (Apache 2.0) at [`stoa-platform/stoa`](https://github.com/stoa-platform/stoa); hosted access is available on request at [sales@gostoa.dev](mailto:sales@gostoa.dev).
 
 <Tabs>
-  <TabItem value="saas" label="☁️ SaaS" default>
-    ```
-    1. Request beta access → christophe@hlfh.io
-    2. Receive your tenant credentials
-    3. Sign in at https://console.gostoa.dev
-    4. Create your first API in the Console
-    ```
+  <TabItem value="local" label="🐳 Local Evaluation (Compose)" default>
+
+```bash
+# Minimal 5-container R1 access verifier (401/401/200 proof via POST /admin/contracts)
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa/quickstart
+# Set required env vars (POSTGRES_PASSWORD, KC_BOOTSTRAP_ADMIN_PASSWORD, etc.), then:
+perl -e 'alarm shift; exec @ARGV' 300 docker compose up --wait
+./verify.sh
+```
+
+For the 19-service local stack with Console, Portal, and Observability, follow the [Quickstart Guide](/docs/guides/quickstart).
+
   </TabItem>
-  <TabItem value="self-hosted" label="🏠 Self-Hosted">
-    ```
-    1. Request beta access → christophe@hlfh.io
-    2. Receive Helm chart access
-    3. helm repo add stoa https://charts.gostoa.dev
-    4. helm install stoa stoa/stoa-platform -n stoa-system
-    ```
+  <TabItem value="k8s" label="☸️ Self-Hosted Gateway (Helm)">
+
+```bash
+# Install the gateway-scoped Helm chart from a repository checkout (no charts.gostoa.dev repo)
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
+helm upgrade --install stoa-platform ./charts/stoa-platform \
+  -n stoa-system --create-namespace \
+  -f my-values.yaml
+```
+
+See the [Installation Guide](/docs/admin/installation) for `stoaGateway.image.{repository,digest}`, `stoaGateway.policyBootTenants`, and separately deployed Control Plane prerequisites.
+
   </TabItem>
 </Tabs>
 
