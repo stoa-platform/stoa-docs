@@ -1,21 +1,28 @@
 ---
 sidebar_position: 3
 title: "CRD ToolSet"
-description: "Spécification de la CRD ToolSet — générer automatiquement plusieurs ressources Tool depuis une spécification OpenAPI."
-keywords: [ToolSet CRD, Kubernetes, OpenAPI, custom resource]
+description: "Spécification de la CRD ToolSet (toolsets.gostoa.dev) — connecter un serveur MCP amont via SSE ou Streamable HTTP et exposer ses outils sur STOA Gateway."
+keywords: [ToolSet CRD, Kubernetes, MCP, serveur amont, SSE, streamable-http, gostoa.dev]
 ---
 
 # CRD ToolSet
 
-La CRD `ToolSet` génère plusieurs ressources Tool depuis une spécification OpenAPI.
+La CRD `ToolSet` (`charts/stoa-platform/crds/toolsets.gostoa.dev.yaml`) connecte un serveur MCP amont externe ou interne (`sse` ou `streamable-http`) et enregistre ses outils découverts dans `stoa-gateway`.
 
-## GroupVersionKind
+:::info Génération OpenAPI vers `Tool` vs `ToolSet`
+`ToolSet` fédère un **serveur MCP amont** en exécution. Pour générer statiquement des manifestes `Tool` à partir d'une spécification OpenAPI, utilisez [`stoactl bridge <openapi.yaml>`](/docs/reference/cli).
+:::
+
+## Métadonnées de Ressource
 
 | Champ | Valeur |
-|-------|-------|
-| Group | `gostoa.dev` |
-| Version | `v1alpha1` |
-| Kind | `ToolSet` |
+|-------|--------|
+| **Nom CRD** | `toolsets.gostoa.dev` |
+| **Version API** | `gostoa.dev/v1alpha1` |
+| **Kind** | `ToolSet` |
+| **Nom court** | `ts` |
+| **Portée** | `Namespaced` |
+| **Watcher** | `stoa-gateway` (`CrdWatcher`) |
 
 ## Exemple Complet
 
@@ -23,284 +30,64 @@ La CRD `ToolSet` génère plusieurs ressources Tool depuis une spécification Op
 apiVersion: gostoa.dev/v1alpha1
 kind: ToolSet
 metadata:
-  name: payment-api-tools
+  name: crm-mcp-upstream
   namespace: tenant-acme
 spec:
-  displayName: Tools API Paiement
-  description: Tools générés depuis la spec OpenAPI de l'API Paiement
-  openAPISpec:
-    url: https://api.<YOUR_DOMAIN>/acme/payment-api/v2/openapi.json
-    refreshInterval: "1h"
-  baseURL: https://api.<YOUR_DOMAIN>/acme/payment-api/v2
-  selector:
-    tags:
-      - payments
-      - refunds
-    excludeTags:
-      - internal
-      - deprecated
-    methods:
-      - GET
-      - POST
-  toolDefaults:
-    tags:
-      - generated
-      - payment-api
-    timeout: "30s"
-    rateLimit:
-      requestsPerMinute: 100
-      burst: 20
-    authentication:
+  upstream:
+    url: https://crm-mcp.internal.example.com/mcp
+    transport: streamable-http
+    timeoutSeconds: 30
+    auth:
       type: bearer
-      secretRef:
-        name: payment-api-token
-        key: token
-  naming:
-    prefix: "payment_"
-    useOperationId: true
-  enabled: true
-status:
-  phase: Ready
-  toolCount: 12
+      secretRef: crm-mcp-token
   tools:
-    - payment_create_payment
-    - payment_get_payment
-    - payment_list_payments
-    - payment_create_refund
-  lastSyncedAt: "2026-02-06T12:00:00Z"
-  specHash: "abc123"
+    - search_contacts
+    - get_account
+  prefix: "crm_"
+status:
+  connected: true
+  toolCount: 2
+  discoveredTools:
+    - crm_search_contacts
+    - crm_get_account
+  lastSync: "2026-11-01T12:00:00Z"
 ```
 
-## Champs Spec
+## Champs `spec` (`openAPIV3Schema`)
 
 ### Champs Obligatoires
 
-| Champ | Type | Description |
-|-------|------|-------------|
-| `displayName` | string | Nom lisible par un humain (1-64 caractères) |
+| Champ | Type | Valeurs / Contraintes imposées | Description |
+|-------|------|--------------------------------|-------------|
+| `upstream` | `object` | Obligatoire (`upstream.url` obligatoire) | Paramètres de connexion au serveur MCP amont |
+| `upstream.url` | `string` | Obligatoire | URL du serveur MCP amont |
 
-### Source de la Spec OpenAPI
+### Champs Optionnels
 
-Configurer d'où récupérer la spécification OpenAPI :
+| Champ | Type | Défaut | Valeurs / Contraintes imposées | Description |
+|-------|------|--------|--------------------------------|-------------|
+| `upstream.transport` | `string` | `sse` | Enum : `sse`, `streamable-http` | Protocole de transport MCP vers `upstream.url` |
+| `upstream.timeoutSeconds` | `integer` | — | Entier | Délai d'expiration de connexion/requête en secondes |
+| `upstream.auth.type` | `string` | — | Enum : `bearer`, `header` | Schéma d'authentification amont |
+| `upstream.auth.secretRef` | `string` | — | Chaîne | Nom du `Secret` Kubernetes contenant l'identifiant amont |
+| `upstream.auth.headerName` | `string` | — | Chaîne | Nom de l'en-tête HTTP lorsque `upstream.auth.type: header` |
+| `tools` | `string[]` | `[]` | Tableau de chaînes | Liste blanche des outils à exposer (`[]` expose tous les outils découverts) |
+| `prefix` | `string` | — | Chaîne | Préfixe ajouté aux noms d'outils pour éviter les collisions |
 
-```yaml
-spec:
-  openAPISpec:
-    # Option 1 : URL (recommandé)
-    url: https://api.example.com/openapi.json
-    refreshInterval: "1h"  # Fréquence de récupération
-
-    # Option 2 : ConfigMap
-    configMapRef:
-      name: api-spec
-      key: openapi.yaml
-
-    # Option 3 : Secret (pour les specs privées)
-    secretRef:
-      name: private-api-spec
-      key: openapi.json
-
-    # Option 4 : Inline (petites specs uniquement)
-    inline: |
-      openapi: "3.0.0"
-      info:
-        title: Mon API
-        version: "1.0"
-      paths: ...
-```
-
-### Selector (Filtrer les Opérations)
-
-Contrôler quelles opérations deviennent des tools :
-
-```yaml
-spec:
-  selector:
-    # N'inclure que ces tags
-    tags:
-      - public
-      - v2
-
-    # Exclure ces tags
-    excludeTags:
-      - internal
-      - deprecated
-      - admin
-
-    # Limiter les méthodes HTTP
-    methods:
-      - GET
-      - POST
-
-    # Filtre par préfixe de chemin
-    pathPrefix: /api/v2/
-
-    # Opérations spécifiques par ID
-    operationIds:
-      - createUser
-      - getUser
-      - listUsers
-```
-
-### Valeurs par Défaut des Tools
-
-Appliquer des valeurs par défaut à tous les tools générés :
-
-```yaml
-spec:
-  toolDefaults:
-    tags:
-      - generated
-    timeout: "30s"
-    rateLimit:
-      requestsPerMinute: 60
-      burst: 10
-    authentication:
-      type: bearer
-      secretRef:
-        name: api-token
-        key: token
-```
-
-### Configuration du Nommage
-
-Contrôler le nommage des tools :
-
-```yaml
-spec:
-  naming:
-    prefix: "myapi_"           # Préfixer tous les noms de tools
-    suffix: "_v2"              # Suffixer tous les noms de tools
-    useOperationId: true       # Utiliser l'operationId OpenAPI (recommandé)
-```
-
-Les noms de tools sont générés comme suit : `{prefix}{operationId}{suffix}`
-
-Exemple : `myapi_createPayment_v2`
-
-## Champs Status
+## Sous-ressource `status`
 
 | Champ | Type | Description |
 |-------|------|-------------|
-| `phase` | enum | Pending, Syncing, Ready, Error, Disabled |
-| `toolCount` | integer | Nombre de tools générés |
-| `tools` | array | Liste des noms de tools générés |
-| `lastSyncedAt` | datetime | Dernière synchronisation réussie |
-| `specHash` | string | Hash de la spec OpenAPI (pour la détection de changements) |
-| `lastError` | string | Message d'erreur le plus récent |
-| `conditions` | array | Conditions de style Kubernetes |
+| `connected` | `boolean` | Indique si `stoa-gateway` est connecté au serveur MCP amont |
+| `toolCount` | `integer` | Nombre d'outils découverts et enregistrés |
+| `discoveredTools` | `string[]` | Liste des noms d'outils enregistrés |
+| `lastSync` | `string` | Horodatage de la dernière synchronisation réussie |
+| `error` | `string` | Message d'erreur en cas d'échec de connexion ou de découverte |
 
-### Phases
-
-| Phase | Description |
-|-------|-------------|
-| `Pending` | ToolSet créé, en attente de la première synchronisation |
-| `Syncing` | Récupération et traitement de la spec en cours |
-| `Ready` | Tools générés et enregistrés |
-| `Error` | Échec de la synchronisation |
-| `Disabled` | ToolSet désactivé manuellement |
-
-## Comportement de Synchronisation
-
-1. **Synchronisation initiale** — À la création, récupère la spec et génère les tools
-2. **Actualisation périodique** — Re-récupère à `refreshInterval`
-3. **Détection des changements** — Ne régénère que si le hash de la spec change
-4. **Incrémental** — Ajoute les nouveaux tools, supprime les opérations effacées
-5. **Préserve les modifications** — Les modifications manuelles des tools sont préservées
-
-## Exemples
-
-### Depuis une URL Publique
-
-```yaml
-apiVersion: gostoa.dev/v1alpha1
-kind: ToolSet
-metadata:
-  name: petstore-tools
-  namespace: tenant-demo
-spec:
-  displayName: API Petstore
-  openAPISpec:
-    url: https://petstore3.swagger.io/api/v3/openapi.json
-    refreshInterval: "24h"
-  baseURL: https://petstore3.swagger.io/api/v3
-  selector:
-    tags:
-      - pet
-      - store
-  enabled: true
-```
-
-### Depuis un ConfigMap
-
-```yaml
-apiVersion: gostoa.dev/v1alpha1
-kind: ToolSet
-metadata:
-  name: internal-api-tools
-  namespace: tenant-corp
-spec:
-  displayName: API Interne
-  openAPISpec:
-    configMapRef:
-      name: internal-api-spec
-      key: openapi.yaml
-  baseURL: http://internal-api.corp.svc.cluster.local
-  toolDefaults:
-    authentication:
-      type: none  # Service interne, aucune auth requise
-```
-
-### Filtré par Méthodes
-
-```yaml
-apiVersion: gostoa.dev/v1alpha1
-kind: ToolSet
-metadata:
-  name: readonly-tools
-  namespace: tenant-readonly
-spec:
-  displayName: Tools API Lecture Seule
-  description: Uniquement les opérations GET exposées
-  openAPISpec:
-    url: https://api.example.com/openapi.json
-  selector:
-    methods:
-      - GET
-  toolDefaults:
-    timeout: "10s"
-    rateLimit:
-      requestsPerMinute: 200
-```
-
-## Dépannage
-
-### Tools Non Générés
-
-Vérifier le statut du ToolSet :
-
-```bash
-kubectl describe toolset my-toolset -n tenant-acme
-```
-
-Problèmes courants :
-- URL de spec OpenAPI invalide
-- Filtres selector trop restrictifs
-- Authentification requise pour l'URL de la spec
-
-### Spec Non Actualisée
-
-Vérifier que `refreshInterval` est défini et consulter les logs :
-
-```bash
-kubectl logs -l app=mcp-gateway -n stoa-system | grep toolset
-```
-
-### Noms de Tools en Double
-
-S'assurer que `naming.prefix` est unique par ToolSet.
+`kubectl get toolsets` (ou `kubectl get ts`) affiche les colonnes `Upstream` (`.spec.upstream.url`), `Tools` (`.status.toolCount`) et `Connected` (`.status.connected`).
 
 ## Ressources Associées
 
-- [CRD Tool](./tool.md) — Définition individuelle de tool
-- [ADR-006 — Architecture du Registre de Tools](/docs/architecture/adr/adr-006-tool-registry-architecture)
+- [CRD Tool](./tool.md) — Outil MCP individuel adossé à HTTP
+- [CRD Skill](./skill.md) — Instructions système contextualisées
+- [Référence CLI (`stoactl bridge`)](/docs/reference/cli) — Générer des CRDs `Tool` depuis une spec OpenAPI

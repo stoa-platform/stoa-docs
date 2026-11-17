@@ -55,7 +55,24 @@ go install github.com/stoa-platform/stoactl@latest
 | `stoactl auth` | Authentication commands |
 | `stoactl config` | Manage CLI contexts |
 | `stoactl token-usage` | View API token usage statistics |
+| `stoactl reconcile` | Reconcile UAC contracts from a local governance snapshot |
+| `stoactl gateway` | Manage and inspect gateway instances (`gw`, `gateways`) |
+| `stoactl mcp` | List MCP servers/tools, invoke tools, and check MCP health |
+| `stoactl catalog` | Detect catalog drift or trigger synchronization |
+| `stoactl subscription` | List, inspect, approve, or revoke subscriptions (`sub`) |
+| `stoactl tenant` | Provision, inspect, list, or delete tenants |
+| `stoactl connect` | Inspect `stoa-connect` (STOA Link) agents and discover gateway APIs |
+| `stoactl audit` | Export tenant audit logs (`table`, `json`, `yaml`, `csv`) |
+| `stoactl completion` | Generate shell completion scripts (`bash`, `zsh`, `fish`) |
 | `stoactl version` | Print version information |
+
+### Global Flags
+
+| Flag / Env | Description |
+|------------|-------------|
+| `--tenant <id>` / `STOACTL_TENANT` | Override the active context's tenant ID for the command |
+| `--admin` | Authenticate with the configured service-account token instead of the user OIDC token |
+| `--namespace <ns>` / `STOACTL_NAMESPACE` | **Deprecated** global flag (prints a deprecation warning in favor of `--tenant`; `--namespace` / `-n` on `stoactl bridge` remains active for Kubernetes CRD metadata) |
 
 ---
 
@@ -485,6 +502,135 @@ stoactl version
 
 ---
 
+## Governance, Platform & Agent Commands
+
+### `stoactl reconcile`
+
+Reconcile owned Universal API Contracts (UAC) against target gateways from a local YAML or JSON governance snapshot (`stoa-go/internal/cli/cmd/reconcile/`).
+
+```bash
+stoactl reconcile -f ./snapshot.yaml --once
+stoactl reconcile -f ./snapshot.yaml --interval 10s --state .stoactl-reconcile.json
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--file`, `-f` | — | Local YAML or JSON snapshot containing targets and contracts (**required**) |
+| `--state` | `.stoactl-reconcile.json` | Local reconciliation status file |
+| `--once` | `false` | Run a single reconciliation pass and exit |
+| `--interval` | `5s` | Continuous reconciliation loop interval |
+
+### `stoactl gateway`
+
+Manage registered gateway instances (aliases: `gw`, `gateways`; supports `-o table|wide|yaml|json`).
+
+```bash
+stoactl gateway list
+stoactl gateway get <gateway-id>
+stoactl gateway health <gateway-id>
+```
+
+### `stoactl mcp`
+
+Interact with MCP servers and tools via the Control Plane API or directly against a gateway (`--gateway <url>`).
+
+```bash
+stoactl mcp list-servers
+stoactl mcp list-tools --server weather-mcp
+stoactl mcp call get-weather --server weather-mcp --input '{"q":"Paris"}'
+stoactl mcp health
+```
+
+| Subcommand / Flag | Description |
+|-------------------|-------------|
+| `list-servers` | List registered MCP servers |
+| `list-tools [--server <name>]` | List MCP tools (optionally filtered by server) |
+| `call <tool-name> --server <name> [--input '<json>']` | Invoke an MCP tool (`--server` is required) |
+| `health` | Check MCP subsystem health |
+| `--gateway <url>` | Query a `stoa-gateway` URL directly (bypasses Control Plane RBAC) |
+| `--output`, `-o` | Output format: `table`, `json`, `yaml` |
+
+### `stoactl catalog`
+
+Inspect API catalog drift or trigger synchronization (`dry-run` by default unless `--apply` is passed).
+
+```bash
+stoactl catalog sync --tenant acme
+stoactl catalog sync --tenant acme --apply -o json
+```
+
+### `stoactl subscription`
+
+Manage consumer API subscriptions (aliases: `sub`, `subscriptions`; supports `-o table|wide|yaml|json`).
+
+```bash
+stoactl subscription list --status pending
+stoactl subscription get <subscription-id>
+stoactl subscription approve <subscription-id>
+stoactl subscription revoke <subscription-id>
+```
+
+### `stoactl tenant`
+
+Manage platform tenants and inspect Keycloak provisioning status (`-o table|wide|yaml|json`).
+
+```bash
+stoactl tenant list
+stoactl tenant create --name acme --display-name "Acme Corp" --owner-email ops@example.com
+stoactl tenant status acme
+stoactl tenant get acme
+stoactl tenant delete acme
+```
+
+### `stoactl connect`
+
+Inspect [`stoa-connect` (STOA Link)](/docs/guides/stoa-connect-quickstart) agents and run ad-hoc admin-API discovery.
+
+```bash
+# Check stoa-connect / STOA Link agent health (:8090/health)
+stoactl connect status --url http://localhost:8090
+
+# Discover APIs directly from a third-party gateway admin API
+stoactl connect discover --admin-url http://localhost:8001 --type kong --token "${KONG_ADMIN_TOKEN}"
+
+# Send a sync trigger request
+stoactl connect sync --url http://localhost:8090
+```
+
+:::note Envoy xDS mode vs `stoactl connect discover` / `sync`
+- `stoactl connect discover` only supports admin-API gateways (`--type kong|gravitee|webmethods|auto`). Upstream **Envoy** has no admin-API discovery path: Envoy mode is configured on the `stoa-connect` agent via `STOA_GATEWAY_TYPE=envoy` and loopback mTLS ADS (`STOA_ENVOY_*` variables; see [stoa-connect Quickstart](/docs/guides/stoa-connect-quickstart)).
+- `stoactl connect sync --url` sends `POST <url>/sync`. On current `main`, `cmd/stoa-connect/main.go` mounts `/health`, `/metrics`, and `/webhook/events` (policy synchronization runs automatically on the agent's background sync/SSE loop).
+:::
+
+### `stoactl audit`
+
+Export tenant audit logs with PII redaction enabled by default.
+
+```bash
+stoactl audit export --tenant acme --since 7d -o csv
+stoactl audit export --tenant acme --action subscription.approved --redact-pii=true -o json
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--tenant` | — | Tenant ID (**required**) |
+| `--since` | `7d` | Lookback window (`24h`, `7d`, `30d`, or ISO-8601 date) |
+| `--action` | `""` | Filter by audit action name |
+| `--redact-pii` | `true` | Mask email addresses and IP addresses in exported records |
+| `--output`, `-o` | `table` | Output format: `table`, `json`, `yaml`, `csv` |
+
+### `stoactl completion`
+
+Generate shell completion scripts for `bash`, `zsh`, or `fish`.
+
+```bash
+stoactl completion zsh > "${fpath[1]}/_stoactl"
+stoactl completion bash > /etc/bash_completion.d/stoactl
+stoactl completion fish > ~/.config/fish/completions/stoactl.fish
+```
+
+---
+
 ## Workflows
 
 ### Deploy an API (stoa.yaml)
@@ -501,7 +647,7 @@ rate_limit:
   requests_per_minute: 1000
 auth:
   type: oauth2
-  issuer: ${STOA_AUTH_URL}/realms/acme
+  issuer: ${STOA_AUTH_URL}/realms/stoa
   required: true
 EOF
 

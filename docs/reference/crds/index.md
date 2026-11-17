@@ -1,48 +1,46 @@
 ---
 sidebar_position: 1
-title: "Kubernetes CRDs for STOA: Tool & ToolSet Resources"
-description: "STOA Kubernetes Custom Resource Definitions (CRDs) reference — Tool and ToolSet resources for declarative MCP tool management and GitOps workflows"
-keywords: [CRD, Kubernetes, custom resources, Tool, ToolSet]
+title: "Kubernetes CRDs Reference"
+description: "STOA Kubernetes Custom Resource Definitions (gostoa.dev/v1alpha1) — Tool, ToolSet, Skill, GatewayInstance, and GatewayBinding."
+keywords: [CRD, Kubernetes, custom resources, Tool, ToolSet, Skill, GatewayInstance, GatewayBinding]
 ---
 
 # Kubernetes CRDs Reference
 
-STOA Platform uses Kubernetes Custom Resource Definitions (CRDs) for declarative tool management.
+STOA Platform ships **five** namespaced Custom Resource Definitions (`gostoa.dev/v1alpha1`) in `charts/stoa-platform/crds/` for declarative MCP tool registration, agent context injection, and multi-gateway reconciliation.
 
-## Available CRDs
+## Available CRDs (`gostoa.dev/v1alpha1`)
 
-| CRD | API Version | Description |
-|-----|-------------|-------------|
-| [Tool](./tool.md) | `gostoa.dev/v1alpha1` | Individual MCP tool definition |
-| [ToolSet](./toolset.md) | `gostoa.dev/v1alpha1` | Tool collection from OpenAPI spec |
+| Kind | Plural / Short Name | Reconciler / Watcher | Purpose |
+|------|---------------------|----------------------|---------|
+| [`Tool`](./tool.md) | `tools` / `tool` | `stoa-gateway` (`CrdWatcher`) | Individual HTTP-backed MCP tool definition |
+| [`ToolSet`](./toolset.md) | `toolsets` / `ts` | `stoa-gateway` (`CrdWatcher`) | Upstream MCP server connection (`sse` or `streamable-http`) exposing discovered tools |
+| [`Skill`](./skill.md) | `skills` / `sk` | `stoa-gateway` (`CrdWatcher`) | Scoped system-prompt context instructions (`global`, `tenant`, `tool`, `user`) |
+| [`GatewayInstance`](./gateway-instance.md) | `gatewayinstances` / `gwi` | `stoa-operator` (Python/Kopf, Beta) | Declarative registration and health tracking of a STOA or third-party gateway instance |
+| [`GatewayBinding`](./gateway-binding.md) | `gatewaybindings` / `gwb` | `stoa-operator` (Python/Kopf, Beta) | Declarative binding of a catalog API and policies onto a `GatewayInstance` |
+
+*(Note: `stoa-gateway`'s Rust K8s module also contains an internal `GuardrailPolicy` watcher struct, which is not currently shipped as a CRD manifest in `charts/stoa-platform/crds/`.)*
 
 ## Installation
 
-CRDs are installed via the STOA Helm chart:
+All five CRDs are installed automatically with the `./charts/stoa-platform` Helm chart from a `stoa-platform/stoa` checkout:
 
 ```bash
-helm install stoa-platform ./charts/stoa-platform -n stoa-system --create-namespace
+helm install stoa-platform ./charts/stoa-platform -n stoa-system --create-namespace \
+  -f values-override.yaml
 ```
 
-Or manually:
+To apply or upgrade CRDs explicitly (recommended before `helm upgrade`, as Helm does not overwrite existing CRDs):
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/stoa-platform/stoa/main/charts/stoa-platform/crds/
+kubectl apply -f charts/stoa-platform/crds/
 ```
 
-## Namespace Requirements
+## Namespace Scoping
 
-CRDs must be created in tenant namespaces:
+All five CRDs are `Namespaced`. When `STOA_K8S_WATCHER_ENABLED=true`, `stoa-gateway` watches `Tool`, `ToolSet`, and `Skill` resources across namespaces and maps the resource's `metadata.namespace` to the owning tenant boundary.
 
-```yaml
-metadata:
-  name: my-tool
-  namespace: tenant-acme  # Must match tenant namespace
-```
-
-## Quick Start
-
-Create a simple tool:
+## Quick Example
 
 ```yaml
 apiVersion: gostoa.dev/v1alpha1
@@ -63,16 +61,11 @@ spec:
         description: City name or coordinates
     required:
       - location
+  auth: bearer
+  rateLimit: "100/min"
 ```
-
-Apply:
 
 ```bash
 kubectl apply -f weather-tool.yaml
-```
-
-Verify:
-
-```bash
-kubectl get tools -n tenant-acme
+kubectl get tools,toolsets,skills,gatewayinstances,gatewaybindings -n tenant-acme
 ```

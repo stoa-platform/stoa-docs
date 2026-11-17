@@ -1,10 +1,13 @@
 ---
 sidebar_position: 3
 title: "Gateway Admin API Reference"
-description: "Complete reference for the STOA Gateway admin API — API route management, policies, circuit breakers, cache, sessions, mTLS, and quotas."
+description: "Complete reference for the STOA Gateway admin API — UAC contracts, routes, policies, skills, federation, prompt cache, circuit breakers, sessions, mTLS, and quotas."
 keywords:
   - gateway admin API
+  - UAC contracts
   - API route management
+  - skills management
+  - federation
   - circuit breaker
   - cache management
   - quota management
@@ -12,34 +15,39 @@ keywords:
 
 # Gateway Admin API
 
-Complete reference for the STOA Gateway administrative endpoints. These endpoints are used by the Control Plane to manage routes, policies, and runtime state.
+Complete reference for the STOA Gateway (`stoa-gateway`) administrative surface mounted under `/admin/*` (`stoa-gateway/src/handlers/admin/router.rs`). These endpoints are used by the Control Plane and operators to manage UAC contracts, routes, policies, skills, federation, caches, and runtime diagnostics.
 
-## Authentication
+## Authentication & Middleware Chain
 
-All `/admin/*` endpoints require a Bearer token configured as the gateway's admin API token:
+Every `/admin/*` route passes through three middleware layers (outermost to innermost):
+
+1. **`admin_audit_log`** — Logs all administrative requests (including rate-limited `429` and unauthenticated `401` attempts)
+2. **`admin_rate_limit`** — Throttles bearer-probing bursts before authentication
+3. **`admin_auth`** — Validates `Authorization: Bearer <token>`
 
 ```bash
-curl -H "Authorization: Bearer ${ADMIN_TOKEN}" \
+curl -H "Authorization: Bearer ${STOA_ADMIN_API_TOKEN}" \
   "${STOA_GATEWAY_URL}/admin/health"
 ```
 
 | Response | Meaning |
 |----------|---------|
-| `200 OK` | Authenticated, request processed |
-| `401 Unauthorized` | Missing or invalid admin token |
-| `503 Service Unavailable` | Admin API disabled (no token configured) |
+| `200 OK` / `201 Created` / `204 No Content` | Authenticated, request processed |
+| `401 Unauthorized` | Missing/invalid `STOA_ADMIN_API_TOKEN` (constant-time comparison), or missing strong-auth administrative OIDC JWT when strong authentication is enabled (`WWW-Authenticate: Bearer error="insufficient_user_authentication"`) |
+| `429 Too Many Requests` | Admin pre-auth rate limit exceeded |
+| `503 Service Unavailable` | Admin API disabled (`STOA_ADMIN_API_TOKEN` is unset or empty — fail-closed) |
 
 ---
 
-## Health
+## Health & Route Reload
 
 ### GET /admin/health
 
-Returns gateway status and statistics.
+Returns gateway status and registry counts.
 
 ```bash
 curl "${STOA_GATEWAY_URL}/admin/health" \
-  -H "Authorization: Bearer ${ADMIN_TOKEN}"
+  -H "Authorization: Bearer ${STOA_ADMIN_API_TOKEN}"
 ```
 
 ```json
@@ -51,17 +59,85 @@ curl "${STOA_GATEWAY_URL}/admin/health" \
 }
 ```
 
+### POST /admin/routes/reload
+
+Trigger a hot-reload of dynamic routes from the configured source.
+
 ---
 
-## API Route Management
+## UAC Contract Management
+
+Contract mutations (`stoa-gateway/src/handlers/admin/contracts.rs`) are **transactional** across three in-memory stores (`contract_registry`, `route_registry`, and `tool_registry`):
+
+- **Upsert (`POST /admin/contracts`)** runs *bind-first*: REST routes and MCP tools are bound before committing to `contract_registry` (rolling back partial binds on error).
+- **Delete (`DELETE /admin/contracts/:key`)** runs *unbind-first*: both binders must succeed before the contract record is removed.
+
+### POST /admin/contracts
+
+Register or update a Universal API Contract (`201 Created` on insert, `200 OK` on update). Setting `"inboundAuth": "jwt"` enforces Keycloak JWT validation on the generated REST route (as exercised in `quickstart/verify.sh`):
+
+```bash
+curl -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
+  -H "Authorization: Bearer ${STOA_ADMIN_API_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "echo-service",
+    "version": "1.0.0",
+    "tenantId": "acme",
+    "inboundAuth": "jwt",
+    "bindings": {
+      "rest": {
+        "enabled": true,
+        "pathPrefix": "/apis/acme/echo",
+        "backendUrl": "http://backend:8080"
+      },
+      "mcp": {
+        "enabled": true
+      }
+    },
+    "endpoints": [
+      {
+        "path": "/get",
+        "methods": ["GET"],
+        "operationId": "echoGet"
+      }
+    ]
+  }'
+```
+
+```json
+{
+  "key": "acme:echo-service:1.0.0",
+  "status": "created",
+  "routes_generated": 1,
+  "tools_generated": 1,
+  "llm_capabilities": []
+}
+```
+
+### GET /admin/contracts
+
+List all registered UAC contracts.
+
+### GET /admin/contracts/:key
+
+Fetch a single contract by composite key (`{tenant_id}:{name}:{version}`). Returns `404` if not found.
+
+### DELETE /admin/contracts/:key
+
+Unbind REST routes and MCP tools for `:key` and delete the contract (`204 No Content` or `404 Not Found`).
+
+---
+
+## API Route & Proxy Backend Management
 
 ### POST /admin/apis
 
-Create or update an API route (upsert).
+Create or update a low-level API route (`201 Created` or `200 OK`).
 
 ```bash
 curl -X POST "${STOA_GATEWAY_URL}/admin/apis" \
-  -H "Authorization: Bearer ${ADMIN_TOKEN}" \
+  -H "Authorization: Bearer ${STOA_ADMIN_API_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
     "id": "api-123",
@@ -75,49 +151,33 @@ curl -X POST "${STOA_GATEWAY_URL}/admin/apis" \
   }'
 ```
 
-| Status | Meaning |
-|--------|---------|
-| `201 Created` | New route created |
-| `200 OK` | Existing route updated |
-
 ### GET /admin/apis
 
 List all registered API routes.
 
-```json
-[
-  {
-    "id": "api-123",
-    "name": "payments",
-    "tenant_id": "acme",
-    "path_prefix": "/apis/acme/payments",
-    "backend_url": "https://api.example.com",
-    "methods": ["GET", "POST"],
-    "spec_hash": "abc123",
-    "activated": true
-  }
-]
-```
-
 ### GET /admin/apis/:id
 
-Get a single API route by ID. Returns `404 Not Found` if the route doesn't exist.
+Get a single API route by ID (`404 Not Found` if missing).
 
 ### DELETE /admin/apis/:id
 
-Remove an API route. Returns `204 No Content` on success, `404 Not Found` if missing. Delete is idempotent — deleting a non-existent route is safe.
+Remove an API route (`204 No Content` or `404 Not Found`).
+
+### GET /admin/api-proxy/backends
+
+List configured internal API proxy backends and their active status (protected by `admin_auth`).
 
 ---
 
-## Policy Management
+## Policy & Credential Management
 
 ### POST /admin/policies
 
-Create or update a policy (upsert). Policies apply rate limits, CORS, and other rules to API routes.
+Create or update a gateway policy (`201 Created` or `200 OK`).
 
 ```bash
 curl -X POST "${STOA_GATEWAY_URL}/admin/policies" \
-  -H "Authorization: Bearer ${ADMIN_TOKEN}" \
+  -H "Authorization: Bearer ${STOA_ADMIN_API_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
     "id": "policy-123",
@@ -132,28 +192,98 @@ curl -X POST "${STOA_GATEWAY_URL}/admin/policies" \
   }'
 ```
 
-| Status | Meaning |
-|--------|---------|
-| `201 Created` | New policy created |
-| `200 OK` | Existing policy updated |
-
 ### GET /admin/policies
 
-List all policies.
+List all registered policies.
 
 ### DELETE /admin/policies/:id
 
-Remove a policy. Returns `204 No Content` or `404 Not Found`.
+Remove a policy (`204 No Content` or `404 Not Found`).
+
+### Backend & Consumer Credentials (BYOK)
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/admin/backend-credentials` | `GET`, `POST` | List or upsert upstream BYOK credentials per route |
+| `/admin/backend-credentials/:route_id` | `DELETE` | Remove backend credential for `:route_id` |
+| `/admin/consumer-credentials` | `GET`, `POST` | List or upsert per-consumer credentials |
+| `/admin/consumer-credentials/:route_id/:consumer_id` | `DELETE` | Remove consumer credential |
+
+---
+
+## Skills Management
+
+Manage hierarchical context-injection skills (`global` < `tenant` < `tool` < `user` specificity, matching the [`Skill` CRD](/docs/reference/crds/skill)). Literal routes (`/status`, `/resolve`, `/sync`, `/health`) are registered ahead of parametric `/skills/:id`.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/admin/skills/status` | `GET` | Skill resolver summary and counts |
+| `/admin/skills/resolve` | `GET` | Preview resolved skill instructions for a query context (`tenant`, `tool`, `user`) |
+| `/admin/skills/sync` | `POST` | Trigger synchronization of skills from the Control Plane |
+| `/admin/skills` | `GET`, `POST` | List skills or upsert a skill (`201` on insert, `200` on update) |
+| `/admin/skills/:id` | `GET`, `PUT`, `DELETE` | Get, update, or delete a skill by ID (**canonical delete path**) |
+| `/admin/skills?key=<key>` | `DELETE` | **Deprecated**: query-based deletion returning `Deprecation` and `Sunset` headers; prefer `DELETE /admin/skills/:id` |
+| `/admin/skills/health` | `GET` | Aggregated health status across all skills |
+| `/admin/skills/:id/health` | `GET` | Health metrics for a single skill |
+| `/admin/skills/:id/health/reset` | `POST` | Reset error/health counters for `:id` |
+
+---
+
+## MCP Federation Management
+
+Inspect and manage upstream MCP server federation and sub-account caches (`stoa-gateway/src/handlers/admin/federation.rs`).
+
+### GET /admin/federation/status
+
+```json
+{
+  "enabled": true,
+  "cache_size": 18,
+  "cache_ttl_secs": 300
+}
+```
+
+### GET /admin/federation/upstreams
+
+Lists configured upstream MCP servers (`url`, `transport`, `has_auth`, `timeout_secs` — credentials are never exposed).
+
+### GET /admin/federation/cache
+
+Returns federation cache hit/miss statistics.
+
+### DELETE /admin/federation/cache/:sub_account_id
+
+Invalidates cached federation state for `:sub_account_id` and reports whether an active entry was purged (`invalidated: true | false`).
+
+---
+
+## Prompt Cache & LLM Cost-Aware Routing
+
+### Prompt Cache
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/admin/prompt-cache/stats` | `GET` | Hit/miss statistics and entry counts |
+| `/admin/prompt-cache/patterns` | `GET` | List cached prompt patterns |
+| `/admin/prompt-cache/get/:key` | `GET` | Inspect a cached prompt entry by key |
+| `/admin/prompt-cache/load` | `POST` | Preload prompt cache entries |
+| `/admin/prompt-cache/invalidate` | `POST` | Invalidate matching prompt cache entries |
+
+### LLM Routing
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/admin/llm/status` | `GET` | LLM router status and active configuration |
+| `/admin/llm/providers` | `GET` | Configured LLM providers and health |
+| `/admin/llm/costs` | `GET` | Aggregated LLM cost and token telemetry |
 
 ---
 
 ## Circuit Breaker Management
 
-The gateway uses circuit breakers to protect against backend failures. When a backend fails repeatedly, the circuit opens and requests are rejected fast instead of waiting for timeouts.
-
 ### GET /admin/circuit-breaker/stats
 
-Get the main circuit breaker statistics (Control Plane API connection).
+Get the main Control Plane circuit breaker statistics (`closed`, `open`, `half_open`).
 
 ```json
 {
@@ -167,36 +297,21 @@ Get the main circuit breaker statistics (Control Plane API connection).
 }
 ```
 
-| State | Meaning |
-|-------|---------|
-| `closed` | Normal operation — requests flow through |
-| `open` | Backend failing — requests rejected immediately |
-| `half_open` | Testing recovery — limited requests allowed |
-
 ### POST /admin/circuit-breaker/reset
 
-Reset the main circuit breaker to `closed` state.
-
-```json
-{
-  "status": "ok",
-  "message": "Circuit breaker reset to closed"
-}
-```
+Reset the main circuit breaker to `closed`.
 
 ### GET /admin/circuit-breakers
 
-List all per-upstream circuit breakers (one per backend URL).
+List all per-upstream circuit breakers.
 
 ### POST /admin/circuit-breakers/:name/reset
 
-Reset a specific upstream circuit breaker. Returns `404` if the named breaker doesn't exist.
+Reset a specific upstream circuit breaker (`404` if unknown).
 
 ---
 
 ## Cache Management
-
-The gateway caches API key validations and tool responses to reduce latency.
 
 ### GET /admin/cache/stats
 
@@ -211,22 +326,15 @@ The gateway caches API key validations and tool responses to reduce latency.
 
 ### POST /admin/cache/clear
 
-Clear all cached entries. Use after key rotations or policy changes that need immediate effect.
-
-```json
-{
-  "status": "ok",
-  "message": "Cache cleared"
-}
-```
+Clear all cached entries immediately.
 
 ---
 
 ## Session Management
 
-SSE sessions for MCP protocol connections are tracked by the gateway.
-
 ### GET /admin/sessions/stats
+
+Returns MCP session tracking statistics.
 
 ```json
 {
@@ -236,121 +344,49 @@ SSE sessions for MCP protocol connections are tracked by the gateway.
 }
 ```
 
-| Field | Description |
-|-------|-------------|
-| `active_sessions` | Sessions with recent activity |
-| `zombie_count` | Sessions past TTL, pending cleanup |
-| `tracked_sessions` | Total sessions in memory |
+---
+
+## mTLS & Quota Management
+
+### GET /admin/mtls/config & GET /admin/mtls/stats
+
+Inspect current mTLS settings (`trusted_proxies` redacted) and client-certificate validation counters (`total_requests`, `cert_validated`, `cert_missing`, `cert_invalid`).
+
+### GET /admin/quotas, GET /admin/quotas/:consumer_id & POST /admin/quotas/:consumer_id/reset
+
+Inspect or reset daily and monthly consumer quota counters.
 
 ---
 
-## mTLS Configuration
-
-### GET /admin/mtls/config
-
-Get current mTLS configuration.
-
-```json
-{
-  "enabled": true,
-  "require_client_cert": true,
-  "trusted_proxies": "[redacted]"
-}
-```
-
-### GET /admin/mtls/stats
-
-Get mTLS validation statistics.
-
-```json
-{
-  "total_requests": 1000,
-  "cert_validated": 950,
-  "cert_missing": 30,
-  "cert_invalid": 20
-}
-```
-
----
-
-## Quota Management
-
-### GET /admin/quotas
-
-List quota statistics for all consumers.
-
-```json
-[
-  {
-    "consumer_id": "user-123",
-    "daily_count": 450,
-    "daily_limit": 1000,
-    "monthly_count": 12500,
-    "monthly_limit": 50000,
-    "daily_remaining": 550,
-    "monthly_remaining": 37500
-  }
-]
-```
-
-### GET /admin/quotas/:consumer_id
-
-Get quota statistics for a specific consumer. Returns `404` if the consumer has no quota data.
-
-### POST /admin/quotas/:consumer_id/reset
-
-Reset quota counters for a consumer (daily and monthly counts reset to zero).
-
-```json
-{
-  "status": "ok",
-  "message": "Quota reset for consumer 'user-123'"
-}
-```
-
----
-
-## Health Probes
-
-These endpoints are for Kubernetes liveness and readiness probes (no authentication required):
-
-| Endpoint | Purpose |
-|----------|---------|
-| `GET /health/ready` | Readiness probe — gateway can serve traffic |
-| `GET /health/live` | Liveness probe — gateway process is alive |
-
----
-
-## Endpoint Summary
+## Diagnostics, Error Snapshots, Tracing & A2A Registry
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/admin/health` | GET | Gateway health + statistics |
-| `/admin/apis` | POST | Create/update API route |
-| `/admin/apis` | GET | List all API routes |
-| `/admin/apis/:id` | GET | Get single API route |
-| `/admin/apis/:id` | DELETE | Remove API route |
-| `/admin/policies` | POST | Create/update policy |
-| `/admin/policies` | GET | List all policies |
-| `/admin/policies/:id` | DELETE | Remove policy |
-| `/admin/circuit-breaker/stats` | GET | Main CB statistics |
-| `/admin/circuit-breaker/reset` | POST | Reset main CB |
-| `/admin/circuit-breakers` | GET | List per-upstream CBs |
-| `/admin/circuit-breakers/:name/reset` | POST | Reset specific CB |
-| `/admin/cache/stats` | GET | Cache statistics |
-| `/admin/cache/clear` | POST | Clear all cache |
-| `/admin/sessions/stats` | GET | SSE session statistics |
-| `/admin/mtls/config` | GET | mTLS configuration |
-| `/admin/mtls/stats` | GET | mTLS statistics |
-| `/admin/quotas` | GET | List consumer quotas |
-| `/admin/quotas/:consumer_id` | GET | Get consumer quota |
-| `/admin/quotas/:consumer_id/reset` | POST | Reset consumer quota |
-| `/health/ready` | GET | K8s readiness probe |
-| `/health/live` | GET | K8s liveness probe |
+| `/admin/diagnostic` | `GET` | Gateway uptime, circuit breaker states, and route statistics |
+| `/admin/diagnostics/summary` | `GET` | Aggregated diagnostic report summary |
+| `/admin/diagnostics/:request_id` | `GET` | Per-request diagnostic trace report |
+| `/admin/snapshots` | `GET`, `DELETE` | List or clear captured error snapshots |
+| `/admin/snapshots/:request_id` | `GET` | Retrieve a specific error snapshot |
+| `/admin/tracing/status` | `GET` | OpenTelemetry distributed tracing exporter status |
+| `/admin/a2a/agents` | `GET`, `POST` | List or register Agent-to-Agent (A2A) agents |
+| `/admin/a2a/agents/:name` | `GET`, `DELETE` | Inspect or unregister an A2A agent |
+
+*(Internal supervision endpoints under `/admin/hegemon/*` and experimental `/admin/ebpf/*` hooks are also mounted behind `admin_auth` for platform-internal telemetry.)*
+
+---
+
+## Unauthenticated Health Probes
+
+Kubernetes liveness and readiness probes live outside `/admin` and require no token:
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /health` / `GET /health/live` | Liveness probe — gateway process is alive |
+| `GET /ready` / `GET /health/ready` | Fail-closed readiness probe — verifies required policy/audience/audit-spool state ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) |
 
 ## Related
 
-- [MCP Gateway API](/docs/api/mcp-gateway) — MCP protocol endpoints
-- [Control Plane API](/docs/api/control-plane) — Management API
+- [MCP Gateway API](/docs/api/mcp-gateway) — MCP JSON-RPC and companion REST endpoints
+- [Control Plane API](/docs/api/control-plane) — Platform management API
 - [Quota Enforcement](/docs/reference/quotas) — Quota model and enforcement
-- [RBAC Permissions](/docs/reference/rbac-permissions) — Access control
+- [RBAC Permissions](/docs/reference/rbac-permissions) — Role and scope model
