@@ -1,249 +1,212 @@
 ---
 sidebar_position: 2
 title: "Authentication Setup"
-description: "Configure OIDC/OAuth2 authentication with Keycloak for STOA Platform — multi-realm, JWT tokens, and role-based access."
-keywords: [authentication, Keycloak, OIDC, OAuth2, JWT, RBAC]
+description: "Configure OIDC/OAuth2 authentication with Keycloak for STOA Platform — single shared stoa realm, per-tenant groups, verified tenant_id JWT claims, and RBAC."
+keywords: [authentication, Keycloak, OIDC, OAuth2, JWT, RBAC, ADR-074]
 ---
 
 # Authentication Setup
 
-Configure authentication and authorization using Keycloak OIDC.
+Configure authentication and authorization for STOA Platform using Keycloak OIDC ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)).
 
 ## Overview
 
-STOA uses Keycloak for centralized authentication and authorization:
+STOA uses **Keycloak 26** for centralized authentication and tenant-scoped authorization:
 
-- **OIDC/OAuth2** - Industry-standard protocols
-- **Multi-Realm** - Isolated realm per tenant
-- **JWT Tokens** - Stateless token validation
-- **SSO Support** - Single Sign-On across APIs
+- **Single Shared Realm (`stoa`)** — One OIDC issuer (`/realms/stoa`) across the platform; no separate realm per tenant ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))
+- **One Keycloak Group per Tenant** — Provisioned automatically (`setup_tenant_group`) when a tenant is created
+- **Verified `tenant_id` JWT Claim** — Enforced after RS256 JWKS verification in both Control Plane API and `stoa-gateway`
+- **OAuth 2.1 + PKCE & DCR** — Native MCP agent authentication discovery (`/.well-known/oauth-protected-resource`)
 
 ## Keycloak Architecture
 
 ```
-┌──────────────────────────────────────────────┐
-│           Keycloak Master Realm              │
-├──────────────────────────────────────────────┤
-│  Tenant Realms:                              │
-│  ├── realm-acme                              │
-│  ├── realm-globex                            │
-│  └── realm-initech                           │
-└──────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│                  Keycloak ('stoa' Realm)                 │
+├──────────────────────────────────────────────────────────┤
+│  OIDC Clients:                                           │
+│  ├── control-plane-ui  (Public, PKCE)                    │
+│  ├── stoa-portal       (Public, PKCE)                    │
+│  ├── stoactl           (Public, PKCE / Device)           │
+│  └── stoa-mcp / API clients (Confidential or DCR)        │
+├──────────────────────────────────────────────────────────┤
+│  Tenant Groups (1 group per tenant → tenant_id claim):   │
+│  ├── /tenants/acme                                       │
+│  ├── /tenants/globex                                     │
+│  └── /tenants/initech                                    │
+└──────────────────────────────────────────────────────────┘
 ```
 
-Each tenant realm contains:
-- Users and groups
-- Client applications
-- Roles and permissions
-- Identity providers (SAML, social login)
+:::info External IdP Federation
+Multi-IdP brokering (OIDC, SAML, LDAP) attaches to the shared `stoa` realm and is demonstrated separately in the `federation` profile of `deploy/docker-compose/` rather than through per-tenant realms ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)).
+:::
 
 ## Setup OIDC for an API
 
-### Step 1: Create API Client in Keycloak
+### Step 1: Provision a Tenant and Group
 
-STOA automatically creates a client when you register an API:
+Creating a tenant via `stoactl` or the Control Plane API triggers `TenantProvisioningService`, which creates the corresponding Keycloak group in the `stoa` realm:
 
 ```bash
-stoa api register \
-  --tenant acme \
-  --name my-api \
-  --upstream https://api.example.com \
-  --path /my-api \
-  --auth-enabled true
+# Authenticate stoactl against the stoa realm
+stoactl auth login
+
+# Create a tenant (provisions the Keycloak tenant group)
+stoactl tenant create --name acme --display-name "Acme Corp"
+stoactl tenant status acme
 ```
 
-This creates:
-- Client ID: `api-my-api`
-- Access Type: `confidential`
-- Valid Redirect URIs configured
-- Service account enabled
+### Step 2: Configure STOA Gateway OIDC & Audience
 
-### Step 2: Configure STOA Gateway OIDC
-
-STOA Gateway automatically configures OIDC, but you can customize:
+Configure `stoa-gateway` to validate tokens issued by the `stoa` realm and require an explicit audience:
 
 ```bash
-stoa api auth configure \
-  --tenant acme \
-  --api my-api \
-  --issuer ${STOA_AUTH_URL}/realms/acme \
-  --client-id api-my-api \
-  --client-secret <secret> \
-  --scope openid,profile,email
+STOA_KEYCLOAK_URL=https://auth.example.com
+STOA_KEYCLOAK_REALM=stoa
+STOA_MCP_AUDIENCE=stoa-mcp
+# Optional: when running the Envoy gRPC ext_authz server (ADR-073)
+STOA_EXT_AUTHZ_GRPC_ADDR=127.0.0.1:9001
+STOA_EXT_AUTHZ_AUDIENCE=stoa-api
+```
+
+To expose a JWT-protected REST route on `stoa-gateway`, declare a contract with `"inboundAuth": "jwt"` via `POST /admin/contracts` (as exercised by `quickstart/verify.sh`):
+
+```bash
+curl -sS -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
+  -H "Authorization: Bearer ${STOA_ADMIN_API_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "orders-api",
+    "version": "1.0.0",
+    "tenantId": "acme",
+    "inboundAuth": "jwt",
+    "bindings": {
+      "rest": {
+        "enabled": true,
+        "pathPrefix": "/apis/acme/orders",
+        "backendUrl": "http://orders-backend:8080"
+      }
+    }
+  }'
 ```
 
 ### Step 3: Test Authentication
 
+Obtain a token from the `stoa` realm and call the protected route:
+
 ```bash
-# Get access token
-TOKEN=$(curl -X POST \
-  ${STOA_AUTH_URL}/realms/acme/protocol/openid-connect/token \
-  -d "client_id=api-my-api" \
-  -d "client_secret=${STOA_CLIENT_SECRET}" \
+# Request an access token from the shared 'stoa' realm
+TOKEN=$(curl -sS -X POST \
+  "${STOA_AUTH_URL}/realms/stoa/protocol/openid-connect/token" \
+  -d "client_id=${CLIENT_ID}" \
+  -d "client_secret=${CLIENT_SECRET}" \
   -d "grant_type=client_credentials" \
   | jq -r '.access_token')
 
-# Call API with token
-curl ${STOA_GATEWAY_URL}/acme/my-api/users \
-  -H "Authorization: Bearer $TOKEN"
+# Call the JWT-protected gateway route
+curl -i "${STOA_GATEWAY_URL}/apis/acme/orders" \
+  -H "Authorization: Bearer ${TOKEN}"
 ```
 
 ## Authentication Flows
 
-### 1. Client Credentials Flow
+All OIDC endpoints are served under `/realms/stoa/protocol/openid-connect/`:
 
-For machine-to-machine authentication:
+### 1. Client Credentials Flow (Machine-to-Machine)
 
-```bash
-# Request token
-POST /realms/{tenant}/protocol/openid-connect/token
+```http
+POST /realms/stoa/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
-client_id=api-my-api&
-client_secret=${STOA_CLIENT_SECRET}&
+client_id=acme-service-client&
+client_secret=<CLIENT_SECRET>&
 grant_type=client_credentials&
-scope=api:read api:write
+scope=openid stoa:read
 ```
 
-### 2. Authorization Code Flow
+### 2. Authorization Code + PKCE Flow (Browser UIs, CLI & MCP Agents)
 
-For user authentication (web apps):
-
-```bash
-# Step 1: Redirect user to login
-GET /realms/{tenant}/protocol/openid-connect/auth
-  ?client_id=my-web-app
-  &redirect_uri=https://myapp.com/callback
+```http
+# Step 1: Redirect user with PKCE code_challenge
+GET /realms/stoa/protocol/openid-connect/auth
+  ?client_id=stoa-portal
+  &redirect_uri=https://portal.example.com/callback
   &response_type=code
-  &scope=openid
+  &scope=openid profile email
+  &code_challenge=<BASE64URL_SHA256>
+  &code_challenge_method=S256
 
-# Step 2: Exchange code for token
-POST /realms/{tenant}/protocol/openid-connect/token
-  client_id=my-web-app&
-  code=AUTH_CODE&
-  grant_type=authorization_code&
-  redirect_uri=https://myapp.com/callback
-```
-
-### 3. Resource Owner Password Flow
-
-For trusted applications only:
-
-```bash
-POST /realms/{tenant}/protocol/openid-connect/token
+# Step 2: Exchange authorization code + code_verifier
+POST /realms/stoa/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
-client_id=trusted-app&
-client_secret=${STOA_CLIENT_SECRET}&
-grant_type=password&
-username=user@example.com&
-password=userpass
+client_id=stoa-portal&
+code=<AUTH_CODE>&
+code_verifier=<CODE_VERIFIER>&
+grant_type=authorization_code&
+redirect_uri=https://portal.example.com/callback
 ```
+
+### 3. OAuth 2.1 Dynamic Client Registration (MCP Clients)
+
+AI agents connecting to `stoa-gateway` discover OAuth metadata at `GET /.well-known/oauth-protected-resource` and `GET /.well-known/oauth-authorization-server`, and register public PKCE clients via `POST /oauth/register` ([ADR-044](/docs/architecture/adr/adr-044-mcp-oauth-gateway-proxy)).
 
 ## Token Validation
 
-STOA Gateway validates JWT tokens automatically:
+`stoa-gateway` and the Control Plane API enforce four checks on every Bearer JWT:
 
-1. **Signature Validation** - Verifies token signature using Keycloak's public keys
-2. **Expiration Check** - Ensures token hasn't expired
-3. **Audience Validation** - Checks token is for correct API
-4. **Scope Check** - Validates required scopes are present
+1. **RS256 Signature & Issuer** — Verified against the `stoa` realm JWKS (`/realms/stoa/protocol/openid-connect/certs`)
+2. **Expiration (`exp`)** — Rejects expired tokens (`401 Unauthorized`)
+3. **Audience (`aud`)** — Verified against `STOA_MCP_AUDIENCE` (MCP endpoints) or `STOA_EXT_AUTHZ_AUDIENCE` (Envoy `ext_authz` gRPC); fails closed when unset
+4. **Tenant Isolation (`tenant_id`)** — `require_tenant_access` (Control Plane) and `enforce_tenant_isolation` (Gateway) reject cross-tenant calls with `403 Forbidden` unless the caller holds `cpi-admin`
 
 ## Role-Based Access Control (RBAC)
 
-### Define Roles in Keycloak
+STOA maps Keycloak roles in the `stoa` realm to four canonical roles ([ADR-054](/docs/architecture/adr/adr-054-rbac-taxonomy-v2)):
 
-```bash
-# Create realm role
-stoa auth role create \
-  --tenant acme \
-  --name api-admin \
-  --description "API Administrator"
-
-# Assign role to user
-stoa auth role assign \
-  --tenant acme \
-  --user user@example.com \
-  --role api-admin
-```
-
-### Enforce Roles in STOA Gateway
-
-```bash
-# Require specific role for route
-stoa api auth require-role \
-  --tenant acme \
-  --api my-api \
-  --path /admin/* \
-  --role api-admin
-```
+| Role | Scope | Typical Scopes | Permissions |
+|------|-------|----------------|-------------|
+| `cpi-admin` | Platform | `stoa:admin`, `stoa:write`, `stoa:read` | Cross-tenant administration |
+| `tenant-admin` | Tenant (`tenant_id`) | `stoa:write`, `stoa:read` | Manage APIs, tools, users, and subscriptions in own tenant |
+| `devops` | Tenant (`tenant_id`) | `stoa:write`, `stoa:read` | Deploy contracts and bindings in own tenant |
+| `viewer` | Tenant (`tenant_id`) | `stoa:read` | Read-only catalog and metrics access in own tenant |
 
 ## Advanced Configuration
 
-### Custom Token Claims
+### Protocol Mappers (`tenant_id` Claim)
 
-Add custom claims to JWT tokens:
+Keycloak client scopes include a group/attribute protocol mapper that injects the verified `tenant_id` claim into access tokens so downstream policies never rely on client-supplied `X-Tenant-ID` headers.
 
-```bash
-stoa auth claim add \
-  --tenant acme \
-  --name tenant_id \
-  --value acme \
-  --token-type access
-```
+### Sender-Constrained Tokens (mTLS & DPoP)
 
-### Token Lifetime
-
-Configure token expiration:
-
-```bash
-stoa auth token-lifetime set \
-  --tenant acme \
-  --access-token 3600 \
-  --refresh-token 86400
-```
-
-### Identity Provider Federation
-
-Connect external IdPs (SAML, Google, GitHub):
-
-```bash
-stoa auth idp add \
-  --tenant acme \
-  --provider google \
-  --client-id GOOGLE_CLIENT_ID \
-  --client-secret GOOGLE_SECRET
-```
+For regulated workloads, `stoa-gateway` supports RFC 8705 certificate-bound tokens (`cnf.x5t#S256`, [ADR-039](/docs/architecture/adr/adr-039-mtls-cert-bound-tokens)) and RFC 9449 DPoP proof validation ([ADR-056](/docs/architecture/adr/adr-056-fapi-2-architecture)).
 
 ## Troubleshooting
 
-### Token Validation Fails
+### Check CLI Session & OIDC Discovery
 
 ```bash
-# Check token details
-stoa auth token inspect YOUR_TOKEN
+# Inspect current stoactl authentication status and context
+stoactl auth status
 
-# Verify Keycloak connectivity
-stoa auth test-connection --tenant acme
+# Verify Keycloak OIDC discovery on the 'stoa' realm
+curl -sS "${STOA_AUTH_URL}/realms/stoa/.well-known/openid-configuration" | jq '{issuer, jwks_uri}'
 ```
 
 ### Common Issues
 
-- **Invalid signature**: Check Keycloak public keys are synced
-- **Token expired**: Refresh token or request new one
-- **Insufficient scope**: Ensure required scopes in token
-- **Wrong audience**: Verify client_id matches API configuration
+- **`401 Unauthorized` (invalid signature or issuer)**: Ensure `STOA_KEYCLOAK_URL` matches the external `iss` claim in the token (use `STOA_KEYCLOAK_INTERNAL_URL` if cluster-internal JWKS routing differs).
+- **`401` / `503` (audience mismatch or missing audience)**: Verify `STOA_MCP_AUDIENCE` (or `STOA_EXT_AUTHZ_AUDIENCE`) matches the `aud` claim minted by Keycloak.
+- **`403 Forbidden` (tenant mismatch)**: Confirm the user belongs to the target tenant's Keycloak group and the token carries the matching `tenant_id` claim.
 
 ---
 
 ## Next Steps
 
-Now that authentication is configured:
-
-- [API Subscriptions](/docs/guides/subscriptions) — Manage access to your APIs
-- [API Reference](/docs/api/control-plane) — Explore the Control Plane API
-- [MCP Gateway](/docs/api/mcp-gateway) — Connect AI agents to your tools
-- [FAQ](/docs/faq) — Common questions answered
+- [Multi-Tenant Isolation](/docs/concepts/multi-tenant) — How `stoa` realm groups, `tenant_id`, and signed policies isolate tenants
+- [API Subscriptions](/docs/guides/subscriptions) — Manage consumer access to your APIs
+- [Control Plane API Reference](/docs/api/control-plane) — Explore Control Plane endpoints
+- [MCP Gateway API](/docs/api/mcp-gateway) — Connect AI agents to your tools
 
 ---
 

@@ -51,9 +51,12 @@ Ces composants ne sont requis que pour le modèle Entièrement Sur Site. En mode
 
 | Composant | Version | Objectif | Alternative |
 |-----------|---------|---------|-------------|
-| **PostgreSQL** | 16+ | Base de données Control Plane | Tout PG géré (RDS, Cloud SQL, Azure DB) |
-| **Redis** | 7+ | Cache gateway (optionnel) | — |
+| **PostgreSQL** | 16+ | Base de données Control Plane (schéma partagé filtré par `tenant_id`, [ADR-074](/docs/architecture/adr/adr-074-tenant-model)) | Tout PG géré (RDS, Cloud SQL, Azure DB) |
+| **Redpanda / Kafka** | 24+ / 3.x | Bus interne d'événements pour la métrologie et l'audit ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka), optionnel) | Apache Kafka 3.x |
+| **OpenBao** | 2.7+ | Socle de secrets via l'API HTTP Vault ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao), optionnel) | HashiCorp Vault |
 | **OpenSearch** | 2.11+ | Logs et recherche (optionnel) | Elasticsearch 8.x |
+
+*(STOA n'exige ni ne déploie Redis ; les caches de limitation de débit et de jetons résident en mémoire dans chaque processus.)*
 
 ---
 

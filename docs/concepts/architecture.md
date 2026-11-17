@@ -18,35 +18,37 @@ flowchart TB
     subgraph Users["👥 Users"]
         Dev["🧑‍💻 Developers"]
         Admin["👨‍💼 Platform Admins"]
-        AI["🤖 AI Agents"]
+        AI["🤖 AI Agents & API Clients"]
     end
 
     subgraph ControlPlane["⚙️ Control Plane"]
         Portal["📱 Developer Portal"]
         Console["🖥️ Admin Console"]
-        CoreAPI["🔧 Core API"]
+        CoreAPI["🔧 Control Plane API"]
     end
 
     subgraph DataPlane["🚀 Data Plane"]
-        MCPGateway["STOA Gateway<br/>(Rust)"]
+        MCPGateway["STOA Gateway (Rust)<br/>MCP, REST & ext_authz gRPC"]
+        EnvoyLink["Envoy + STOA Link xDS<br/>(Target Data Plane, ADR-073)"]
     end
 
     subgraph Backend["💾 Backend Services"]
-        KC["Keycloak"]
+        KC["Keycloak (stoa realm)"]
         PG["PostgreSQL"]
-        Kafka["Kafka/Redpanda"]
+        Kafka["Redpanda (Kafka API)"]
         Vault["OpenBao (Vault API)"]
     end
 
-    subgraph MCP["🔧 MCP Servers"]
-        Tools["Enterprise Tools"]
+    subgraph MCP["🔧 Upstreams"]
+        Tools["Enterprise APIs & MCP Tools"]
     end
 
     Dev & Admin --> Portal & Console
-    AI --> MCPGateway
+    AI --> MCPGateway & EnvoyLink
     Portal & Console --> CoreAPI
-    CoreAPI -->|"config sync"| MCPGateway
-    MCPGateway --> Tools
+    CoreAPI -->|"config & signed policies"| MCPGateway & EnvoyLink
+    EnvoyLink -.->|"ext_authz gRPC"| MCPGateway
+    MCPGateway & EnvoyLink --> Tools
     CoreAPI --> PG & Kafka & KC & Vault
     MCPGateway --> KC
 ```
@@ -55,124 +57,116 @@ flowchart TB
 
 | Aspect | Control Plane | Data Plane |
 |--------|---------------|------------|
-| **Role** | Configuration & Management | Traffic Execution |
-| **Components** | Core API, Portal, Console | STOA Gateway (Rust) |
-| **Latency** | Human-scale (ms OK) | Machine-scale (sub-ms) |
-| **Scaling** | Moderate | High (per-request) |
+| **Role** | Configuration, Catalog & Governance | Traffic Execution & Policy Enforcement |
+| **Components** | Control Plane API, Portal, Console, `stoa-operator` | `stoa-gateway` (Rust, maintenance) & Upstream Envoy + `stoa-connect` (STOA Link, [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
+| **Latency** | Human-scale (ms OK) | Machine-scale (low-ms) |
+| **Scaling** | Moderate | High (per-request, horizontal) |
 
-:::tip Architecture Decision
-This separation is documented in [ADR-001: API Exposure Strategy](/docs/architecture/adr/adr-001-api-exposure-strategy).
+:::tip Architecture Decisions
+This separation and data plane evolution are documented in [ADR-001: API Exposure Strategy](/docs/architecture/adr/adr-001-api-exposure-strategy) and [ADR-073: Adopt Envoy as Primary Data Plane](/docs/architecture/adr/adr-073-adopt-envoy-data-plane).
 :::
 
 ## Core Components
 
 ### Control Plane API
 
-The central management API built with **Python** and **FastAPI**.
+The central management API built with **Python** and **FastAPI** (`control-plane-api/`).
 
 | Aspect | Details |
 |--------|---------|
 | Language | Python 3.12+ |
 | Framework | FastAPI (async) |
-| Database | PostgreSQL + SQLAlchemy |
-| Event Streaming | Kafka/Redpanda |
-| Auth | Keycloak (OIDC) |
+| Database | PostgreSQL + SQLAlchemy (shared schema scoped by `tenant_id`) |
+| Event Streaming | Redpanda / Kafka ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)) |
+| Auth | Keycloak OIDC (`stoa` realm, [ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
 
 **Responsibilities:**
-- Subscription management
-- Tenant provisioning
-- Tool catalog
-- Usage tracking
-- Policy enforcement
+- Subscription and API catalog management
+- Tenant provisioning (`setup_tenant_group` in Keycloak)
+- Signed Ed25519 gateway policy bundle issuance ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture))
+- Multi-gateway orchestration ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern))
+- Usage tracking and audit trails
 
-### STOA Gateway
+### STOA Gateway & Envoy Data Plane
 
-The STOA Gateway is the unified data plane component, handling both MCP protocol interactions for AI agents and traditional API traffic. Built with **Rust** and **Tokio/axum**, it has been in production since February 2026.
+STOA operates a production Rust gateway while converging the L4/L7 proxy layer onto upstream Envoy ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)):
 
-| Aspect | Details |
-|--------|---------|
-| Language | Rust (stable) |
-| Framework | Tokio + axum |
-| Policy Engine | OPA (Open Policy Agent) |
-| Protocol | MCP, REST |
+| Aspect | Current Production (`stoa-gateway`) | Target Data Plane (`Envoy` + `STOA Link`) |
+|--------|-------------------------------------|-------------------------------------------|
+| Implementation | Rust (`Tokio` + `axum`) | Upstream Envoy + `stoa-connect` (Go xDS ADS) + Rust `ext_authz` gRPC |
+| Lifecycle | Production / Maintenance | Opt-in runtime blocks implemented; topology cut-over in progress |
+| Policy Engine | Signed Ed25519 policy bundles ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) + OPA | Envoy native filters (`cors`, `rate_limit`, `ip_filter`) + gRPC `ExtAuthzService` |
+| Protocols | MCP (`POST /mcp`, `/mcp/sse`, opt-in `/mcp/ws`), REST, A2A | HTTP/1.1, HTTP/2, gRPC, MCP module behind Envoy |
 
-**Responsibilities:**
-- MCP protocol handling (tools/list, tools/call, SSE)
-- OAuth2/OIDC authentication via Keycloak
-- Request routing and rate limiting
-- Metrics collection and observability
-- Multi-gateway adapter orchestration (Kong, Gravitee, Apigee, Azure APIM, AWS API Gateway, webMethods)
+**Delivered building blocks on `main`:**
+- **Rust `stoa-gateway`** handles MCP protocol sessions, REST contract routes, fail-closed tenant policy enforcement, and supervises an optional gRPC `envoy.service.auth.v3.Authorization` server (`ExtAuthzService`, enabled via `STOA_EXT_AUTHZ_GRPC_ADDR` and `STOA_EXT_AUTHZ_AUDIENCE`).
+- **STOA Link (`stoa-connect`)** embeds a loopback mTLS ADS server (`STOA_GATEWAY_TYPE=envoy`) alongside third-party gateway adapters (Kong, Gravitee, webMethods, Apigee, AWS API Gateway, Azure APIM). Full policy parity and default topology migration remain distinct milestones ([Data Plane Architecture](/docs/architecture/data-plane)).
 
 ### Portal UI
 
-Self-service developer portal built with **React** and **TypeScript**.
+Self-service developer portal built with **React 19** and **TypeScript** (`portal/`).
 
 **Features:**
-- API/Tool catalog browsing
-- Subscription management
-- API key generation
-- Usage dashboards
-- Documentation access
+- API and MCP tool catalog browsing
+- Subscription and API key management
+- Usage dashboards and interactive documentation
 
 ### Console UI
 
-Admin management console built with **React** and **TypeScript**.
+Admin management console built with **React 19** and **TypeScript** (`control-plane-ui/`).
 
 **Features:**
-- Tenant management
-- User administration
-- Policy configuration
-- System monitoring
-- Audit logs
+- Tenant and user administration
+- Gateway instance and binding management
+- Policy configuration, system monitoring, and audit logs
 
 ## Security Layer
 
 ### Keycloak
 
-Identity and access management providing:
-- OIDC/OAuth2 authentication
-- SSO (Single Sign-On)
-- RBAC (Role-Based Access Control)
-- Multi-factor authentication
-- User federation
+Identity and access management ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) providing:
+- Single shared `stoa` realm (`KEYCLOAK_REALM=stoa`) with one Keycloak group per tenant
+- OIDC/OAuth2 authentication, PKCE, and verified `tenant_id` JWT claims
+- Platform and tenant-scoped RBAC (`cpi-admin`, `tenant-admin`, `devops`, `viewer`)
+- Multi-IdP brokering demonstrated in the separate federation topology (`deploy/docker-compose/` profile `federation`)
 
 ### Secrets Backend (OpenBao)
 
-Reached through the Vault HTTP API: OpenBao by default, or a HashiCorp Vault you already run ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)). Secrets management for:
-- API key encryption
-- Database credentials
-- TLS certificates
-- Service tokens
+Reached through the Vault HTTP API: **OpenBao 2.7.2** by default, or an existing HashiCorp Vault ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao), partial rollout across platform components). Used for:
+- API key and credential encryption
+- Gateway adapter credentials
+- TLS material and service tokens
 
 ## Data Layer
 
 ### PostgreSQL
 
-Primary database storing:
-- Subscriptions
-- Tenants
-- Users
-- Tool definitions
-- Audit logs
+Primary relational store using a **shared schema scoped by `tenant_id`** ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)):
+- Tenants, users, and subscriptions
+- APIs, contracts, and MCP server/tool definitions
+- Control-plane audit logs
 
-### Kafka/Redpanda
+*(Note: STOA does not use Redis; rate-limit and token caches run in-process.)*
 
-Event streaming for:
-- Audit events
-- Usage metrics
-- Cross-service communication
+### Redpanda (Kafka API)
+
+Asynchronous event backbone ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)) for:
+- Metering and usage events
+- Audit and error snapshot pipelines
+- Asynchronous cross-service notifications
 
 :::warning Internal Only
-Kafka is strictly internal with zero external exposure (ADR-017). All external integrations use REST APIs.
+Redpanda/Kafka is strictly internal with zero external exposure ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)). All external client and agent integrations use HTTPS/gRPC APIs.
 :::
 
 ## Observability Stack
 
 | Component | Purpose |
 |-----------|---------|
-| **Prometheus** | Metrics collection |
-| **Grafana** | Dashboards & visualization |
-| **Loki** | Log aggregation |
+| **Prometheus** | Metrics scraping and alerting rules |
+| **Grafana** | Dashboards and per-tenant visualization |
+| **OpenSearch** (+ Data Prepper / Fluent Bit) | Structured logs, analytics, and audit search |
+| **Tempo** | Distributed OpenTelemetry trace storage |
 | **Alertmanager** | Alert routing |
 
 ## Request Flow
@@ -180,38 +174,35 @@ Kafka is strictly internal with zero external exposure (ADR-017). All external i
 ```mermaid
 sequenceDiagram
     participant AI as AI Agent
-    participant GW as MCP Gateway
-    participant API as Control Plane
-    participant MCP as MCP Server
+    participant GW as STOA Gateway
+    participant KC as Keycloak (stoa realm)
+    participant MCP as Upstream API / MCP Server
 
-    AI->>GW: Tool Invocation (API Key)
-    GW->>GW: Validate API Key
-    GW->>API: Check Subscription
-    API-->>GW: ✅ Authorized
-    GW->>MCP: Forward Request
-    MCP-->>GW: Response
-    GW-->>AI: Tool Response
+    AI->>GW: POST /mcp (tools/call + Bearer JWT)
+    GW->>KC: Verify RS256 JWKS + audience + tenant_id claim
+    GW->>GW: Enforce signed tenant policy bundle (ADR-070)
+    GW->>MCP: Forward authorized request
+    MCP-->>GW: Upstream response
+    GW-->>AI: MCP JSON-RPC response
 ```
 
-1. **AI Agent** sends a tool invocation request with an API key
-2. **MCP Gateway** validates the API key against Keycloak
-3. **Gateway** checks subscription status with Control Plane API
-4. **Control Plane** verifies the subscription is active
-5. **Gateway** forwards the request to the appropriate MCP Server
-6. **MCP Server** executes the tool and returns the response
-7. **Gateway** returns the response to the AI Agent
+1. **AI Agent** sends a `POST /mcp` (`tools/call`) request with a Keycloak Bearer JWT
+2. **STOA Gateway** validates the RS256 signature against cached JWKS, audience (`STOA_MCP_AUDIENCE`), and `tenant_id` claim ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))
+3. **Gateway** evaluates the signed per-tenant policy artifact fail-closed ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) and OPA rules
+4. **Gateway** forwards the authorized call to the upstream backend or MCP server
+5. **Gateway** returns the JSON-RPC response and records telemetry
 
 ## Deployment
 
-STOA Platform runs on **Kubernetes** and can be deployed using:
+STOA Platform runs on **Kubernetes** (or Docker Compose for local evaluation):
 
-- **Helm Charts**: Available in `stoa-infra/charts/`
+- **Helm Charts**: Located in `charts/stoa-platform` (gateway-scoped workload + 5 CRDs; Control Plane, UIs, Keycloak, PostgreSQL, Redpanda, and OpenBao are deployed separately) and `charts/stoa-observability` in `stoa-platform/stoa`
 - **GitOps**: ArgoCD compatible
-- **IaC**: Terraform modules available
+- **IaC**: Terraform modules planned (`infra/terraform`)
 
 ### Kubernetes Namespace
 
-All components run in the `stoa-system` namespace:
+Gateway workloads default to the `stoa-system` namespace:
 
 ```bash
 kubectl get pods -n stoa-system
@@ -223,27 +214,30 @@ kubectl get pods -n stoa-system
 |---------|-------------|
 | Portal | `portal.<domain>` |
 | Console | `console.<domain>` |
-| API | `api.<domain>` |
-| Gateway | `gateway.<domain>` |
+| Control Plane API | `api.<domain>` |
+| Gateway | `mcp.<domain>` / `gateway.<domain>` |
 | Auth | `auth.<domain>` |
 
 ## Technology Stack Summary
 
 | Layer | Technology | Notes |
 |-------|------------|-------|
-| Control Plane | Python, FastAPI | Management API |
-| STOA Gateway | Rust, Tokio, axum | MCP + API traffic |
-| Frontend | React, TypeScript, Tailwind | Portal & Console |
-| Database | PostgreSQL | Primary data store |
-| Event Streaming | Kafka/Redpanda | Internal events |
-| Streaming | Kafka/Redpanda | Internal events |
-| Auth | Keycloak | OIDC/OAuth2 |
-| Secrets | OpenBao or HashiCorp Vault (Vault API) | Encryption, credentials |
-| Observability | Prometheus, Grafana, Loki | Metrics, logs |
-| Infrastructure | Kubernetes, Helm, ArgoCD | Deployment |
+| Control Plane | Python 3.12+, FastAPI | Management API (`control-plane-api/`) |
+| Data Plane (current) | Rust, Tokio, axum | `stoa-gateway` (maintenance, MCP + REST + `ext_authz` gRPC) |
+| Data Plane (target) | Upstream Envoy + Go (`stoa-connect`) | Loopback mTLS xDS ADS + external services ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
+| Kubernetes Operator | Python, Kopf | `stoa-operator` (Beta, reconciles `GatewayInstance` / `GatewayBinding`) |
+| CLI & Link Agent | Go 1.25 | `stoactl` & `stoa-connect` (`stoa-go/`) |
+| Frontend | React 19, TypeScript, Tailwind | Developer Portal & Admin Console |
+| Database | PostgreSQL 16+ | Shared schema scoped by `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
+| Event Streaming | Redpanda (Kafka API) | Internal event backbone ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)) |
+| Auth | Keycloak 26 | Single `stoa` realm + per-tenant groups ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
+| Secrets | OpenBao 2.7.2 / HashiCorp Vault | Vault HTTP API ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao), partial rollout) |
+| Observability | Prometheus, Grafana, OpenSearch, Tempo | Metrics, logs, traces |
+| Infrastructure | Kubernetes, Helm, ArgoCD | Declarative deployment |
 
 ## Next Steps
 
-- [Quick Start Guide](/docs/guides/quickstart) - Get STOA running locally
-- [API Reference](/docs/api/control-plane) - Explore the Control Plane API
-- [MCP Gateway](/docs/concepts/mcp-gateway) - Deep dive into MCP integration
+- [Quick Start Guide](/docs/guides/quickstart) — Run STOA locally
+- [Data Plane Architecture](/docs/architecture/data-plane) — Current vs target Envoy data plane details
+- [API Reference](/docs/api/control-plane) — Explore the Control Plane API
+- [MCP Gateway](/docs/concepts/mcp-gateway) — Deep dive into MCP integration

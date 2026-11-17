@@ -31,14 +31,14 @@ Lors de la traduction de la documentation STOA en français, utilisez toujours l
 | **Clé d'API** | API Key | Identifiant statique utilisé par les consommateurs pour authentifier les appels API. Géré via les abonnements. |
 | **Consommateur** | Consumer | Entité (personne, équipe ou application) qui s'abonne et consomme des API via la plateforme. |
 | **Contrat d'API** | API Contract | Voir **UAC (Contrat d'API universel)**. |
-| **CRD (Définition de ressource personnalisée)** | CRD (Custom Resource Definition) | Mécanisme d'extension Kubernetes. STOA utilise des CRD pour les ressources `Tool` et `ToolSet`. |
+| **CRD (Définition de ressource personnalisée)** | CRD (Custom Resource Definition) | Mécanisme d'extension Kubernetes. STOA fournit cinq CRD `gostoa.dev/v1alpha1` : `Tool`, `ToolSet`, `Skill`, `GatewayInstance` et `GatewayBinding`. |
 
 ## E
 
 | Terme FR | Terme EN | Définition |
 |----------|----------|------------|
 | **Edge-MCP** | Edge-MCP | Mode de passerelle principal pour l'intégration des agents IA via le protocole MCP. En production. |
-| **Espace de noms (namespace)** | Namespace | Frontière d'isolation Kubernetes. Chaque tenant STOA obtient un namespace dédié (`tenant-{id}`). |
+| **Espace de noms (namespace)** | Namespace | Frontière d'isolation Kubernetes. Les opérateurs peuvent isoler les charges de travail des tenants dans des namespaces dédiés (`tenant-{id}`). |
 
 ## F
 
@@ -71,7 +71,7 @@ Lors de la traduction de la documentation STOA en français, utilisez toujours l
 
 | Terme FR | Terme EN | Définition |
 |----------|----------|------------|
-| **Keycloak** | Keycloak | Serveur open-source de gestion des identités et des accès. STOA utilise un realm par tenant. |
+| **Keycloak** | Keycloak | Serveur open source de gestion des identités et des accès. STOA utilise un unique realm partagé `stoa` avec un groupe par tenant ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)). |
 
 ## L
 
@@ -86,8 +86,8 @@ Lors de la traduction de la documentation STOA en français, utilisez toujours l
 | **MCP (Protocole de contexte de modèle)** | MCP (Model Context Protocol) | Protocole ouvert permettant aux agents IA de découvrir et d'invoquer des outils. STOA implémente MCP via les transports SSE et REST. |
 | **Métrologie** | Metering | Pipeline de suivi d'utilisation (basé sur Kafka) qui enregistre les appels API pour la facturation et l'analyse. |
 | **Mode de déploiement** | Deployment Mode | L'un des 4 modes de passerelle : edge-mcp, sidecar, proxy, shadow. Voir [Modes de passerelle](/docs/concepts/gateway). |
-| **Mode shadow** | Shadow Mode | Mode de capture passive du trafic pour la découverte d'API legacy. Reporté en attente de revue sécurité. |
-| **Mode sidecar** | Sidecar Mode | Mode de passerelle déployé aux côtés de passerelles existantes (Kong, Envoy) pour l'injection d'observabilité. |
+| **Mode shadow** | Shadow Mode | Mode de capture passive du trafic pour la découverte d'API legacy (socle Rust présent ; mirroring en production ciblé sur Envoy selon [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)). |
+| **Mode sidecar** | Sidecar Mode | Mode compagnon (`STOA_GATEWAY_MODE=sidecar`) répondant à `POST /authz` HTTP aux côtés d'une passerelle hôte ([Usage du compagnon](/docs/guides/companion-usage)). |
 | **mTLS (TLS mutuel)** | mTLS (Mutual TLS) | Authentification TLS bidirectionnelle où le client et le serveur présentent des certificats. |
 | **Multi-tenant** | Multi-Tenant | Architecture où une seule instance de plateforme sert plusieurs organisations isolées. |
 
@@ -95,9 +95,10 @@ Lors de la traduction de la documentation STOA en français, utilisez toujours l
 
 | Terme FR | Terme EN | Définition |
 |----------|----------|------------|
-| **OAuth 2.0** | OAuth 2.0 | Framework d'autorisation standard de l'industrie. STOA supporte les flux authorization code, client credentials et ROPC. |
-| **OIDC (OpenID Connect)** | OIDC (OpenID Connect) | Couche d'identité au-dessus d'OAuth 2.0. Utilisée par Keycloak pour le SSO et l'authentification utilisateur. |
+| **OAuth 2.0 / 2.1** | OAuth 2.0 / 2.1 | Framework d'autorisation standard de l'industrie. STOA supporte Authorization Code + PKCE, Client Credentials et Dynamic Client Registration (DCR). |
+| **OIDC (OpenID Connect)** | OIDC (OpenID Connect) | Couche d'identité au-dessus d'OAuth 2.0. Utilisée par Keycloak (realm `stoa`) pour le SSO et l'authentification utilisateur. |
 | **OPA (Open Policy Agent)** | OPA (Open Policy Agent) | Moteur de politiques utilisé par la passerelle pour l'autorisation fine (politiques Rego). |
+| **OpenBao** | OpenBao | Socle de secrets open source accessible via l'API HTTP Vault ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)). |
 | **Optimisation de jetons** | Token Optimization | Fonctionnalité de la passerelle qui réduit la consommation de jetons LLM en compressant les descriptions d'outils. |
 | **Outil (MCP)** | Tool | Fonction exposée via MCP que les agents IA peuvent découvrir et invoquer. Défini comme CRD Kubernetes. |
 
@@ -117,20 +118,21 @@ Lors de la traduction de la documentation STOA en français, utilisez toujours l
 | Terme FR | Terme EN | Définition |
 |----------|----------|------------|
 | **RBAC (Contrôle d'accès basé sur les rôles)** | RBAC (Role-Based Access Control) | Modèle d'autorisation avec 4 rôles : `cpi-admin`, `tenant-admin`, `devops`, `viewer`. |
-| **Realm (domaine)** | Realm | Unité d'isolation Keycloak. STOA crée un realm par tenant avec des utilisateurs, clients et rôles indépendants. |
+| **Realm (domaine)** | Realm | Unité d'isolation Keycloak. STOA utilise un unique realm partagé `stoa` et isole les tenants par groupes Keycloak et claims JWT `tenant_id` vérifiés ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)). |
 
 ## S
 
 | Terme FR | Terme EN | Définition |
 |----------|----------|------------|
 | **Scope (portée)** | Scope | Granularité de permission OAuth 2.0 (ex. `stoa:read`, `stoa:write`, `stoa:admin`). |
-| **SSE (Événements envoyés par le serveur)** | SSE (Server-Sent Events) | Protocole de streaming unidirectionnel utilisé pour les connexions d'agents MCP. |
+| **SSE (Événements envoyés par le serveur)** | SSE (Server-Sent Events) | Protocole de streaming unidirectionnel utilisé pour les connexions d'agents MCP et la synchronisation STOA Link. |
+| **STOA Link (`stoa-connect`)** | STOA Link (`stoa-connect`) | Agent Go sur site synchronisant les passerelles tierces et servant l'ADS xDS mTLS loopback à Envoy upstream ([ADR-057](/docs/architecture/adr/adr-057-product-lineup-gateway-link-connect), [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)). |
 
 ## T
 
 | Terme FR | Terme EN | Définition |
 |----------|----------|------------|
-| **Tenant (locataire)** | Tenant | Organisation isolée sur la plateforme. Chaque tenant possède son propre namespace, realm, API et utilisateurs. |
+| **Tenant (locataire)** | Tenant | Organisation isolée sur la plateforme, rattachée à un groupe Keycloak du realm `stoa`, un claim JWT `tenant_id` vérifié, un filtrage `tenant_id` PostgreSQL et des politiques passerelle signées ([ADR-074](/docs/architecture/adr/adr-074-tenant-model), [ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)). |
 
 ## U
 

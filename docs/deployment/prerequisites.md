@@ -51,9 +51,12 @@ These are only required for the Full On-Premises model. In Hybrid mode, STOA Clo
 
 | Component | Version | Purpose | Alternative |
 |-----------|---------|---------|-------------|
-| **PostgreSQL** | 16+ | Control Plane database | Any managed PG (RDS, Cloud SQL, Azure DB) |
-| **Redis** | 7+ | Gateway caching (optional) | — |
+| **PostgreSQL** | 16+ | Control Plane database (shared schema scoped by `tenant_id`, [ADR-074](/docs/architecture/adr/adr-074-tenant-model)) | Any managed PG (RDS, Cloud SQL, Azure DB) |
+| **Redpanda / Kafka** | 24+ / 3.x | Internal event backbone for metering and audit ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka), optional) | Apache Kafka 3.x |
+| **OpenBao** | 2.7+ | Secrets backend via Vault HTTP API ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao), optional) | HashiCorp Vault |
 | **OpenSearch** | 2.11+ | Logs and search (optional) | Elasticsearch 8.x |
+
+*(STOA does not require or deploy Redis; gateway rate-limiting and token caches operate in-process.)*
 
 ---
 

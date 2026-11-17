@@ -20,9 +20,9 @@ STOA bridges traditional APIs and AI agents through the [Model Context Protocol 
 STOA is a cloud-native API gateway and management platform built on Kubernetes. It combines the features of a traditional API gateway with native support for AI agent protocols:
 
 - **MCP Gateway** — AI agents discover and invoke your APIs via the Model Context Protocol, with automatic schema generation and tool registration
-- **Multi-Tenant Isolation** — Each tenant gets its own Kubernetes namespace, Keycloak realm, and database schema for complete data separation
+- **Multi-Tenant Isolation** — Shared `stoa` Keycloak realm with per-tenant groups, verified `tenant_id` JWT claims, shared PostgreSQL schema scoped by `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)), and signed per-tenant gateway policy artifacts ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture))
 - **GitOps-First Configuration** — All API definitions, policies, and tenant configurations managed declaratively through Git and ArgoCD
-- **OIDC/OAuth2 Authentication** — Integrated Keycloak for standards-based identity federation, supporting LDAP, SAML, and social providers
+- **OIDC/OAuth2 Authentication** — Integrated Keycloak (`stoa` realm) for standards-based OIDC/OAuth2 authentication; multi-IdP brokering is demonstrated in the separate federation topology
 - **Developer Portal** — Self-service API discovery, documentation browsing, and subscription management for developers and API consumers
 - **Enterprise Observability** — Prometheus metrics, Grafana dashboards, and OpenSearch for logs and error snapshots — all built-in
 
@@ -41,11 +41,10 @@ STOA is a cloud-native API gateway and management platform built on Kubernetes. 
 ┌──────────────────────────────────────────────────────────────┐
 │                    DATA PLANE (On-Premise or Cloud)           │
 │                                                              │
-│   STOA Gateway (Rust)          Legacy Adapters               │
-│   • MCP Protocol               • webMethods                  │
-│   • REST Proxy                  • Kong                       │
-│   • Rate Limiting               • Gravitee                   │
-│   • mTLS                        • Apigee                     │
+│   STOA Gateway (Rust, maint.)   STOA Link (stoa-connect)     │
+│   • MCP & REST + ext_authz gRPC • Envoy xDS ADS (ADR-073)    │
+│   • Rate Limiting & OPA         • webMethods / Kong          │
+│   • Fail-Closed Policies        • Gravitee / Apigee          │
 │                                                              │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -63,7 +62,7 @@ There is one startup path: run STOA locally with the Docker Compose stack of the
 | AI Agent Support | Not designed for it | Native MCP Gateway |
 | API Discovery | Manual documentation | Auto-discovery via MCP |
 | First API Call | Days to weeks | Seconds (with MCP) |
-| Tenant Isolation | Shared infrastructure | Namespace-level isolation |
+| Tenant Isolation | Shared infrastructure | Tenant groups + `tenant_id` scoping ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
 | Configuration | GUI or imperative API | GitOps-first (ArgoCD) |
 | Hosting | Vendor-managed | Self-hosted, EU-ready |
 | License | Proprietary | Apache 2.0 |

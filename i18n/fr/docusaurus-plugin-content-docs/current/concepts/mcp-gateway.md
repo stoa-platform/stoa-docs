@@ -7,162 +7,143 @@ keywords: [STOA, passerelle MCP, MCP, agents IA, passerelle API, invocation d'ou
 
 # Passerelle MCP
 
-La passerelle MCP de STOA est une **passerelle API MCP-native dédiée**, permettant aux agents IA comme Claude, GPT et les applications LLM personnalisées de consommer les API d'entreprise de manière sécurisée via le Model Context Protocol.
+La passerelle MCP de STOA (`stoa-gateway`) est une **passerelle API MCP-native dédiée**, permettant aux agents IA comme Claude, GPT et les applications LLM personnalisées de consommer les API d'entreprise de manière sécurisée via le Model Context Protocol.
 
 ## Vue d'ensemble
 
-La passerelle MCP fait le pont entre les agents IA et votre écosystème d'API. Elle gère l'authentification, la limitation de débit, la validation des abonnements et l'isolation multi-tenant — tout en parlant le protocole MCP natif.
+La passerelle MCP constitue le pont gouverné entre les agents IA et votre écosystème d'API. Elle assure l'authentification OIDC, la vérification d'audience, l'autorisation d'outils fail-closed par tenant et la limitation de débit tout en parlant nativement le protocole MCP.
 
 ```mermaid
 flowchart LR
-    AI["Agent IA<br/>(Claude, GPT)"] <-->|"Protocole MCP<br/>tools/call, SSE"| GW["Passerelle MCP<br/>(Rust/axum)"]
-    GW <-->|"REST / gRPC"| APIs["Vos API"]
-    GW -.->|"sync"| CP["Control Plane<br/>(FastAPI)"]
+    AI["Agent IA<br/>(Claude, GPT)"] <-->|"Protocole MCP<br/>POST /mcp, /mcp/sse"| GW["STOA Gateway<br/>(Rust/axum)"]
+    GW <-->|"REST / HTTPS"| APIs["API entreprise & Upstreams MCP"]
+    GW -.->|"sync & politiques signées"| CP["Control Plane<br/>(FastAPI)"]
 ```
 
-## Implémentation actuelle
+## Implémentation
 
-La passerelle MCP est construite avec **Python** et **FastAPI** pour un développement rapide et flexible.
+La passerelle MCP est implémentée dans `stoa-gateway/` avec **Rust**, **Tokio** et **axum** — en production depuis février 2026 (en remplacement de l'ancien prototype Python archivé). Selon [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane), `stoa-gateway` est en **Production / Maintenance** et évolue vers un module protocole MCP opérant derrière Envoy upstream.
 
 | Aspect | Détails |
 |--------|---------|
-| Langage | Python 3.12+ |
-| Framework | FastAPI (async) |
-| Moteur de politiques | OPA (Open Policy Agent) |
-| Protocole | MCP 2024-11-05 |
-
-:::info Feuille de route
-Une implémentation haute performance en **Rust + Tokio + Hyper** est prévue pour le **T4 2026**, apportant :
-- Accélération au niveau noyau via eBPF
-- Latence additionnelle inférieure à la milliseconde
-- Empreinte mémoire significativement réduite
-
-Consultez notre [Feuille de route](/docs/roadmap) pour plus de détails.
-:::
+| Langage | Rust (stable) |
+| Framework | Tokio + axum |
+| Moteur de politiques | Artefacts de politiques signés Ed25519 ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) + OPA |
+| Protocole | MCP `2025-11-25` (négociant `2025-03-26` et `2024-11-05`) |
+| Statut | Production / Maintenance ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
 
 ## Fonctionnalités clés
 
 ### 🔐 Sécurité entreprise
-- **Intégration Keycloak OIDC** avec multi-realm par tenant
-- Validation de jetons JWT avec mappage d'audience
-- Gestion des clés API avec rotation automatique
+- **Intégration Keycloak OIDC** sur le realm unique partagé `stoa` avec un groupe par tenant et le claim JWT `tenant_id` vérifié ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))
+- Vérification d'audience obligatoire via `STOA_MCP_AUDIENCE` (fail-closed en production)
+- Artefacts de politiques d'outils signés Ed25519 par tenant ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture))
 
 ### 🏢 Isolation multi-tenant
-- Namespace Kubernetes par tenant (`tenant-{name}`)
-- Politiques réseau empêchant la communication inter-tenant
+- Filtrage par `tenant_id` JWT vérifié sur la découverte (`tools/list`), l'invocation (`tools/call`) et les ressources `stoa://tools/{name}`
+- Namespaces Kubernetes dédiés et politiques réseau `NetworkPolicy` optionnels pour les charges de travail tenants
 - Limitation de débit et quotas par tenant
 
 ### 📊 Observabilité complète
-- Métriques Prometheus sur le port 9090
-- Traçage des requêtes avec identifiants de corrélation
-- Analytique d'utilisation par abonnement
+- Métriques Prometheus (`GET /metrics` sur le port HTTP de la passerelle)
+- Propagation de traces OpenTelemetry avec identifiants de corrélation
+- Spool WAL d'audit durable (`STOA_AUDIT_SPOOL_DIR`) et métrologie Redpanda/Kafka optionnelle
 
 ### ⚡ Prêt pour la production
-- Traitement asynchrone des requêtes avec FastAPI
-- Pipeline de métrologie basé sur Kafka/Redpanda
-- Pooling de connexions et regroupement de requêtes
-- Application des politiques basée sur OPA
+- Traitement asynchrone en Rust/Tokio avec prise en charge JSON-RPC 2.0 unitaire et par lot (batch)
+- Optimisation de jetons optionnelle (`X-Token-Optimization` / capacité `tokenOptimization`)
+- Démarrage fail-closed (`STOA_POLICY_BOOT_TENANTS`)
 
 ## Support du protocole MCP
 
-STOA implémente la [spécification MCP](https://modelcontextprotocol.io/) complète (version `2024-11-05`) avec des extensions entreprise.
+STOA implémente la [spécification MCP](https://modelcontextprotocol.io/) (`2025-11-25`, avec négociation de version pour `2025-03-26` et `2024-11-05`).
 
-### Méthodes supportées
+### Méthodes JSON-RPC supportées
 
-| Méthode | Description |
-|---------|-------------|
-| `tools/list` | Découvrir les outils disponibles |
-| `tools/call` | Invoquer un outil |
-| `resources/list` | Lister les ressources disponibles |
-| `resources/read` | Lire le contenu d'une ressource |
-| `prompts/list` | Lister les prompts disponibles |
-| `prompts/get` | Obtenir un modèle de prompt |
+| Méthode | Comportement effectif |
+|---------|-----------------------|
+| `initialize` / `ping` | Négociation de protocole et sonde de vivacité (autorisés avant authentification Bearer) |
+| `tools/list` | Découvrir les outils visibles pour le `tenant_id` vérifié de l'appelant |
+| `tools/call` | Invoquer un outil autorisé |
+| `resources/list` / `resources/read` | Lister et lire les descripteurs d'outils exposés sous `stoa://tools/{name}` |
+| `resources/templates/list` | Retourne le modèle d'URI `stoa://tools/{name}` |
+| `prompts/list` / `prompts/get` | Déclarés au handshake ; `prompts/list` retourne actuellement `[]` et `prompts/get` retourne `-32002` (registre de prompts non peuplé) |
+
+Consultez la [Référence API de la passerelle MCP](/docs/api/mcp-gateway) pour la distinction complète entre les méthodes JSON-RPC de `POST /mcp`, les routes REST compagnons protégées par JWT et les capacités déclarées vs réponses effectives.
 
 ### Options de transport
 
-- **HTTP/SSE** : Server-Sent Events pour les réponses en streaming
-- **WebSocket** : Communication bidirectionnelle (prévu)
+- **Streamable HTTP (`POST /mcp`)** : Transport principal MCP `2025-03-26+` utilisant l'en-tête `Mcp-Session-Id` (réponse JSON ou `text/event-stream` selon `Accept`)
+- **HTTP + SSE (`GET /mcp/sse`, `POST /mcp/sse`, `DELETE /mcp/sse`)** : Transport Server-Sent Events (`?sessionId=`)
+- **WebSocket (`GET /mcp/ws`)** : Transport JSON-RPC bidirectionnel activable via `STOA_WEBSOCKET_ENABLED=true` (retourne `404` lorsqu'il est désactivé par défaut)
 
 ## Flux d'authentification {#authentication-flow}
 
 ```mermaid
 sequenceDiagram
-    participant Claude as Claude.ai
-    participant MCP as Passerelle MCP
-    participant KC as Keycloak
-    participant CP as Control Plane
+    participant Claude as Agent IA (Claude)
+    participant MCP as STOA Gateway
+    participant KC as Keycloak (realm stoa)
+    participant API as Backend Upstream
 
-    Claude->>MCP: tools/call + JWT
-    MCP->>KC: Valider le jeton
-    KC-->>MCP: Jeton valide + Claims
-    MCP->>CP: Vérifier l'abonnement
-    CP-->>MCP: Autorisé
-    MCP->>MCP: Exécuter l'outil
-    MCP-->>Claude: Réponse
+    Claude->>MCP: POST /mcp (tools/call + Bearer JWT)
+    MCP->>KC: Valider JWKS RS256 + audience + tenant_id
+    KC-->>MCP: Claims vérifiés
+    MCP->>MCP: Évaluer la politique tenant signée (ADR-070) & OPA
+    MCP->>API: Exécuter l'appel upstream
+    API-->>MCP: Résultat de l'outil
+    MCP-->>Claude: Résultat JSON-RPC
 ```
 
 ## Visibilité des outils multi-tenant
 
-Chaque tenant ne voit que les outils auxquels il est autorisé à accéder :
+Chaque appelant authentifié ne voit que les outils rattachés à son `tenant_id` vérifié (ou globaux), sauf rôle d'administration plateforme :
 
 | Tenant | Outils visibles |
 |--------|-----------------|
-| **Parzival** (High Five) | `stoa_*`, `highfive:*` |
-| **Sorrento** (IOI) | `stoa_*`, `ioi:*` |
-| **Halliday** (Admin) | Tous les outils (inter-tenant) |
+| **Parzival** (`high-five`) | `stoa_*`, `high-five:*` |
+| **Sorrento** (`ioi`) | `stoa_*`, `ioi:*` |
+| **Halliday** (`cpi-admin`) | Visibilité administrative inter-tenant |
 
 ## Configuration
 
 ### Variables d'environnement
 
 ```bash
-# Serveur
-MCP_GATEWAY_HOST=0.0.0.0
-MCP_GATEWAY_PORT=3001
+# Écouteur HTTP
+STOA_HOST=0.0.0.0
+STOA_PORT=8080
 
 # Control Plane
-CONTROL_PLANE_URL=http://control-plane:8080
+STOA_CONTROL_PLANE_URL=http://control-plane-api:8000
 
-# Keycloak
-KEYCLOAK_URL=https://auth.<YOUR_DOMAIN>
-KEYCLOAK_REALM=stoa
+# Keycloak (realm partagé stoa — ADR-074)
+STOA_KEYCLOAK_URL=https://auth.<YOUR_DOMAIN>
+STOA_KEYCLOAK_REALM=stoa
+STOA_MCP_AUDIENCE=stoa-mcp
 
-# OPA (pour les politiques)
-OPA_URL=http://opa:8181
+# Application fail-closed des politiques par tenant (ADR-070)
+STOA_POLICY_ENABLED=true
+STOA_POLICY_BOOT_TENANTS=acme
 ```
 
 ### Déploiement Kubernetes
 
+Déployez `stoa-gateway` via le chart Helm `./charts/stoa-platform` avec une image épinglée par digest (`repository` + digest `sha256`) :
+
 ```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: mcp-gateway
-  namespace: stoa-system
-spec:
-  replicas: 3
-  template:
-    spec:
-      containers:
-        - name: mcp-gateway
-          image: stoaplatform/mcp-gateway:latest
-          ports:
-            - containerPort: 3001
-          resources:
-            requests:
-              cpu: 500m
-              memory: 512Mi
-            limits:
-              cpu: 2000m
-              memory: 2Gi
+stoaGateway:
+  image:
+    repository: ghcr.io/stoa-platform/stoa-gateway
+    digest: "sha256:<64-hex-digest>"
+  policyBootTenants:
+    - acme
 ```
 
 ## Intégration avec Claude.ai
 
-La passerelle MCP de STOA s'intègre directement avec Claude.ai via le connecteur MCP :
-
-1. **Configurer le serveur MCP** dans les paramètres de Claude.ai
-2. **S'authentifier** avec votre clé API STOA
+1. **Configurer le serveur MCP** dans les paramètres Claude.ai / client MCP (`https://mcp.<YOUR_DOMAIN>/mcp` ou `/mcp/sse`)
+2. **S'authentifier** via la découverte OAuth 2.1 PKCE (`/.well-known/oauth-protected-resource`) auprès du realm Keycloak `stoa`
 3. **Découvrir les outils** automatiquement via `tools/list`
 4. **Invoquer les outils** à travers une conversation naturelle
 
@@ -170,6 +151,8 @@ La passerelle MCP de STOA s'intègre directement avec Claude.ai via le connecteu
 
 ```json
 {
+  "jsonrpc": "2.0",
+  "id": 1,
   "method": "tools/call",
   "params": {
     "name": "stoa_catalog",
@@ -185,23 +168,18 @@ La passerelle MCP de STOA s'intègre directement avec Claude.ai via le connecteu
 
 ### Métriques Prometheus
 
-| Métrique | Type | Description |
-|----------|------|-------------|
-| `mcp_requests_total` | Counter | Total des requêtes MCP |
-| `mcp_request_duration_seconds` | Histogram | Latence des requêtes |
-| `mcp_tool_invocations_total` | Counter | Invocations d'outils par nom |
-| `mcp_errors_total` | Counter | Erreurs par type |
+`stoa-gateway` expose ses métriques Prometheus sur `GET /metrics` via son port HTTP (`8080` par défaut), couvrant les requêtes JSON-RPC MCP, les histogrammes de latence d'outils, les sessions actives et les rejets de politique/authentification par tenant.
 
-### Tableau de bord Grafana
+### Tableaux de bord Grafana
 
-Tableaux de bord pré-configurés disponibles pour :
-- Débit et latence des requêtes
-- Patterns d'invocation des outils
-- Taux d'erreur par tenant
+Les tableaux de bord fournis dans `charts/stoa-observability` permettent de suivre :
+- Débit et percentiles de latence des requêtes
+- Invocations d'outils par tenant
+- Taux de rejet d'authentification et de politiques
 - Événements de limitation de débit
 
 ## Étapes suivantes
 
-- [Guide de démarrage rapide](/docs/guides/quickstart) - Commencer avec STOA
-- [Référence API](/docs/api/mcp-gateway) - Points d'entrée de la passerelle MCP
-- [Guide d'authentification](/docs/guides/authentication) - Configurer l'authentification
+- [Guide de démarrage rapide](/docs/guides/quickstart) — Lancer STOA en local
+- [Référence API de la passerelle MCP](/docs/api/mcp-gateway) — Méthodes JSON-RPC, routes REST compagnons et capacités
+- [Guide d'authentification](/docs/guides/authentication) — Configurer Keycloak OIDC (realm `stoa`)

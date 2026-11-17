@@ -1,86 +1,88 @@
 ---
 sidebar_position: 5
 title: "Modes de déploiement de la passerelle STOA"
-description: "Découvrez les 4 modes de déploiement de la passerelle STOA : edge-mcp, sidecar, proxy et shadow pour tous les cas d'usage."
-keywords: [STOA, passerelle, modes de déploiement, edge-mcp, sidecar, proxy, concepts, passerelle API]
+description: "Découvrez les modes de déploiement de STOA Gateway (edge-mcp, sidecar, proxy, shadow) et la transition du plan de données vers Envoy (ADR-073)."
+keywords: [STOA, passerelle, modes de déploiement, edge-mcp, sidecar, proxy, Envoy, ext_authz, concepts, passerelle API]
 ---
 
 # Passerelle STOA
 
 ## Vue d'ensemble
 
-La passerelle STOA est le composant de passerelle API unifiée de la plateforme STOA. Elle fournit une gestion d'API AI-native avec 4 modes de déploiement pour s'adapter à différents cas d'usage.
+STOA Gateway (`stoa-gateway/`, Rust/Tokio/axum) est le runtime de passerelle AI-native unifié en production depuis février 2026. Il expose quatre profils `STOA_GATEWAY_MODE` ([ADR-024](../architecture/adr/adr-024-gateway-unified-modes)) ainsi qu'un écouteur gRPC `ExtAuthzService` optionnel pour Envoy.
 
-**Implémentation actuelle** : Python/FastAPI (`mcp-gateway/`)
-**Implémentation cible** : Rust/Tokio (`stoa-gateway/`) — T4 2026
-
-Voir [ADR-024](../architecture/adr/adr-024-gateway-unified-modes) pour la décision d'architecture.
+:::info Évolution du plan de données (ADR-073)
+Dans le cadre d'[ADR-073 : Adoption d'Envoy comme plan de données principal](../architecture/adr/adr-073-adopt-envoy-data-plane), `stoa-gateway` est en **Production / Maintenance** tandis que les fonctions de proxy L4/L7 convergent vers **Envoy** upstream configuré via **STOA Link** (`stoa-connect` en ADS mTLS loopback) et autorisé par le serveur gRPC `ExtAuthzService` intégré à `stoa-gateway` (`STOA_EXT_AUTHZ_GRPC_ADDR` + `STOA_EXT_AUTHZ_AUDIENCE`). La parité complète des politiques et la bascule de topologie par défaut sont en cours ([Architecture du plan de données](../architecture/data-plane)).
+:::
 
 ## Vision architecturale
 
 ```mermaid
 flowchart TB
-    GW["<b>stoa-gateway</b><br/>(binaire unique)"]
+    GW["<b>stoa-gateway</b><br/>(binaire Rust/Tokio/axum)"]
 
     subgraph modes[" "]
         direction LR
-        EM["--mode=edge-mcp<br/>✅ Production"]
-        SC["STOA_GATEWAY_MODE=sidecar<br/>Runtime présent"]
-        PX["--mode=proxy<br/>📋 T3 2026"]
-        SH["--mode=shadow<br/>⏸️ Reporté"]
+        EM["STOA_GATEWAY_MODE=edge-mcp<br/>✅ Production (+ ext_authz gRPC optionnel)"]
+        SC["STOA_GATEWAY_MODE=sidecar<br/>Compagnon HTTP /authz"]
+        PX["STOA_GATEWAY_MODE=proxy<br/>Socle → Cible Envoy xDS (ADR-073)"]
+        SH["STOA_GATEWAY_MODE=shadow<br/>Socle → Cible mirroring Envoy"]
     end
 
     GW --- modes
-    EM --> AI["Agents IA<br/>(Claude, GPT)"]
-    SC --> LG["Passerelles legacy<br/>(Kong, Envoy)"]
+    EM --> AI["Agents IA & Contrats REST<br/>(Claude, GPT, MCP)"]
+    SC --> LG["Passerelles hôtes<br/>(HTTP POST /authz)"]
     PX --> BE["API Backend<br/>(ERP, CRM)"]
-    SH --> DI["API tierces<br/>(découverte de trafic)"]
+    SH --> DI["API legacy<br/>(découverte de trafic)"]
 ```
 
 ## Modes de déploiement {#deployment-modes}
 
-### Mode Edge-MCP (actuel)
+### Mode Edge-MCP (défaut actuel)
 
-**Statut** : ✅ Production
+**Statut** : ✅ Production (Maintenance selon [ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane))
 
-Le mode principal pour l'intégration des agents IA via le Model Context Protocol (MCP).
+Le mode principal pour l'intégration des agents IA via le Model Context Protocol (MCP) et les routes REST pilotées par contrat.
 
 **Cas d'usage** :
-- Intégration Claude Desktop
+- Intégration Claude.ai et Claude Desktop
 - Accès d'agents LLM personnalisés aux API d'entreprise
-- Workflows d'automatisation pilotés par l'IA
+- Contrats transactionnels REST + MCP (`POST /admin/contracts`)
 
 **Fonctionnalités** :
-- Transport SSE (Server-Sent Events)
-- Gestion des messages JSON-RPC 2.0
-- Registre dynamique d'outils à partir de CRD Kubernetes
-- Authentification OAuth2/OIDC via Keycloak
-- Évaluation de politiques OPA
-- Pipeline de métrologie Kafka
+- Streamable HTTP (`POST /mcp`), SSE (`GET/POST/DELETE /mcp/sse`) et WebSocket sur option (`GET /mcp/ws` lorsque `STOA_WEBSOCKET_ENABLED=true`)
+- Gestion des messages JSON-RPC 2.0 unitaires et par lot (`2025-11-25`, `2025-03-26`, `2024-11-05`)
+- Registre dynamique d'outils depuis les CRD Kubernetes (`Tool`, `ToolSet`, `Skill`) et synchronisation Control Plane
+- Authentification OAuth2/OIDC via Keycloak (realm `stoa`, claim `tenant_id` vérifié, [ADR-074](../architecture/adr/adr-074-tenant-model))
+- Application fail-closed des politiques signées Ed25519 par tenant ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) et évaluation OPA
+- Serveur gRPC `envoy.service.auth.v3.Authorization` optionnel (`STOA_EXT_AUTHZ_GRPC_ADDR` + `STOA_EXT_AUTHZ_AUDIENCE`)
 
 **Exemple** :
 ```bash
-# Implémentation Python actuelle
-cd mcp-gateway && uvicorn src.main:app --port 3001
-
-# Future implémentation Rust
-stoa-gateway --mode=edge-mcp --port=3001
+STOA_GATEWAY_MODE=edge-mcp \
+STOA_PORT=8080 \
+STOA_KEYCLOAK_URL=https://auth.example.com \
+STOA_KEYCLOAK_REALM=stoa \
+STOA_MCP_AUDIENCE=stoa-mcp \
+stoa-gateway
 ```
 
-**Points d'entrée** :
-- `GET /mcp/sse` — Point d'entrée SSE pour Claude Desktop
-- `POST /mcp/v1/tools/{name}` — Invocation d'outil
-- `GET /mcp/v1/tools` — Lister les outils disponibles
+**Points d'entrée principaux** :
+- `POST /mcp` — Point d'entrée Streamable HTTP JSON-RPC 2.0
+- `GET /mcp/sse` & `POST /mcp/sse` — Transport SSE
+- `GET /mcp/v1/tools` & `POST /mcp/v1/tools/invoke` — Routes REST compagnons protégées par JWT
 
 ---
 
 ### Mode sidecar (runtime compagnon)
 
-**Statut** : runtime présent. Le packaging dans le même pod existe dans le chart Helm et est désactivé par défaut. Aucun appel de passerelle tierce en conditions réelles n'est enregistré.
+**Statut** : Runtime présent. Le packaging dans le même pod existe dans `charts/stoa-platform` (`stoaSidecar.enabled=false` par défaut).
 
-Le même binaire démarre avec `STOA_GATEWAY_MODE=sidecar` et répond à `POST /authz`. L'hôte conserve l'authentification, le routage et l'application du verdict. Le moteur de décision n'évalue pas OPA et n'émet pas d'événements de métrologie Kafka. Les adaptateurs mesh sont des notes de conception.
+Le même binaire démarre avec `STOA_GATEWAY_MODE=sidecar` et répond à `POST /authz` en HTTP. La passerelle hôte conserve l'authentification, le routage et l'application du verdict. Le moteur de décision HTTP compagnon n'évalue pas OPA et n'émet pas d'événements de métrologie Kafka.
 
-Les options `--mode`, `--primary-gateway` et `--metering-enabled` ne sont pas l'interrupteur du runtime. Voir [Usage du compagnon](../guides/companion-usage.md) pour le corps de requête, les trois formes d'intégration et les limites. La synchronisation GitOps vers une passerelle existante est [stoa-connect](../guides/stoa-connect-quickstart.md).
+:::note Envoy `ext_authz` gRPC vs Compagnon HTTP
+`stoa-gateway` se configure exclusivement via les variables d'environnement `STOA_*` ou `config.yaml` (pas d'options CLI `--mode`). Pour le filtre natif gRPC `envoy.filters.http.ext_authz` d'Envoy ([ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane)), renseignez `STOA_EXT_AUTHZ_GRPC_ADDR` et `STOA_EXT_AUTHZ_AUDIENCE` plutôt que `POST /authz`. Voir [Usage du compagnon](../guides/companion-usage.md) pour les limites de `/authz` HTTP et [stoa-connect](../guides/stoa-connect-quickstart.md) pour la synchronisation Control Plane et l'ADS mTLS loopback.
+:::
 
 ```text
 Client → passerelle hôte → POST /authz → stoa-gateway (sidecar)
@@ -89,60 +91,37 @@ Client → passerelle hôte → POST /authz → stoa-gateway (sidecar)
 
 ---
 
-### Mode Proxy (prévu T3 2026)
+### Mode Proxy
 
-**Statut** : 📋 Prévu
+**Statut** : Socle Rust présent ; proxy API L7 complet ciblé sur Envoy upstream via xDS ([ADR-073 §8](../architecture/adr/adr-073-adopt-envoy-data-plane))
 
-Passerelle API classique avec application complète des politiques, pour les déploiements greenfield.
+Profil de passerelle API classique pour les flux REST/gRPC greenfield avec application complète des politiques.
 
 **Cas d'usage** :
-- Nouveaux déploiements d'API nécessitant de la gouvernance
-- Remplacement complet des passerelles legacy
+- Nouveaux déploiements d'API nécessitant une gouvernance centralisée
+- Remplacement de passerelles legacy sans exposition d'outils MCP
 - Plateformes API multi-tenant
 
-**Fonctionnalités** :
-- Évaluation de politiques OPA (bloquante)
-- Limitation de débit par tenant/consommateur
-- Transformation des requêtes/réponses
-- Patterns de circuit breaker
-- Terminaison mTLS
-
-**Exemple** :
-```bash
-stoa-gateway --mode=proxy \
-  --upstream=http://backend:8080 \
-  --opa-endpoint=http://opa:8181
-```
+**Capacités et trajectoire** :
+- `stoa-gateway` sert déjà des routes de contrats dynamiques (`POST /admin/contracts`) et des backends proxy API en mode `edge-mcp`
+- Selon [ADR-073 §8](../architecture/adr/adr-073-adopt-envoy-data-plane), le mode `proxy` autonome correspond à un profil listener/cluster Envoy réconcilié par xDS avec contrôle `ExtAuthzService` gRPC
 
 ---
 
-### Mode Shadow (reporté) {#shadow-mode}
+### Mode Shadow {#shadow-mode}
 
-**Statut** : ⏸️ Reporté en attente de revue sécurité
+**Statut** : ⏸️ Socle de capture Rust présent ; mirroring de trafic en production ciblé sur Envoy ([ADR-073 §8](../architecture/adr/adr-073-adopt-envoy-data-plane)) sous réserve de revue sécurité
 
-Observation passive du trafic pour la découverte d'API legacy. Déployez pendant 2 semaines, auto-génération de contrats d'interface.
+Observation passive du trafic pour la découverte d'API legacy et la génération de contrats UAC sans modifier les réponses en ligne.
 
 **Cas d'usage** :
-- API legacy sans documentation
-- Progiciels black-box (SAP, Oracle, etc.)
+- API legacy sans spécification OpenAPI à jour
+- Progiciels black-box (SAP, Oracle, ERP)
 - Découverte d'inventaire d'API
 
-**Fonctionnalités** (prévues) :
-- Zéro modification des requêtes/réponses
-- Capture des patterns de trafic
-- Auto-génération de contrats UAC (parsing HTTP, pas de ML)
-- Validation humaine avant promotion
-
-**Exemple** :
-```bash
-stoa-gateway --mode=shadow \
-  --target=http://legacy-erp:8080 \
-  --output=/var/lib/stoa/uac
-```
-
-**Exigences de sécurité** (avant implémentation) :
-- Détection/masquage des PII avant stockage
-- Opt-in explicite par API/tenant
+**Exigences de sécurité** (avant activation en production) :
+- Détection et masquage des PII avant stockage
+- Opt-in explicite par API et par tenant
 - Rétention < 30 jours avec purge automatique
 - Conformité RGPD Article 25
 
@@ -152,25 +131,31 @@ stoa-gateway --mode=shadow \
 
 ### Variables d'environnement
 
+`stoa-gateway` lit les variables préfixées `STOA_*` (ainsi qu'un fichier `config.yaml` optionnel) :
+
 | Variable | Description | Défaut |
 |----------|-------------|--------|
-| `GATEWAY_MODE` | Mode de déploiement | `edge-mcp` |
-| `GATEWAY_PORT` | Port HTTP | `3001` |
-| `KEYCLOAK_URL` | URL de base Keycloak | Requis |
-| `KEYCLOAK_REALM` | Realm Keycloak | `stoa` |
-| `OPA_ENABLED` | Activer l'évaluation de politiques OPA | `true` |
-| `METERING_ENABLED` | Activer la métrologie Kafka | `true` |
+| `STOA_GATEWAY_MODE` | Mode de déploiement (`edge-mcp`, `sidecar`, `proxy`, `shadow`) | `edge-mcp` |
+| `STOA_PORT` | Port d'écoute HTTP | `8080` |
+| `STOA_KEYCLOAK_URL` | URL de base canonique Keycloak | Optionnel (requis pour OIDC) |
+| `STOA_KEYCLOAK_REALM` | Realm Keycloak partagé ([ADR-074](../architecture/adr/adr-074-tenant-model)) | `stoa` (dans Helm/Compose) |
+| `STOA_MCP_AUDIENCE` | Audience JWT `aud` requise sur MCP (obligatoire si `STOA_ENVIRONMENT=prod`) | Non défini (fail-closed) |
+| `STOA_POLICY_ENABLED` | Appliquer les politiques d'outils signées Ed25519 par tenant ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) | `true` |
+| `STOA_POLICY_BOOT_TENANTS` | Liste CSV de tenants dont la politique signée est exigée au démarrage | Vide |
+| `STOA_EXT_AUTHZ_GRPC_ADDR` | Adresse socket gRPC `ExtAuthzService` optionnelle pour Envoy (`host:port`) | Non défini |
+| `STOA_EXT_AUTHZ_AUDIENCE` | Audience JWT `aud` requise pour les vérifications gRPC `ext_authz` | Non défini (fail-closed) |
+| `STOA_KAFKA_ENABLED` | Activer le producteur interne de métrologie Kafka/Redpanda | `false` |
 
 ### CRD Kubernetes
 
-La passerelle surveille les CRD Tool et ToolSet :
+Lorsque `STOA_K8S_WATCHER_ENABLED=true`, `stoa-gateway` surveille les ressources `Tool`, `ToolSet` et `Skill` (`gostoa.dev/v1alpha1`) :
 
 ```yaml
 apiVersion: gostoa.dev/v1alpha1
 kind: Tool
 metadata:
   name: my-api-tool
-  namespace: tenant-acme
+  namespace: stoa-system
 spec:
   displayName: My API Tool
   description: A sample tool
@@ -178,22 +163,23 @@ spec:
   method: POST
 ```
 
-Voir la [Référence des outils MCP](../reference/mcp-tools) pour le schéma complet.
+Voir la [Référence des CRD Kubernetes](../reference/crds) pour les cinq CRD (`Tool`, `ToolSet`, `Skill`, `GatewayInstance`, `GatewayBinding`).
 
-## Actuel vs cible
+## Synthèse d'implémentation
 
-| Aspect | Actuel (Python) | Cible (Rust) |
-|--------|------------------|---------------|
-| Répertoire | `mcp-gateway/` | `stoa-gateway/` |
-| Langage | Python 3.11 | Rust (Tokio) |
-| Framework | FastAPI | Axum/Hyper |
-| Statut | Production | T4 2026 |
-| Modes | edge-mcp uniquement | Les 4 modes |
+| Aspect | Détails |
+|--------|---------|
+| Répertoire | `stoa-gateway/` |
+| Langage & Runtime | Rust (stable), Tokio + axum + tonic |
+| Cycle de vie | Production / Maintenance ([ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane)) |
+| Mode actif principal | `edge-mcp` (avec écouteur gRPC `ExtAuthzService` optionnel) |
+| Mode compagnon | `sidecar` HTTP `POST /authz` ([Usage du compagnon](../guides/companion-usage.md)) |
+| Proxy & Shadow cibles | Envoy upstream via `stoa-connect` xDS ADS ([ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane)) |
 
 ## Documentation associée
 
+- [Architecture du plan de données](../architecture/data-plane)
+- [ADR-073 : Adoption d'Envoy comme plan de données principal](../architecture/adr/adr-073-adopt-envoy-data-plane)
 - [Usage du compagnon](../guides/companion-usage.md)
 - [ADR-024 : Architecture unifiée de la passerelle](../architecture/adr/adr-024-gateway-unified-modes)
-- [Spécification du protocole MCP](https://modelcontextprotocol.io/)
 - [Référence API de la passerelle MCP](../api/mcp-gateway)
-- [ADR-021 : Observabilité pilotée par le UAC](../architecture/adr/adr-021-uac-driven-observability)

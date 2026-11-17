@@ -9,7 +9,7 @@ import ArchitectureDiagrams from '@site/src/components/ArchitectureDiagrams';
 
 # Architecture
 
-Cette section présente les diagrammes d'architecture de STOA Platform, illustrant les différents composants, les flux de données et les décisions de sécurité.
+Cette section présente les diagrammes d'architecture de STOA Platform, illustrant les composants principaux, les flux de données et les décisions de sécurité.
 
 ## Diagrammes Interactifs
 
@@ -17,78 +17,82 @@ Cette section présente les diagrammes d'architecture de STOA Platform, illustra
 
 ## Vue d'Ensemble
 
-STOA Platform suit une architecture **cloud-native** déployée sur Kubernetes avec les principes suivants :
+STOA Platform suit une architecture **cloud-native** déployée sur Kubernetes (ou Docker Compose pour l'évaluation locale) avec les principes suivants :
 
 ### Zones de Sécurité
 
 | Zone | Niveau de Confiance | Composants |
-|------|-------------|------------|
-| **Externe** | Non fiable | Clients API, Claude.ai, Console Web |
-| **DMZ** | Semi-fiable | Nginx Ingress, API Gateway, MCP Gateway |
-| **Interne** | Fiable | Control Plane, Keycloak, Couche de Données |
+|------|---------------------|------------|
+| **Externe** | Non fiable | Clients API, Agents IA (Claude.ai, clients MCP), Interfaces Web |
+| **DMZ** | Semi-fiable | Contrôleur Ingress, STOA Gateway (Rust), Envoy + STOA Link xDS ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
+| **Interne** | Fiable | API Control Plane, `stoa-operator`, Keycloak, Couche de Données |
 
 ### Composants Principaux
 
-- **STOA Control Plane** — FastAPI, gestion des contrats UAC, APIs multi-protocoles
-- **MCP Gateway** — Intégration Claude.ai, découverte des tools, injection de contexte JWT
-- **webMethods Gateway** — Proxy API, application des politiques
-- **Keycloak** — OAuth2/OIDC, RBAC multi-tenant
+- **STOA Control Plane** — API de gestion Python/FastAPI, contrats UAC, catalogue et émission d'artefacts de politiques signés Ed25519
+- **STOA Gateway (`stoa-gateway`)** — Runtime Rust/axum (Production / Maintenance selon [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) : MCP `2025-11-25`, routes de contrats REST, politiques tenant fail-closed et `ExtAuthzService` gRPC optionnel
+- **Envoy upstream + STOA Link (`stoa-connect`)** — Plan de données L4/L7 cible via ADS mTLS loopback ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)), ainsi que les adaptateurs multi-passerelles (Kong, Gravitee, webMethods, Apigee, AWS, Azure)
+- **Keycloak** — Realm unique `stoa`, groupes par tenant, OIDC/OAuth2 et claim JWT `tenant_id` vérifié ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))
 
 ### Couche de Données
 
-- **PostgreSQL** — Contrats, tenants, abonnements
-- **OpenSearch** — Logs API, analytiques
-- **Redis** — Cache, sessions, rate limiting
-- **Kafka/Redpanda** — Événements, audit (🔒 Interne Uniquement)
-- **Vault** — Secrets, certificats
+- **PostgreSQL** — Schéma partagé filtré par `tenant_id` (contrats, tenants, abonnements, audit)
+- **OpenSearch** — Journaux API structurés, analytique et recherche d'audit
+- **Redpanda (API Kafka)** — Événements asynchrones et métrologie (🔒 Interne Uniquement, [ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka))
+- **OpenBao (API Vault)** — Secrets et identifiants ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao), déploiement partiel ; compatible HashiCorp Vault)
+
+*(Note : STOA ne déploie pas Redis.)*
 
 ## Architecture Decision Records (ADRs)
 
-Les décisions architecturales importantes sont documentées via des ADRs :
+Les décisions architecturales structurantes sont documentées dans l'[Index des ADR](/docs/architecture/adr) :
 
-- **[ADR-019 : Stratégie Business Model & Moat](/docs/architecture/adr/adr-019-business-model-moat-strategy)** — Trademark, Velocity, Ecosystem
-- **[ADR-018 : Durcissement de Sécurité P0](/docs/architecture/adr/adr-018-security-hardening-p0)** — Correctifs Pentest Team Coca
-- **ADR-017 : Kafka Interne Uniquement** — Zéro Exposition Externe
-- **ADR-016 : RBAC Multi-tenant** — Isolation via Contexte JWT
-- **ADR-015 : GitOps avec Argo CD** — Déploiement Continu
+- **[ADR-073 : Adoption d'Envoy comme plan de données principal](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)** — Envoy upstream + STOA Link xDS + services externes
+- **[ADR-074 : Realm Keycloak unique et groupes par tenant](/docs/architecture/adr/adr-074-tenant-model)** — Realm partagé `stoa`, groupes par tenant, filtrage `tenant_id`
+- **[ADR-075 : Socle de secrets — OpenBao via l'API Vault](/docs/architecture/adr/adr-075-secrets-backend-openbao)** — Coffre de secrets auto-hébergé Apache 2.0
+- **[ADR-070 : Posture fail-closed de la passerelle](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)** — Application d'artefacts de politiques signés Ed25519 par tenant
+- **[ADR-005 : Architecture Event-Driven Kafka](/docs/architecture/adr/adr-005-event-driven-kafka)** — Streaming Redpanda/Kafka strictement interne
+- **[ADR-035 : Modèle d'adaptateur de passerelle](/docs/architecture/adr/adr-035-gateway-adapter-pattern)** — Orchestration multi-passerelles unifiée
+- **[ADR-019 : Stratégie Business Model & Moat](/docs/architecture/adr/adr-019-business-model-moat-strategy)** — Gouvernance open-core Apache 2.0
+- **[ADR-018 : Durcissement de Sécurité P0](/docs/architecture/adr/adr-018-security-hardening-p0)** — Socle de contrôles de sécurité
 
 ## Pipeline CI/CD
 
-Le pipeline suit une approche **GitOps** avec :
+La chaîne de livraison suit une approche **GitOps** :
 
-1. **Code** — GitLab avec Charts Helm
-2. **Build & Test** — Lint, Tests, Scan de Sécurité, Construction d'Image
-3. **Package** — Registre de Conteneurs (signé), Dépôt Helm
-4. **Deploy** — Argo CD avec synchronisation continue
+1. **Code** — Monorepo `stoa-platform/stoa` sur GitHub (incluant `charts/stoa-platform` et `charts/stoa-observability`)
+2. **Build & Test** — GitHub Actions (lint, tests unitaires/intégration, scans sécurité, preuve réelle Envoy xDS)
+3. **Package** — Images conteneurs signées et épinglées par digest sur GHCR (`ghcr.io/stoa-platform/*@sha256:...`)
+4. **Deploy** — Synchronisation déclarative Argo CD ([ADR-007](/docs/architecture/adr/adr-007-gitops-argocd))
 
 ### Sécurité de la Chaîne d'Approvisionnement
 
-- **SBOM** — Software Bill of Materials généré automatiquement
-- **Cosign** — Signature des images de conteneurs
-- **SLSA** — Attestations de provenance
+- **SBOM** — Software Bill of Materials généré automatiquement en CI
+- **Cosign** — Signature OIDC sans clé des images conteneurs
+- **SLSA** — Attestations de provenance et déploiements Helm épinglés par digest
 
 ## MCP Gateway
 
-Le MCP Gateway (Model Context Protocol) permet l'intégration avec Claude.ai :
+La passerelle MCP permet l'intégration gouvernée avec les agents IA :
 
 ### Flux d'Exécution
 
-1. Claude.ai envoie un `tools/call` avec JWT
-2. MCP Gateway décode le JWT et extrait le tenant
-3. Keycloak valide le token et vérifie les permissions RBAC
-4. Le Control Plane exécute la logique métier et valide le contrat UAC
-5. L'API backend traite la requête
-6. La réponse est retournée avec un Trace ID
+1. L'agent IA envoie `POST /mcp` (`tools/call`) avec un JWT Bearer
+2. STOA Gateway vérifie la signature JWKS RS256, `STOA_MCP_AUDIENCE` et le claim `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))
+3. La passerelle évalue l'artefact de politique signé du tenant en mode fail-closed ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) ainsi qu'OPA
+4. La requête autorisée est transmise à l'API backend ou au serveur MCP cible
+5. La réponse est retournée avec corrélation de trace et enregistrée dans les pipelines d'audit/métrologie
 
 ### Isolation Multi-Tenant
 
-Chaque tenant ne voit que ses propres tools :
+Chaque tenant ne voit que les outils rattachés à son `tenant_id` vérifié :
 
-- **Parzival (IOI)** — `stoa_*`, `ioi:billing:*`, `ioi:inventory:*`
-- **Sorrento (Gregarious)** — `stoa_*`, `greg:oasis:*`, `greg:sixers:*`
-- **Halliday (Admin)** — Visibilité complète inter-tenant
+- **Parzival (`ioi`)** — `stoa_*`, `ioi:billing:*`, `ioi:inventory:*`
+- **Sorrento (`gregarious`)** — `stoa_*`, `greg:oasis:*`, `greg:sixers:*`
+- **Halliday (`cpi-admin`)** — Visibilité administrative inter-tenant
 
 ## Ressources Complémentaires
 
+- [Architecture du plan de données](/docs/architecture/data-plane)
 - [Guide de Démarrage Rapide](/docs/guides/quickstart)
 - [Référence API](/docs/api/control-plane)

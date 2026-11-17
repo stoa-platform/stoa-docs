@@ -297,8 +297,8 @@ egress:
   - to:
       - podSelector:
           matchLabels:
-            app: redis
-  # ... et DNS
+            app: keycloak
+  # ... et DNS / OpenBao (API Vault)
 ```
 
 ### Vérification
