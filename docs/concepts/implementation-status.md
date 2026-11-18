@@ -41,7 +41,7 @@ Today's production traffic runs through **STOA Gateway (Rust)** in `edge-mcp` mo
 | Rate Limiting, Circuit Breaker & Security Headers | **Production** | Per-consumer sliding-window quotas, per-upstream circuit breaker, OWASP headers, SSRF blocklist |
 | Companion / Sidecar Mode (`POST /authz`) | **Runtime present** | Allow/deny status-code endpoint in `stoa-gateway`; no live third-party gateway callout demonstrated in CI. See [Companion usage](/docs/guides/companion-usage) |
 | Envoy Loopback ADS/xDS (`STOA_GATEWAY_TYPE=envoy`) | **In Progress** | mTLS loopback ADS (`CDS`/`LDS`/`RDS`), fail-closed `ext_authz` wiring, and `cors` / `rate_limit` / `ip_filter` v1 policies in `stoa-connect`; external `ext_authz` service and JWT/OIDC/transform policies in progress |
-| Proxy & Shadow Modes | **Planned (on Envoy)** | Targeted as Envoy xDS routing and traffic-mirroring profiles under [ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) |
+| Proxy & Shadow Modes | **Partial Rust implementations** | Proxy starts with an empty route registry and no transformers wired. Shadow exposes UAC endpoints without a capture source. [ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) defines the Envoy routing and traffic mirroring targets. |
 
 ## Gateway Adapters
 

@@ -41,7 +41,7 @@ Le trafic de production passe aujourd'hui par **STOA Gateway (Rust)** en mode `e
 | Rate Limiting, Circuit Breaker & En-têtes de Sécurité | **Production** | Quotas à fenêtre glissante par consommateur, circuit breaker par amont, en-têtes OWASP, blocage SSRF |
 | Mode Compagnon / Sidecar (`POST /authz`) | **Runtime présent** | Endpoint allow/deny par code HTTP dans `stoa-gateway` ; aucun appel réel depuis une passerelle tierce démontré en CI. Voir [Usage du compagnon](/docs/guides/companion-usage) |
 | ADS/xDS Loopback Envoy (`STOA_GATEWAY_TYPE=envoy`) | **En cours** | Serveur ADS mTLS loopback (`CDS`/`LDS`/`RDS`), câblage `ext_authz` fail-closed et politiques v1 `cors` / `rate_limit` / `ip_filter` dans `stoa-connect` ; service `ext_authz` externe et politiques JWT/OIDC/transform en cours |
-| Modes Proxy & Shadow | **Planifié (sur Envoy)** | Ciblés comme profils de routage et de miroir de trafic xDS sur Envoy selon l'[ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) |
+| Modes Proxy & Shadow | **Implémentations Rust partielles** | Proxy démarre avec un registre de routes vide et sans transformateurs raccordés. Shadow expose les routes UAC sans source de capture. L’[ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) définit la cible Envoy pour le routage et la mise en miroir du trafic. |
 
 ## Adaptateurs de Passerelles
 
