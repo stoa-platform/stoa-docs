@@ -209,6 +209,13 @@ npm run build
 npm run test:e2e
 ```
 
+After a successful Vercel production deployment, the same workflow tests the live docs.
+To run those checks against production from your checkout, use:
+
+```bash
+STOA_DOCS_PLAYWRIGHT_TARGET=production npm run test:e2e
+```
+
 ## Documentation
 
 - Update relevant docs when changing functionality
