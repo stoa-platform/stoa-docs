@@ -1,0 +1,67 @@
+name: Readiness language navigation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/readiness-language.yml'
+      - 'docs/admin/installation.md'
+      - 'docusaurus.config.ts'
+      - 'i18n/fr/code.json'
+      - 'i18n/fr/docusaurus-plugin-content-docs/current/admin/installation.md'
+      - 'package*.json'
+      - 'playwright.config.mjs'
+      - 'scripts/enrich-sitemap-hreflang.mjs'
+      - 'scripts/manage-scheduled-posts.sh'
+      - 'scripts/notify-readiness-failures.mjs'
+      - 'scripts/tests/notify-readiness-failures.test.mjs'
+      - 'sidebars.ts'
+      - 'src/**'
+      - 'tests/e2e/**'
+  workflow_dispatch:
+  deployment_status:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-test:
+    name: >-
+      ${{ github.event_name == 'deployment_status' &&
+          'Readiness on docs.gostoa.dev' ||
+          'Readiness links on desktop and mobile' }}
+    if: >-
+      github.event_name != 'deployment_status' ||
+      (github.event.deployment.environment == 'Production' &&
+       github.event.deployment_status.state == 'success' &&
+       github.event.deployment_status.creator.login == 'vercel[bot]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - if: github.event_name != 'deployment_status'
+        run: node --test scripts/tests/notify-readiness-failures.test.mjs
+      - run: npm ci
+      - run: npx playwright install --with-deps --only-shell chromium
+      - if: github.event_name != 'deployment_status'
+        run: npm run build
+        env:
+          DOCUSAURUS_SSR_CONCURRENCY: 1
+      - id: playwright
+        run: PLAYWRIGHT_JSON_OUTPUT_FILE="$RUNNER_TEMP/readiness-playwright.json" npm run test:e2e -- --reporter=dot,json
+        env:
+          STOA_DOCS_PLAYWRIGHT_TARGET: ${{ github.event_name == 'deployment_status' && 'production' || 'local' }}
+
+      - name: Notify n8n of failed production scenarios
+        if: >-
+          failure() && steps.playwright.outcome == 'failure' &&
+          github.event_name == 'deployment_status'
+        run: node scripts/notify-readiness-failures.mjs "$RUNNER_TEMP/readiness-playwright.json"
+        env:
+          STOA_N8N_CI_EVENT_TOKEN: ${{ secrets.STOA_N8N_CI_EVENT_TOKEN }}

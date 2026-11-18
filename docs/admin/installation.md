@@ -13,7 +13,7 @@ import EnvSetup from '@site/docs/_partials/_env-setup.mdx';
 
 # Installation Guide
 
-Deploy STOA Platform on any Kubernetes cluster using Helm. This guide covers prerequisites, chart installation, configuration, and post-install verification.
+Deploy the **STOA Gateway** and its Kubernetes Custom Resource Definitions using the `charts/stoa-platform` Helm chart from the `stoa-platform/stoa` repository. This guide covers prerequisites, local-checkout chart installation, `values.yaml` configuration, and post-install verification.
 
 ## Prerequisites
 
@@ -22,8 +22,8 @@ Deploy STOA Platform on any Kubernetes cluster using Helm. This guide covers pre
 | Kubernetes | 1.28+ | Container orchestration |
 | Helm | 3.12+ | Chart deployment |
 | kubectl | 1.28+ | Cluster management |
-| PostgreSQL | 15+ | Control Plane database |
-| Keycloak | 24+ | Identity and access management |
+| PostgreSQL | 15+ | Control Plane database (deployed separately) |
+| Keycloak | 26+ | Identity and access management — single `stoa` realm (deployed separately) |
 
 ### Optional Components
 
@@ -46,52 +46,52 @@ See [Hardware Requirements](/docs/reference/hardware-requirements) for detailed 
 
 ## Quick Install
 
-This minimal example installs the gateway resources but is **not a complete Ready deployment**. Complete the startup policy setup below before expecting `1/1 Ready`.
+No public Helm chart index (`charts.gostoa.dev`) or `helm-v*` release tarball is published today. Install directly from a checkout of `stoa-platform/stoa`.
+
+This minimal example installs the gateway resources from `./charts/stoa-platform` without monitoring or the external gateway sync hook, but is **not a complete Ready deployment** until you complete the startup policy setup below:
 
 ```bash
-# Add the STOA Helm repository
-helm repo add stoa https://charts.gostoa.dev
-helm repo update
-
-# Create namespace
-kubectl create namespace stoa-system
+# Clone the monorepo at a verified revision
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
 
 # Install the gateway without monitoring or the external gateway sync hook
-helm install stoa-platform stoa/stoa-platform \
-  -n stoa-system \
+helm upgrade --install stoa-platform ./charts/stoa-platform \
+  -n stoa-system --create-namespace \
   --set stoa.domain="<YOUR_DOMAIN>" \
   --set stoaGateway.keycloakUrl="https://auth.<YOUR_DOMAIN>" \
   --set stoaGateway.controlPlaneUrl="https://api.<YOUR_DOMAIN>" \
   --set stoaGateway.serviceMonitor.enabled=false \
   --set controlPlaneApi.serviceMonitor.enabled=false \
   --set gateway.edgeMcp.enabled=false \
-  --set gatewaySync.enabled=false
+  --set gatewaySync.enabled=false \
+  --set stoaGateway.otelEndpoint=""
 ```
 
-:::note What this chart installs
-With default values, the `stoa-platform` chart installs the **STOA Gateway** (Deployment, Service, policies ConfigMap), the gateway OpenAPI sync CronJob and hook, three ServiceMonitors and an internal Secret (`stoa-internal-keys`, generated at install; its `gateway-consumer-key` is passed to the gateway as `GATEWAY_API_KEYS`). The minimal example above disables the ServiceMonitors and both the sync CronJob and hook. The legacy `gateway.edgeMcp.enabled` setting controls one ServiceMonitor; disabling it does not disable the Rust gateway.
+:::note What this chart installs (gateway-only scope)
+With default values, `charts/stoa-platform` (`v0.1.0`) installs the **Rust STOA Gateway** (`stoa-gateway` Deployment with 2 replicas, ClusterIP Service port `80` → container port `8080`, `stoa-gateway-policies` ConfigMap), the 5 CRDs in `crds/` on initial install, the gateway OpenAPI sync CronJob and hook, three ServiceMonitors, and an internal Secret (`stoa-internal-keys`, generated at install; its `gateway-consumer-key` is passed to the gateway as `GATEWAY_API_KEYS`). Sibling chart `charts/stoa-observability` (and umbrella `charts/stoa-stack`) packages optional Grafana Alloy, Tempo, and Blackbox telemetry. The minimal example above disables the ServiceMonitors, OTLP export, and both the sync CronJob and hook. The legacy `gateway.edgeMcp.enabled` setting controls one ServiceMonitor; disabling it does not disable the Rust gateway (`stoaGateway.enabled`).
 
-The Control Plane API, Console, Portal and Keycloak are **not** installed by this chart: replace the `controlPlaneUrl` and `keycloakUrl` placeholders with existing service URLs. To enable auto-registration, also provide the `STOA_CONTROL_PLANE_API_KEY` key in the Secret named by `stoaGateway.secretName` (see [Gateway Auto-Registration](/docs/guides/gateway-auto-registration)). Without this key, the gateway runs in standalone mode.
+The **Control Plane API, Console, Developer Portal, Keycloak, PostgreSQL, Redpanda, and OpenBao** are **not** installed by `charts/stoa-platform` (values under `controlPlaneApi`, `controlPlaneUi`, `portal`, `keycloak`, and `vault` only render optional HPA/PDB/ServiceMonitor/CronJob integration objects for separately deployed workloads). Replace the `controlPlaneUrl` and `keycloakUrl` placeholders with existing service URLs. Providing `STOA_CONTROL_PLANE_API_KEY` in the Secret named by `stoaGateway.secretName` enables auto-registration (see [Gateway Auto-Registration](/docs/guides/gateway-auto-registration)); omitting that API key skips auto-registration, whereas Control Plane mode itself remains active whenever `stoaGateway.controlPlaneUrl` is set.
 
 Before re-enabling the ServiceMonitors, install the Prometheus Operator CRDs, including `servicemonitors.monitoring.coreos.com`. Before setting `gatewaySync.enabled=true`, make the Control Plane API (`gatewaySync.backendUrl`, endpoints `/health/live` and `/openapi.json`) and the webMethods administration API (`gatewaySync.gatewayUrl`) reachable, then create the Secret named by `gatewaySync.credentialsSecret` with `username` and `password` keys. This setting also enables a Helm post-install/post-upgrade hook; the periodic sync expects an existing API matching `gatewaySync.apiName` and `gatewaySync.apiVersion`.
 :::
 
 ### Startup Policy and Readiness
 
-`STOA_POLICY_BOOT_TENANTS` defaults to an empty list, and the chart does not set it. With the minimal command above, `/ready` returns HTTP 503 and the pods remain `0/1 Ready`, even if the external services are reachable. The chart probes `/ready`; a successful `/health` response or auto-registration does not satisfy this readiness gate.
+`stoaGateway.policyBootTenants` (and `stoaSidecar.policyBootTenants` when sidecar mode is enabled) defaults to `[]` (`charts/stoa-platform/values.yaml`). Whenever `controlPlaneUrl` is set and `policyBootTenants` is empty, `/ready` fails closed with HTTP `503` ([ADR-070 §4](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) and pods remain `0/1 Ready`, even if external services are reachable. `/health` tests process liveness only (`200 OK`); the Kubernetes readiness probe calls `/ready`, which enforces `policyBootTenants` and fresh signed tool permissions.
 
-Add startup tenants through `stoaGateway.extraEnv` in your values file and pass it with `-f my-values.yaml` when installing or upgrading:
+Configure startup tenants directly via `stoaGateway.policyBootTenants` in `my-values.yaml` (rendered as comma-separated `STOA_POLICY_BOOT_TENANTS` in `templates/stoa-gateway-deployment.yaml`; no `extraEnv` workaround is needed) and pass `-f my-values.yaml` when installing or upgrading:
 
 ```yaml
 stoaGateway:
-  extraEnv:
-    - name: STOA_POLICY_BOOT_TENANTS
-      value: "<TENANT_ID>"
+  policyBootTenants:
+    - "<TENANT_ID>"
 ```
 
-Replace `<TENANT_ID>` with an existing tenant whose tool permissions the gateway can read; multiple tenant IDs can be comma-separated. This setting alone is insufficient: the gateway must load a complete, fresh tool policy from the Control Plane. Provide reachable Control Plane and Keycloak services, and configure the gateway's Keycloak service client for `private_key_jwt` authentication with its mounted signing key (`STOA_KEYCLOAK_CLIENT_KEY_PATH`, plus `STOA_KEYCLOAK_CLIENT_KEY_ID` when needed). That service identity must be authorized to read the tenant's tool permissions. The registration API key and a Keycloak client secret do not replace this signing-key authentication for policy reads. If `STOA_POLICY_TRUST_JWKS_FILE` is configured, its trust set must also load successfully.
+Replace `<TENANT_ID>` with each existing tenant whose tool permissions the gateway must load at boot. Listing tenants alone is insufficient: the gateway must load a complete, fresh signed tool policy from the Control Plane. Provide reachable Control Plane and Keycloak services, and configure the gateway's Keycloak service client for `private_key_jwt` authentication with its signing key (`STOA_KEYCLOAK_CLIENT_KEY_PATH`, plus `STOA_KEYCLOAK_CLIENT_KEY_ID` when needed via `extraEnv`). At commit `639e8b9a`, `templates/stoa-gateway-deployment.yaml` mounts only `tmp` (`emptyDir`) and `policies` (`ConfigMap` `stoa-gateway-policies`) — it does **not** mount a Secret volume via `secretName` or `extraEnv`. Mounting the `private_key_jwt` signing-key Secret into the `stoa-gateway` container therefore requires a Deployment manifest overlay, Kustomize patch, or Helm `--post-renderer` before pods can reach `1/1 Ready`. That service identity must be authorized to read the tenant's tool permissions; the registration API key and a Keycloak client secret do not replace this signing-key authentication for policy reads. If `STOA_POLICY_TRUST_JWKS_FILE` is configured, its trust set must also load successfully (and be mounted via the same overlay if stored in a Secret or ConfigMap).
 
-The startup loader fetches and refreshes tenant tool permissions in the background. Missing inputs, a failed initial policy load, or a stale policy keep readiness failed. Only expect `1/1 Ready` after a fresh policy has loaded and the other readiness checks, including Control Plane health and OIDC discovery when enabled, pass. The chart's `policies.enabled` and `policies.path` settings do not populate startup tenants or replace this tool-policy load.
+The startup loader fetches and refreshes tenant tool permissions in the background. Missing inputs, a failed initial policy load, or a stale policy keep readiness failed. Only expect `1/1 Ready` after a fresh policy has loaded for every listed tenant and the other readiness checks, including Control Plane health and OIDC discovery when enabled, pass. The chart's `policies.enabled` and `policies.path` settings do not populate startup tenants or replace this tool-policy load.
 
 ## Helm Chart Reference
 
@@ -99,23 +99,18 @@ The startup loader fetches and refreshes tenant tool permissions in the backgrou
 
 | Field | Value |
 |-------|-------|
-| Chart name | `stoa-platform` |
+| Chart name | `stoa-platform` (`charts/stoa-platform`) |
 | Chart version | `0.1.0` |
 | App version | `2.0.0` |
 | Type | `application` |
 
-### Installation from Source
+### Lint and Install with a Values File
 
 ```bash
-# Clone the repository
-git clone https://github.com/stoa-platform/stoa.git
-cd stoa
+# From the stoa repository root
+helm lint ./charts/stoa-platform
 
-# Lint the chart
-helm lint charts/stoa-platform
-
-# Install from local chart
-helm install stoa-platform ./charts/stoa-platform \
+helm upgrade --install stoa-platform ./charts/stoa-platform \
   -n stoa-system \
   --create-namespace \
   -f my-values.yaml
@@ -132,23 +127,27 @@ stoaGateway:
   enabled: true
   image:
     repository: ghcr.io/stoa-platform/stoa-gateway
-    tag: latest                 # Pin an immutable tag to reliably restore the previous image
+    digest: sha256:0ea4741d3b83c4de5f5f221a42969e4afbee17ed1d66d40fb92500d77dce991e
+    pullPolicy: IfNotPresent
   replicas: 2
 
+  # Startup policy readiness gate (ADR-070 §4)
+  policyBootTenants: []          # Populate with tenant IDs when controlPlaneUrl is set
+
   # Keycloak OIDC
-  keycloakUrl: ""              # Required: https://auth.<YOUR_DOMAIN>
-  keycloakRealm: stoa
+  keycloakUrl: ""                # Required: https://auth.<YOUR_DOMAIN>
+  keycloakRealm: ""              # Empty inherits keycloak.realm ("stoa")
   keycloakClientId: stoa-mcp-gateway
 
   # Control Plane connection
-  controlPlaneUrl: "http://stoa-control-plane-api.stoa-system.svc.cluster.local:80"
+  controlPlaneUrl: "http://stoa-control-plane-api.stoa-system.svc.cluster.local:8000"
 
   # Gateway mode (ADR-024)
-  mode: edge-mcp               # Options: edge-mcp, sidecar, proxy, shadow
+  mode: edge-mcp                 # Supported by Rust runtime: edge-mcp, sidecar, proxy, shadow
 
-  # Auto-registration (ADR-028)
+  # Auto-registration (ADR-036)
   autoRegister: true
-  environment: dev              # Options: dev, staging, prod
+  environment: ""                # Empty inherits global.environment ("dev")
 
   # Resources
   resources:
@@ -163,13 +162,13 @@ stoaGateway:
   secretName: stoa-gateway-secrets
 
   # Logging
-  logLevel: info                # Options: trace, debug, info, warn, error
-  logFormat: json               # Options: json, pretty, compact
+  logLevel: info                 # Options: trace, debug, info, warn, error
+  logFormat: json                # Options: json, pretty, compact
 ```
 
-The chart comment also lists `connect`, but the Rust runtime does not accept it for `STOA_GATEWAY_MODE`. Use `edge-mcp`, `sidecar`, `proxy`, or `shadow` for `stoaGateway.mode`.
+`templates/_helpers.tpl` (`stoa-platform.pinnedImage`) requires **both** `image.repository` and `image.digest` (`sha256:` followed by 64 lowercase hexadecimal characters) and renders `image: "<repository>@<digest>"`. Setting `image.tag` is ignored by the template, and missing or malformed digests fail `helm template` / `helm install`.
 
-Helm can roll back configuration and other resources, but a mutable tag cannot reliably restore the previous image version.
+The chart comment also lists `connect`, but the Rust runtime does not accept it for `STOA_GATEWAY_MODE` (use the Go `stoa-connect` binary for STOA Link). Use `edge-mcp`, `sidecar`, `proxy`, or `shadow` for `stoaGateway.mode`.
 
 ### OPA Policies
 
@@ -211,12 +210,21 @@ stoaGateway:
 
 ### Sidecar Mode
 
-For deploying alongside third-party gateways (Kong, webMethods, Gravitee):
+For deploying alongside third-party gateways in the same Kubernetes pod (`stoaSidecar.mainGateway.enabled=true` is required when `stoaSidecar.enabled=true`, and both images must specify `repository` and `digest`):
 
 ```yaml
 stoaSidecar:
   enabled: false
   targetGateway: webmethods    # Options: webmethods, kong, gravitee, agentgateway, apigee, aws_apigateway, azure_apim
+  policyBootTenants: []        # Same fail-closed semantics as stoaGateway.policyBootTenants
+  image:
+    repository: ghcr.io/stoa-platform/stoa-gateway
+    digest: sha256:0ea4741d3b83c4de5f5f221a42969e4afbee17ed1d66d40fb92500d77dce991e
+  mainGateway:
+    enabled: true
+    image:
+      repository: "<YOUR_GATEWAY_IMAGE_REPO>"
+      digest: "sha256:<64_HEX_DIGEST>"
   resources:
     requests:
       cpu: 50m
@@ -421,20 +429,18 @@ You should see Prometheus-format metrics starting with `stoa_`.
 
 ## Upgrade
 
-Follow [Upgrade](./upgrade) and the checklist in [Maintenance Cycle](./maintenance). Short form:
+Follow [Upgrade](./upgrade) and the checklist in [Maintenance Cycle](./maintenance). From your checked-out `stoa` repository at the target revision:
 
 ```bash
-helm repo update
-helm upgrade stoa-platform stoa/stoa-platform \
+git fetch origin
+git checkout <TARGET_COMMIT_OR_TAG>
+
+# Apply CRD changes BEFORE upgrading the Helm release (Helm does not upgrade existing CRDs)
+kubectl apply -f ./charts/stoa-platform/crds/
+
+helm upgrade stoa-platform ./charts/stoa-platform \
   -n stoa-system \
-  -f my-values.yaml \
-  --version <NEW_VERSION>
-```
-
-CRD updates require manual application **before** the Helm upgrade (Helm does not upgrade CRDs):
-
-```bash
-kubectl apply -f charts/stoa-platform/crds/
+  -f my-values.yaml
 ```
 
 ## Uninstall

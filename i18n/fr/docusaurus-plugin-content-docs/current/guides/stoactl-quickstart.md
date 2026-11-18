@@ -20,38 +20,44 @@ Démarrez un MCP Gateway local et faites le bridge de votre première API REST �
 ## Prérequis
 
 - **Docker** (Docker Desktop ou Docker Engine)
-- **stoactl** — le CLI STOA
+- **Go 1.25+** afin de compiler **stoactl** depuis [`stoa-platform/stoa/stoa-go`](https://github.com/stoa-platform/stoa/tree/main/stoa-go)
 
 ### Installer stoactl
+
+:::warning Canaux d'installation historiques
+N'utilisez **pas** `go install github.com/stoa-platform/stoactl@latest` (ancien dépôt figé en `v0.3.0`), `brew install stoa-platform/tap/stoactl` (formule Homebrew obsolète en `0.1.1` et cask en `0.3.0`), ni `https://get.gostoa.dev` (URLs d'installation historiques). Les GitHub Releases `stoa-go-v0.3.9` et `stoa-go-v0.3.10` du monorepo publient **zéro binaire** ; compilez `stoactl` depuis un checkout vérifié du monorepo.
+:::
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 <Tabs>
-<TabItem value="macos" label="macOS (Homebrew)">
+<TabItem value="tag" label="Tag publié (stoa-go-v0.3.10)">
 
 ```bash
-brew install stoa-platform/tap/stoactl
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout stoa-go-v0.3.10
+cd stoa-go
+make install   # installe stoactl dans GOBIN s'il est défini, sinon $(go env GOPATH)/bin
 ```
 
 </TabItem>
-<TabItem value="linux" label="Linux">
+<TabItem value="main" label="Commit main vérifié (639e8b9a)">
 
 ```bash
-curl -sSL https://get.gostoa.dev | sh
-```
-
-</TabItem>
-<TabItem value="go" label="Depuis les sources (Go 1.22+)">
-
-```bash
-go install github.com/stoa-platform/stoactl@latest
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
+cd stoa-go
+go install -ldflags "-s -w -X github.com/stoa-platform/stoa-go/internal/cli/cmd.Version=0.3.10-main -X github.com/stoa-platform/stoa-go/internal/cli/cmd.Commit=639e8b9a" \
+  ./cmd/stoactl
 ```
 
 </TabItem>
 </Tabs>
 
-Vérifiez l'installation :
+Assurez-vous que `GOBIN` (ou `$(go env GOPATH)/bin` lorsque `GOBIN` n'est pas défini) figure dans `PATH`, puis vérifiez l'installation :
 
 ```bash
 stoactl version
@@ -218,7 +224,7 @@ stoactl bridge your-api.yaml --namespace default --dry-run
 
 ## Prochaines Étapes
 
-- **[Démarrage Rapide (Cloud)](/docs/guides/quickstart)** — Utiliser la plateforme STOA hébergée
+- **[Démarrage Rapide (Stack Locale)](/docs/guides/quickstart)** — Lancer la stack locale STOA Platform sous Docker Compose
 - **[Configuration du Gateway](/docs/reference/configuration)** — Personnaliser votre gateway
 - **[Référence Tool CRD](/docs/reference/crds/tool)** — Documentation complète de la spec Tool
 - **[Référence CLI](/docs/reference/cli)** — Toutes les commandes stoactl

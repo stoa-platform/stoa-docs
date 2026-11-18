@@ -11,32 +11,51 @@ keywords: [CLI, command line, stoactl, reference, deploy, rollback, logs, MCP, b
 
 ## Installation
 
+`stoactl` lives in the [`stoa-go/`](https://github.com/stoa-platform/stoa/tree/main/stoa-go) directory of the `stoa-platform/stoa` monorepo and requires **Go 1.25+** (`stoa-go/go.mod`).
+
+:::warning Legacy install channels
+Do **not** use `go install github.com/stoa-platform/stoactl@latest` (frozen standalone repository at `v0.3.0`), `brew install stoa-platform/tap/stoactl` (outdated Homebrew tap formula `0.1.1` and cask `0.3.0`), or `https://get.gostoa.dev` (legacy bootstrap URLs). Monorepo GitHub Releases `stoa-go-v0.3.9` and `stoa-go-v0.3.10` currently publish **zero binary assets**; build `stoactl` from a verified monorepo checkout instead.
+:::
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 <Tabs>
-<TabItem value="macos" label="macOS (Homebrew)">
+<TabItem value="tag" label="Release tag (stoa-go-v0.3.10)">
 
 ```bash
-brew install stoa-platform/tap/stoactl
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout stoa-go-v0.3.10
+cd stoa-go
+make install   # installs stoactl (and stoa-connect) into GOBIN if set, otherwise $(go env GOPATH)/bin
 ```
 
 </TabItem>
-<TabItem value="linux" label="Linux">
+<TabItem value="main" label="Verified main commit (639e8b9a)">
 
 ```bash
-curl -sSL https://get.gostoa.dev | sh
-```
-
-</TabItem>
-<TabItem value="go" label="From source (Go 1.22+)">
-
-```bash
-go install github.com/stoa-platform/stoactl@latest
+# Includes post-v0.3.10 main additions (stoactl reconcile and stoa-connect Envoy xDS support)
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
+cd stoa-go
+go build -ldflags "-s -w -X github.com/stoa-platform/stoa-go/internal/cli/cmd.Version=0.3.10-main -X github.com/stoa-platform/stoa-go/internal/cli/cmd.Commit=639e8b9a" \
+  -o ./bin/stoactl ./cmd/stoactl
 ```
 
 </TabItem>
 </Tabs>
+
+Verify the compiled binary using the path matching your chosen build method:
+
+```bash
+# After `make install` (with GOBIN or $(go env GOPATH)/bin on PATH):
+stoactl version
+
+# After `go build -o ./bin/stoactl`:
+./bin/stoactl version
+```
 
 ---
 
@@ -55,7 +74,24 @@ go install github.com/stoa-platform/stoactl@latest
 | `stoactl auth` | Authentication commands |
 | `stoactl config` | Manage CLI contexts |
 | `stoactl token-usage` | View API token usage statistics |
+| `stoactl reconcile` | Reconcile UAC contracts from a local governance snapshot |
+| `stoactl gateway` | Manage and inspect gateway instances (`gw`, `gateways`) |
+| `stoactl mcp` | List MCP servers/tools, invoke tools, and check MCP health |
+| `stoactl catalog` | Detect catalog drift or trigger synchronization |
+| `stoactl subscription` | List, inspect, approve, or revoke subscriptions (`sub`) |
+| `stoactl tenant` | Provision, inspect, list, or delete tenants |
+| `stoactl connect` | Inspect `stoa-connect` (STOA Link) agents and discover gateway APIs |
+| `stoactl audit` | Export tenant audit logs (`table`, `json`, `yaml`, `csv`) |
+| `stoactl completion` | Generate shell completion scripts (`bash`, `zsh`, `fish`) |
 | `stoactl version` | Print version information |
+
+### Global Flags
+
+| Flag / Env | Description |
+|------------|-------------|
+| `--tenant <id>` / `STOACTL_TENANT` | Override the active context's tenant ID for the command |
+| `--admin` | Authenticate with the configured service-account token instead of the user OIDC token |
+| `--namespace <ns>` / `STOACTL_NAMESPACE` | **Deprecated** global flag (prints a deprecation warning in favor of `--tenant`; `--namespace` / `-n` on `stoactl bridge` remains active for Kubernetes CRD metadata) |
 
 ---
 
@@ -485,6 +521,136 @@ stoactl version
 
 ---
 
+## Governance, Platform & Agent Commands
+
+### `stoactl reconcile`
+
+Reconcile owned Universal API Contracts (UAC) against target gateways from a local YAML or JSON governance snapshot (`stoa-go/internal/cli/cmd/reconcile/`).
+
+```bash
+stoactl reconcile -f ./snapshot.yaml --once
+stoactl reconcile -f ./snapshot.yaml --interval 10s --state .stoactl-reconcile.json
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--file`, `-f` | — | Local YAML or JSON snapshot containing targets and contracts (**required**) |
+| `--state` | `.stoactl-reconcile.json` | Local reconciliation status file |
+| `--once` | `false` | Run a single reconciliation pass and exit |
+| `--interval` | `5s` | Continuous reconciliation loop interval |
+
+### `stoactl gateway`
+
+Manage registered gateway instances (aliases: `gw`, `gateways`; supports `-o table|wide|yaml|json`).
+
+```bash
+stoactl gateway list
+stoactl gateway get <gateway-id>
+stoactl gateway health <gateway-id>
+```
+
+### `stoactl mcp`
+
+Interact with MCP servers and tools via the Control Plane API (default source of truth) or check public gateway MCP health (`health --gateway <url>`).
+
+```bash
+stoactl mcp list-servers
+stoactl mcp list-tools --server weather-mcp
+stoactl mcp call get-weather --server weather-mcp --input '{"q":"Paris"}'
+stoactl mcp health
+stoactl mcp health --gateway http://localhost:8080
+```
+
+| Subcommand / Flag | Description |
+|-------------------|-------------|
+| `list-servers` | List registered MCP servers via the Control Plane API (`--gateway` is ignored) |
+| `list-tools [--server <name>]` | List MCP tools via the Control Plane API (optionally filtered by server) |
+| `call <tool-name> --server <name> [--input '<json>']` | Invoke an MCP tool via the Control Plane API (`--server` is required) |
+| `health [--gateway <url>]` | Check MCP subsystem health (Control Plane API by default, or public `GET <url>/mcp/health` with `--gateway`) |
+| `--output`, `-o` | Output format: `table`, `json`, `yaml` |
+
+:::note `--gateway` direct-mode limitations (`mcp.go`)
+Use the Control Plane path above for `list-tools` and `call`. In current `stoa-go`, `--gateway <url>` works for `stoactl mcp health --gateway <url>` (which reads public `GET <url>/mcp/health`), whereas `list-tools --gateway` and `call --gateway` send unauthenticated requests to JWT-gated `/mcp/v1/tools*` routes and `call --gateway` posts legacy `{"tool_name", "input"}` fields whereas `POST /mcp/v1/tools/invoke` expects `{"tool", "arguments"}` (`handlers.rs`; `POST /mcp/tools/call` expects `{"name", "arguments"}`).
+:::
+
+### `stoactl catalog`
+
+Inspect API catalog drift or trigger synchronization (`dry-run` by default unless `--apply` is passed).
+
+```bash
+stoactl catalog sync --tenant acme
+stoactl catalog sync --tenant acme --apply -o json
+```
+
+### `stoactl subscription`
+
+Manage consumer API subscriptions (aliases: `sub`, `subscriptions`; supports `-o table|wide|yaml|json`).
+
+```bash
+stoactl subscription list --status pending
+stoactl subscription get <subscription-id>
+stoactl subscription approve <subscription-id>
+stoactl subscription revoke <subscription-id>
+```
+
+### `stoactl tenant`
+
+Manage platform tenants and inspect Keycloak provisioning status (`-o table|wide|yaml|json`).
+
+```bash
+stoactl tenant list
+stoactl tenant create --name acme --display-name "Acme Corp" --owner-email ops@example.com
+stoactl tenant status acme
+stoactl tenant get acme
+stoactl tenant delete acme
+```
+
+### `stoactl connect`
+
+Inspect [`stoa-connect` (STOA Link)](/docs/guides/stoa-connect-quickstart) agents and run ad-hoc admin-API discovery.
+
+```bash
+# Check stoa-connect / STOA Link agent health (:8090/health)
+stoactl connect status --url http://localhost:8090
+
+# Discover APIs directly from a third-party gateway admin API
+stoactl connect discover --admin-url http://localhost:8001 --type kong --token "${KONG_ADMIN_TOKEN}"
+```
+
+:::note Envoy xDS mode vs `stoactl connect discover` / `sync`
+- `stoactl connect discover` only supports admin-API gateways (`--type kong|gravitee|webmethods|auto`). Upstream **Envoy** has no admin-API discovery path: Envoy mode is configured on the `stoa-connect` agent via `STOA_GATEWAY_TYPE=envoy` and loopback mTLS ADS (`STOA_ENVOY_*` variables; see [stoa-connect Quickstart](/docs/guides/stoa-connect-quickstart)).
+- The CLI also defines `stoactl connect sync --url <url>` (`POST <url>/sync`), but `cmd/stoa-connect/main.go` on current `main` mounts only `/health`, `/metrics`, and `/webhook/events` (do not use `connect sync` against `stoa-connect`; policy and route synchronization runs automatically via the agent's sync/SSE loops).
+:::
+
+### `stoactl audit`
+
+Export tenant audit logs with PII redaction enabled by default.
+
+```bash
+stoactl audit export --tenant acme --since 7d -o csv
+stoactl audit export --tenant acme --action subscription.approved --redact-pii=true -o json
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--tenant` | — | Tenant ID (**required**) |
+| `--since` | `7d` | Lookback window (`24h`, `7d`, `30d`, or ISO-8601 date) |
+| `--action` | `""` | Filter by audit action name |
+| `--redact-pii` | `true` | Mask email addresses and IP addresses in exported records |
+| `--output`, `-o` | `table` | Output format: `table`, `json`, `yaml`, `csv` |
+
+### `stoactl completion`
+
+Generate shell completion scripts for `bash`, `zsh`, or `fish`.
+
+```bash
+stoactl completion zsh > "${fpath[1]}/_stoactl"
+stoactl completion bash > /etc/bash_completion.d/stoactl
+stoactl completion fish > ~/.config/fish/completions/stoactl.fish
+```
+
+---
+
 ## Workflows
 
 ### Deploy an API (stoa.yaml)
@@ -501,7 +667,7 @@ rate_limit:
   requests_per_minute: 1000
 auth:
   type: oauth2
-  issuer: ${STOA_AUTH_URL}/realms/acme
+  issuer: ${STOA_AUTH_URL}/realms/stoa
   required: true
 EOF
 

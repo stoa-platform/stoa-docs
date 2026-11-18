@@ -32,7 +32,7 @@ STOA uses **rolling updates** by default. The upgrade order matters:
 
 - [ ] Read the release notes for breaking changes
 - [ ] Back up PostgreSQL (see [Backup & Recovery](/docs/admin/backup-recovery))
-- [ ] Export Keycloak realm
+- [ ] Export the shared `stoa` Keycloak realm ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))
 - [ ] Note current versions: `helm list -n stoa-system`
 - [ ] Verify cluster health: `kubectl get pods -n stoa-system`
 
@@ -55,17 +55,9 @@ kubectl exec -n stoa-system deploy/control-plane-api -- \
   alembic upgrade head
 ```
 
-### 3. Upgrade Helm Release
+### 3. Upgrade Gateway Helm Release
 
-```bash
-helm repo update
-helm upgrade stoa-platform stoa/stoa-platform \
-  -n stoa-system \
-  -f my-values.yaml \
-  --version <NEW_VERSION>
-```
-
-Or from local chart:
+`charts/stoa-platform` lives inside the `stoa-platform/stoa` checkout (no hosted Helm repository is published yet) and manages the gateway workload and CRDs; upgrade Control Plane, UIs, and Keycloak via your GitOps/deployment manifests alongside it:
 
 ```bash
 helm upgrade stoa-platform ./charts/stoa-platform \
@@ -128,7 +120,7 @@ Then confirm Helm revision and application health before closing the change.
 | Console UI | Compatible with CP API N and N-1 |
 | Portal | Compatible with CP API N and N-1 |
 | CRDs | Must be applied before chart upgrade |
-| Keycloak | 24.x supported, test 25.x in staging |
+| Keycloak | 26.x (`stoa` realm, [ADR-074](/docs/architecture/adr/adr-074-tenant-model)); test major upgrades in staging |
 
 ## Zero-Downtime Upgrades
 

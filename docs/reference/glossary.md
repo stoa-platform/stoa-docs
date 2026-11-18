@@ -33,7 +33,7 @@ When translating STOA documentation to French, always use the **FR Term** column
 | **Client Credentials** | Identifiants client | OAuth 2.0 grant type for machine-to-machine authentication (no user interaction). |
 | **Consumer** | Consommateur | An entity (person, team, or application) that subscribes to and consumes APIs through the platform. |
 | **Control Plane** | Plan de contrôle | The centralized management layer of STOA — API, Console UI, and Portal. Runs in the cloud or on-premise. |
-| **CRD (Custom Resource Definition)** | CRD (Définition de ressource personnalisée) | Kubernetes extension mechanism. STOA uses CRDs for `Tool` and `ToolSet` resources. |
+| **CRD (Custom Resource Definition)** | CRD (Définition de ressource personnalisée) | Kubernetes extension mechanism. STOA ships five `gostoa.dev/v1alpha1` CRDs: `Tool`, `ToolSet`, `Skill`, `GatewayInstance`, and `GatewayBinding`. |
 
 ## D
 
@@ -75,7 +75,7 @@ When translating STOA documentation to French, always use the **FR Term** column
 
 | EN Term | FR Term | Definition |
 |---------|---------|------------|
-| **Keycloak** | Keycloak | Open-source identity and access management server. STOA uses one realm per tenant. |
+| **Keycloak** | Keycloak | Open-source identity and access management server. STOA uses a single shared `stoa` realm with one group per tenant ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)). |
 
 ## M
 
@@ -90,15 +90,16 @@ When translating STOA documentation to French, always use the **FR Term** column
 
 | EN Term | FR Term | Definition |
 |---------|---------|------------|
-| **Namespace** | Namespace (espace de noms) | Kubernetes isolation boundary. Each STOA tenant gets a dedicated namespace (`tenant-{id}`). |
+| **Namespace** | Namespace (espace de noms) | Kubernetes isolation boundary. Operators can isolate tenant workloads in dedicated namespaces (`tenant-{id}`). |
 
 ## O
 
 | EN Term | FR Term | Definition |
 |---------|---------|------------|
-| **OAuth 2.0** | OAuth 2.0 | Industry-standard authorization framework. STOA supports authorization code, client credentials, and ROPC flows. |
-| **OIDC (OpenID Connect)** | OIDC (OpenID Connect) | Identity layer on top of OAuth 2.0. Used by Keycloak for SSO and user authentication. |
+| **OAuth 2.0 / 2.1** | OAuth 2.0 / 2.1 | Industry-standard authorization framework. STOA supports Authorization Code + PKCE, Client Credentials, and Dynamic Client Registration (DCR). |
+| **OIDC (OpenID Connect)** | OIDC (OpenID Connect) | Identity layer on top of OAuth 2.0. Used by Keycloak (`stoa` realm) for SSO and user authentication. |
 | **OPA (Open Policy Agent)** | OPA (Open Policy Agent) | Policy engine used by the gateway for fine-grained authorization (Rego policies). |
+| **OpenBao** | OpenBao | Open-source secrets backend accessed through the Vault HTTP API ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)). |
 
 ## P
 
@@ -113,23 +114,24 @@ When translating STOA documentation to French, always use the **FR Term** column
 |---------|---------|------------|
 | **Rate Limit** | Limitation de débit | Policy that restricts the number of API calls per time window (e.g., 600 requests/minute). |
 | **RBAC (Role-Based Access Control)** | RBAC (Contrôle d'accès basé sur les rôles) | Authorization model with 4 roles: `cpi-admin`, `tenant-admin`, `devops`, `viewer`. |
-| **Realm** | Realm (domaine) | A Keycloak isolation unit. STOA creates one realm per tenant with independent users, clients, and roles. |
+| **Realm** | Realm (domaine) | A Keycloak isolation unit. STOA uses a single shared `stoa` realm across the platform and isolates tenants via Keycloak groups and verified `tenant_id` JWT claims ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)). |
 
 ## S
 
 | EN Term | FR Term | Definition |
 |---------|---------|------------|
 | **Scope** | Scope (portée) | OAuth 2.0 permission granularity (e.g., `stoa:read`, `stoa:write`, `stoa:admin`). |
-| **Shadow Mode** | Mode shadow (observation) | Passive traffic capture mode for legacy API discovery. Deferred pending security review. |
-| **Sidecar Mode** | Mode sidecar | Gateway mode deployed alongside existing gateways (Kong, Envoy) for observability injection. |
-| **SSE (Server-Sent Events)** | SSE (Événements envoyés par le serveur) | Unidirectional streaming protocol used for MCP agent connections. |
+| **Shadow Mode** | Mode shadow (observation) | Passive traffic capture mode for legacy API discovery (Rust capture scaffolding; production mirroring targeted on Envoy per [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)). |
+| **Sidecar Mode** | Mode sidecar | Companion gateway mode (`STOA_GATEWAY_MODE=sidecar`) answering HTTP `POST /authz` beside a host gateway ([Companion usage](/docs/guides/companion-usage)). |
+| **SSE (Server-Sent Events)** | SSE (Événements envoyés par le serveur) | Unidirectional streaming protocol used for MCP agent connections and STOA Link control-plane sync. |
+| **STOA Link (`stoa-connect`)** | STOA Link (`stoa-connect`) | On-site Go agent that synchronizes third-party gateways and serves loopback mTLS xDS ADS to upstream Envoy ([ADR-057](/docs/architecture/adr/adr-057-product-lineup-gateway-link-connect), [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)). |
 | **Subscription** | Abonnement | A link between a consumer application and an API, granting access with specific quotas. |
 
 ## T
 
 | EN Term | FR Term | Definition |
 |---------|---------|------------|
-| **Tenant** | Tenant (locataire) | An isolated organization on the platform. Each tenant has its own namespace, realm, APIs, and users. |
+| **Tenant** | Tenant (locataire) | An isolated organization on the platform, scoped by a Keycloak group in the `stoa` realm, a verified `tenant_id` JWT claim, `tenant_id` PostgreSQL filtering, and signed gateway policy artifacts ([ADR-074](/docs/architecture/adr/adr-074-tenant-model), [ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)). |
 | **Tool** | Outil (MCP) | A function exposed via MCP that AI agents can discover and invoke. Defined as a Kubernetes CRD. |
 | **ToolSet** | Ensemble d'outils | A CRD that connects an external MCP server and exposes its tools through the STOA gateway. |
 | **Token Optimization** | Optimisation de jetons | Gateway feature that reduces LLM token consumption by compressing tool descriptions. |

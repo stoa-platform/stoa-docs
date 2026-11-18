@@ -15,16 +15,16 @@ import EnvSetup from '@site/docs/_partials/_env-setup.mdx';
 
 # Gateway Modes
 
-STOA Gateway supports 4 deployment modes (defined in [ADR-024](/docs/architecture/adr/adr-024-gateway-unified-modes)), each optimized for a different integration pattern. Select the mode via the `STOA_GATEWAY_MODE` environment variable.
+The Rust gateway has four mode values, selected with `STOA_GATEWAY_MODE`. The table distinguishes the available Edge-MCP and Sidecar runtimes from the partial Rust implementations of Proxy and Shadow.
 
 ## Mode Overview
 
-| Mode | Port | MCP Support | Use Case | Status |
+| Mode | Default HTTP Port | MCP Support | Use Case | Status |
 |------|------|-------------|----------|--------|
-| **edge-mcp** | 8080 | Yes | Standalone MCP gateway with full protocol support | Production |
-| **sidecar** | 8081 in the chart (binary default 8080) | No | Allow or deny on `POST /authz` for a host that calls it | Runtime present |
-| **proxy** | 8082 | No | Inline request/response transformation | Q3 2026 |
-| **shadow** | 8083 | No | Passive traffic capture and UAC generation | Q4 2026 |
+| **edge-mcp** | 8080 | Yes | Standalone MCP gateway with full protocol support (+ optional Envoy `ext_authz` gRPC listener) | Production (Maintenance, [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
+| **sidecar** | 8080 (companion Helm chart sets 8081) | No | Allow or deny on HTTP `POST /authz` for a host that calls it | Runtime present |
+| **proxy** | 8080 | No | HTTP forwarding components | Partial Rust implementation. Envoy xDS target ([ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
+| **shadow** | 8080 | No | Status and UAC generation endpoints | Partial Rust implementation. Envoy mirroring target ([ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
 
 ```mermaid
 graph TB
@@ -32,8 +32,8 @@ graph TB
         ENV["STOA_GATEWAY_MODE"]
         ENV -->|edge-mcp| EM[Edge MCP<br/>Full MCP protocol]
         ENV -->|sidecar| SC[Sidecar<br/>Policy enforcement]
-        ENV -->|proxy| PX[Proxy<br/>Transformation]
-        ENV -->|shadow| SH[Shadow<br/>Traffic analysis]
+        ENV -->|proxy| PX[Proxy<br/>Partial Rust implementation]
+        ENV -->|shadow| SH[Shadow<br/>Partial Rust implementation]
     end
 ```
 
@@ -43,14 +43,14 @@ graph TB
 |-----------|----------|---------|-------|--------|
 | MCP protocol (SSE) | Yes | No | No | No |
 | Tool discovery/invocation | Yes | No | No | No |
-| JWT authentication | Yes | No. `/authz` trusts the JSON `user` | Yes | No |
-| Rate limiting | Yes | Optional, in-memory, per process | Yes | No |
-| Circuit breaker | Yes | No | Yes | No |
-| Request transformation | No | No | Yes | No |
-| Traffic capture | No | No | No | Yes |
-| UAC generation | No | No | No | Yes |
-| Requires upstream | No | No | Yes | Yes |
-| Passive (read-only) | No | No | No | Yes |
+| JWT authentication | Yes | No. `/authz` trusts the JSON `user` | Not wired | No |
+| Rate limiting | Yes | Optional, in-memory, per process | Not wired | No |
+| Circuit breaker | Yes | No | Not wired | No |
+| Request transformation | No | No | Component only | No |
+| Traffic capture | No | No | No | No capture source wired |
+| UAC generation | No | No | No | Manual endpoint requires data |
+| Requires upstream | No | No | Forwarding requires a registered upstream route | GitLab only for UAC submission |
+| Passive (read-only) | No | No | No | Status and analysis only. UAC submission writes to GitLab |
 
 ## Edge-MCP Mode (Production)
 
@@ -87,14 +87,17 @@ stoaGateway:
 |------|--------|---------|
 | `/.well-known/oauth-authorization-server` | GET | OAuth 2.1 discovery |
 | `/.well-known/oauth-protected-resource` | GET | Protected resource metadata |
-| `/mcp/sse` | GET | SSE transport endpoint |
-| `/mcp/messages` | POST | JSON-RPC message endpoint |
-| `/oauth/authorize` | GET | OIDC proxy (to Keycloak) |
-| `/oauth/token` | POST | Token proxy (to Keycloak) |
+| `/mcp` | GET, POST | Discovery (`GET`) & Streamable HTTP JSON-RPC 2.0 (`POST`) |
+| `/mcp/sse` | GET, POST, DELETE | SSE transport & JSON-RPC session endpoint |
+| `/mcp/ws` | GET | Opt-in WebSocket JSON-RPC (`STOA_WEBSOCKET_ENABLED=true`) |
+| `/oauth/token` | POST | Token proxy (to Keycloak `stoa` realm) |
+| `/oauth/par` | POST | Pushed Authorization Request proxy (to Keycloak `stoa` realm) |
 | `/oauth/register` | POST | Dynamic client registration |
-| `/admin/*` | Various | Admin API (22 endpoints) |
-| `/health` | GET | Health check |
+| `/admin/*` | Various | [Gateway Admin API](/docs/api/gateway-admin-api) (Bearer `STOA_ADMIN_API_TOKEN`) |
+| `/health`, `/ready` | GET | Liveness and fail-closed readiness checks |
 | `/metrics` | GET | Prometheus metrics |
+
+*(Note: `GET /oauth/authorize` returns `404` on `stoa-gateway`; `/.well-known/oauth-authorization-server` directs clients directly to Keycloak's `/realms/stoa/protocol/openid-connect/auth`. When `STOA_EXT_AUTHZ_GRPC_ADDR`, `STOA_EXT_AUTHZ_AUDIENCE`, and non-empty `STOA_EXT_AUTHZ_REQUIRED_SCOPES` in `prod` are set, `stoa-gateway` also supervises a gRPC `envoy.service.auth.v3.Authorization` listener for upstream Envoy per [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane).)*
 
 ### When to Use
 
@@ -138,113 +141,34 @@ There is no `stoa_sidecar_*` metric in the gateway source.
 
 ## Proxy Mode
 
-Sits inline in the request path, transforming requests and responses between clients and backends. Supports header injection, body transformation, and WebSocket passthrough.
+The Rust binary starts this mode with an empty route registry and no request or response transformers attached. The repository tests routing and transformation components in isolation. Those tests do not cover a working proxy running from the binary.
 
-### Configuration
-
-```bash
-STOA_GATEWAY_MODE=proxy
-
-# Proxy specific settings
-STOA_TRANSFORM_REQUEST=false
-STOA_TRANSFORM_RESPONSE=false
-STOA_INJECT_HEADERS=true
-STOA_WEBSOCKET_PASSTHROUGH=false
-STOA_CONNECTION_POOL_SIZE=100
-```
-
-### Capabilities
-
-| Feature | Default | Description |
-|---------|---------|-------------|
-| Request transformation | Off | Modify request headers/body before forwarding |
-| Response transformation | Off | Modify response headers/body before returning |
-| Header injection | On | Add tenant, trace, and correlation headers |
-| WebSocket passthrough | Off | Forward WebSocket connections |
-| Connection pooling | 100 | Upstream connection pool size |
-
-### When to Use
-
-- Request/response transformation between clients and backends
-- Adding observability headers to existing API traffic
-- WebSocket proxying with policy enforcement
-- Environments requiring inline traffic manipulation
+[ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) defines the Envoy target. UAC contracts provide the routes through xDS, with STOA processing in external services.
 
 ## Shadow Mode
 
-Passively captures traffic for analysis and automatic UAC (Universal API Contract) generation. Does not modify or block any requests.
+The Rust binary exposes the endpoints below and starts without a traffic capture source attached. UAC generation needs captured samples. The repository tests analysis and generation with data passed directly to the service.
 
-### Configuration
-
-```bash
-STOA_GATEWAY_MODE=shadow
-
-# Shadow specific settings
-STOA_CAPTURE_METHOD=Inline       # Options: EnvoyTap, PortMirror, Inline, KafkaReplay
-STOA_UAC_OUTPUT_DIR=/var/stoa/uac
-STOA_AUTO_CREATE_MR=false
-STOA_MIN_REQUESTS_FOR_UAC=100
-STOA_ANALYSIS_WINDOW_HOURS=168   # 7 days
-```
-
-### Capture Methods
-
-| Method | Description | Infrastructure |
-|--------|-------------|----------------|
-| `Inline` | STOA captures traffic directly | No extra infra |
-| `EnvoyTap` | Envoy tap filter forwards copies | Envoy sidecar |
-| `PortMirror` | Network-level traffic mirroring | Switch/router config |
-| `KafkaReplay` | Replay from Kafka topic | Redpanda/Kafka |
-
-### UAC Generation
-
-After collecting `min_requests_for_uac` requests over `analysis_window_hours`, shadow mode generates a Universal API Contract:
-
-```
-1. Capture traffic (requests + responses)
-2. Analyze patterns (endpoints, schemas, error codes)
-3. Generate OpenAPI spec + STOA UAC annotations
-4. Output to UAC_OUTPUT_DIR (or auto-create MR if configured)
-```
+Submitting a UAC is a separate operation that requires a configured GitLab client. [ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) defines the Envoy target, where request mirroring and access logs supply the data for UAC generation.
 
 ### Exposed Routes
 
 | Path | Method | Purpose |
 |------|--------|---------|
-| `/shadow/status` | GET | Capture statistics |
-| `/shadow/generate` | POST | Trigger UAC generation |
+| `/shadow/status` | GET | Report capture and analysis statistics |
+| `/shadow/generate` | POST | Trigger UAC generation. Reports `insufficient_data` when there are too few samples |
+| `/shadow/submit-uac` | POST | Submit a UAC to GitLab when the GitLab client is configured |
 | `/health` | GET | Health check |
 | `/metrics` | GET | Prometheus metrics |
 
-### When to Use
-
-- Discovering undocumented APIs in legacy environments
-- Automatically generating API contracts from live traffic
-- Pre-migration analysis before moving to STOA
-- Compliance auditing of API traffic patterns
-
 ## Mode Selection Guide
-
-```mermaid
-graph TD
-    Start[Need an API Gateway?] -->|New deployment| Q1{AI/MCP agents?}
-    Q1 -->|Yes| EM[edge-mcp]
-    Q1 -->|No| PX[proxy]
-
-    Start -->|Existing gateway| Q2{Replace or augment?}
-    Q2 -->|Augment| SC[sidecar]
-    Q2 -->|Replace gradually| Q3{Know your APIs?}
-    Q3 -->|Yes| EM
-    Q3 -->|No| SH[shadow first]
-    SH --> EM
-```
 
 | Scenario | Recommended Mode |
 |----------|-----------------|
 | Greenfield MCP deployment | `edge-mcp` |
 | Allow or deny beside a host that calls `POST /authz` | Companion (`sidecar` runtime). See [Companion usage](./companion-usage.md) |
-| API transformation layer | `proxy` |
-| Legacy API discovery | `shadow` → then `edge-mcp` |
+| API transformation layer | Envoy routing profile defined in [ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) |
+| Legacy API discovery | Envoy traffic mirroring defined in [ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) |
 | Keep a third-party gateway and sync desired state | [`stoa-connect`](./stoa-connect-quickstart.md). A same-pod companion is a separate callout and is not a recorded webMethods integration |
 
 ## Runtime Configuration
@@ -266,7 +190,10 @@ The mode is logged at startup:
 INFO Starting STOA Gateway version=2.0.0 mode=edge-mcp
 ```
 
-The gateway listens on the mode's default port (8080-8083) unless overridden.
+The Rust binary uses HTTP port `8080` by default in all four modes. Set `STOA_PORT` to change the listen port. If you also set the legacy `PORT` variable, it takes precedence.
+
+- **Helm** sets port `8080` in the main gateway container and `8081` in the companion container.
+- **Docker Compose** maps host port `8081` by default to container port `8080` in the main stack. `PORT_GATEWAY` changes the host port.
 
 ## Troubleshooting
 
@@ -275,8 +202,8 @@ The gateway listens on the mode's default port (8080-8083) unless overridden.
 | "Unknown mode" on startup | Invalid `STOA_GATEWAY_MODE` value | Use: `edge-mcp`, `sidecar`, `proxy`, or `shadow` |
 | MCP endpoints return 404 | Wrong mode selected | Only `edge-mcp` serves MCP routes |
 | Sidecar answers with a status and an empty body | `/authz` format is fixed to status code | Send the JSON body in [Companion usage](./companion-usage.md). `STOA_DECISION_FORMAT` is not read |
-| Shadow not capturing traffic | Capture method requires infra | Use `Inline` if no Envoy/Kafka available |
-| Proxy dropping WebSocket | Passthrough disabled | Set `STOA_WEBSOCKET_PASSTHROUGH=true` |
+| Shadow not capturing traffic | The Rust mode has no input wired to its capture service | See [Shadow Mode](#shadow-mode) for the current runtime and the Envoy target |
+| Proxy dropping WebSocket | The Rust mode does not wire WebSocket passthrough | See [Proxy Mode](#proxy-mode) for the current runtime and the Envoy target |
 
 ## Related
 

@@ -198,6 +198,31 @@ make test-e2e
 make test-coverage
 ```
 
+### Docs browser tests
+
+From the `stoa-docs` checkout, build both locales and run the Readiness language-switch test on Chromium desktop and mobile.
+
+```bash
+npm ci
+npx playwright install chromium
+npm run build
+npm run test:e2e
+```
+
+After a successful Vercel production deployment, the same workflow tests the live docs.
+To run those checks against production from your checkout, use:
+
+```bash
+STOA_DOCS_PLAYWRIGHT_TARGET=production npm run test:e2e
+```
+
+If a Readiness scenario fails in the production workflow, n8n receives a CI alert
+with the scenario, browser profile, deployment commit, and GitHub Actions run link.
+Alerts use the dedicated n8n emitter for the `ci` source. For delivery, register
+that emitter in n8n and set the matching GitHub Actions secret
+`STOA_N8N_CI_EVENT_TOKEN`. The workflow reports a missing secret on a scenario
+failure.
+
 ## Documentation
 
 - Update relevant docs when changing functionality

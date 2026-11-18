@@ -20,9 +20,9 @@ STOA fait le pont entre les API traditionnelles et les agents IA grâce au [Mode
 STOA est une passerelle API et une plateforme de gestion cloud-native construite sur Kubernetes. Elle combine les fonctionnalités d'une passerelle API traditionnelle avec le support natif des protocoles pour agents IA :
 
 - **MCP Gateway** — Les agents IA découvrent et invoquent vos API via le Model Context Protocol, avec génération automatique de schémas et enregistrement d'outils
-- **Isolation multi-tenant** — Chaque tenant dispose de son propre namespace Kubernetes, realm Keycloak et schéma de base de données pour une séparation complète des données
+- **Isolation multi-tenant** — Realm Keycloak unique `stoa` avec un groupe par tenant, claim JWT `tenant_id` vérifié, schéma PostgreSQL partagé filtré par `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) et artefacts de politiques signés par tenant ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture))
 - **Configuration GitOps-first** — Toutes les définitions d'API, politiques et configurations de tenants sont gérées de manière déclarative via Git et ArgoCD
-- **Authentification OIDC/OAuth2** — Keycloak intégré pour la fédération d'identités basée sur les standards, supportant LDAP, SAML et les fournisseurs sociaux
+- **Authentification OIDC/OAuth2** — Keycloak intégré (realm `stoa`) pour l'authentification OIDC/OAuth2 standard ; le courtage multi-IdP est démontré uniquement dans des realms de fédération dédiés
 - **Portail développeur** — Découverte d'API en libre-service, consultation de la documentation et gestion des abonnements pour les développeurs et consommateurs d'API
 - **Observabilité entreprise** — Métriques Prometheus, tableaux de bord Grafana et OpenSearch pour les logs et snapshots d'erreurs — le tout intégré
 
@@ -41,11 +41,10 @@ STOA est une passerelle API et une plateforme de gestion cloud-native construite
 ┌──────────────────────────────────────────────────────────────┐
 │                    PLAN DE DONNÉES (On-Premise ou Cloud)      │
 │                                                              │
-│   STOA Gateway (Rust)          Adaptateurs legacy            │
-│   • Protocole MCP              • webMethods                  │
-│   • Proxy REST                 • Kong                        │
-│   • Rate Limiting              • Gravitee                    │
-│   • mTLS                       • Apigee                      │
+│   STOA Gateway (Rust, maint.)   STOA Link (stoa-connect)     │
+│   • MCP & REST + ext_authz gRPC • Envoy xDS ADS (ADR-073)    │
+│   • Rate Limiting & OPA         • webMethods / Kong          │
+│   • Politiques fail-closed      • Gravitee                   │
 │                                                              │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -54,7 +53,10 @@ Le **Plan de contrôle** gère le catalogue d'API, l'authentification et l'obser
 
 ## Démarrage rapide
 
-Il n'y a qu'un seul parcours de démarrage : lancer STOA localement avec la stack Docker Compose du dépôt principal. Le [Guide de démarrage rapide](/docs/guides/quickstart) liste chaque variable obligatoire par son nom (donnez vos propres valeurs dans `.env` ; aucune n'est fournie), valide la configuration statiquement avec `docker compose config --quiet`, puis démarre un ensemble explicite de services. L'offre hébergée est disponible sur demande.
+Le dépôt `stoa-platform/stoa` propose deux parcours Docker Compose locaux distincts selon votre objectif (le dépôt séparé `stoa-platform/stoa-quickstart` est obsolète et n'est pas utilisé) :
+
+- **Vérificateur minimal d'accès R1 (`quickstart/`, 5 conteneurs)** — Démarre `postgres`, `keycloak`, `control-plane`, `gateway` (compilé localement depuis `stoa-gateway`) et `backend` avec images épinglées par digest (sans Redpanda ni Redis). Le script `./verify.sh` déclare une API via `POST /admin/contracts` (`inboundAuth: jwt`) et vérifie en exécution les réponses `401` (anonyme), `401` (jeton invalide) et `200` (JWT Keycloak valide).
+- **Stack plateforme locale complète (`deploy/docker-compose/`, 19 services)** — Décrite dans le [Guide de démarrage rapide](/docs/guides/quickstart). Sur les 35 services déclarés dans `docker-compose.yml` (dont 28 hors profils), le raccourci explicite (`nginx`, `redpanda-init`, `opensearch-init`, `data-prepper`, `tempo`) démarre 19 services dépendances comprises (Console, Portail développeur, Control Plane API, Gateway, Keycloak et Observabilité) après validation statique via `docker compose config --quiet`. L'offre hébergée est disponible sur demande.
 
 ## Différenciateurs clés
 
@@ -63,7 +65,7 @@ Il n'y a qu'un seul parcours de démarrage : lancer STOA localement avec la stac
 | Support agents IA | Non prévu | MCP Gateway natif |
 | Découverte d'API | Documentation manuelle | Auto-découverte via MCP |
 | Premier appel API | Jours à semaines | Secondes (avec MCP) |
-| Isolation par tenant | Infrastructure partagée | Isolation au niveau namespace |
+| Isolation par tenant | Infrastructure partagée | Groupes par tenant + filtrage `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
 | Configuration | GUI ou API impérative | GitOps-first (ArgoCD) |
 | Hébergement | Géré par le fournisseur | Auto-hébergé, prêt pour l'UE |
 | Licence | Propriétaire | Apache 2.0 |

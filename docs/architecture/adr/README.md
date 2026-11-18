@@ -9,7 +9,7 @@ keywords: [ADR, architecture decisions, STOA platform, technical decisions]
 
 > **"Each tool to its purpose"** — No one-size-fits-all
 
-This directory contains important architectural decisions for STOA Platform.
+This directory contains architectural decisions for STOA Platform.
 
 ---
 
@@ -19,7 +19,7 @@ This directory contains important architectural decisions for STOA Platform.
 
 | # | Title | Status |
 |:---:|-------|:------:|
-| [003](./adr-003-monorepo-architecture.md) | Monorepo Architecture — Multi-Service Polyglot | ✅ |
+| [003](./adr-003-monorepo-architecture.md) | Monorepo Architecture — Multi-Service Polyglot (Amended by ADR-073) | ✅ |
 | [004](./adr-004-gateway-adapter-pattern.md) | Gateway Adapter Pattern — Multi-Gateway Orchestration | ✅ |
 | [005](./adr-005-event-driven-kafka.md) | Event-Driven Architecture — Kafka Topics Design | ✅ |
 | [006](./adr-006-tool-registry-architecture.md) | Tool Registry Architecture — 7-Module Design | ✅ |
@@ -37,6 +37,8 @@ This directory contains important architectural decisions for STOA Platform.
 | [031](./adr-031-ci-cd-reusable-workflow-architecture.md) | CI/CD Reusable Workflow Architecture | ✅ |
 | [040](./adr-040-born-gitops-multi-environment.md) | Born GitOps — Multi-Environment Promotion Architecture | ✅ |
 | [043](./adr-043-kafka-mcp-event-bridge.md) | Kafka → MCP Event Bridge Architecture | 📋 |
+| [059](./adr-059-simplified-deployment-sse.md) | Simplified Deployment Architecture — Single Path via SSE | ✅ |
+| [064](./adr-064-controller-framework.md) | Controller Framework — Keep Ad-Hoc Python Workers, Defer Kopf and Go (Amended by ADR-073) | ✅ |
 
 ### Security & Compliance
 
@@ -45,7 +47,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [011](./adr-011-api-security-modes.md) | API Security Mode Selection — mTLS / OAuth2 / Hybrid | ✅ |
 | [015](./adr-015-token-optimization-architecture.md) | Token Optimization Architecture | 📋 |
 | [018](./adr-018-security-hardening-p0.md) | Security Hardening P0 — Team Coca Pentest | ✅ |
-| [026](./adr-026-multi-iam-federation.md) | Multi-IAM Federation Pattern — Zero User Storage | 🔄 |
+| [026](./adr-026-multi-iam-federation.md) | Multi-IAM Federation Pattern — Zero User Storage (Superseded by ADR-074) | 🔄 |
 | [027](./adr-027-x509-header-authentication.md) | X.509 Header Authentication | ✅ |
 | [028](./adr-028-rfc8705-certificate-binding.md) | RFC 8705 Certificate Binding | ✅ |
 | [029](./adr-029-mtls-certificate-lifecycle.md) | mTLS Certificate Lifecycle | ✅ |
@@ -53,7 +55,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [044](./adr-044-mcp-oauth-gateway-proxy.md) | MCP OAuth 2.1 Gateway Proxy Architecture | ✅ |
 | [054](./adr-054-rbac-taxonomy-v2.md) | RBAC Taxonomy v2 — Persona Roles & Display Names | ✅ |
 | [056](./adr-056-fapi-2-architecture.md) | FAPI 2.0 Security Architecture | ✅ |
-| [074](./adr-074-tenant-model.md) | Tenant Model — One Realm, Tenant Groups, tenant_id Claim | ✅ |
+| [074](./adr-074-tenant-model.md) | Tenant Model — One Realm, Tenant Groups, `tenant_id` Claim | ✅ |
 | [075](./adr-075-secrets-backend-openbao.md) | Secrets Backend — OpenBao Through the Vault API | ✅ |
 
 ### MCP & AI Gateway
@@ -70,6 +72,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [047](./adr-047-mcp-skills-system.md) | MCP Skills System — Context Injection | 📋 |
 | [048](./adr-048-integrated-chat-agent.md) | Integrated Chat Agent Architecture | 📋 |
 | [051](./adr-051-lazy-mcp-discovery.md) | Lazy MCP Discovery with Cache-First Pattern | ✅ |
+| [066](./adr-066-stoa-token-compression.md) | STOA Token Compression (STC) — Lossless Response Compression for LLM Agents | ✅ |
 | [067](./adr-067-uac-as-llm-optimized-executable-contract.md) | UAC as LLM-Optimized Executable Contract | 📋 |
 
 ### Performance & Observability
@@ -88,12 +91,12 @@ This directory contains important architectural decisions for STOA Platform.
 
 | # | Title | Status |
 |:---:|-------|:------:|
-| [034](./adr-034-python-rust-migration.md) | Python to Rust Migration Strategy | 🔄 |
+| [034](./adr-034-python-rust-migration.md) | Python to Rust Migration Strategy (Superseded by ADR-073) | 🔄 |
 | [036](./adr-036-gateway-auto-registration.md) | Gateway Auto-Registration — Zero-Config Onboarding | ✅ |
 | [037](./adr-037-deployment-modes-sovereign-first.md) | Deployment Modes — Sovereign First Strategy | ✅ |
 | [038](./adr-038-sidecar-deployment-strategies-vm.md) | Sidecar Deployment on VM Infrastructure | 📋 |
-| [057](./adr-057-product-lineup-gateway-link-connect.md) | Product Lineup — STOA Gateway, STOA Link, STOA Connect | ✅ |
-| [058](./adr-058-pingora-integration.md) | Pingora Integration — Embedded Connection Pool | 🔄 |
+| [057](./adr-057-product-lineup-gateway-link-connect.md) | Product Lineup — STOA Gateway, STOA Link, STOA Connect (Amended by ADR-073) | ✅ |
+| [058](./adr-058-pingora-integration.md) | Pingora Integration — Embedded Connection Pool (Superseded by ADR-073) | 🔄 |
 | [070](./adr-070-gateway-fail-closed-posture.md) | Gateway Fail-Closed Posture | ✅ |
 | [073](./adr-073-adopt-envoy-data-plane.md) | Adopt Envoy as the STOA Data Plane | ✅ |
 
@@ -104,6 +107,7 @@ This directory contains important architectural decisions for STOA Platform.
 | [032](./adr-032-response-transformation.md) | Response Transformation — Pluggable Adapters | ✅ |
 | [033](./adr-033-shared-ui-components.md) | Shared UI Components — Theme Abstraction | ✅ |
 | [055](./adr-055-portal-console-governance.md) | Portal/Console Governance — Clear Separation of Concerns | ✅ |
+| [060](./adr-060-ai-verified-ui-testing.md) | AI-Verified UI Testing Framework — 4-Layer Validation | ✅ |
 
 ### Business & Strategy
 
@@ -116,7 +120,10 @@ This directory contains important architectural decisions for STOA Platform.
 
 | # | Title | Status |
 |:---:|-------|:------:|
-| [030](./adr-030-ai-context-management.md) | AI-Native Context Management Architecture | ✅ |
+| [030](./adr-030-ai-context-management.md) | AI-Native Context Management Architecture (Partially Superseded by ADR-062) | ✅ |
+| [061](./adr-061-council-multi-stage-review.md) | Council Multi-Stage Review System | ✅ |
+| [062](./adr-062-claude-md-hierarchy-no-rules-dir.md) | CLAUDE.md Hierarchy Replaces `.claude/rules/` | ✅ |
+| [063](./adr-063-sdd-l1-impact-mcp.md) | SDD Level 1 + stoa-impact MCP Knowledge Agent | ✅ |
 | [065](./adr-065-pr-guardian.md) | STOA PR Guardian — Advisory AI Review on GitHub Actions | ✅ |
 
 ---
@@ -131,22 +138,22 @@ This directory contains important architectural decisions for STOA Platform.
 | 016 | Release Engineering — Git Workflow & Versioning | High |
 | 017 | Kafka/Redpanda Internal-Only — Zero External Exposure | Medium |
 
-**Legend:** ✅ Accepted · 📋 Draft/Proposed
+**Legend:** ✅ Accepted · 📋 Draft/Proposed · 🔄 Superseded
 
 ## Technology Choices Overview
 
 | Category | STOA Choice | Alternatives | Rationale |
 |----------|-------------|--------------|-----------|
-| **Messaging** | Kafka (Redpanda) | RabbitMQ, NATS | Event sourcing, replay, scale |
-| **Database** | PostgreSQL | MySQL, MongoDB | ACID, JSON, extensions |
-| **Auth** | Keycloak | Auth0, Okta | Self-hosted, full OIDC |
-| **Observability** | Prometheus + Grafana + Loki | Datadog, ELK | Open source, K8s-native |
-| **GitOps** | ArgoCD | Flux, Jenkins | UI, multi-cluster |
-| **Automation** | ArgoCD + Gateway Adapters | Terraform | Idempotent, auditable |
-| **Gateway v1** | webMethods | Kong, APISIX | Legacy expertise |
-| **Gateway v2** | Rust (Pingora) | Go, C++ | Performance, safety |
+| **Messaging** | Redpanda (Kafka API) | RabbitMQ, NATS | Event sourcing, replay, internal-only |
+| **Database** | PostgreSQL | MySQL, MongoDB | ACID, JSONB, shared schema + `tenant_id` ([ADR-074](./adr-074-tenant-model.md)) |
+| **Auth** | Keycloak (`stoa` realm) | Auth0, Okta | Self-hosted, single realm + tenant groups ([ADR-074](./adr-074-tenant-model.md)) |
+| **Observability** | Prometheus + Grafana + OpenSearch + Tempo | Datadog, ELK | Open source, K8s-native, OTLP |
+| **GitOps** | ArgoCD | Flux, Jenkins | UI, multi-cluster ([ADR-007](./adr-007-gitops-argocd.md)) |
+| **On-Site Agent & xDS** | STOA Link (`stoa-connect`, Go) | Custom push | Outbound SSE, gateway adapters & loopback mTLS ADS ([ADR-057](./adr-057-product-lineup-gateway-link-connect.md), [ADR-059](./adr-059-simplified-deployment-sse.md)) |
+| **Data Plane (target)** | Upstream Envoy + STOA external services | Custom Rust/Pingora proxy | Battle-tested L4/L7 proxy + `ext_authz` / MCP services ([ADR-073](./adr-073-adopt-envoy-data-plane.md)) |
+| **Data Plane (current)** | STOA Gateway (Rust/Tokio/axum) | Python prototype | Production / Maintenance + `ExtAuthzService` gRPC ([ADR-073](./adr-073-adopt-envoy-data-plane.md)) |
 | **Search** | OpenSearch | Elasticsearch | Apache 2.0, AWS-free |
-| **Secrets** | OpenBao (Vault API) | HashiCorp Vault, Infisical | MPL 2.0, audit included, Vault API kept |
+| **Secrets** | OpenBao (Vault API) | HashiCorp Vault, Infisical | MPL 2.0, audit included, Vault API kept ([ADR-075](./adr-075-secrets-backend-openbao.md)) |
 
 ## Guiding Principles
 
@@ -154,7 +161,7 @@ This directory contains important architectural decisions for STOA Platform.
 |-----------|-------------|
 | **Open Source first** | Avoid lock-in, contribute upstream |
 | **K8s-native** | Operators, CRDs, GitOps |
-| **Right tool for the job** | Kafka for events, PostgreSQL for ACID |
+| **Right tool for the job** | Envoy for L4/L7 proxy, Rust for authz/MCP, PostgreSQL for ACID |
 | **Self-hosted possible** | No mandatory SaaS dependency |
 | **Permissive license** | Apache 2.0, MIT — avoid GPL, SSPL |
 | **Cloud-agnostic** | No mandatory managed service |
