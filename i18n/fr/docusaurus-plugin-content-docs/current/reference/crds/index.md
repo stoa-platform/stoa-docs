@@ -36,9 +36,9 @@ Pour appliquer ou mettre à jour les CRDs manuellement (recommandé avant `helm 
 kubectl apply -f charts/stoa-platform/crds/
 ```
 
-## Périmètre Namespace
+## Périmètre Namespace & Comportement Runtime
 
-Les cinq CRDs ont une portée `Namespaced`. Lorsque `STOA_K8S_WATCHER_ENABLED=true`, `stoa-gateway` surveille les ressources `Tool`, `ToolSet` et `Skill` et associe `metadata.namespace` au périmètre tenant correspondant.
+Les cinq CRDs ont une portée `Namespaced`. Lorsque `stoa-gateway` est compilé avec la feature Cargo `k8s` et démarré avec `STOA_K8S_ENABLED=true`, son `CrdWatcher` (`stoa-gateway/src/k8s/watcher.rs`) surveille les ressources `Tool`, `ToolSet` et `Skill`, associe `metadata.namespace` au périmètre tenant correspondant et met à jour les registres en mémoire directement (il ne patche **pas** la sous-ressource `.status` des `Tool`, `ToolSet` et `Skill`). `GatewayInstance` et `GatewayBinding` sont réconciliées séparément par `stoa-operator` (Bêta).
 
 ## Exemple Rapide
 
@@ -61,8 +61,6 @@ spec:
         description: Nom de la ville ou coordonnées
     required:
       - location
-  auth: bearer
-  rateLimit: "100/min"
 ```
 
 ```bash

@@ -9,6 +9,10 @@ keywords: [Skill CRD, Kubernetes, MCP, context injection, system prompt, ADR-047
 
 The `Skill` CRD (`charts/stoa-platform/crds/skills.gostoa.dev.yaml`, [ADR-047](/docs/architecture/adr/adr-047-mcp-skills-system)) defines scoped system-prompt instructions injected by `stoa-gateway` into AI agent tool execution contexts using CSS-like specificity (`global` < `tenant` < `tool` < `user`).
 
+:::warning Context injection vs hard enforcement
+A `Skill` injects prompt instructions into the LLM agent's context; it does **not** enforce hard security, authorization, or schema validation guardrails on tool calls. Enforce hard access and payload rules via signed tenant tool policies ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)), OPA policies, and `Tool.spec.inputSchema`.
+:::
+
 ## Resource Metadata
 
 | Field | Value |
@@ -18,7 +22,7 @@ The `Skill` CRD (`charts/stoa-platform/crds/skills.gostoa.dev.yaml`, [ADR-047](/
 | **Kind** | `Skill` |
 | **Short Name** | `sk` |
 | **Scope** | `Namespaced` |
-| **Watcher** | `stoa-gateway` (`CrdWatcher`) |
+| **Watcher** | `stoa-gateway` (`CrdWatcher`, `STOA_K8S_ENABLED=true` with `k8s` feature) |
 
 ## Complete Example
 
@@ -26,21 +30,19 @@ The `Skill` CRD (`charts/stoa-platform/crds/skills.gostoa.dev.yaml`, [ADR-047](/
 apiVersion: gostoa.dev/v1alpha1
 kind: Skill
 metadata:
-  name: payment-currency-guardrail
+  name: payment-currency-policy
   namespace: tenant-acme
 spec:
-  name: Payment Currency Policy
-  description: Enforce ISO-4217 currency codes and cents precision on payment tools
+  name: Payment Currency Guidance
+  description: Instruct agents to pass ISO-4217 currency codes and cents precision on payment tools
   scope: tool
   priority: 80
-  toolRef: payment-create
+  toolRef: tenant-acme_payment_create
   instructions: |
-    Always pass monetary amounts in integer minor units (cents) and explicit ISO-4217 3-letter currency codes (EUR, USD, GBP). Confirm amounts above 100000 cents with the user before calling payment-create.
+    Always pass monetary amounts in integer minor units (cents) and explicit ISO-4217 3-letter currency codes (EUR, USD, GBP). Confirm amounts above 100000 cents with the user before calling tenant-acme_payment_create.
   enabled: true
-status:
-  registered: true
-  lastSeen: "2026-11-01T12:00:00Z"
 ```
+*(Note: `spec.toolRef` is matched by exact equality against the resolved gateway tool name — for a `Tool` named `payment-create` in namespace `tenant-acme`, `CrdWatcher` registers `tenant-acme_payment_create`.)*
 
 ## Spec Fields (`openAPIV3Schema`)
 
@@ -58,23 +60,23 @@ status:
 | `description` | `string` | — | String | Skill summary for administrative visibility |
 | `priority` | `integer` | `50` | `minimum: 0`, `maximum: 100` | Tie-breaker priority within the same `scope` (higher value wins) |
 | `instructions` | `string` | — | String | System-prompt instructions injected into the agent context |
-| `toolRef` | `string` | — | String | Target tool name when `scope: tool` |
+| `toolRef` | `string` | — | String | Exact registered gateway tool name (`{namespace}_{snake_case(name)}`) when `scope: tool` |
 | `userRef` | `string` | — | String | Target user identifier when `scope: user` |
 | `enabled` | `boolean` | `true` | Boolean | Whether this skill is active in the resolver |
 
 ## Specificity & Resolution Order
 
-When `stoa-gateway` resolves skills for an incoming request (`GET /admin/skills/resolve`), matching enabled skills are ordered first by `scope` (`global` → `tenant` → `tool` → `user`) and then by `priority` (`0..100`).
+When `stoa-gateway` resolves skills for an incoming request (`GET /admin/skills/resolve?tenant_id=<id>`), matching enabled skills are ordered first by `scope` (`global` → `tenant` → `tool` → `user`) and then by `priority` (`0..100`).
 
 ## Status Subresource (`status`)
 
+The CRD defines `.status` fields (`registered`, `lastSeen`, `error`) and printer columns (`Scope`, `Priority`, `Enabled`, `Registered`). On `main`, `CrdWatcher` upserts skills into the in-memory `SkillResolver` without patching `.status` back to the Kubernetes API server:
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `registered` | `boolean` | `false` | Whether the skill is registered in `stoa-gateway`'s `SkillResolver` |
-| `lastSeen` | `string` | — | Timestamp of the last watcher event |
-| `error` | `string` | — | Error details if registration failed |
-
-`kubectl get skills` (or `kubectl get sk`) displays `Scope`, `Priority`, `Enabled`, and `Registered`.
+| `registered` | `boolean` | `false` | Schema field for registration state (not patched by `CrdWatcher` on `main`) |
+| `lastSeen` | `string` | — | Schema field for last watcher timestamp (not patched by `CrdWatcher` on `main`) |
+| `error` | `string` | — | Schema field for registration error details |
 
 ## Related Resources
 

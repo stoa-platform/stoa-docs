@@ -532,23 +532,27 @@ stoactl gateway health <gateway-id>
 
 ### `stoactl mcp`
 
-Interagir avec les serveurs et outils MCP via l'API Control Plane ou directement auprès d'une passerelle (`--gateway <url>`).
+Interagir avec les serveurs et outils MCP via l'API Control Plane (source de vérité par défaut) ou vérifier la santé publique MCP d'une passerelle (`health --gateway <url>`).
 
 ```bash
 stoactl mcp list-servers
 stoactl mcp list-tools --server weather-mcp
 stoactl mcp call get-weather --server weather-mcp --input '{"q":"Paris"}'
 stoactl mcp health
+stoactl mcp health --gateway http://localhost:8080
 ```
 
 | Sous-commande / Flag | Description |
 |----------------------|-------------|
-| `list-servers` | Lister les serveurs MCP enregistrés |
-| `list-tools [--server <nom>]` | Lister les outils MCP (filtrables par serveur) |
-| `call <outil> --server <nom> [--input '<json>']` | Invoquer un outil MCP (`--server` obligatoire) |
-| `health` | Vérifier l'état de santé MCP |
-| `--gateway <url>` | Interroger directement l'URL d'un `stoa-gateway` (contourne le RBAC Control Plane) |
+| `list-servers` | Lister les serveurs MCP enregistrés via l'API Control Plane (`--gateway` ignoré) |
+| `list-tools [--server <nom>]` | Lister les outils MCP via l'API Control Plane (filtrables par serveur) |
+| `call <outil> --server <nom> [--input '<json>']` | Invoquer un outil MCP via l'API Control Plane (`--server` obligatoire) |
+| `health [--gateway <url>]` | Vérifier l'état de santé MCP (Control Plane par défaut, ou `GET <url>/mcp/health` public avec `--gateway`) |
 | `--output`, `-o` | Format de sortie : `table`, `json`, `yaml` |
+
+:::note Limites du mode direct `--gateway` (`mcp.go`)
+Utilisez le parcours Control Plane ci-dessus pour `list-tools` et `call`. Dans `stoa-go` actuel, `--gateway <url>` fonctionne avec `stoactl mcp health --gateway <url>` (qui interroge l'endpoint public `GET <url>/mcp/health`), tandis que `list-tools --gateway` et `call --gateway` n'envoient pas le JWT Bearer requis sur `/mcp/v1/tools*` et `call --gateway` transmet les anciens champs `{"tool_name", "input"}` au lieu de `{"name", "arguments"}`.
+:::
 
 ### `stoactl catalog`
 
@@ -592,14 +596,11 @@ stoactl connect status --url http://localhost:8090
 
 # Découvrir les API directement auprès d'une passerelle tierce
 stoactl connect discover --admin-url http://localhost:8001 --type kong --token "${KONG_ADMIN_TOKEN}"
-
-# Envoyer une requête de déclenchement de synchronisation
-stoactl connect sync --url http://localhost:8090
 ```
 
 :::note Mode Envoy xDS vs `stoactl connect discover` / `sync`
 - `stoactl connect discover` ne prend en charge que les passerelles dotées d'une API d'administration (`--type kong|gravitee|webmethods|auto`). **Envoy** upstream ne dispose pas de découverte par API d'administration : le mode Envoy se configure sur l'agent `stoa-connect` via `STOA_GATEWAY_TYPE=envoy` et l'ADS mTLS loopback (variables `STOA_ENVOY_*` ; voir le [Guide stoa-connect](/docs/guides/stoa-connect-quickstart)).
-- `stoactl connect sync --url` envoie `POST <url>/sync`. Sur `main` actuel, `cmd/stoa-connect/main.go` monte uniquement `/health`, `/metrics` et `/webhook/events` (la synchronisation des politiques s'effectue automatiquement via la boucle périodique / SSE de l'agent).
+- La CLI définit également `stoactl connect sync --url <url>` (`POST <url>/sync`), mais `cmd/stoa-connect/main.go` sur `main` actuel ne monte que `/health`, `/metrics` et `/webhook/events` (n'utilisez pas `connect sync` sur `stoa-connect` ; la synchronisation des routes et politiques s'effectue automatiquement via les boucles périodiques / SSE de l'agent).
 :::
 
 ### `stoactl audit`

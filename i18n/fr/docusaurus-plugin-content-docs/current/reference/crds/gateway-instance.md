@@ -70,9 +70,10 @@ Le schéma OpenAPI de la CRD impose quatre champs obligatoires sous `spec` :
 | `environment` | `string` | Obligatoire | Environnement cible (ex. `dev`, `staging`, `prod`) |
 | `baseUrl` | `string` | Obligatoire | URL de base de l'API d'administration (ou de contrôle) |
 
-:::note Limites des Enums (`gatewayType` vs `targetGatewayType`)
+:::note Limites des Enums & Mapping `stoa-operator` (`gateway_instance.py`)
 - Ni `spec.gatewayType` ni `spec.targetGatewayType` n'inclut encore la valeur `envoy` dans le schéma CRD `v1alpha1` (les instances Envoy ADS loopback s'enregistrent actuellement via `stoa-connect` avec `STOA_GATEWAY_TYPE=envoy`).
 - `azure_apim` et `agentgateway` figurent dans `spec.targetGatewayType` (`[stoa, kong, webmethods, gravitee, agentgateway, apigee, aws_apigateway, azure_apim]`) mais **pas** dans `spec.gatewayType`.
+- **Schéma vs comportement opérateur sur `main`** : `stoa-operator` (`_spec_to_registration` dans `stoa-operator/src/handlers/gateway_instance.py`) ne transmet **que** `metadata.name`, `displayName` (`display_name`), `gatewayType` (`gateway_type`), `baseUrl` (`base_url`), `environment` et `mode` lors de l'enregistrement auprès de l'API Control Plane. Les champs optionnels ci-dessous (`authConfig.secretRef`, `tenantId`, `deploymentMode`, `targetGatewayType`, `topology`, `endpoints`, `capabilities`, `version`, `tags`) sont validés par le schéma CRD mais ne sont pas encore envoyés au Control Plane par l'opérateur Bêta.
 :::
 
 ### Champs Optionnels
@@ -99,6 +100,8 @@ Le schéma OpenAPI de la CRD impose quatre champs obligatoires sous `spec` :
 | `lastHealthCheck` | `string` | — | Horodatage du dernier contrôle de santé réussi |
 | `healthDetails` | `object` | `x-kubernetes-preserve-unknown-fields: true` | Détail du dernier contrôle de santé |
 | `error` | `string` | — | Message d'erreur en cas d'échec du contrôle de santé |
+
+*(Note d'implémentation : sur `main`, `stoa-operator` tente également d'écrire `status.cpGatewayId` — champ non encore déclaré dans `status.properties` — et passe `status.phase: "error"` en cas d'échec d'enregistrement, valeur hors de l'enum `[online, offline, degraded, maintenance]` rejetée par la validation de schéma Kubernetes.)*
 
 `kubectl get gatewayinstances` (ou `kubectl get gwi`) affiche `Type` (`.spec.gatewayType`), `Environment` (`.spec.environment`) et `Status` (`.status.phase`), ainsi que `URL` et `Topology` avec `-o wide`.
 

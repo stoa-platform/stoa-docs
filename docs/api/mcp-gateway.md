@@ -19,16 +19,16 @@ Complete API reference for the `stoa-gateway` MCP surface (`stoa-gateway/src/lib
 
 | Surface | Entrypoints | Framing | Authentication |
 |---------|-------------|---------|----------------|
-| **1. MCP JSON-RPC Protocol** | `POST /mcp` (Streamable HTTP, `Mcp-Session-Id` header), `GET/POST/DELETE /mcp/sse` (`?sessionId=`), and opt-in `GET /mcp/ws` (`STOA_WEBSOCKET_ENABLED=true`) | JSON-RPC 2.0 (single or batch); optional `text/event-stream` framing | Stateless anonymous handshake allowed for `initialize`, `ping`, `notifications/initialized`, `notifications/cancelled`; **Bearer JWT required** for all other methods |
+| **1. MCP JSON-RPC Protocol** | `POST /mcp` (Streamable HTTP, `Mcp-Session-Id` header), `GET/POST/DELETE /mcp/sse` (`?sessionId=`), and opt-in `GET /mcp/ws` (`STOA_WEBSOCKET_ENABLED=true`) | JSON-RPC 2.0 (single or batch); optional `text/event-stream` on single `POST` | Single (non-batch) `POST` without `Authorization` header allows stateless `initialize`, `ping`, `notifications/initialized`, `notifications/cancelled`; **Bearer JWT required** for batch JSON-RPC (`[...]`), `GET /mcp/sse`, `DELETE /mcp/sse`, `GET /mcp/ws`, and all other methods |
 | **2. Companion REST API** | `POST /mcp/tools/*`, `POST /mcp/resources/*`, `POST /mcp/prompts/*`, `POST /mcp/completion/complete`, `GET /mcp/v1/tools`, `POST /mcp/v1/tools/invoke`, `GET /mcp/events` | Plain REST JSON (non-JSON-RPC) | **Strict JWT gate (`mcp_jwt_required`)** on every route (`STOA_MCP_AUDIENCE` + verified `tenant_id` claim) |
 | **3. Public Discovery & OAuth 2.1** | `GET /mcp`, `GET /mcp/capabilities`, `GET /mcp/health`, `/.well-known/*`, `/oauth/*` | Plain HTTP JSON | Public (no Bearer token required; `GET /mcp` intentionally enumerates no tools) |
 
 ## Authentication
 
-Authenticated calls require a Keycloak JWT from the shared `stoa` realm ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) carrying the configured `STOA_MCP_AUDIENCE` (`aud`) and a verified `tenant_id` claim:
+Authenticated calls require a Keycloak JWT from the shared `stoa` realm ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) carrying the configured `STOA_MCP_AUDIENCE` (`aud`) and a verified `tenant_id` claim. For machine-to-machine `client_credentials` flows, provision a **confidential Keycloak client** configured with an audience mapper for `STOA_MCP_AUDIENCE` and a `tenant_id` protocol mapper:
 
 ```bash
-# Obtain an access token from the shared 'stoa' realm
+# Obtain an access token from a confidential client provisioned with STOA_MCP_AUDIENCE + tenant_id
 TOKEN=$(curl -sS -X POST "${STOA_AUTH_URL}/realms/stoa/protocol/openid-connect/token" \
   -d "client_id=my-app" \
   -d "client_secret=${CLIENT_SECRET}" \
@@ -55,22 +55,22 @@ curl -sS -X POST "${STOA_GATEWAY_URL}/mcp/tools/list" \
 
 Implements the MCP `2025-03-26` / `2025-11-25` Streamable HTTP specification (`handle_streamable_http_post` in `stoa-gateway/src/mcp/sse.rs`):
 
-- **Session tracking**: Reads or assigns the `Mcp-Session-Id` HTTP header.
-- **Response framing**: Returns `application/json` by default; if the client explicitly sends `Accept: text/event-stream`, the JSON-RPC response is wrapped in an SSE `data:` frame.
-- **Batching**: Accepts either a single JSON-RPC 2.0 object or a JSON array of requests (executed concurrently).
+- **Anonymous handshake vs authenticated session**: A single (non-batch) `POST` with **no** `Authorization` header handles `initialize`, `ping`, `notifications/initialized`, and `notifications/cancelled` statelessly without creating a session (`Mcp-Session-Id` is omitted). Authenticated single requests resolve or create a tenant-scoped session and return `Mcp-Session-Id`.
+- **Response framing**: For **single** requests, returns `application/json` by default or wraps the JSON-RPC response in an SSE `data:` frame when `Accept: text/event-stream` is sent.
+- **Batching (`[...]`)**: JSON-RPC batch arrays **require a valid Bearer JWT** (`handle_batch_request`) and **always respond with `application/json`**, even if the client sends `Accept: text/event-stream`.
 
 ### SSE Transport (`GET /mcp/sse`, `POST /mcp/sse`, `DELETE /mcp/sse`)
 
-- `GET /mcp/sse?sessionId=<id>` — Opens a persistent Server-Sent Events stream.
-- `POST /mcp/sse?sessionId=<id>` — Sends single or batch JSON-RPC 2.0 messages for the session.
-- `DELETE /mcp/sse?sessionId=<id>` — Explicitly closes the session.
+- `GET /mcp/sse?sessionId=<id>` — Opens a persistent Server-Sent Events stream (**Bearer JWT required**).
+- `POST /mcp/sse?sessionId=<id>` — Sends single or batch JSON-RPC 2.0 messages (same auth and batch rules as `POST /mcp`).
+- `DELETE /mcp/sse?sessionId=<id>` — Explicitly closes the session (**Bearer JWT required**).
 
 ### WebSocket Transport (`GET /mcp/ws`) — Opt-In
 
 Bidirectional JSON-RPC 2.0 over WebSocket (`stoa-gateway/src/mcp/ws.rs`) is **disabled by default**:
 
 - Returns `404 Not Found` unless `STOA_WEBSOCKET_ENABLED=true` is set.
-- When enabled, upgrades `GET /mcp/ws` to a WebSocket connection dispatching the same JSON-RPC methods.
+- **Authentication required on upgrade**: `GET /mcp/ws` validates the caller's Bearer token (or WebSocket subprotocol token) and `tenant_id` claim before upgrading (`websocket_identity`), and bounds the connection lifetime to the token's `exp`.
 
 ### Initialize Handshake
 
@@ -121,10 +121,10 @@ Content-Type: application/json
 
 | JSON-RPC Method | Auth Required | Companion REST Route? | Effective Runtime Behavior |
 |-----------------|---------------|-----------------------|----------------------------|
-| `initialize` | No | No | Negotiates `2025-11-25` / `2025-03-26` / `2024-11-05` and creates/updates session |
-| `ping` | No | No | Keepalive (`{}`) |
-| `notifications/initialized` | No | No | Client handshake acknowledgement (HTTP `202` / empty notification result) |
-| `notifications/cancelled` | No | No | Request cancellation notification |
+| `initialize` | No (single `POST` only; JWT required in batch or `/mcp/ws`) | No | Negotiates `2025-11-25` / `2025-03-26` / `2024-11-05`; creates a tenant session only when authenticated |
+| `ping` | No (single `POST` only; JWT required in batch or `/mcp/ws`) | No | Keepalive (`{}`) |
+| `notifications/initialized` | No (single `POST` only; JWT required in batch or `/mcp/ws`) | No | Client handshake acknowledgement (HTTP `204` when `id` is omitted) |
+| `notifications/cancelled` | No (single `POST` only; JWT required in batch or `/mcp/ws`) | No | Request cancellation notification (HTTP `204` when `id` is omitted) |
 | `tools/list` | **Yes (JWT)** | `POST /mcp/tools/list` | Lists tools visible to the caller's verified `tenant_id` |
 | `tools/call` | **Yes (JWT)** | `POST /mcp/tools/call` | Evaluates signed tenant policy ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) + OPA and invokes tool |
 | `resources/list` | **Yes (JWT)** | `POST /mcp/resources/list` | Exposes registered tools as `stoa://tools/{name}` URIs (filtered by `tenant_id` on JSON-RPC) |
@@ -135,6 +135,47 @@ Content-Type: application/json
 | `completion/complete` | **Yes (JWT)** | `POST /mcp/completion/complete` | Returns empty completion list (`values: []`, `hasMore: false`) |
 | `logging/setLevel` | **Yes (JWT)** | *JSON-RPC only* | Accepts MCP log level (`debug`..`emergency`) for the session and returns `{}` |
 | `roots/list` | **Yes (JWT)** | *JSON-RPC only* | Returns `{"roots": []}` |
+
+### List Tools, Call Tool & Batch Requests (JSON-RPC)
+
+```http
+POST /mcp
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "get-weather",
+    "arguments": { "q": "London" }
+  },
+  "id": 3
+}
+```
+
+Batch requests (`POST /mcp` or `POST /mcp/sse`) execute concurrently, **require `Authorization: Bearer <token>`**, and always return a JSON array (`application/json`):
+
+```http
+POST /mcp
+Authorization: Bearer <token>
+Content-Type: application/json
+
+[
+  {
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": { "name": "get-weather", "arguments": { "q": "Paris" } },
+    "id": 1
+  },
+  {
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": { "name": "get-weather", "arguments": { "q": "London" } },
+    "id": 2
+  }
+]
+```
 
 ---
 
@@ -280,6 +321,15 @@ graph TD
     D -->|403 / 503| J[Fail-Closed Policy Denied]
 ```
 
+### RBAC Scope Mapping
+
+| Role | Scopes |
+|------|--------|
+| `cpi-admin` | `admin`, `read`, `write`, `execute`, `deploy`, `audit` |
+| `tenant-admin` | `read`, `write`, `execute` |
+| `devops` | `read`, `write`, `deploy` |
+| `viewer` | `read` |
+
 ---
 
 ## Token Optimization
@@ -298,7 +348,7 @@ curl -X POST "${STOA_GATEWAY_URL}/mcp/tools/call" \
 
 ## Session Management
 
-MCP sessions default to a 30-minute TTL (`STOA_SESSION_TTL_MINUTES`) with background zombie cleanup. Inspect active session counts via [`GET /admin/sessions/stats`](/docs/api/gateway-admin-api#get-adminsessionsstats).
+MCP sessions default to a 30-minute TTL (`STOA_MCP_SESSION_TTL_MINUTES`) with background zombie cleanup. Inspect active session counts via [`GET /admin/sessions/stats`](/docs/api/gateway-admin-api#get-adminsessionsstats).
 
 ---
 
@@ -345,6 +395,66 @@ On `POST /mcp` and `POST /mcp/sse`, rejected tool calls return a JSON-RPC 2.0 `e
 | `404` (prompt not found) | `-32002` |
 | `429` | `-32029` |
 | Other | `-32603` |
+
+---
+
+## Examples
+
+The examples below assume `my-app` is a confidential Keycloak client in the `stoa` realm configured with an audience mapper matching `STOA_MCP_AUDIENCE` and a `tenant_id` protocol mapper:
+
+### Python Client
+
+```python
+import os
+import requests
+
+STOA_AUTH_URL = os.environ['STOA_AUTH_URL']
+STOA_GATEWAY_URL = os.environ['STOA_GATEWAY_URL']
+
+# Authenticate against the shared 'stoa' realm
+auth = requests.post(
+    f'{STOA_AUTH_URL}/realms/stoa/protocol/openid-connect/token',
+    data={
+        'client_id': 'my-app',
+        'client_secret': os.environ['STOA_CLIENT_SECRET'],
+        'grant_type': 'client_credentials'
+    }
+)
+auth.raise_for_status()
+token = auth.json()['access_token']
+
+# Invoke tool via companion REST endpoint
+response = requests.post(
+    f'{STOA_GATEWAY_URL}/mcp/tools/call',
+    headers={'Authorization': f'Bearer {token}'},
+    json={'name': 'get-weather', 'arguments': {'q': 'Paris'}}
+)
+response.raise_for_status()
+
+result = response.json()
+print(result['content'][0]['text'])
+```
+
+### JavaScript Client
+
+```javascript
+const STOA_GATEWAY_URL = process.env.STOA_GATEWAY_URL;
+
+const response = await fetch(`${STOA_GATEWAY_URL}/mcp/tools/call`, {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: 'get-weather',
+    arguments: { q: 'Paris' }
+  })
+});
+
+const result = await response.json();
+console.log(result.content[0].text);
+```
 
 ---
 

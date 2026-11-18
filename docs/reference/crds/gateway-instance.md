@@ -70,9 +70,10 @@ The CRD schema enforces four required fields under `spec`:
 | `environment` | `string` | Required | Target environment identifier (e.g., `dev`, `staging`, `prod`) |
 | `baseUrl` | `string` | Required | Gateway admin API (or control) base URL |
 
-:::note Schema Enum Boundaries (`gatewayType` vs `targetGatewayType`)
+:::note Schema Enum Boundaries & `stoa-operator` Mapping (`gateway_instance.py`)
 - Neither `spec.gatewayType` nor `spec.targetGatewayType` includes an `envoy` enum value in the `v1alpha1` CRD schema yet (Envoy loopback ADS instances currently register via `stoa-connect` with `STOA_GATEWAY_TYPE=envoy`).
 - `azure_apim` and `agentgateway` appear in `spec.targetGatewayType` (`[stoa, kong, webmethods, gravitee, agentgateway, apigee, aws_apigateway, azure_apim]`) but **not** in `spec.gatewayType`.
+- **Schema vs operator behavior on `main`**: `stoa-operator` (`_spec_to_registration` in `stoa-operator/src/handlers/gateway_instance.py`) sends **only** `metadata.name`, `displayName` (`display_name`), `gatewayType` (`gateway_type`), `baseUrl` (`base_url`), `environment`, and `mode` when registering with the Control Plane API. The optional fields below (`authConfig.secretRef`, `tenantId`, `deploymentMode`, `targetGatewayType`, `topology`, `endpoints`, `capabilities`, `version`, `tags`) are validated and stored on the Kubernetes resource by the CRD schema, but are not forwarded to the Control Plane by the Beta operator yet.
 :::
 
 ### Optional Fields
@@ -99,6 +100,8 @@ The CRD schema enforces four required fields under `spec`:
 | `lastHealthCheck` | `string` | — | Timestamp of the last successful health check |
 | `healthDetails` | `object` | `x-kubernetes-preserve-unknown-fields: true` | Last health check payload |
 | `error` | `string` | — | Error message if the last health check failed |
+
+*(Implementation note: on `main`, `stoa-operator` also attempts to patch `status.cpGatewayId` — which is not yet declared in `status.properties` — and writes `status.phase: "error"` on registration failure, which is rejected by Kubernetes schema validation because `error` is outside the `[online, offline, degraded, maintenance]` enum.)*
 
 `kubectl get gatewayinstances` (or `kubectl get gwi`) displays `Type` (`.spec.gatewayType`), `Environment` (`.spec.environment`), and `Status` (`.status.phase`), plus `URL` and `Topology` with `-o wide`.
 

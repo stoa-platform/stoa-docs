@@ -74,7 +74,7 @@ Les mutations de contrats (`stoa-gateway/src/handlers/admin/contracts.rs`) sont 
 
 ### POST /admin/contracts
 
-Enregistre ou met à jour un contrat UAC (`201 Created` à la création, `200 OK` à la mise à jour). L'option `"inboundAuth": "jwt"` active la validation JWT Keycloak sur la route REST générée (comme vérifié par `quickstart/verify.sh`) :
+Enregistre ou met à jour un contrat UAC (`201 Created` à la création, `200 OK` à la mise à jour). `tenant_id` est obligatoire, `status: "published"` active la génération des routes/outils, et `"inboundAuth": "jwt"` active la validation JWT Keycloak sur la route REST générée (conforme à `quickstart/verify.sh` et `stoa-gateway/src/uac/schema.rs`) :
 
 ```bash
 curl -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
@@ -83,23 +83,16 @@ curl -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
   -d '{
     "name": "echo-service",
     "version": "1.0.0",
-    "tenantId": "acme",
+    "tenant_id": "acme",
+    "status": "published",
+    "classification": "H",
     "inboundAuth": "jwt",
-    "bindings": {
-      "rest": {
-        "enabled": true,
-        "pathPrefix": "/apis/acme/echo",
-        "backendUrl": "http://backend:8080"
-      },
-      "mcp": {
-        "enabled": true
-      }
-    },
     "endpoints": [
       {
-        "path": "/get",
+        "path": "/ping",
         "methods": ["GET"],
-        "operationId": "echoGet"
+        "backend_url": "http://backend:80",
+        "operation_id": "echoPing"
       }
     ]
   }'
@@ -107,11 +100,11 @@ curl -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
 
 ```json
 {
-  "key": "acme:echo-service:1.0.0",
-  "status": "created",
+  "key": "acme:echo-service",
+  "status": "ok",
   "routes_generated": 1,
   "tools_generated": 1,
-  "llm_capabilities": []
+  "llm_capabilities": 0
 }
 ```
 
@@ -121,11 +114,11 @@ Liste tous les contrats UAC enregistrés.
 
 ### GET /admin/contracts/:key
 
-Récupère un contrat par sa clé composite (`{tenant_id}:{name}:{version}`). Retourne `404` s'il est absent.
+Récupère un contrat par sa clé composite (`{tenant_id}:{name}` par défaut, ex. `acme:echo-service`, sauf si un champ `key` explicite a été fourni). Retourne `404` s'il est absent.
 
 ### DELETE /admin/contracts/:key
 
-Retire les routes REST et outils MCP associés à `:key` puis supprime le contrat (`204 No Content` ou `404 Not Found`).
+Retire les routes REST et outils MCP associés à `:key` puis supprime le contrat (`200 OK` avec compteurs JSON `{"status": "deleted", "routes_removed": 1, "tools_removed": 1}`, ou `404 Not Found` s'il est absent).
 
 ---
 
@@ -217,9 +210,9 @@ Gère les skills d'injection de contexte hiérarchique (spécificité `global` <
 
 | Endpoint | Méthode | Description |
 |----------|---------|-------------|
-| `/admin/skills/status` | `GET` | État et compteurs du résolveur de skills |
-| `/admin/skills/resolve` | `GET` | Prévisualiser les instructions résolues pour un contexte (`tenant`, `tool`, `user`) |
-| `/admin/skills/sync` | `POST` | Déclencher une synchronisation des skills depuis le Control Plane |
+| `/admin/skills/status` | `GET` | État du résolveur de skills (`enabled`, `cache_ttl_secs`, `skill_count`) |
+| `/admin/skills/resolve` | `GET` | Prévisualiser les instructions résolues (`?tenant_id=<id>` **obligatoire** ; `&tool_ref=<outil>&user_ref=<user>` optionnels) |
+| `/admin/skills/sync` | `POST` | Remplacer atomiquement le registre en mémoire par le tableau JSON de skills posté dans la requête (aucun pull depuis le Control Plane) |
 | `/admin/skills` | `GET`, `POST` | Lister les skills ou créer/mettre à jour un skill (`201` ou `200`) |
 | `/admin/skills/:id` | `GET`, `PUT`, `DELETE` | Consulter, modifier ou supprimer un skill par ID (**suppression canonique**) |
 | `/admin/skills?key=<key>` | `DELETE` | **Déprécié** : suppression par paramètre de requête émettant les en-têtes `Deprecation` et `Sunset` ; privilégiez `DELETE /admin/skills/:id` |
@@ -267,7 +260,7 @@ Purge l'entrée de cache du sous-compte `:sub_account_id` et indique si une entr
 | `/admin/prompt-cache/patterns` | `GET` | Lister les motifs en cache |
 | `/admin/prompt-cache/get/:key` | `GET` | Consulter une entrée par clé |
 | `/admin/prompt-cache/load` | `POST` | Précharger des entrées dans le cache de prompts |
-| `/admin/prompt-cache/invalidate` | `POST` | Invalider des entrées du cache de prompts |
+| `/admin/prompt-cache/invalidate` | `POST` | Vider intégralement le cache de prompts (`{"status": "cleared"}`, sans filtre de motif) |
 
 ### Routage LLM
 

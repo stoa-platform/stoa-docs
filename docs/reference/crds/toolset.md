@@ -39,19 +39,13 @@ spec:
     timeoutSeconds: 30
     auth:
       type: bearer
-      secretRef: crm-mcp-token
+      secretRef: crm-mcp-token   # K8s Secret name in `tenant-acme` (reads key `token`)
   tools:
     - search_contacts
     - get_account
   prefix: "crm_"
-status:
-  connected: true
-  toolCount: 2
-  discoveredTools:
-    - crm_search_contacts
-    - crm_get_account
-  lastSync: "2026-11-01T12:00:00Z"
 ```
+*(Registered tool names follow `{prefix}{namespace}_{snake_case(tool_name)}`: with `prefix: "crm_"` in `tenant-acme`, `CrdWatcher` registers `crm_tenant-acme_search_contacts` and `crm_tenant-acme_get_account`.)*
 
 ## Spec Fields (`openAPIV3Schema`)
 
@@ -67,24 +61,24 @@ status:
 | Field | Type | Default | Enforced Values / Constraints | Description |
 |-------|------|---------|-------------------------------|-------------|
 | `upstream.transport` | `string` | `sse` | Enum: `sse`, `streamable-http` | MCP transport protocol used to reach `upstream.url` |
-| `upstream.timeoutSeconds` | `integer` | — | Integer | Connection and request timeout in seconds |
-| `upstream.auth.type` | `string` | — | Enum: `bearer`, `header` | Upstream authentication scheme |
-| `upstream.auth.secretRef` | `string` | — | String | Kubernetes `Secret` name containing the upstream credential |
-| `upstream.auth.headerName` | `string` | — | String | Custom HTTP header name when `upstream.auth.type: header` |
+| `upstream.timeoutSeconds` | `integer` | `30` (runtime) | Integer | Connection and request timeout in seconds (`unwrap_or(30)` in `CrdWatcher`) |
+| `upstream.auth.type` | `string` | — | Enum: `bearer`, `header` | Declared in CRD schema; runtime `UpstreamMcpClient` currently sends `Authorization: Bearer <token>` whenever a Secret token is loaded |
+| `upstream.auth.secretRef` | `string` | — | String | Name of the Kubernetes `Secret` in the same namespace (`CrdWatcher` reads key `token` by default) |
+| `upstream.auth.headerName` | `string` | — | String | Declared in CRD schema for `type: header`, **not read** by `UpstreamMcpClient` on `main` |
 | `tools` | `string[]` | `[]` | Array of strings | Allowlist of upstream tool names to expose (empty array `[]` exposes all discovered tools) |
-| `prefix` | `string` | — | String | Optional prefix prepended to exposed tool names to avoid collisions |
+| `prefix` | `string` | `""` | String | Prefix prepended before `{namespace}_{snake_case(tool_name)}` (e.g., `crm_tenant-acme_search_contacts`) |
 
 ## Status Subresource (`status`)
 
+The CRD defines `.status` fields (`connected`, `toolCount`, `discoveredTools`, `lastSync`, `error`) and printer columns (`Upstream`, `Tools`, `Connected`). On `main`, `CrdWatcher` registers federated tools in memory without patching `.status` back to the Kubernetes API server:
+
 | Field | Type | Description |
 |-------|------|-------------|
-| `connected` | `boolean` | Whether `stoa-gateway` is currently connected to the upstream MCP server |
-| `toolCount` | `integer` | Number of tools discovered and registered |
-| `discoveredTools` | `string[]` | Names of registered tools |
-| `lastSync` | `string` | Timestamp of the last successful upstream discovery sync |
-| `error` | `string` | Error message if upstream connection or discovery failed |
-
-`kubectl get toolsets` (or `kubectl get ts`) displays `Upstream` (`.spec.upstream.url`), `Tools` (`.status.toolCount`), and `Connected` (`.status.connected`).
+| `connected` | `boolean` | Schema field for upstream connectivity (not patched by `CrdWatcher` on `main`) |
+| `toolCount` | `integer` | Schema field for registered tool count (not patched by `CrdWatcher` on `main`) |
+| `discoveredTools` | `string[]` | Schema field for registered tool names |
+| `lastSync` | `string` | Schema field for last discovery sync timestamp |
+| `error` | `string` | Schema field for upstream connection or discovery error |
 
 ## Related Resources
 

@@ -7,7 +7,7 @@ keywords: [Tool CRD, Kubernetes, MCP, custom resource, gostoa.dev]
 
 # CRD Tool
 
-La CRD `Tool` (`charts/stoa-platform/crds/tools.gostoa.dev.yaml`) définit un outil MCP individuel adossé à un endpoint HTTP, surveillé dynamiquement par `stoa-gateway` lorsque `STOA_K8S_WATCHER_ENABLED=true`.
+La CRD `Tool` (`charts/stoa-platform/crds/tools.gostoa.dev.yaml`) définit un outil MCP individuel adossé à un endpoint HTTP, surveillé dynamiquement par `stoa-gateway` lorsqu'il est compilé avec la feature Cargo `k8s` et démarré avec `STOA_K8S_ENABLED=true`.
 
 ## Métadonnées de Ressource
 
@@ -18,7 +18,7 @@ La CRD `Tool` (`charts/stoa-platform/crds/tools.gostoa.dev.yaml`) définit un ou
 | **Kind** | `Tool` |
 | **Nom court** | `tool` |
 | **Portée** | `Namespaced` |
-| **Watcher** | `stoa-gateway` (`CrdWatcher`) |
+| **Watcher** | `stoa-gateway` (`CrdWatcher`, expose `{namespace}_{snake_case(metadata.name)}`) |
 
 ## Exemple Complet
 
@@ -54,17 +54,13 @@ spec:
     properties:
       paymentId:
         type: string
-  auth: bearer
-  rateLimit: "100/min"
   annotations:
     readOnly: false
     destructive: false
     idempotent: false
     openWorld: true
-status:
-  registered: true
-  lastSeen: "2026-11-01T12:00:00Z"
 ```
+*(Dans le namespace `tenant-acme`, `metadata.name: payment-create` est enregistré dans `stoa-gateway` sous le nom d'outil MCP `tenant-acme_payment_create`.)*
 
 ## Champs `spec` (`openAPIV3Schema`)
 
@@ -85,24 +81,24 @@ Les cinq champs suivants sont imposés (`required`) par le schéma OpenAPI de la
 | Champ | Type | Défaut | Valeurs / Contraintes imposées | Description |
 |-------|------|--------|--------------------------------|-------------|
 | `outputSchema` | `object` | — | `x-kubernetes-preserve-unknown-fields: true` | JSON Schema optionnel de la sortie |
-| `auth` | `string` | `none` | Enum : `bearer`, `service_account`, `none` | Mode d'authentification vers le backend |
-| `rateLimit` | `string` | — | Expression (ex. `100/min`, `1000/hour`) | Expression de limitation de débit de l'outil |
+| `auth` | `string` | `none` | Enum : `bearer`, `service_account`, `none` | Déclaré au schéma CRD, **non lu** par `CrdWatcher` sur `main` |
+| `rateLimit` | `string` | — | Expression (ex. `100/min`, `1000/hour`) | Déclaré au schéma CRD, **non appliqué** par `CrdWatcher` sur `main` |
 | `annotations.readOnly` | `boolean` | — | Booléen | Indique un outil sans modification d'état |
 | `annotations.destructive` | `boolean` | — | Booléen | Indique une action destructive |
 | `annotations.idempotent` | `boolean` | — | Booléen | Indique une opération idempotente |
 | `annotations.openWorld` | `boolean` | — | Booléen | Indique une interaction avec un système externe |
 
-*(Note : pour générer automatiquement des manifestes `Tool` à partir d'une spécification OpenAPI, utilisez [`stoactl bridge <spec-file>`](/docs/reference/cli).)*
+*(Note : `CrdWatcher::handle_tool_apply` (`stoa-gateway/src/k8s/watcher.rs`) construit `DynamicTool` à partir de `description`, `endpoint`, `method`, `inputSchema`, `outputSchema` et `annotations` ; `spec.auth` et `spec.rateLimit` sont acceptés par le schéma mais ne sont pas lus par le watcher Rust actuel. Pour générer automatiquement des manifestes `Tool` à partir d'une spécification OpenAPI, utilisez [`stoactl bridge <spec-file>`](/docs/reference/cli).)*
 
 ## Sous-ressource `status`
 
+Le schéma CRD définit les champs `.status` (`registered`, `lastSeen`, `error`) et les colonnes d'affichage (`Display Name`, `Endpoint`, `Registered`). Sur `main`, `CrdWatcher` enregistre les outils en mémoire sans patcher `.status` auprès de l'API Kubernetes ; `.status.registered` reste donc vide tant qu'aucun contrôleur externe ne l'écrit :
+
 | Champ | Type | Description |
 |-------|------|-------------|
-| `registered` | `boolean` | Indique si l'outil est enregistré dans `stoa-gateway` |
-| `lastSeen` | `string` | Horodatage de la dernière prise en compte par le watcher |
-| `error` | `string` | Message d'erreur en cas d'échec d'enregistrement |
-
-`kubectl get tools` affiche les colonnes `Display Name` (`.spec.displayName`), `Endpoint` (`.spec.endpoint`) et `Registered` (`.status.registered`).
+| `registered` | `boolean` | Champ schéma d'état d'enregistrement (non patché par `CrdWatcher` sur `main`) |
+| `lastSeen` | `string` | Champ schéma d'horodatage (non patché par `CrdWatcher` sur `main`) |
+| `error` | `string` | Détail d'erreur éventuel |
 
 ## Ressources Associées
 

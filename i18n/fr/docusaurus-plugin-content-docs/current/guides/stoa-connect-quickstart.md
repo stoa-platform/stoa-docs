@@ -177,6 +177,7 @@ export STOA_ENVOY_AUTH_ADDR="127.0.0.1:9001"   # ExtAuthzService gRPC fail-close
 | `STOA_INSTANCE_NAME` | Non | hostname | Identifiant affiché dans la Console |
 | `STOA_ENVIRONMENT` | Non | `production` | Libellé d'environnement |
 | `STOA_HEARTBEAT_INTERVAL` | Non | `30s` | Fréquence des heartbeats |
+| `STOA_SSE_ENABLED` | Non | `false` | Flux SSE sortant sur option après enregistrement ([ADR-059](/docs/architecture/adr/adr-059-simplified-deployment-sse)) ; sinon polling périodique des routes |
 | `STOA_CONNECT_PORT` | Non | `8090` | Port HTTP local de l'agent |
 
 ---
@@ -227,12 +228,11 @@ sudo systemctl enable --now stoa-connect
 </TabItem>
 </Tabs>
 
-Au démarrage, `stoa-connect` va :
+Au démarrage (`cmd/stoa-connect/main.go`), `stoa-connect` va :
 
-1. Enregistrer la passerelle auprès du Plan de Contrôle (`POST /v1/internal/gateways/register`)
-2. Découvrir les API depuis l'API d'administration locale de la passerelle
-3. Démarrer la boucle de heartbeat (toutes les 30 secondes)
-4. Lancer la synchronisation des politiques (toutes les 60 secondes)
+1. Si `STOA_CONTROL_PLANE_URL` et `STOA_GATEWAY_API_KEY` sont renseignés, enregistrer la passerelle auprès du Plan de Contrôle (`POST /v1/internal/gateways/register`) et démarrer le heartbeat **uniquement après un enregistrement réussi**
+2. Démarrer la découverte des API locales — **ignorée lorsque `STOA_GATEWAY_TYPE=envoy`**, qui démarre à la place le serveur ADS mTLS loopback
+3. Lancer la synchronisation des politiques, ainsi que le flux SSE sortant sur option (`STOA_SSE_ENABLED=true` avec `gateway_id` enregistré) ou le polling périodique des routes
 
 ---
 
@@ -250,11 +250,14 @@ Résultat attendu :
 ```json
 {
   "status": "ok",
-  "version": "0.3.0",
+  "version": "0.3.10-main",
+  "commit": "639e8b9a",
   "gateway_id": "a1b2c3d4-...",
   "discovered_apis": 12
 }
 ```
+
+*(Note : `/health` reflète la vivacité HTTP de l'agent local et peut renvoyer `"status": "ok"` avec `"gateway_id": "unregistered"` si l'enregistrement auprès du Plan de Contrôle a été omis ou a échoué — vérifiez que `gateway_id` ne vaut pas `"unregistered"`.)*
 
 Ou via la CLI :
 
@@ -262,13 +265,13 @@ Ou via la CLI :
 stoactl connect status --url http://localhost:8090
 ```
 
-Confirmez que la passerelle apparaît dans la Console sur [console.gostoa.dev](https://console.gostoa.dev) sous **Gateways**. L'indicateur d'état doit devenir vert en moins de 30 secondes.
+Confirmez que la passerelle apparaît dans la Console STOA (`${STOA_CONSOLE_URL}`) sous **Gateways**. L'indicateur d'état passe au vert dès réception du premier heartbeat.
 
 ---
 
 ## Référence CLI
 
-`stoactl connect` propose trois sous-commandes de diagnostic opérateur :
+`stoactl connect` propose les sous-commandes de diagnostic opérateur suivantes :
 
 ```bash
 # Afficher l'état de l'agent et la connectivité (:8090/health)
@@ -276,14 +279,11 @@ stoactl connect status --url http://localhost:8090
 
 # Découvrir les API directement sur une passerelle à API d'administration (kong | gravitee | webmethods | auto)
 stoactl connect discover --admin-url http://localhost:8001 --type kong
-
-# Envoyer une requête de déclenchement de synchronisation (POST /sync)
-stoactl connect sync --url http://localhost:8090
 ```
 
 :::note Mode Envoy xDS & limites de `/sync`
 - **Découverte (`stoactl connect discover`)** interroge directement l'API d'administration d'une passerelle tierce (`kong`, `gravitee`, `webmethods` ou `auto`). En mode **Envoy** (`STOA_GATEWAY_TYPE=envoy`), `stoa-connect` sert l'ADS xDS mTLS loopback depuis l'état du Plan de Contrôle ; `Discover` retourne `UnsupportedError` et est ignoré par conception.
-- **Synchronisation manuelle (`stoactl connect sync`)** envoie `POST <url>/sync`. Sur `main` actuel, `cmd/stoa-connect/main.go` monte `/health`, `/metrics` et `/webhook/events` ; les routes et politiques sont réconciliées automatiquement via le flux SSE sortant et la boucle interne de l'agent.
+- **Synchronisation manuelle (`stoactl connect sync`)** : Bien que `stoactl connect` définisse une sous-commande `sync` (`POST <url>/sync`), `cmd/stoa-connect/main.go` sur `main` actuel ne monte que `/health`, `/metrics` et `/webhook/events` (n'exécutez pas `stoactl connect sync` sur `stoa-connect` ; les routes et politiques sont réconciliées automatiquement via la boucle interne et le flux SSE optionnel).
 :::
 
 ---

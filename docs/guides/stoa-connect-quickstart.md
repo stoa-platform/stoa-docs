@@ -177,6 +177,7 @@ export STOA_ENVOY_AUTH_ADDR="127.0.0.1:9001"   # fail-closed gRPC ExtAuthzServic
 | `STOA_INSTANCE_NAME` | No | hostname | Identifier shown in the Console |
 | `STOA_ENVIRONMENT` | No | `production` | Environment label |
 | `STOA_HEARTBEAT_INTERVAL` | No | `30s` | Heartbeat frequency |
+| `STOA_SSE_ENABLED` | No | `false` | Opt-in outbound SSE deployment stream when registered ([ADR-059](/docs/architecture/adr/adr-059-simplified-deployment-sse)); otherwise periodic route polling |
 | `STOA_CONNECT_PORT` | No | `8090` | Local HTTP port for the agent |
 
 ---
@@ -227,12 +228,11 @@ sudo systemctl enable --now stoa-connect
 </TabItem>
 </Tabs>
 
-On startup, `stoa-connect` will:
+On startup (`cmd/stoa-connect/main.go`), `stoa-connect` will:
 
-1. Register the gateway with the Control Plane (`POST /v1/internal/gateways/register`)
-2. Discover APIs from the local gateway admin API
-3. Start the heartbeat loop (every 30 seconds)
-4. Begin policy sync (every 60 seconds)
+1. If `STOA_CONTROL_PLANE_URL` and `STOA_GATEWAY_API_KEY` are set, register the gateway with the Control Plane (`POST /v1/internal/gateways/register`) and start the heartbeat loop **after registration succeeds**
+2. Start local gateway API discovery — **skipped when `STOA_GATEWAY_TYPE=envoy`**, which starts the loopback mTLS ADS server instead
+3. Start the policy sync loop, plus either the opt-in outbound SSE deployment stream (`STOA_SSE_ENABLED=true` with a registered `gateway_id`) or periodic route sync
 
 ---
 
@@ -250,11 +250,14 @@ Expected output:
 ```json
 {
   "status": "ok",
-  "version": "0.3.0",
+  "version": "0.3.10-main",
+  "commit": "639e8b9a",
   "gateway_id": "a1b2c3d4-...",
   "discovered_apis": 12
 }
 ```
+
+*(Note: `/health` reports HTTP liveness of the local agent and can return `"status": "ok"` with `"gateway_id": "unregistered"` if Control Plane registration was skipped or failed — always verify `gateway_id` is not `"unregistered"`.)*
 
 Or use the CLI:
 
@@ -262,13 +265,13 @@ Or use the CLI:
 stoactl connect status --url http://localhost:8090
 ```
 
-Confirm the gateway appears in the Console at [console.gostoa.dev](https://console.gostoa.dev) under **Gateways**. The status indicator should be green within 30 seconds.
+Confirm the gateway appears in the STOA Console (`${STOA_CONSOLE_URL}`) under **Gateways**. The status indicator should turn green once the first heartbeat arrives.
 
 ---
 
 ## CLI Reference
 
-`stoactl connect` provides three subcommands for operator diagnostics:
+`stoactl connect` provides operator diagnostic subcommands:
 
 ```bash
 # Show agent status and connectivity (:8090/health)
@@ -276,14 +279,11 @@ stoactl connect status --url http://localhost:8090
 
 # Discover APIs directly on an admin-API gateway (kong | gravitee | webmethods | auto)
 stoactl connect discover --admin-url http://localhost:8001 --type kong
-
-# Send a sync trigger request (POST /sync)
-stoactl connect sync --url http://localhost:8090
 ```
 
 :::note Envoy xDS mode & `/sync` endpoint boundaries
 - **Discovery (`stoactl connect discover`)** talks directly to a third-party gateway's admin API (`kong`, `gravitee`, `webmethods`, or `auto`). In **Envoy** mode (`STOA_GATEWAY_TYPE=envoy`), `stoa-connect` serves loopback mTLS xDS ADS from Control Plane state; `Discover` returns `UnsupportedError` and is skipped automatically.
-- **Manual sync (`stoactl connect sync`)** sends `POST <url>/sync`. On current `main`, `cmd/stoa-connect/main.go` mounts `/health`, `/metrics`, and `/webhook/events`; policy and route updates are reconciled automatically via the agent's outbound SSE stream and sync loop.
+- **Manual sync (`stoactl connect sync`)**: Although `stoactl connect` defines a `sync` subcommand (`POST <url>/sync`), `cmd/stoa-connect/main.go` on current `main` mounts only `/health`, `/metrics`, and `/webhook/events` (do not run `stoactl connect sync` against `stoa-connect`; policy and route updates are reconciled automatically via the agent's sync loop and optional SSE stream).
 :::
 
 ---

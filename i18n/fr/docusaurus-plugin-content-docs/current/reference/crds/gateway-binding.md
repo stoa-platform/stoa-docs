@@ -72,13 +72,17 @@ status:
 
 ### Champs Optionnels
 
+:::note Schéma vs Comportement de `stoa-operator` (`gateway_binding.py`)
+Sur `main` actuel, `on_gwb_create` (`stoa-operator/src/handlers/gateway_binding.py`) ne résout **que** `spec.apiRef.name` et `spec.gatewayRef.name` auprès de l'API Control Plane (`apiRef.version` et `gatewayRef.namespace` ne sont pas utilisés), n'applique **pas** `contractRef`, `desiredState` ni `policies`, et crée un déploiement Control Plane (`cp_client.create_deployment`) dont l'identifiant `deployment_id` alimente `status.gatewayResourceId`.
+:::
+
 | Champ | Type | Valeurs / Contraintes imposées | Description |
 |-------|------|--------------------------------|-------------|
-| `apiRef.version` | `string` | Chaîne | Version spécifique de l'API à exposer |
-| `gatewayRef.namespace` | `string` | Chaîne | Namespace de la `GatewayInstance` cible (si inter-namespace) |
-| `contractRef` | `object` | Sous-champs : `name` (`string`), `namespace` (`string`) | Référence optionnelle vers un contrat UAC |
-| `desiredState` | `object` | `x-kubernetes-preserve-unknown-fields: true` | Configuration souhaitée spécifique à la passerelle cible |
-| `policies` | `object[]` | Tableau d'objets `{name, type, config}` | Politiques appliquées sur cette liaison |
+| `apiRef.version` | `string` | Chaîne | Version spécifique déclarée au schéma (non utilisée par `stoa-operator` sur `main`) |
+| `gatewayRef.namespace` | `string` | Chaîne | Namespace cible déclaré au schéma (non utilisé par `stoa-operator` sur `main`) |
+| `contractRef` | `object` | Sous-champs : `name` (`string`), `namespace` (`string`) | Référence UAC déclarée au schéma (non appliquée par `stoa-operator` sur `main`) |
+| `desiredState` | `object` | `x-kubernetes-preserve-unknown-fields: true` | Configuration cible déclarée au schéma (non appliquée par `stoa-operator` sur `main`) |
+| `policies` | `object[]` | Tableau d'objets `{name, type, config}` | Politiques déclarées au schéma (non appliquées par `stoa-operator` sur `main`) |
 | `policies[].name` | `string` | Chaîne | Nom de la politique |
 | `policies[].type` | `string` | Chaîne (ex. `rate_limit`, `cors`, `request_validation`) | Type de politique |
 | `policies[].config` | `object` | `x-kubernetes-preserve-unknown-fields: true` | Paramètres de la politique |
@@ -89,7 +93,7 @@ status:
 |-------|------|--------------------------------|-------------|
 | `syncStatus` | `string` | Enum : `pending`, `syncing`, `synced`, `drifted`, `error`, `deleting` | État du cycle de synchronisation |
 | `actualState` | `object` | `x-kubernetes-preserve-unknown-fields: true` | État effectif remonté par la passerelle cible |
-| `gatewayResourceId` | `string` | Chaîne | Identifiant externe attribué par la passerelle cible |
+| `gatewayResourceId` | `string` | Chaîne | Identifiant du déploiement Control Plane renseigné par `stoa-operator` (`create_deployment`) |
 | `lastSyncAttempt` | `string` | Chaîne | Horodatage de la dernière tentative de synchronisation |
 | `lastSyncSuccess` | `string` | Chaîne | Horodatage de la dernière synchronisation réussie |
 | `syncAttempts` | `integer` | Entier | Nombre cumulé de tentatives |

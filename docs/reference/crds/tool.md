@@ -7,7 +7,7 @@ keywords: [Tool CRD, Kubernetes, MCP, custom resource, gostoa.dev]
 
 # Tool CRD
 
-The `Tool` CRD (`charts/stoa-platform/crds/tools.gostoa.dev.yaml`) defines an individual HTTP-backed MCP tool watched dynamically by `stoa-gateway` when `STOA_K8S_WATCHER_ENABLED=true`.
+The `Tool` CRD (`charts/stoa-platform/crds/tools.gostoa.dev.yaml`) defines an individual HTTP-backed MCP tool watched dynamically by `stoa-gateway` when compiled with the `k8s` Cargo feature and started with `STOA_K8S_ENABLED=true`.
 
 ## Resource Metadata
 
@@ -18,7 +18,7 @@ The `Tool` CRD (`charts/stoa-platform/crds/tools.gostoa.dev.yaml`) defines an in
 | **Kind** | `Tool` |
 | **Short Name** | `tool` |
 | **Scope** | `Namespaced` |
-| **Watcher** | `stoa-gateway` (`CrdWatcher`) |
+| **Watcher** | `stoa-gateway` (`CrdWatcher`, exports `{namespace}_{snake_case(metadata.name)}`) |
 
 ## Complete Example
 
@@ -54,17 +54,13 @@ spec:
     properties:
       paymentId:
         type: string
-  auth: bearer
-  rateLimit: "100/min"
   annotations:
     readOnly: false
     destructive: false
     idempotent: false
     openWorld: true
-status:
-  registered: true
-  lastSeen: "2026-11-01T12:00:00Z"
 ```
+*(In namespace `tenant-acme`, `metadata.name: payment-create` registers in `stoa-gateway` under the MCP tool name `tenant-acme_payment_create`.)*
 
 ## Spec Fields (`openAPIV3Schema`)
 
@@ -85,24 +81,24 @@ All five fields below are enforced as `required` by the CRD schema:
 | Field | Type | Default | Enforced Values / Constraints | Description |
 |-------|------|---------|-------------------------------|-------------|
 | `outputSchema` | `object` | — | `x-kubernetes-preserve-unknown-fields: true` | Optional JSON Schema for tool output |
-| `auth` | `string` | `none` | Enum: `bearer`, `service_account`, `none` | Upstream authentication mode |
-| `rateLimit` | `string` | — | Expression string (e.g., `100/min`, `1000/hour`) | Per-tool rate limit expression |
+| `auth` | `string` | `none` | Enum: `bearer`, `service_account`, `none` | Declared in CRD schema, **not read** by `CrdWatcher` on `main` |
+| `rateLimit` | `string` | — | Expression string (e.g., `100/min`, `1000/hour`) | Declared in CRD schema, **not enforced** by `CrdWatcher` on `main` |
 | `annotations.readOnly` | `boolean` | — | Boolean | Hints that the tool does not mutate state |
 | `annotations.destructive` | `boolean` | — | Boolean | Hints that the tool performs destructive mutations |
 | `annotations.idempotent` | `boolean` | — | Boolean | Hints that repeated calls with identical args are safe |
 | `annotations.openWorld` | `boolean` | — | Boolean | Hints that the tool interacts with external systems |
 
-*(Note: to generate `Tool` manifests automatically from an OpenAPI specification, use [`stoactl bridge <spec-file>`](/docs/reference/cli).)*
+*(Note: `CrdWatcher::handle_tool_apply` (`stoa-gateway/src/k8s/watcher.rs`) constructs `DynamicTool` from `description`, `endpoint`, `method`, `inputSchema`, `outputSchema`, and `annotations`; `spec.auth` and `spec.rateLimit` are validated by the CRD schema but currently ignored by the Rust watcher. To generate `Tool` manifests automatically from an OpenAPI specification, use [`stoactl bridge <spec-file>`](/docs/reference/cli).)*
 
 ## Status Subresource (`status`)
 
+The CRD defines `.status` fields (`registered`, `lastSeen`, `error`) and printer columns (`Display Name`, `Endpoint`, `Registered`). Note that `CrdWatcher` on `main` registers tools in memory without patching `.status` back to the Kubernetes API server, so `.status.registered` remains unset unless written by an external controller:
+
 | Field | Type | Description |
 |-------|------|-------------|
-| `registered` | `boolean` | Whether the tool is currently registered in `stoa-gateway` |
-| `lastSeen` | `string` | Timestamp of the last watcher update |
-| `error` | `string` | Error message if registration failed |
-
-`kubectl get tools` displays `Display Name` (`.spec.displayName`), `Endpoint` (`.spec.endpoint`), and `Registered` (`.status.registered`).
+| `registered` | `boolean` | Schema field for registration state (not patched by `CrdWatcher` on `main`) |
+| `lastSeen` | `string` | Schema field for last watcher timestamp (not patched by `CrdWatcher` on `main`) |
+| `error` | `string` | Schema field for registration error details |
 
 ## Related Resources
 

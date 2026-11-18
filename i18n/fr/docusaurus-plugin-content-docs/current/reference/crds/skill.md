@@ -9,6 +9,10 @@ keywords: [Skill CRD, Kubernetes, MCP, injection de contexte, system prompt, ADR
 
 La CRD `Skill` (`charts/stoa-platform/crds/skills.gostoa.dev.yaml`, [ADR-047](/docs/architecture/adr/adr-047-mcp-skills-system)) définit des instructions système injectées par `stoa-gateway` dans le contexte d'exécution des agents IA selon une hiérarchie de spécificité inspirée de CSS (`global` < `tenant` < `tool` < `user`).
 
+:::warning Injection de contexte vs contrôle bloquant
+Une ressource `Skill` injecte des consignes de prompt dans le contexte de l'agent LLM ; elle ne constitue **pas** un contrôle bloquant de sécurité, d'autorisation ou de validation de schéma sur les appels d'outils. Appliquez les contrôles bloquants via les politiques d'outils signées par tenant ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)), les règles OPA et `Tool.spec.inputSchema`.
+:::
+
 ## Métadonnées de Ressource
 
 | Champ | Valeur |
@@ -18,7 +22,7 @@ La CRD `Skill` (`charts/stoa-platform/crds/skills.gostoa.dev.yaml`, [ADR-047](/d
 | **Kind** | `Skill` |
 | **Nom court** | `sk` |
 | **Portée** | `Namespaced` |
-| **Watcher** | `stoa-gateway` (`CrdWatcher`) |
+| **Watcher** | `stoa-gateway` (`CrdWatcher`, `STOA_K8S_ENABLED=true` avec feature `k8s`) |
 
 ## Exemple Complet
 
@@ -26,21 +30,19 @@ La CRD `Skill` (`charts/stoa-platform/crds/skills.gostoa.dev.yaml`, [ADR-047](/d
 apiVersion: gostoa.dev/v1alpha1
 kind: Skill
 metadata:
-  name: payment-currency-guardrail
+  name: payment-currency-policy
   namespace: tenant-acme
 spec:
-  name: Politique Devises Paiement
-  description: Imposer les codes devises ISO-4217 et les montants en centimes sur les outils de paiement
+  name: Consigne Devises Paiement
+  description: Guider les agents pour transmettre les codes devises ISO-4217 et les montants en centimes
   scope: tool
   priority: 80
-  toolRef: payment-create
+  toolRef: tenant-acme_payment_create
   instructions: |
-    Toujours transmettre les montants monétaires en centimes entiers avec un code devise ISO-4217 à 3 lettres (EUR, USD, GBP). Demander confirmation à l'utilisateur au-delà de 100000 centimes avant d'appeler payment-create.
+    Toujours transmettre les montants monétaires en centimes entiers avec un code devise ISO-4217 à 3 lettres (EUR, USD, GBP). Demander confirmation à l'utilisateur au-delà de 100000 centimes avant d'appeler tenant-acme_payment_create.
   enabled: true
-status:
-  registered: true
-  lastSeen: "2026-11-01T12:00:00Z"
 ```
+*(Note : `spec.toolRef` est comparé par égalité exacte au nom d'outil résolu sur la passerelle — pour un `Tool` nommé `payment-create` dans `tenant-acme`, `CrdWatcher` enregistre `tenant-acme_payment_create`.)*
 
 ## Champs `spec` (`openAPIV3Schema`)
 
@@ -58,23 +60,23 @@ status:
 | `description` | `string` | — | Chaîne | Description administrative du skill |
 | `priority` | `integer` | `50` | `minimum: 0`, `maximum: 100` | Priorité à portée égale (la valeur la plus élevée l'emporte) |
 | `instructions` | `string` | — | Chaîne | Instructions système injectées dans le contexte de l'agent |
-| `toolRef` | `string` | — | Chaîne | Nom de l'outil cible lorsque `scope: tool` |
+| `toolRef` | `string` | — | Chaîne | Nom exact de l'outil enregistré (`{namespace}_{snake_case(name)}`) lorsque `scope: tool` |
 | `userRef` | `string` | — | Chaîne | Identifiant de l'utilisateur cible lorsque `scope: user` |
 | `enabled` | `boolean` | `true` | Booléen | Active ou désactive ce skill dans le résolveur |
 
 ## Spécificité & Ordre de Résolution
 
-Lorsque `stoa-gateway` résout les skills applicables à une requête (`GET /admin/skills/resolve`), les skills actifs correspondants sont ordonnés par `scope` (`global` → `tenant` → `tool` → `user`) puis par `priority` (`0..100`).
+Lorsque `stoa-gateway` résout les skills applicables à une requête (`GET /admin/skills/resolve?tenant_id=<id>`), les skills actifs correspondants sont ordonnés par `scope` (`global` → `tenant` → `tool` → `user`) puis par `priority` (`0..100`).
 
 ## Sous-ressource `status`
 
+Le schéma CRD définit les champs `.status` (`registered`, `lastSeen`, `error`) et les colonnes d'affichage (`Scope`, `Priority`, `Enabled`, `Registered`). Sur `main`, `CrdWatcher` met à jour le `SkillResolver` en mémoire sans patcher `.status` auprès de l'API Kubernetes :
+
 | Champ | Type | Défaut | Description |
 |-------|------|--------|-------------|
-| `registered` | `boolean` | `false` | Indique si le skill est enregistré dans le `SkillResolver` de `stoa-gateway` |
-| `lastSeen` | `string` | — | Horodatage du dernier événement traité par le watcher |
-| `error` | `string` | — | Détail d'erreur en cas d'échec d'enregistrement |
-
-`kubectl get skills` (ou `kubectl get sk`) affiche les colonnes `Scope`, `Priority`, `Enabled` et `Registered`.
+| `registered` | `boolean` | `false` | Champ schéma d'état d'enregistrement (non patché par `CrdWatcher` sur `main`) |
+| `lastSeen` | `string` | — | Champ schéma d'horodatage (non patché par `CrdWatcher` sur `main`) |
+| `error` | `string` | — | Détail d'erreur éventuel |
 
 ## Ressources Associées
 

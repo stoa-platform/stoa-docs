@@ -36,9 +36,9 @@ To apply or upgrade CRDs explicitly (recommended before `helm upgrade`, as Helm 
 kubectl apply -f charts/stoa-platform/crds/
 ```
 
-## Namespace Scoping
+## Namespace Scoping & Runtime Behavior
 
-All five CRDs are `Namespaced`. When `STOA_K8S_WATCHER_ENABLED=true`, `stoa-gateway` watches `Tool`, `ToolSet`, and `Skill` resources across namespaces and maps the resource's `metadata.namespace` to the owning tenant boundary.
+All five CRDs are `Namespaced`. When `stoa-gateway` is compiled with the `k8s` Cargo feature and started with `STOA_K8S_ENABLED=true`, its `CrdWatcher` (`stoa-gateway/src/k8s/watcher.rs`) watches `Tool`, `ToolSet`, and `Skill` resources across namespaces, maps `metadata.namespace` to the owning tenant boundary, and updates in-memory registries directly (it does **not** patch `.status` subresources on `Tool`, `ToolSet`, or `Skill`). `GatewayInstance` and `GatewayBinding` are reconciled separately by `stoa-operator` (Beta).
 
 ## Quick Example
 
@@ -61,8 +61,6 @@ spec:
         description: City name or coordinates
     required:
       - location
-  auth: bearer
-  rateLimit: "100/min"
 ```
 
 ```bash

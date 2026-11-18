@@ -74,7 +74,7 @@ Contract mutations (`stoa-gateway/src/handlers/admin/contracts.rs`) are **transa
 
 ### POST /admin/contracts
 
-Register or update a Universal API Contract (`201 Created` on insert, `200 OK` on update). Setting `"inboundAuth": "jwt"` enforces Keycloak JWT validation on the generated REST route (as exercised in `quickstart/verify.sh`):
+Register or update a Universal API Contract (`201 Created` on insert, `200 OK` on update). `tenant_id` is required, `status: "published"` activates route/tool generation, and `"inboundAuth": "jwt"` enforces Keycloak JWT validation on the generated REST route (matching `quickstart/verify.sh` and `stoa-gateway/src/uac/schema.rs`):
 
 ```bash
 curl -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
@@ -83,23 +83,16 @@ curl -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
   -d '{
     "name": "echo-service",
     "version": "1.0.0",
-    "tenantId": "acme",
+    "tenant_id": "acme",
+    "status": "published",
+    "classification": "H",
     "inboundAuth": "jwt",
-    "bindings": {
-      "rest": {
-        "enabled": true,
-        "pathPrefix": "/apis/acme/echo",
-        "backendUrl": "http://backend:8080"
-      },
-      "mcp": {
-        "enabled": true
-      }
-    },
     "endpoints": [
       {
-        "path": "/get",
+        "path": "/ping",
         "methods": ["GET"],
-        "operationId": "echoGet"
+        "backend_url": "http://backend:80",
+        "operation_id": "echoPing"
       }
     ]
   }'
@@ -107,11 +100,11 @@ curl -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
 
 ```json
 {
-  "key": "acme:echo-service:1.0.0",
-  "status": "created",
+  "key": "acme:echo-service",
+  "status": "ok",
   "routes_generated": 1,
   "tools_generated": 1,
-  "llm_capabilities": []
+  "llm_capabilities": 0
 }
 ```
 
@@ -121,11 +114,11 @@ List all registered UAC contracts.
 
 ### GET /admin/contracts/:key
 
-Fetch a single contract by composite key (`{tenant_id}:{name}:{version}`). Returns `404` if not found.
+Fetch a single contract by its composite key (`{tenant_id}:{name}` by default, e.g., `acme:echo-service`, unless an explicit `key` was passed on upsert). Returns `404` if not found.
 
 ### DELETE /admin/contracts/:key
 
-Unbind REST routes and MCP tools for `:key` and delete the contract (`204 No Content` or `404 Not Found`).
+Unbind REST routes and MCP tools for `:key` and delete the contract (`200 OK` with JSON counters `{"status": "deleted", "routes_removed": 1, "tools_removed": 1}`, or `404 Not Found` if missing).
 
 ---
 
@@ -217,9 +210,9 @@ Manage hierarchical context-injection skills (`global` < `tenant` < `tool` < `us
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/admin/skills/status` | `GET` | Skill resolver summary and counts |
-| `/admin/skills/resolve` | `GET` | Preview resolved skill instructions for a query context (`tenant`, `tool`, `user`) |
-| `/admin/skills/sync` | `POST` | Trigger synchronization of skills from the Control Plane |
+| `/admin/skills/status` | `GET` | Skill resolver summary (`enabled`, `cache_ttl_secs`, `skill_count`) |
+| `/admin/skills/resolve` | `GET` | Preview resolved instructions (`?tenant_id=<id>` **required**; optional `&tool_ref=<tool>&user_ref=<user>`) |
+| `/admin/skills/sync` | `POST` | Atomically replace the in-memory skill registry from a posted JSON array of skill objects (does **not** pull from the Control Plane) |
 | `/admin/skills` | `GET`, `POST` | List skills or upsert a skill (`201` on insert, `200` on update) |
 | `/admin/skills/:id` | `GET`, `PUT`, `DELETE` | Get, update, or delete a skill by ID (**canonical delete path**) |
 | `/admin/skills?key=<key>` | `DELETE` | **Deprecated**: query-based deletion returning `Deprecation` and `Sunset` headers; prefer `DELETE /admin/skills/:id` |
@@ -267,7 +260,7 @@ Invalidates cached federation state for `:sub_account_id` and reports whether an
 | `/admin/prompt-cache/patterns` | `GET` | List cached prompt patterns |
 | `/admin/prompt-cache/get/:key` | `GET` | Inspect a cached prompt entry by key |
 | `/admin/prompt-cache/load` | `POST` | Preload prompt cache entries |
-| `/admin/prompt-cache/invalidate` | `POST` | Invalidate matching prompt cache entries |
+| `/admin/prompt-cache/invalidate` | `POST` | Clear all entries in the prompt cache (`{"status": "cleared"}`, no pattern filter) |
 
 ### LLM Routing
 
