@@ -74,7 +74,7 @@ Contract mutations (`stoa-gateway/src/handlers/admin/contracts.rs`) are **transa
 
 ### POST /admin/contracts
 
-Register or update a Universal API Contract (`201 Created` on insert, `200 OK` on update). `tenant_id` is required, `status: "published"` activates route/tool generation, and `"inboundAuth": "jwt"` enforces Keycloak JWT validation on the generated REST route (matching `quickstart/verify.sh` and `stoa-gateway/src/uac/schema.rs`):
+Register or update a Universal API Contract (`201 Created` on insert, `200 OK` on update). `tenant_id` is required, and `"inboundAuth": "jwt"` enforces Keycloak JWT validation on the generated REST route (matching `quickstart/verify.sh` and `stoa-gateway/src/uac/schema.rs`). `perform_upsert` and the REST/MCP binders (`contracts.rs`, `rest.rs`, `mcp.rs`) generate routes and tools unconditionally on upsert — `status` (such as `"published"` in the example payload below) is stored contract metadata rather than a conditional activation gate:
 
 ```bash
 curl -X POST "${STOA_GATEWAY_URL}/admin/contracts" \

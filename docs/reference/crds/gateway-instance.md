@@ -20,7 +20,9 @@ The `GatewayInstance` CRD (`charts/stoa-platform/crds/gatewayinstances.gostoa.de
 | **Scope** | `Namespaced` |
 | **Reconciler** | `stoa-operator` (Python/Kopf, Beta) |
 
-## Complete Example
+## Operational Example (Reconciled Fields)
+
+The manifest below includes only the fields forwarded to the Control Plane API by `stoa-operator` on `main` (additional schema-validated optional fields such as `authConfig.secretRef`, `endpoints`, and `topology` are listed under [Optional Fields](#optional-fields)):
 
 ```yaml
 apiVersion: gostoa.dev/v1alpha1
@@ -32,29 +34,8 @@ spec:
   displayName: Kong Production EU
   gatewayType: kong
   environment: prod
-  tenantId: acme
   baseUrl: https://kong-admin.internal.example.com:8444
-  deploymentMode: connect
-  targetGatewayType: kong
-  topology: remote-agent
   mode: connect
-  endpoints:
-    publicUrl: https://api.example.com
-    adminUrl: https://kong-admin.internal.example.com:8444
-    healthUrl: https://kong-admin.internal.example.com:8444/status
-  authConfig:
-    secretRef: kong-admin-credentials
-  capabilities:
-    - rest
-    - oidc
-    - rate_limiting
-  version: "3.7.0"
-  tags:
-    - eu-west
-    - production
-status:
-  phase: online
-  lastHealthCheck: "2026-11-01T12:00:00Z"
 ```
 
 ## Spec Fields (`openAPIV3Schema`)

@@ -323,12 +323,16 @@ graph TD
 
 ### Correspondance des Scopes RBAC
 
-| Rôle | Scopes |
-|------|--------|
-| `cpi-admin` | `admin`, `read`, `write`, `execute`, `deploy`, `audit` |
-| `tenant-admin` | `read`, `write`, `execute` |
-| `devops` | `read`, `write`, `deploy` |
-| `viewer` | `read` |
+`expand_role_scopes` (`stoa-gateway/src/mcp/handlers.rs`) dérive les rôles du realm Keycloak vers des scopes OAuth préfixés `stoa:*` :
+
+| Rôle | Scopes dérivés |
+|------|----------------|
+| `cpi-admin` | `stoa:read`, `stoa:write`, `stoa:execute`, `stoa:deploy`, `stoa:audit` |
+| `tenant-admin` (`tenant_admin`) | `stoa:read`, `stoa:write`, `stoa:execute` |
+| `devops` (`dev-ops`) | `stoa:read`, `stoa:write`, `stoa:deploy` |
+| `viewer` (`read-only`, `readonly`) | `stoa:read` |
+
+`stoa:admin` n'est **pas** dérivé automatiquement à partir de `cpi-admin` : il doit être explicitement émis dans le claim `scope` du jeton pour les parcours qui le reconnaissent (et `filter_admin_scope` retire `stoa:admin` dès que l'appelant ne possède pas le rôle `cpi-admin`).
 
 ---
 
@@ -400,7 +404,7 @@ Sur `POST /mcp` et `POST /mcp/sse`, les appels rejetés utilisent l'objet `error
 
 ## Exemples
 
-Les exemples ci-dessous supposent que `my-app` est un client Keycloak confidentiel dans le realm `stoa` configuré avec un mapper d'audience correspondant à `STOA_MCP_AUDIENCE` et un mapper de protocole `tenant_id` :
+Les exemples ci-dessous supposent que `my-app` est un client Keycloak confidentiel dans le realm `stoa` configuré avec un mapper d'audience correspondant à `STOA_MCP_AUDIENCE` et un mapper de protocole `tenant_id` (en JavaScript, `STOA_ACCESS_TOKEN` contient le JWT Bearer obtenu via cet échange `client_credentials`) :
 
 ### Client Python
 
@@ -432,6 +436,9 @@ response = requests.post(
 response.raise_for_status()
 
 result = response.json()
+# Une erreur applicative amont retourne HTTP 200 avec isError: true
+if result.get('isError'):
+    raise RuntimeError(result['content'][0]['text'])
 print(result['content'][0]['text'])
 ```
 
@@ -439,6 +446,8 @@ print(result['content'][0]['text'])
 
 ```javascript
 const STOA_GATEWAY_URL = process.env.STOA_GATEWAY_URL;
+// JWT Bearer émis par le realm 'stoa' avec les claims STOA_MCP_AUDIENCE et tenant_id
+const token = process.env.STOA_ACCESS_TOKEN;
 
 const response = await fetch(`${STOA_GATEWAY_URL}/mcp/tools/call`, {
   method: 'POST',
@@ -451,8 +460,15 @@ const response = await fetch(`${STOA_GATEWAY_URL}/mcp/tools/call`, {
     arguments: { q: 'Paris' }
   })
 });
+if (!response.ok) {
+  throw new Error(`Erreur passerelle : ${response.status}`);
+}
 
 const result = await response.json();
+// Une erreur applicative amont retourne HTTP 200 avec isError: true
+if (result.isError) {
+  throw new Error(result.content?.[0]?.text ?? "Échec d'exécution de l'outil");
+}
 console.log(result.content[0].text);
 ```
 

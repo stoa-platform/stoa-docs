@@ -551,7 +551,7 @@ stoactl mcp health --gateway http://localhost:8080
 | `--output`, `-o` | Output format: `table`, `json`, `yaml` |
 
 :::note `--gateway` direct-mode limitations (`mcp.go`)
-Use the Control Plane path above for `list-tools` and `call`. In current `stoa-go`, `--gateway <url>` works for `stoactl mcp health --gateway <url>` (which reads public `GET <url>/mcp/health`), whereas `list-tools --gateway` and `call --gateway` send unauthenticated requests to JWT-gated `/mcp/v1/tools*` routes and `call --gateway` posts legacy `{"tool_name", "input"}` fields rather than `{"name", "arguments"}`.
+Use the Control Plane path above for `list-tools` and `call`. In current `stoa-go`, `--gateway <url>` works for `stoactl mcp health --gateway <url>` (which reads public `GET <url>/mcp/health`), whereas `list-tools --gateway` and `call --gateway` send unauthenticated requests to JWT-gated `/mcp/v1/tools*` routes and `call --gateway` posts legacy `{"tool_name", "input"}` fields whereas `POST /mcp/v1/tools/invoke` expects `{"tool", "arguments"}` (`handlers.rs`; `POST /mcp/tools/call` expects `{"name", "arguments"}`).
 :::
 
 ### `stoactl catalog`

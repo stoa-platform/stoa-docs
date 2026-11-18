@@ -20,7 +20,9 @@ The `GatewayBinding` CRD (`charts/stoa-platform/crds/gatewaybindings.gostoa.dev.
 | **Scope** | `Namespaced` |
 | **Reconciler** | `stoa-operator` (Python/Kopf, Beta) |
 
-## Complete Example
+## Operational Example (Reconciled Fields)
+
+The manifest below includes only the fields reconciled by `stoa-operator` on `main` (additional schema-validated optional fields are listed under [Optional Fields](#optional-fields)):
 
 ```yaml
 apiVersion: gostoa.dev/v1alpha1
@@ -31,32 +33,8 @@ metadata:
 spec:
   apiRef:
     name: payments-api
-    version: "2.0.0"
   gatewayRef:
     name: kong-prod-eu
-    namespace: stoa-system
-  contractRef:
-    name: payments-uac
-    namespace: tenant-acme
-  desiredState:
-    stripPath: false
-  policies:
-    - name: gold-rate-limit
-      type: rate_limit
-      config:
-        maxRequests: 600
-        intervalSeconds: 60
-    - name: portal-cors
-      type: cors
-      config:
-        allowOrigins:
-          - https://portal.example.com
-status:
-  syncStatus: synced
-  gatewayResourceId: "svc_9f81c2"
-  lastSyncAttempt: "2026-11-01T12:00:00Z"
-  lastSyncSuccess: "2026-11-01T12:00:01Z"
-  syncAttempts: 1
 ```
 
 ## Spec Fields (`openAPIV3Schema`)
@@ -73,7 +51,7 @@ status:
 ### Optional Fields
 
 :::note Schema vs `stoa-operator` Behavior (`gateway_binding.py`)
-On current `main`, `on_gwb_create` (`stoa-operator/src/handlers/gateway_binding.py`) resolves **only** `spec.apiRef.name` and `spec.gatewayRef.name` against the Control Plane API (`apiRef.version` and `gatewayRef.namespace` are not used during lookup), does **not** apply `contractRef`, `desiredState`, or `policies`, and calls `cp_client.create_deployment(api_id, gateway_id)` whose returned Control Plane `deployment_id` is written into `status.gatewayResourceId`.
+On current `main`, `on_gwb_create` (`stoa-operator/src/handlers/gateway_binding.py`) resolves **only** `spec.apiRef.name` (`catalog_id`) and `spec.gatewayRef.name` (`gateway_id`) against the Control Plane API (`apiRef.version` and `gatewayRef.namespace` are not used during lookup), does **not** apply `contractRef`, `desiredState`, or `policies`, and calls `cp_client.create_deployment(catalog_id, [gateway_id])` (`cp_client.py`) whose returned `deployments[0]["id"]` is written into `status.gatewayResourceId`.
 :::
 
 | Field | Type | Enforced Values / Constraints | Description |

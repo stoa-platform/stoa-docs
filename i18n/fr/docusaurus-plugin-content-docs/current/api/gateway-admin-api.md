@@ -74,7 +74,7 @@ Les mutations de contrats (`stoa-gateway/src/handlers/admin/contracts.rs`) sont 
 
 ### POST /admin/contracts
 
-Enregistre ou met à jour un contrat UAC (`201 Created` à la création, `200 OK` à la mise à jour). `tenant_id` est obligatoire, `status: "published"` active la génération des routes/outils, et `"inboundAuth": "jwt"` active la validation JWT Keycloak sur la route REST générée (conforme à `quickstart/verify.sh` et `stoa-gateway/src/uac/schema.rs`) :
+Enregistre ou met à jour un contrat UAC (`201 Created` à la création, `200 OK` à la mise à jour). `tenant_id` est obligatoire, et `"inboundAuth": "jwt"` active la validation JWT Keycloak sur la route REST générée (conforme à `quickstart/verify.sh` et `stoa-gateway/src/uac/schema.rs`). `perform_upsert` et les binders REST/MCP (`contracts.rs`, `rest.rs`, `mcp.rs`) génèrent les routes et outils inconditionnellement lors de l'upsert — `status` (tel que `"published"` dans la charge utile ci-dessous) est une métadonnée stockée du contrat et non une condition d'activation :
 
 ```bash
 curl -X POST "${STOA_GATEWAY_URL}/admin/contracts" \

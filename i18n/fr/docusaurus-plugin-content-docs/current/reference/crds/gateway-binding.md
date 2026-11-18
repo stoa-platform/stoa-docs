@@ -20,7 +20,9 @@ La CRD `GatewayBinding` (`charts/stoa-platform/crds/gatewaybindings.gostoa.dev.y
 | **Portée** | `Namespaced` |
 | **Réconciliateur** | `stoa-operator` (Python/Kopf, Bêta) |
 
-## Exemple Complet
+## Exemple Opératoire (Champs Réconciliés)
+
+Le manifeste ci-dessous ne conserve que les champs effectivement pris en compte par `stoa-operator` sur `main` (les champs optionnels validés uniquement par le schéma sont détaillés sous [Champs Optionnels](#champs-optionnels)) :
 
 ```yaml
 apiVersion: gostoa.dev/v1alpha1
@@ -31,32 +33,8 @@ metadata:
 spec:
   apiRef:
     name: payments-api
-    version: "2.0.0"
   gatewayRef:
     name: kong-prod-eu
-    namespace: stoa-system
-  contractRef:
-    name: payments-uac
-    namespace: tenant-acme
-  desiredState:
-    stripPath: false
-  policies:
-    - name: gold-rate-limit
-      type: rate_limit
-      config:
-        maxRequests: 600
-        intervalSeconds: 60
-    - name: portal-cors
-      type: cors
-      config:
-        allowOrigins:
-          - https://portal.example.com
-status:
-  syncStatus: synced
-  gatewayResourceId: "svc_9f81c2"
-  lastSyncAttempt: "2026-11-01T12:00:00Z"
-  lastSyncSuccess: "2026-11-01T12:00:01Z"
-  syncAttempts: 1
 ```
 
 ## Champs `spec` (`openAPIV3Schema`)
@@ -73,7 +51,7 @@ status:
 ### Champs Optionnels
 
 :::note Schéma vs Comportement de `stoa-operator` (`gateway_binding.py`)
-Sur `main` actuel, `on_gwb_create` (`stoa-operator/src/handlers/gateway_binding.py`) ne résout **que** `spec.apiRef.name` et `spec.gatewayRef.name` auprès de l'API Control Plane (`apiRef.version` et `gatewayRef.namespace` ne sont pas utilisés), n'applique **pas** `contractRef`, `desiredState` ni `policies`, et crée un déploiement Control Plane (`cp_client.create_deployment`) dont l'identifiant `deployment_id` alimente `status.gatewayResourceId`.
+Sur `main` actuel, `on_gwb_create` (`stoa-operator/src/handlers/gateway_binding.py`) ne résout **que** `spec.apiRef.name` (`catalog_id`) et `spec.gatewayRef.name` (`gateway_id`) auprès de l'API Control Plane (`apiRef.version` et `gatewayRef.namespace` ne sont pas utilisés), n'applique **pas** `contractRef`, `desiredState` ni `policies`, et appelle `cp_client.create_deployment(catalog_id, [gateway_id])` (`cp_client.py`) dont le premier identifiant `deployments[0]["id"]` alimente `status.gatewayResourceId`.
 :::
 
 | Champ | Type | Valeurs / Contraintes imposées | Description |

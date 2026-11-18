@@ -323,12 +323,16 @@ graph TD
 
 ### RBAC Scope Mapping
 
-| Role | Scopes |
-|------|--------|
-| `cpi-admin` | `admin`, `read`, `write`, `execute`, `deploy`, `audit` |
-| `tenant-admin` | `read`, `write`, `execute` |
-| `devops` | `read`, `write`, `deploy` |
-| `viewer` | `read` |
+`expand_role_scopes` (`stoa-gateway/src/mcp/handlers.rs`) expands Keycloak realm roles into `stoa:*` OAuth scopes:
+
+| Role | Expanded Scopes |
+|------|-----------------|
+| `cpi-admin` | `stoa:read`, `stoa:write`, `stoa:execute`, `stoa:deploy`, `stoa:audit` |
+| `tenant-admin` (`tenant_admin`) | `stoa:read`, `stoa:write`, `stoa:execute` |
+| `devops` (`dev-ops`) | `stoa:read`, `stoa:write`, `stoa:deploy` |
+| `viewer` (`read-only`, `readonly`) | `stoa:read` |
+
+`stoa:admin` is **not** automatically derived from `cpi-admin`; it must be explicitly issued in the token's `scope` claim for paths that recognize it (and `filter_admin_scope` strips `stoa:admin` whenever the caller does not hold `cpi-admin`).
 
 ---
 
@@ -400,7 +404,7 @@ On `POST /mcp` and `POST /mcp/sse`, rejected tool calls return a JSON-RPC 2.0 `e
 
 ## Examples
 
-The examples below assume `my-app` is a confidential Keycloak client in the `stoa` realm configured with an audience mapper matching `STOA_MCP_AUDIENCE` and a `tenant_id` protocol mapper:
+The examples below assume `my-app` is a confidential Keycloak client in the `stoa` realm configured with an audience mapper matching `STOA_MCP_AUDIENCE` and a `tenant_id` protocol mapper (in JavaScript, `STOA_ACCESS_TOKEN` holds the Bearer JWT obtained from that `client_credentials` token exchange):
 
 ### Python Client
 
@@ -432,6 +436,9 @@ response = requests.post(
 response.raise_for_status()
 
 result = response.json()
+# Application-level upstream errors return HTTP 200 with isError: true
+if result.get('isError'):
+    raise RuntimeError(result['content'][0]['text'])
 print(result['content'][0]['text'])
 ```
 
@@ -439,6 +446,8 @@ print(result['content'][0]['text'])
 
 ```javascript
 const STOA_GATEWAY_URL = process.env.STOA_GATEWAY_URL;
+// Bearer JWT minted by the 'stoa' realm with STOA_MCP_AUDIENCE and tenant_id claims
+const token = process.env.STOA_ACCESS_TOKEN;
 
 const response = await fetch(`${STOA_GATEWAY_URL}/mcp/tools/call`, {
   method: 'POST',
@@ -451,8 +460,15 @@ const response = await fetch(`${STOA_GATEWAY_URL}/mcp/tools/call`, {
     arguments: { q: 'Paris' }
   })
 });
+if (!response.ok) {
+  throw new Error(`Gateway error: ${response.status}`);
+}
 
 const result = await response.json();
+// Application-level upstream errors return HTTP 200 with isError: true
+if (result.isError) {
+  throw new Error(result.content?.[0]?.text ?? 'Tool execution failed');
+}
 console.log(result.content[0].text);
 ```
 
