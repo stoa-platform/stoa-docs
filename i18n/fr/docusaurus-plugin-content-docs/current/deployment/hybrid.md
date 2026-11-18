@@ -296,7 +296,7 @@ gatewaySync:
 ```
 
 :::warning Prérequis avant d'attendre `1/1 Ready`
-Ce fichier minimal de valeurs ne suffit **pas** à amener les pods à `1/1 Ready` (`/health` teste uniquement la vivacité du processus, tandis que `/ready` vérifie `policyBootTenants` et la fraîcheur des permissions d'outils signées). Au commit `639e8b9a`, `charts/stoa-platform` ne monte que les volumes `tmp` (`emptyDir`) et `stoa-gateway-policies` (`ConfigMap`) — avant d'attendre `1/1 Ready`, montez le Secret contenant la clé de signature `private_key_jwt` (`STOA_KEYCLOAK_CLIENT_KEY_PATH`, plus `STOA_KEYCLOAK_CLIENT_KEY_ID` via `extraEnv`) au moyen d'un overlay Deployment, d'un patch Kustomize ou d'un `--post-renderer` Helm comme documenté dans [Politiques au Démarrage et Readiness](/docs/admin/installation#startup-policy-and-readiness).
+Ce fichier minimal de valeurs ne suffit **pas** à amener les pods à `1/1 Ready` (`/health` teste uniquement la vivacité du processus, tandis que `/ready` vérifie `policyBootTenants` et la fraîcheur des permissions d'outils signées). Au commit `639e8b9a`, `charts/stoa-platform` ne monte que les volumes `tmp` (`emptyDir`) et `stoa-gateway-policies` (`ConfigMap`) — avant d'attendre `1/1 Ready`, montez le Secret contenant la clé de signature `private_key_jwt` (`STOA_KEYCLOAK_CLIENT_KEY_PATH`, plus `STOA_KEYCLOAK_CLIENT_KEY_ID` via `extraEnv`) au moyen d'un overlay Deployment, d'un patch Kustomize ou d'un `--post-renderer` Helm comme documenté dans [Politiques au Démarrage et Readiness](/docs/admin/installation#politiques-au-démarrage-et-readiness).
 :::
 
 ```bash

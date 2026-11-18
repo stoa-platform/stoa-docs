@@ -77,7 +77,7 @@ L'**API du Control Plane, la Console, le Portail Développeur, Keycloak, Postgre
 Avant de réactiver les ServiceMonitors, installez les CRDs de Prometheus Operator, dont `servicemonitors.monitoring.coreos.com`. Avant de définir `gatewaySync.enabled=true`, rendez accessibles l'API du Control Plane (`gatewaySync.backendUrl`, endpoints `/health/live` et `/openapi.json`) et l'API d'administration webMethods (`gatewaySync.gatewayUrl`), puis créez le Secret désigné par `gatewaySync.credentialsSecret` avec les clés `username` et `password`. Ce paramètre active aussi un hook Helm post-installation/post-mise à jour ; la synchronisation périodique attend une API existante correspondant à `gatewaySync.apiName` et `gatewaySync.apiVersion`.
 :::
 
-### Politiques au Démarrage et Readiness {#startup-policy-and-readiness}
+### Politiques au Démarrage et Readiness
 
 `stoaGateway.policyBootTenants` (ainsi que `stoaSidecar.policyBootTenants` lorsque le mode sidecar est activé) vaut `[]` par défaut (`charts/stoa-platform/values.yaml`). Dès que `controlPlaneUrl` est renseigné et que `policyBootTenants` est vide, `/ready` échoue en mode *fail-closed* avec HTTP `503` ([ADR-070 §4](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) et les pods restent `0/1 Ready`, même si les services externes sont accessibles. `/health` ne teste que la vivacité du processus (`200 OK`) ; la sonde Kubernetes de readiness interroge `/ready`, qui vérifie `policyBootTenants` et la fraîcheur des permissions d'outils signées.
 
