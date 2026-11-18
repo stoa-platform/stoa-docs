@@ -8,7 +8,7 @@ keywords: [stoa-connect, kong, gravitee, webmethods, passerelle hybride, plan de
 
 # Connecter une passerelle tierce avec stoa-connect
 
-`stoa-connect` est un agent Go léger qui s'exécute aux côtés de votre passerelle API existante (Kong, Gravitee ou webMethods) et la connecte au Plan de Contrôle STOA — aucun remplacement de passerelle requis.
+`stoa-connect` (**STOA Link**, unifié par [ADR-057](/docs/architecture/adr/adr-057-product-lineup-gateway-link-connect) et [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) est l'agent Go léger sur site qui s'exécute aux côtés de votre passerelle API existante (Kong, Gravitee ou webMethods) ou sert l'ADS xDS mTLS en boucle locale à Envoy upstream — reliant votre plan de données au Plan de Contrôle STOA par HTTPS/SSE sortant.
 
 ## Ce que vous allez accomplir
 
@@ -161,17 +161,43 @@ export STOA_GATEWAY_ADMIN_PASSWORD="your-webmethods-password"
 ```
 
 </TabItem>
+<TabItem value="envoy" label="Envoy (xDS ADS)">
+
+```bash
+export STOA_CONTROL_PLANE_URL="${STOA_API_URL}"
+export STOA_GATEWAY_API_KEY="gw_your_key_here"
+export STOA_INSTANCE_NAME="envoy-prod-01"
+export STOA_ENVIRONMENT="production"
+
+# Sélection explicite obligatoire (l'auto-détection ne choisit jamais envoy ; pas d'URL admin)
+export STOA_GATEWAY_TYPE="envoy"
+export STOA_ENVOY_ADS_ADDR="127.0.0.1:18000"   # adresse IP loopback uniquement
+export STOA_ENVOY_NODE_URI="spiffe://example.internal/envoy/prod-01"
+export STOA_ENVOY_TLS_CERT="/etc/stoa-connect/tls/ads-server.crt"
+export STOA_ENVOY_TLS_KEY="/etc/stoa-connect/tls/ads-server.key"
+export STOA_ENVOY_CLIENT_CA="/etc/stoa-connect/tls/envoy-client-ca.crt"
+export STOA_ENVOY_LISTENER_PORT="10000"
+export STOA_ENVOY_AUTH_ADDR="127.0.0.1:9001"   # ExtAuthzService gRPC fail-closed
+```
+
+</TabItem>
 </Tabs>
 
 | Variable | Obligatoire | Défaut | Description |
 |----------|-------------|--------|-------------|
 | `STOA_CONTROL_PLANE_URL` | Oui | — | URL de base de l'API du Plan de Contrôle |
 | `STOA_GATEWAY_API_KEY` | Oui | — | `X-Gateway-Key` pour l'authentification au Plan de Contrôle |
-| `STOA_GATEWAY_TYPE` | Oui | `auto` | `kong`, `gravitee` ou `webmethods` |
-| `STOA_GATEWAY_ADMIN_URL` | Oui | — | URL locale de l'API d'administration de la passerelle |
+| `STOA_GATEWAY_TYPE` | Oui | `auto` | `kong`, `gravitee`, `webmethods`, `auto` ou `envoy` (`envoy` doit être défini explicitement) |
+| `STOA_GATEWAY_ADMIN_URL` | Modes Admin API | — | URL locale de l'API d'administration (inutilisée lorsque `STOA_GATEWAY_TYPE=envoy`) |
+| `STOA_ENVOY_ADS_ADDR` | Mode Envoy | `127.0.0.1:18000` | Adresse d'écoute ADS mTLS loopback (IP loopback littérale uniquement) |
+| `STOA_ENVOY_NODE_URI` | Mode Envoy | — | URI SAN obligatoire du certificat client Envoy autorisé |
+| `STOA_ENVOY_TLS_CERT` / `KEY` / `CLIENT_CA` | Mode Envoy | — | Certificat/clé serveur et autorité cliente mTLS obligatoire |
+| `STOA_ENVOY_LISTENER_PORT` | Mode Envoy | — | Port d'écoute HTTP loopback généré pour Envoy |
+| `STOA_ENVOY_AUTH_ADDR` | Mode Envoy | — | `host:port` du service gRPC `ExtAuthzService` fail-closed (`stoa-gateway`) |
 | `STOA_INSTANCE_NAME` | Non | hostname | Identifiant affiché dans la Console |
 | `STOA_ENVIRONMENT` | Non | `production` | Libellé d'environnement |
 | `STOA_HEARTBEAT_INTERVAL` | Non | `30s` | Fréquence des heartbeats |
+| `STOA_SSE_ENABLED` | Non | `false` | Flux SSE sortant sur option après enregistrement ([ADR-059](/docs/architecture/adr/adr-059-simplified-deployment-sse)) ; sinon polling périodique des routes |
 | `STOA_CONNECT_PORT` | Non | `8090` | Port HTTP local de l'agent |
 
 ---
@@ -222,12 +248,11 @@ sudo systemctl enable --now stoa-connect
 </TabItem>
 </Tabs>
 
-Au démarrage, `stoa-connect` va :
+Au démarrage (`cmd/stoa-connect/main.go`), `stoa-connect` va :
 
-1. Enregistrer la passerelle auprès du Plan de Contrôle (`POST /v1/internal/gateways/register`)
-2. Découvrir les API depuis l'API d'administration locale de la passerelle
-3. Démarrer la boucle de heartbeat (toutes les 30 secondes)
-4. Lancer la synchronisation des politiques (toutes les 60 secondes)
+1. Si `STOA_CONTROL_PLANE_URL` et `STOA_GATEWAY_API_KEY` sont renseignés, enregistrer la passerelle auprès du Plan de Contrôle (`POST /v1/internal/gateways/register`) et démarrer le heartbeat **uniquement après un enregistrement réussi**
+2. Démarrer la découverte des API locales — **ignorée lorsque `STOA_GATEWAY_TYPE=envoy`**, qui démarre à la place le serveur ADS mTLS loopback
+3. Lancer la synchronisation des politiques, ainsi que le flux SSE sortant sur option (`STOA_SSE_ENABLED=true` avec `gateway_id` enregistré) ou le polling périodique des routes
 
 ---
 
@@ -245,11 +270,14 @@ Résultat attendu :
 ```json
 {
   "status": "ok",
-  "version": "0.3.0",
+  "version": "0.3.10-main",
+  "commit": "639e8b9a",
   "gateway_id": "a1b2c3d4-...",
   "discovered_apis": 12
 }
 ```
+
+*(Note : `/health` reflète la vivacité HTTP de l'agent local et peut renvoyer `"status": "ok"` avec `"gateway_id": "unregistered"` si l'enregistrement auprès du Plan de Contrôle a été omis ou a échoué — vérifiez que `gateway_id` ne vaut pas `"unregistered"`.)*
 
 Ou via la CLI :
 
@@ -257,24 +285,26 @@ Ou via la CLI :
 stoactl connect status --url http://localhost:8090
 ```
 
-Confirmez que la passerelle apparaît dans la Console sur [console.gostoa.dev](https://console.gostoa.dev) sous **Gateways**. L'indicateur d'état doit devenir vert en moins de 30 secondes.
+Confirmez que la passerelle apparaît dans la Console STOA (`${STOA_CONSOLE_URL}`) sous **Gateways**. L'indicateur d'état passe au vert dès réception du premier heartbeat.
 
 ---
 
 ## Référence CLI
 
-`stoactl connect` propose trois sous-commandes pour les opérations courantes :
+`stoactl connect` propose les sous-commandes de diagnostic opérateur suivantes :
 
 ```bash
-# Afficher l'état de l'agent et la connectivité
+# Afficher l'état de l'agent et la connectivité (:8090/health)
 stoactl connect status --url http://localhost:8090
 
-# Déclencher une découverte d'API immédiate (sans attendre les 60s)
-stoactl connect discover --admin-url http://localhost:8001
-
-# Forcer une synchronisation des politiques depuis le Plan de Contrôle
-stoactl connect sync --url http://localhost:8090
+# Découvrir les API directement sur une passerelle à API d'administration (kong | gravitee | webmethods | auto)
+stoactl connect discover --admin-url http://localhost:8001 --type kong
 ```
+
+:::note Mode Envoy xDS & limites de `/sync`
+- **Découverte (`stoactl connect discover`)** interroge directement l'API d'administration d'une passerelle tierce (`kong`, `gravitee`, `webmethods` ou `auto`). En mode **Envoy** (`STOA_GATEWAY_TYPE=envoy`), `stoa-connect` sert l'ADS xDS mTLS loopback depuis l'état du Plan de Contrôle ; `Discover` retourne `UnsupportedError` et est ignoré par conception.
+- **Synchronisation manuelle (`stoactl connect sync`)** : Bien que `stoactl connect` définisse une sous-commande `sync` (`POST <url>/sync`), `cmd/stoa-connect/main.go` sur `main` actuel ne monte que `/health`, `/metrics` et `/webhook/events` (n'exécutez pas `stoactl connect sync` sur `stoa-connect` ; les routes et politiques sont réconciliées automatiquement via la boucle interne et le flux SSE optionnel).
+:::
 
 ---
 
@@ -284,8 +314,8 @@ stoactl connect sync --url http://localhost:8090
 |----------|---------------|----------|
 | `UNAUTHORIZED` au démarrage | `STOA_GATEWAY_API_KEY` invalide ou expirée | Régénérez la clé dans Console → Paramètres → Gateways |
 | La passerelle reste OFFLINE dans la Console | Le heartbeat n'atteint pas le Plan de Contrôle | Vérifiez que les règles du pare-feu autorisent le trafic HTTPS sortant vers `${STOA_API_URL}` |
-| 0 API découverte | `STOA_GATEWAY_ADMIN_URL` incorrecte | Vérifiez avec `curl ${STOA_GATEWAY_ADMIN_URL}/health` |
-| La synchronisation des politiques échoue | Identifiants d'administration rejetés | Vérifiez `STOA_GATEWAY_ADMIN_TOKEN` / `USER` / `PASSWORD` |
+| 0 API découverte | `STOA_GATEWAY_ADMIN_URL` incorrecte (ou exécution en mode Envoy) | Vérifiez avec `curl ${STOA_GATEWAY_ADMIN_URL}/health` (le mode Envoy ignore la découverte par conception) |
+| La synchronisation des politiques échoue | Identifiants rejetés ou politique Envoy non traduite | Vérifiez `STOA_GATEWAY_ADMIN_*` ; en mode Envoy v1 seuls `cors`, `rate_limit` et `ip_filter` sont traduits |
 
 Pour des logs structurés, définissez `LOG_LEVEL=debug` avant de démarrer l'agent.
 
@@ -293,12 +323,12 @@ Pour des logs structurés, définissez `LOG_LEVEL=debug` avant de démarrer l'ag
 
 ## Compagnon et stoa-connect
 
-`stoa-connect` est le chemin GitOps pour une passerelle tierce. Il synchronise l'état souhaité vers l'API d'administration (adaptateurs webMethods, Kong, Gravitee et Envoy dans le dépôt `stoa`) et reste hors du chemin de requête client.
+`stoa-connect` (**STOA Link**) est l'agent de synchronisation Control Plane et serveur xDS. Il synchronise l'état souhaité vers les API d'administration des passerelles tierces (webMethods, Kong, Gravitee) ou sert l'ADS mTLS loopback à Envoy upstream ([Architecture du plan de données](/docs/architecture/data-plane)), hors du chemin des charges utiles HTTP clientes.
 
-Le compagnon est une autre intégration. Le même binaire Rust, avec `STOA_GATEWAY_MODE=sidecar`, répond à `POST /authz` pour un hôte dans le même pod ou pour un appel depuis une application. L'hôte conserve l'authentification, le routage et l'application du verdict. Ce chemin n'est pas une démo Kong ou webMethods enregistrée en conditions réelles. Les adaptateurs mesh sont des notes de conception. Voir [Usage du compagnon](./companion-usage.md).
+Le compagnon est une autre intégration. Le binaire Rust `stoa-gateway`, démarré avec `STOA_GATEWAY_MODE=sidecar`, répond à `POST /authz` HTTP pour un hôte dans le même pod ou un appel applicatif (tandis que `STOA_EXT_AUTHZ_GRPC_ADDR` expose le service gRPC `ExtAuthzService` natif pour Envoy). Voir [Usage du compagnon](./companion-usage.md).
 
 ## Étapes suivantes
 
-- **Configuration multi-passerelles** — gérez plusieurs passerelles depuis un seul Plan de Contrôle (bientôt disponible)
-- **Enregistrement automatique de passerelle** — enregistrement natif STOA sans agent (bientôt disponible)
-- **Politiques OPA** — rédigez des politiques que stoa-connect synchronisera avec votre passerelle (bientôt disponible)
+- [Configuration multi-passerelles](/docs/guides/multi-gateway-setup) — Orchestrez plusieurs passerelles depuis un unique Plan de Contrôle
+- [Auto-enregistrement de passerelle](/docs/guides/gateway-auto-registration) — Enregistrement automatique et heartbeats
+- [Politiques OPA](/docs/guides/opa-policies) — Rédigez des politiques de gouvernance synchronisées sur vos passerelles

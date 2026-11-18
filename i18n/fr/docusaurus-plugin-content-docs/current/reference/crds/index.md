@@ -1,48 +1,46 @@
 ---
 sidebar_position: 1
-title: "CRDs Kubernetes pour STOA : Ressources Tool & ToolSet"
-description: "Référence des Custom Resource Definitions (CRDs) Kubernetes STOA — ressources Tool et ToolSet pour la gestion déclarative des tools MCP et les flux GitOps"
-keywords: [CRD, Kubernetes, custom resources, Tool, ToolSet]
+title: "Référence des CRDs Kubernetes"
+description: "Custom Resource Definitions Kubernetes STOA (gostoa.dev/v1alpha1) — Tool, ToolSet, Skill, GatewayInstance et GatewayBinding."
+keywords: [CRD, Kubernetes, custom resources, Tool, ToolSet, Skill, GatewayInstance, GatewayBinding]
 ---
 
 # Référence des CRDs Kubernetes
 
-STOA Platform utilise des Custom Resource Definitions (CRDs) Kubernetes pour la gestion déclarative des tools.
+STOA Platform fournit **cinq** Custom Resource Definitions namespacées (`gostoa.dev/v1alpha1`) dans `charts/stoa-platform/crds/` pour l'enregistrement déclaratif d'outils MCP, l'injection de contexte agent et la réconciliation multi-passerelles.
 
-## CRDs Disponibles
+## CRDs Disponibles (`gostoa.dev/v1alpha1`)
 
-| CRD | Version API | Description |
-|-----|-------------|-------------|
-| [Tool](./tool.md) | `gostoa.dev/v1alpha1` | Définition individuelle d'un tool MCP |
-| [ToolSet](./toolset.md) | `gostoa.dev/v1alpha1` | Collection de tools depuis une spec OpenAPI |
+| Kind | Pluriel / Nom court | Contrôleur / Watcher | Rôle |
+|------|---------------------|----------------------|------|
+| [`Tool`](./tool.md) | `tools` / `tool` | `stoa-gateway` (`CrdWatcher`) | Définition d'un outil MCP individuel adossé à un endpoint HTTP |
+| [`ToolSet`](./toolset.md) | `toolsets` / `ts` | `stoa-gateway` (`CrdWatcher`) | Connexion à un serveur MCP amont (`sse` ou `streamable-http`) exposant ses outils |
+| [`Skill`](./skill.md) | `skills` / `sk` | `stoa-gateway` (`CrdWatcher`) | Instructions de contexte système hiérarchisées (`global`, `tenant`, `tool`, `user`) |
+| [`GatewayInstance`](./gateway-instance.md) | `gatewayinstances` / `gwi` | `stoa-operator` (Python/Kopf, Bêta) | Déclaration et suivi de santé d'une instance de passerelle STOA ou tierce |
+| [`GatewayBinding`](./gateway-binding.md) | `gatewaybindings` / `gwb` | `stoa-operator` (Python/Kopf, Bêta) | Liaison déclarative d'une API du catalogue et de politiques vers une `GatewayInstance` |
+
+*(Note : le module K8s Rust de `stoa-gateway` inclut également un watcher interne `GuardrailPolicy`, qui n'est pas distribué comme manifeste CRD dans `charts/stoa-platform/crds/` à ce jour.)*
 
 ## Installation
 
-Les CRDs sont installées via le chart Helm STOA :
+Les cinq CRDs sont installées automatiquement par le chart Helm `./charts/stoa-platform` depuis un checkout de `stoa-platform/stoa` :
 
 ```bash
-helm install stoa-platform ./charts/stoa-platform -n stoa-system --create-namespace
+helm install stoa-platform ./charts/stoa-platform -n stoa-system --create-namespace \
+  -f values-override.yaml
 ```
 
-Ou manuellement :
+Pour appliquer ou mettre à jour les CRDs manuellement (recommandé avant `helm upgrade`, Helm ne mettant pas à jour les CRDs existantes) :
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/stoa-platform/stoa/main/charts/stoa-platform/crds/
+kubectl apply -f charts/stoa-platform/crds/
 ```
 
-## Prérequis de Namespace
+## Périmètre Namespace & Comportement Runtime
 
-Les CRDs doivent être créées dans les namespaces tenant :
+Les cinq CRDs ont une portée `Namespaced`. Lorsque `stoa-gateway` est compilé avec la feature Cargo `k8s` et démarré avec `STOA_K8S_ENABLED=true`, son `CrdWatcher` (`stoa-gateway/src/k8s/watcher.rs`) surveille les ressources `Tool`, `ToolSet` et `Skill`, associe `metadata.namespace` au périmètre tenant correspondant et met à jour les registres en mémoire directement (il ne patche **pas** la sous-ressource `.status` des `Tool`, `ToolSet` et `Skill`). `GatewayInstance` et `GatewayBinding` sont réconciliées séparément par `stoa-operator` (Bêta).
 
-```yaml
-metadata:
-  name: my-tool
-  namespace: tenant-acme  # Doit correspondre au namespace tenant
-```
-
-## Démarrage Rapide
-
-Créer un tool simple :
+## Exemple Rapide
 
 ```yaml
 apiVersion: gostoa.dev/v1alpha1
@@ -65,14 +63,7 @@ spec:
       - location
 ```
 
-Appliquer :
-
 ```bash
 kubectl apply -f weather-tool.yaml
-```
-
-Vérifier :
-
-```bash
-kubectl get tools -n tenant-acme
+kubectl get tools,toolsets,skills,gatewayinstances,gatewaybindings -n tenant-acme
 ```
