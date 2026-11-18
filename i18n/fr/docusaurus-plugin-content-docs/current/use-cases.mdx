@@ -249,19 +249,27 @@ Prêt à évaluer ou déployer ces cas d'usage ? STOA Platform est open source (
 <Tabs>
   <TabItem value="local" label="🐳 Évaluation Locale (Compose)" default>
 
+Suivez [`stoa/quickstart/README.md`](https://github.com/stoa-platform/stoa/blob/main/quickstart/README.md) et renseignez les cinq variables obligatoires (`POSTGRES_PASSWORD`, `KC_BOOTSTRAP_ADMIN_PASSWORD`, `KEYCLOAK_CLIENT_SECRET`, `KEYCLOAK_ADMIN_CLIENT_SECRET` et `STOA_ADMIN_API_TOKEN`) avant de démarrer le vérificateur R1 à 5 conteneurs :
+
 ```bash
 # Vérificateur minimal d'accès R1 à 5 conteneurs (preuve 401/401/200 via POST /admin/contracts)
 git clone https://github.com/stoa-platform/stoa.git
 cd stoa/quickstart
-# Définir les variables requises (POSTGRES_PASSWORD, KC_BOOTSTRAP_ADMIN_PASSWORD, etc.), puis :
+export POSTGRES_PASSWORD="<a-definir>" \
+  KC_BOOTSTRAP_ADMIN_PASSWORD="<a-definir>" \
+  KEYCLOAK_CLIENT_SECRET="<a-definir>" \
+  KEYCLOAK_ADMIN_CLIENT_SECRET="<a-definir>" \
+  STOA_ADMIN_API_TOKEN="<a-definir>"
 perl -e 'alarm shift; exec @ARGV' 300 docker compose up --wait
 ./verify.sh
 ```
 
-Pour la stack locale complète à 19 services (Console, Portail et Observabilité), suivez le [Guide de Démarrage Rapide](/docs/guides/quickstart).
+Pour la stack locale à 19 services avec Console, Portail et Observabilité (`deploy/docker-compose`), validez d'abord statiquement votre fichier `.env` avec `docker compose -p stoa-local-check -f docker-compose.yml config --quiet`, puis lancez le raccourci explicite à 5 cibles décrit dans le [Guide de Démarrage Rapide](/docs/guides/quickstart).
 
   </TabItem>
   <TabItem value="k8s" label="☸️ Gateway Auto-hébergé (Helm)">
+
+Préparez au préalable `my-values.yaml` (`stoaGateway.image.{repository,digest}`, `stoaGateway.policyBootTenants`), les services Control Plane / Keycloak déployés séparément ainsi que l'overlay de volume du Secret `private_key_jwt` conformément au [Guide d'Installation](/docs/admin/installation) :
 
 ```bash
 # Installer le chart Helm gateway depuis un checkout du dépôt (pas d'index charts.gostoa.dev)
@@ -272,8 +280,6 @@ helm upgrade --install stoa-platform ./charts/stoa-platform \
   -n stoa-system --create-namespace \
   -f my-values.yaml
 ```
-
-Consultez le [Guide d'Installation](/docs/admin/installation) pour `stoaGateway.image.{repository,digest}`, `stoaGateway.policyBootTenants` et les prérequis Control Plane déployés séparément.
 
   </TabItem>
 </Tabs>

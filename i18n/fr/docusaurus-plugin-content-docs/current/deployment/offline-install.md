@@ -50,7 +50,7 @@ Miroitez `stoa-gateway` pour `charts/stoa-platform`, ainsi que les images Contro
 | Portail Développeur | `ghcr.io/stoa-platform/portal@sha256:<digest>` | Manifeste Control Plane séparé |
 | Keycloak 26 | `quay.io/keycloak/keycloak@sha256:<digest>` | Manifeste IAM séparé (realm `stoa`) |
 | PostgreSQL 16 | `docker.io/library/postgres@sha256:<digest>` | Manifeste base de données séparé |
-| Images des Jobs optionnels du chart | `curlimages/curl@sha256:...` (`gatewaySync.image`), `python@sha256:...` (`stoa.bootstrap.firstAdmin.image`), `postgres@sha256:...` (`vault.credentialsCheck.image`), `quay.io/oauth2-proxy/oauth2-proxy@sha256:...` | Uniquement si ces options sont activées |
+| Images des Jobs optionnels du chart | `curlimages/curl@sha256:...` (`gatewaySync.image`), `python@sha256:...` (`stoa.bootstrap.firstAdmin.image`), `postgres@sha256:...` (`vault.credentialsCheck.image`) | Uniquement si ces options sont activées |
 
 ### 3.2 Empaqueter le chart Helm depuis le checkout et sauvegarder les images
 
@@ -71,7 +71,7 @@ cp ./charts/stoa-platform/crds/*.yaml "${BUNDLE_DIR}/crds/"
 cd ..
 ```
 
-Tirez les images par digest immuable et exportez les archives OCI (`skopeo copy` conserve les digests exacts d'un registre à l'autre ; avec `docker pull` / `docker save` / `docker push`, relevez le digest `RepoDigests` produit sur le registre du site) :
+Tirez les images par digest immuable et exportez une **archive Docker** (`.tar`) via `docker save` (si vous copiez plutôt avec `skopeo`, utilisez `skopeo copy --preserve-digests` — avec `--all` pour un index multi-architecture — sachant que `skopeo` échoue explicitement si une conversion de format modifierait le digest ; avec `docker pull` / `docker save` / `docker push`, relevez le digest affiché par `docker push` ou lu directement sur le registre du site) :
 
 ```bash
 GW_DIGEST="sha256:0ea4741d3b83c4de5f5f221a42969e4afbee17ed1d66d40fb92500d77dce991e"
@@ -120,13 +120,14 @@ for f in images/*.tar; do
 done
 
 docker push registry.example.com/stoa/stoa-gateway:0.9.25
-
-# Relever le digest sha256 exact enregistré par le registre du site :
-docker inspect --format='{{index .RepoDigests 0}}' registry.example.com/stoa/stoa-gateway:0.9.25
+# Relever la ligne `digest: sha256:<SITE_GW_DIGEST>` affichée par `docker push`, ou filtrer `.RepoDigests`
+# explicitement sur `registry.example.com/` (`.RepoDigests[0]` peut encore désigner `ghcr.io`) :
+docker inspect --format='{{range .RepoDigests}}{{println .}}{{end}}' \
+  registry.example.com/stoa/stoa-gateway:0.9.25 | grep '^registry\.example\.com/'
 # Exemple : registry.example.com/stoa/stoa-gateway@sha256:<SITE_GW_DIGEST>
 ```
 
-3. Créez le namespace, le secret d'authentification au registre privé, puis attachez `imagePullSecrets` au `ServiceAccount` utilisé par `stoa-gateway` (`charts/stoa-platform` ne lit **ni** `global.imageRegistry` **ni** `global.imagePullSecrets` ; le pod hérite des droits de tirage via `stoaGateway.serviceAccount`) :
+3. Créez le namespace, le secret d'authentification au registre privé, puis attachez `imagePullSecrets` au `ServiceAccount` utilisé par `stoa-gateway` (`charts/stoa-platform` ne lit **ni** `global.imageRegistry` **ni** `global.imagePullSecrets` ; lorsque `stoaGateway.k8s.enabled` vaut `false` par défaut, `templates/stoa-gateway-deployment.yaml` utilise `stoaGateway.serviceAccount` — `"default"` par défaut, remplacé par `stoa-gateway-sa` ci-dessous — tandis que `stoaGateway.k8s.enabled: true` fige `serviceAccountName: stoa-gateway`, auquel cas patchez `stoa-gateway`) :
 
 ```bash
 kubectl create namespace stoa-system --dry-run=client -o yaml | kubectl apply -f -
@@ -179,10 +180,11 @@ gateway:
 vault:
   credentialsCheck:
     enabled: false
-prometheus:
-  oauth2Proxy:
-    enabled: false
 ```
+
+:::warning Monter le Secret de clé `private_key_jwt` avant d'attendre `1/1 Ready`
+`values-offline-example.yaml` seul ne suffit **pas** à amener les pods à `1/1 Ready` (`/health` teste uniquement la vivacité du processus, tandis que `/ready` vérifie `policyBootTenants` et la fraîcheur des permissions d'outils signées). Au commit `639e8b9a`, `charts/stoa-platform` ne monte que les volumes `tmp` (`emptyDir`) et `stoa-gateway-policies` (`ConfigMap`) — aucun volume de Secret n'est monté via `secretName` ou `extraEnv`. Montez le Secret contenant la clé de signature `private_key_jwt` (`STOA_KEYCLOAK_CLIENT_KEY_PATH`, plus `STOA_KEYCLOAK_CLIENT_KEY_ID` via `extraEnv`) au moyen d'un overlay Deployment, d'un patch Kustomize ou d'un `--post-renderer` Helm comme documenté dans [Politiques au Démarrage et Readiness](/docs/admin/installation#startup-policy-and-readiness).
+:::
 
 Installez depuis l'archive `.tgz` locale (Helm installe les CRDs absents depuis le dossier `crds/` de l'archive lors de l'installation initiale ; lors d'une mise à jour, appliquez d'abord `crds/*.yaml` manuellement) :
 
@@ -192,7 +194,7 @@ helm upgrade --install stoa-platform ./charts/stoa-platform-0.1.0.tgz \
   --values values-offline-example.yaml
 ```
 
-Ne laissez **jamais** `stoaGateway.image.repository` pointer vers `ghcr.io` sur un site isolé. Si vous activez `gatewaySync`, `stoa.bootstrap.firstAdmin`, `vault.credentialsCheck`, `prometheus.oauth2Proxy` ou `stoaSidecar`, miroitez également leurs images et surchargez chaque clé `image` (`<repo>@sha256:<digest>` ou `{repository, digest}`) dans `values-offline-example.yaml`.
+Ne laissez **jamais** `stoaGateway.image.repository` pointer vers `ghcr.io` sur un site isolé. Si vous activez `gatewaySync`, `stoa.bootstrap.firstAdmin`, `vault.credentialsCheck` ou `stoaSidecar`, miroitez également leurs images et surchargez chaque clé `image` (`<repo>@sha256:<digest>` ou `{repository, digest}`) dans `values-offline-example.yaml`.
 
 ## 6. Liste de contrôle de vérification (sans Internet)
 
@@ -201,7 +203,7 @@ Exécutez ces contrôles sur site. Chaque étape doit réussir sans accès Inter
 - [ ] `shasum -a 256 -c SHA256SUMS` validé avant le chargement des archives.
 - [ ] `kubectl get crd | grep gostoa.dev` liste les 5 CRDs (`gatewaybindings`, `gatewayinstances`, `skills`, `tools`, `toolsets`).
 - [ ] `kubectl -n stoa-system get pods -l app.kubernetes.io/name=stoa-gateway -o jsonpath='{.items[*].spec.containers[*].image}'` pointe vers `registry.example.com/stoa/stoa-gateway@sha256:...` (jamais `ghcr.io`).
-- [ ] `kubectl -n stoa-system get pods` affiche les pods `stoa-gateway` à `1/1 Ready` une fois le Control Plane sur site, Keycloak (`private_key_jwt`) et les politiques signées de `policyBootTenants` chargés ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)).
+- [ ] `kubectl -n stoa-system get pods` affiche les pods `stoa-gateway` à `1/1 Ready` une fois l'overlay de montage du Secret `private_key_jwt` appliqué et le Control Plane sur site, Keycloak et les politiques signées de `policyBootTenants` chargés ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)).
 - [ ] Aucun paramètre d'exécution n'appelle d'hôte hors du périmètre du site ([ADR-037](/docs/architecture/adr/adr-037-deployment-modes-sovereign-first)).
 
 Si un pod reste en `ImagePullBackOff`, vérifiez le digest présent sur `registry.example.com` et le patch `imagePullSecrets` sur `stoa-gateway-sa` — n'ouvrez pas d'accès Internet temporaire sans dérogation de sécurité tracée.

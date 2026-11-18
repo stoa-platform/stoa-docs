@@ -14,7 +14,7 @@ keywords: [CLI, command line, stoactl, reference, deploy, rollback, logs, MCP, b
 `stoactl` lives in the [`stoa-go/`](https://github.com/stoa-platform/stoa/tree/main/stoa-go) directory of the `stoa-platform/stoa` monorepo and requires **Go 1.25+** (`stoa-go/go.mod`).
 
 :::warning Legacy install channels
-Do **not** use `go install github.com/stoa-platform/stoactl@latest` (frozen standalone repository at `v0.3.0`), `brew install stoa-platform/tap/stoactl` (tap formula stuck at `0.1.1`), or `https://get.gostoa.dev` (legacy bootstrap URLs). Monorepo GitHub Releases `stoa-go-v0.3.9` and `stoa-go-v0.3.10` currently publish **zero binary assets**; build `stoactl` from a verified monorepo checkout instead.
+Do **not** use `go install github.com/stoa-platform/stoactl@latest` (frozen standalone repository at `v0.3.0`), `brew install stoa-platform/tap/stoactl` (outdated Homebrew tap formula `0.1.1` and cask `0.3.0`), or `https://get.gostoa.dev` (legacy bootstrap URLs). Monorepo GitHub Releases `stoa-go-v0.3.9` and `stoa-go-v0.3.10` currently publish **zero binary assets**; build `stoactl` from a verified monorepo checkout instead.
 :::
 
 import Tabs from '@theme/Tabs';
@@ -28,14 +28,14 @@ git clone https://github.com/stoa-platform/stoa.git
 cd stoa
 git checkout stoa-go-v0.3.10
 cd stoa-go
-make install   # installs stoactl (and stoa-connect) into $(go env GOPATH)/bin
+make install   # installs stoactl (and stoa-connect) into GOBIN if set, otherwise $(go env GOPATH)/bin
 ```
 
 </TabItem>
 <TabItem value="main" label="Verified main commit (639e8b9a)">
 
 ```bash
-# Includes post-May-2026 subcommands (reconcile, audit, catalog, mcp) and Envoy xDS support
+# Includes post-v0.3.10 main additions (stoactl reconcile and stoa-connect Envoy xDS support)
 git clone https://github.com/stoa-platform/stoa.git
 cd stoa
 git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
@@ -47,10 +47,14 @@ go build -ldflags "-s -w -X github.com/stoa-platform/stoa-go/internal/cli/cmd.Ve
 </TabItem>
 </Tabs>
 
-Verify the compiled binary with the `version` subcommand:
+Verify the compiled binary using the path matching your chosen build method:
 
 ```bash
+# After `make install` (with GOBIN or $(go env GOPATH)/bin on PATH):
 stoactl version
+
+# After `go build -o ./bin/stoactl`:
+./bin/stoactl version
 ```
 
 ---

@@ -97,10 +97,15 @@ docker build -f Dockerfile.connect -t stoa-connect:639e8b9a .
 </TabItem>
 </Tabs>
 
-Confirm the compiled binary is on `PATH` (do **not** run `stoa-connect --version` — `cmd/stoa-connect/main.go` parses no CLI flags and immediately starts the HTTP listener on `:8090`; verify the running version via `GET /health` in Step 4):
+Verify the build artifact matching your chosen path (do **not** run `stoa-connect --version` — `cmd/stoa-connect/main.go` parses no CLI flags and immediately starts the HTTP listener on `:8090`):
 
 ```bash
+# Host Go binary tabs: confirm the installed binary is on PATH
 command -v stoa-connect
+
+# Local Docker image tab: confirm the image exists locally
+docker image inspect stoa-connect:639e8b9a --format '{{.Id}}'
+# Then check runtime status and version via GET http://localhost:8090/health after configuring (Step 2) and starting (Step 3).
 ```
 
 ---

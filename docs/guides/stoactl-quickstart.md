@@ -25,7 +25,7 @@ By the end of this guide, you'll have:
 ### Install stoactl
 
 :::warning Legacy install channels
-Do **not** use `go install github.com/stoa-platform/stoactl@latest` (frozen standalone repository at `v0.3.0`), `brew install stoa-platform/tap/stoactl` (tap formula stuck at `0.1.1`), or `https://get.gostoa.dev` (legacy bootstrap URLs). Monorepo GitHub Releases `stoa-go-v0.3.9` and `stoa-go-v0.3.10` publish **zero binary assets**; build `stoactl` from a verified monorepo checkout instead.
+Do **not** use `go install github.com/stoa-platform/stoactl@latest` (frozen standalone repository at `v0.3.0`), `brew install stoa-platform/tap/stoactl` (outdated Homebrew tap formula `0.1.1` and cask `0.3.0`), or `https://get.gostoa.dev` (legacy bootstrap URLs). Monorepo GitHub Releases `stoa-go-v0.3.9` and `stoa-go-v0.3.10` publish **zero binary assets**; build `stoactl` from a verified monorepo checkout instead.
 :::
 
 import Tabs from '@theme/Tabs';
@@ -39,7 +39,7 @@ git clone https://github.com/stoa-platform/stoa.git
 cd stoa
 git checkout stoa-go-v0.3.10
 cd stoa-go
-make install   # installs stoactl into $(go env GOPATH)/bin
+make install   # installs stoactl into GOBIN if set, otherwise $(go env GOPATH)/bin
 ```
 
 </TabItem>
@@ -57,7 +57,7 @@ go install -ldflags "-s -w -X github.com/stoa-platform/stoa-go/internal/cli/cmd.
 </TabItem>
 </Tabs>
 
-Verify the installation:
+Ensure `GOBIN` (or `$(go env GOPATH)/bin` when `GOBIN` is unset) is in your `PATH`, then verify the installation:
 
 ```bash
 stoactl version

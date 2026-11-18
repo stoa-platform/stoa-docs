@@ -97,10 +97,15 @@ docker build -f Dockerfile.connect -t stoa-connect:639e8b9a .
 </TabItem>
 </Tabs>
 
-Vérifiez que le binaire compilé est bien présent dans `PATH` (n'exécutez **pas** `stoa-connect --version` — `cmd/stoa-connect/main.go` n'analyse aucun flag CLI et démarre immédiatement le serveur HTTP sur `:8090` ; contrôlez la version active via `GET /health` à l'étape 4) :
+Vérifiez l'artefact produit selon le parcours choisi (n'exécutez **pas** `stoa-connect --version` — `cmd/stoa-connect/main.go` n'analyse aucun flag CLI et démarre immédiatement le serveur HTTP sur `:8090`) :
 
 ```bash
+# Onglets Build Go (binaire hôte) : vérifier que le binaire installé figure dans PATH
 command -v stoa-connect
+
+# Onglet Docker (image locale) : vérifier que l'image existe localement
+docker image inspect stoa-connect:639e8b9a --format '{{.Id}}'
+# Puis contrôler l'état et la version via GET http://localhost:8090/health après configuration (étape 2) et démarrage (étape 3).
 ```
 
 ---

@@ -25,7 +25,7 @@ Démarrez un MCP Gateway local et faites le bridge de votre première API REST �
 ### Installer stoactl
 
 :::warning Canaux d'installation historiques
-N'utilisez **pas** `go install github.com/stoa-platform/stoactl@latest` (ancien dépôt figé en `v0.3.0`), `brew install stoa-platform/tap/stoactl` (formule bloquée en `0.1.1`), ni `https://get.gostoa.dev` (URLs d'installation historiques). Les GitHub Releases `stoa-go-v0.3.9` et `stoa-go-v0.3.10` du monorepo publient **zéro binaire** ; compilez `stoactl` depuis un checkout vérifié du monorepo.
+N'utilisez **pas** `go install github.com/stoa-platform/stoactl@latest` (ancien dépôt figé en `v0.3.0`), `brew install stoa-platform/tap/stoactl` (formule Homebrew obsolète en `0.1.1` et cask en `0.3.0`), ni `https://get.gostoa.dev` (URLs d'installation historiques). Les GitHub Releases `stoa-go-v0.3.9` et `stoa-go-v0.3.10` du monorepo publient **zéro binaire** ; compilez `stoactl` depuis un checkout vérifié du monorepo.
 :::
 
 import Tabs from '@theme/Tabs';
@@ -39,7 +39,7 @@ git clone https://github.com/stoa-platform/stoa.git
 cd stoa
 git checkout stoa-go-v0.3.10
 cd stoa-go
-make install   # installe stoactl dans $(go env GOPATH)/bin
+make install   # installe stoactl dans GOBIN s'il est défini, sinon $(go env GOPATH)/bin
 ```
 
 </TabItem>
@@ -57,7 +57,7 @@ go install -ldflags "-s -w -X github.com/stoa-platform/stoa-go/internal/cli/cmd.
 </TabItem>
 </Tabs>
 
-Vérifiez l'installation :
+Assurez-vous que `GOBIN` (ou `$(go env GOPATH)/bin` lorsque `GOBIN` n'est pas défini) figure dans `PATH`, puis vérifiez l'installation :
 
 ```bash
 stoactl version

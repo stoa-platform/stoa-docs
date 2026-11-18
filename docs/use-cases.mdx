@@ -249,19 +249,27 @@ Ready to evaluate or deploy these use cases? STOA Platform is open source (Apach
 <Tabs>
   <TabItem value="local" label="🐳 Local Evaluation (Compose)" default>
 
+Follow [`stoa/quickstart/README.md`](https://github.com/stoa-platform/stoa/blob/main/quickstart/README.md) and export all five required variables (`POSTGRES_PASSWORD`, `KC_BOOTSTRAP_ADMIN_PASSWORD`, `KEYCLOAK_CLIENT_SECRET`, `KEYCLOAK_ADMIN_CLIENT_SECRET`, and `STOA_ADMIN_API_TOKEN`) before starting the 5-container R1 verifier:
+
 ```bash
 # Minimal 5-container R1 access verifier (401/401/200 proof via POST /admin/contracts)
 git clone https://github.com/stoa-platform/stoa.git
 cd stoa/quickstart
-# Set required env vars (POSTGRES_PASSWORD, KC_BOOTSTRAP_ADMIN_PASSWORD, etc.), then:
+export POSTGRES_PASSWORD="<set-me>" \
+  KC_BOOTSTRAP_ADMIN_PASSWORD="<set-me>" \
+  KEYCLOAK_CLIENT_SECRET="<set-me>" \
+  KEYCLOAK_ADMIN_CLIENT_SECRET="<set-me>" \
+  STOA_ADMIN_API_TOKEN="<set-me>"
 perl -e 'alarm shift; exec @ARGV' 300 docker compose up --wait
 ./verify.sh
 ```
 
-For the 19-service local stack with Console, Portal, and Observability, follow the [Quickstart Guide](/docs/guides/quickstart).
+For the 19-service local stack with Console, Portal, and Observability (`deploy/docker-compose`), validate your `.env` statically with `docker compose -p stoa-local-check -f docker-compose.yml config --quiet` first, then start the explicit 5-target shortcut documented in the [Quickstart Guide](/docs/guides/quickstart).
 
   </TabItem>
   <TabItem value="k8s" label="☸️ Self-Hosted Gateway (Helm)">
+
+First prepare `my-values.yaml` (`stoaGateway.image.{repository,digest}`, `stoaGateway.policyBootTenants`), separately deployed Control Plane / Keycloak endpoints, and the `private_key_jwt` Secret volume overlay as documented in the [Installation Guide](/docs/admin/installation):
 
 ```bash
 # Install the gateway-scoped Helm chart from a repository checkout (no charts.gostoa.dev repo)
@@ -272,8 +280,6 @@ helm upgrade --install stoa-platform ./charts/stoa-platform \
   -n stoa-system --create-namespace \
   -f my-values.yaml
 ```
-
-See the [Installation Guide](/docs/admin/installation) for `stoaGateway.image.{repository,digest}`, `stoaGateway.policyBootTenants`, and separately deployed Control Plane prerequisites.
 
   </TabItem>
 </Tabs>

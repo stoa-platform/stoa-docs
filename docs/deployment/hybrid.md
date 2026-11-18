@@ -269,7 +269,7 @@ helm upgrade --install stoa-platform ./charts/stoa-platform \
   -f my-values.yaml
 ```
 
-Minimal `my-values.yaml` for a hybrid gateway (`stoaGateway.image` requires both `repository` and `digest`; see the [Installation Guide](/docs/admin/installation) for `private_key_jwt` startup policy credentials):
+Minimal `my-values.yaml` for a hybrid gateway (`stoaGateway.image` requires both `repository` and `digest` when overridden; see the [Installation Guide](/docs/admin/installation) for startup policy readiness requirements):
 
 ```yaml
 stoa:
@@ -295,23 +295,29 @@ gatewaySync:
   enabled: false
 ```
 
+:::warning Prerequisite before expecting `1/1 Ready`
+This minimal values file alone will **not** bring pods to `1/1 Ready` (`/health` tests process liveness only, whereas `/ready` enforces `policyBootTenants` and fresh signed tool permissions). At commit `639e8b9a`, `charts/stoa-platform` mounts only `tmp` (`emptyDir`) and `stoa-gateway-policies` (`ConfigMap`) — before expecting `1/1 Ready`, mount the `private_key_jwt` signing-key Secret (`STOA_KEYCLOAK_CLIENT_KEY_PATH`, plus `STOA_KEYCLOAK_CLIENT_KEY_ID` via `extraEnv`) using a Deployment manifest overlay, Kustomize patch, or Helm `--post-renderer` as documented in [Startup Policy and Readiness](/docs/admin/installation#startup-policy-and-readiness).
+:::
+
 ```bash
-# 3. Verify pods reach 1/1 Ready once startup policies load
+# 3. Check pod status (pods reach 1/1 Ready only after the private_key_jwt Secret is mounted and signed policies load)
 kubectl get pods -n stoa-system
 ```
 
 ### Full On-Premises Stack
 
-`charts/stoa-platform` deploys **only the STOA Gateway, 5 CRDs, and optional integration hooks** (`charts/stoa-observability` packages optional Grafana Alloy/Tempo/Blackbox telemetry). Provision PostgreSQL, Keycloak (single `stoa` realm), OpenSearch, OpenBao (`openbao/openbao`, [ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)), and the Control Plane API / Console / Developer Portal workloads separately before installing the gateway chart:
+`charts/stoa-platform` deploys **only the STOA Gateway, 5 CRDs, and optional integration hooks** (`charts/stoa-observability` packages optional Grafana Alloy/Tempo/Blackbox telemetry). Provision PostgreSQL, Keycloak (single `stoa` realm), OpenSearch, the Control Plane API / Console / Developer Portal workloads, and — **if** your site uses an external secrets backend ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) — optional OpenBao separately before installing the gateway chart:
 
 ```bash
-# 1. Provision stateful prerequisites (examples — adapt to your cluster operators/charts)
-helm install openbao openbao/openbao -n openbao --create-namespace  # https://openbao.github.io/openbao-helm
+# 1. Optional: install OpenBao only if your site uses an external secrets backend (ADR-075)
+helm repo add openbao https://openbao.github.io/openbao-helm
+helm repo update
+helm install openbao openbao/openbao -n openbao --create-namespace
 
 # 2. Deploy Control Plane API, Console, Portal, PostgreSQL, and Keycloak per your site manifests
 #    (or evaluate locally via deploy/docker-compose — see /docs/guides/quickstart)
 
-# 3. Install the STOA Gateway from the checked-out repository
+# 3. Install the STOA Gateway from the checked-out repository (with your values + private_key_jwt volume overlay)
 helm upgrade --install stoa-platform ./charts/stoa-platform \
   -n stoa-system --create-namespace \
   -f your-values.yaml
