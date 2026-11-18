@@ -198,6 +198,17 @@ make test-e2e
 make test-coverage
 ```
 
+### Docs browser tests
+
+From the `stoa-docs` checkout, build both locales and run the Readiness language-switch test on Chromium desktop and mobile.
+
+```bash
+npm ci
+npx playwright install chromium
+npm run build
+npm run test:e2e
+```
+
 ## Documentation
 
 - Update relevant docs when changing functionality
