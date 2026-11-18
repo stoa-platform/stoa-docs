@@ -1,0 +1,42 @@
+name: Readiness language navigation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/readiness-language.yml'
+      - 'docs/admin/installation.md'
+      - 'docusaurus.config.ts'
+      - 'i18n/fr/code.json'
+      - 'i18n/fr/docusaurus-plugin-content-docs/current/admin/installation.md'
+      - 'package*.json'
+      - 'playwright.config.mjs'
+      - 'scripts/enrich-sitemap-hreflang.mjs'
+      - 'scripts/manage-scheduled-posts.sh'
+      - 'sidebars.ts'
+      - 'src/**'
+      - 'tests/e2e/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-test:
+    name: Readiness links on desktop and mobile
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps --only-shell chromium
+      - run: npm run build
+        env:
+          DOCUSAURUS_SSR_CONCURRENCY: 1
+      - run: npm run test:e2e
