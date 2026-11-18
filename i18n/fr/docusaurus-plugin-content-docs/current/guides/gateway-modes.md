@@ -15,16 +15,16 @@ import EnvSetup from '@site/docs/_partials/_env-setup.mdx';
 
 # Modes du Gateway
 
-STOA Gateway supporte 4 modes de déploiement (définis dans [ADR-024](/docs/architecture/adr/adr-024-gateway-unified-modes)), chacun optimisé pour un pattern d'intégration différent. Sélectionnez le mode via la variable d'environnement `STOA_GATEWAY_MODE`.
+La passerelle Rust propose quatre valeurs pour `STOA_GATEWAY_MODE`. Le tableau distingue les modes Edge-MCP et Sidecar disponibles des implémentations Rust partielles de Proxy et Shadow.
 
 ## Vue d'Ensemble des Modes
 
-| Mode | Port | Support MCP | Cas d'Usage | Statut |
+| Mode | Port HTTP par défaut | Support MCP | Cas d'Usage | Statut |
 |------|------|-------------|----------|--------|
 | **edge-mcp** | 8080 | Oui | Gateway MCP autonome avec support complet du protocole (+ écouteur gRPC `ext_authz` Envoy optionnel) | Production (Maintenance, [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
-| **sidecar** | 8081 dans le chart (défaut du binaire 8080) | Non | Allow ou deny sur `POST /authz` HTTP pour un hôte qui l'appelle | Runtime présent |
-| **proxy** | 8082 | Non | Transformation inline des requêtes/réponses | Socle Rust ; cible Envoy xDS ([ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
-| **shadow** | 8083 | Non | Capture passive du trafic et génération UAC | Socle Rust ; cible mirroring Envoy ([ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
+| **sidecar** | 8080 (le chart Helm compagnon fixe 8081) | Non | Allow ou deny sur `POST /authz` HTTP pour un hôte qui l'appelle | Runtime présent |
+| **proxy** | 8080 | Non | Composants de transfert HTTP | Implémentation Rust partielle. Cible Envoy xDS ([ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
+| **shadow** | 8080 | Non | Routes de statut et de génération UAC | Implémentation Rust partielle. Cible de mise en miroir par Envoy ([ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
 
 ```mermaid
 graph TB
@@ -32,8 +32,8 @@ graph TB
         ENV["STOA_GATEWAY_MODE"]
         ENV -->|edge-mcp| EM[Edge MCP<br/>Full MCP protocol]
         ENV -->|sidecar| SC[Sidecar<br/>Policy enforcement]
-        ENV -->|proxy| PX[Proxy<br/>Transformation]
-        ENV -->|shadow| SH[Shadow<br/>Traffic analysis]
+        ENV -->|proxy| PX[Proxy<br/>Implémentation Rust partielle]
+        ENV -->|shadow| SH[Shadow<br/>Implémentation Rust partielle]
     end
 ```
 
@@ -43,14 +43,14 @@ graph TB
 |-----------|----------|---------|-------|--------|
 | Protocole MCP (SSE) | Oui | Non | Non | Non |
 | Découverte/invocation d'outils | Oui | Non | Non | Non |
-| Authentification JWT | Oui | Non. `/authz` fait confiance au `user` JSON | Oui | Non |
-| Limitation de débit | Oui | Optionnelle, en mémoire, par processus | Oui | Non |
-| Disjoncteur | Oui | Non | Oui | Non |
-| Transformation des requêtes | Non | Non | Oui | Non |
-| Capture de trafic | Non | Non | Non | Oui |
-| Génération UAC | Non | Non | Non | Oui |
-| Nécessite un upstream | Non | Non | Oui | Oui |
-| Passif (lecture seule) | Non | Non | Non | Oui |
+| Authentification JWT | Oui | Non. `/authz` fait confiance au `user` JSON | Non raccordée | Non |
+| Limitation de débit | Oui | Optionnelle, en mémoire, par processus | Non raccordée | Non |
+| Disjoncteur | Oui | Non | Non raccordé | Non |
+| Transformation des requêtes | Non | Non | Composant seul | Non |
+| Capture de trafic | Non | Non | Non | Aucune source de capture raccordée |
+| Génération UAC | Non | Non | Non | Route manuelle qui exige des données |
+| Nécessite un upstream | Non | Non | Le transfert exige une route vers un service amont | GitLab pour la soumission d’un UAC |
+| Passif (lecture seule) | Non | Non | Non | Statut et analyse. La soumission UAC écrit dans GitLab |
 
 ## Mode Edge-MCP (Production)
 
@@ -141,113 +141,34 @@ Il n'y a pas de métrique `stoa_sidecar_*` dans les sources de la passerelle.
 
 ## Mode Proxy
 
-Se positionne en ligne dans le chemin des requêtes, transformant les requêtes et les réponses entre les clients et les backends. Supporte l'injection d'en-têtes, la transformation de corps et le passthrough WebSocket.
+Le binaire Rust démarre ce mode avec un registre de routes vide et sans transformateurs de requêtes ou de réponses raccordés. Le dépôt teste séparément les composants de routage et de transformation. Ces tests ne couvrent pas le fonctionnement du proxy lancé depuis le binaire.
 
-### Configuration
-
-```bash
-STOA_GATEWAY_MODE=proxy
-
-# Paramètres spécifiques proxy
-STOA_TRANSFORM_REQUEST=false
-STOA_TRANSFORM_RESPONSE=false
-STOA_INJECT_HEADERS=true
-STOA_WEBSOCKET_PASSTHROUGH=false
-STOA_CONNECTION_POOL_SIZE=100
-```
-
-### Capacités
-
-| Fonctionnalité | Défaut | Description |
-|---------|---------|-------------|
-| Transformation des requêtes | Désactivé | Modifier les en-têtes/corps avant transmission |
-| Transformation des réponses | Désactivé | Modifier les en-têtes/corps avant retour |
-| Injection d'en-têtes | Activé | Ajouter des en-têtes de tenant, trace et corrélation |
-| Passthrough WebSocket | Désactivé | Transmettre les connexions WebSocket |
-| Pool de connexions | 100 | Taille du pool de connexions upstream |
-
-### Quand Utiliser
-
-- Transformation requête/réponse entre clients et backends
-- Ajout d'en-têtes d'observabilité au trafic API existant
-- Proxying WebSocket avec application de politiques
-- Environnements nécessitant une manipulation inline du trafic
+L’[ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) définit la cible Envoy. Les contrats UAC fournissent les routes via xDS et les services externes STOA assurent le traitement.
 
 ## Mode Shadow
 
-Capture passif le trafic pour analyse et génération automatique d'UAC (Universal API Contract). Ne modifie ni ne bloque aucune requête.
+Le binaire Rust expose les routes ci-dessous et démarre sans source de capture de trafic raccordée. La génération d’un UAC exige des échantillons de trafic. Le dépôt teste l’analyse et la génération avec des données injectées directement dans le service.
 
-### Configuration
-
-```bash
-STOA_GATEWAY_MODE=shadow
-
-# Paramètres spécifiques shadow
-STOA_CAPTURE_METHOD=Inline       # Options : EnvoyTap, PortMirror, Inline, KafkaReplay
-STOA_UAC_OUTPUT_DIR=/var/stoa/uac
-STOA_AUTO_CREATE_MR=false
-STOA_MIN_REQUESTS_FOR_UAC=100
-STOA_ANALYSIS_WINDOW_HOURS=168   # 7 jours
-```
-
-### Méthodes de Capture
-
-| Méthode | Description | Infrastructure |
-|--------|-------------|----------------|
-| `Inline` | STOA capture le trafic directement | Pas d'infra supplémentaire |
-| `EnvoyTap` | Le filtre tap d'Envoy transmet des copies | Sidecar Envoy |
-| `PortMirror` | Mise en miroir du trafic au niveau réseau | Config switch/routeur |
-| `KafkaReplay` | Rejeu depuis un topic Kafka | Redpanda/Kafka |
-
-### Génération d'UAC
-
-Après avoir collecté `min_requests_for_uac` requêtes sur `analysis_window_hours`, le mode shadow génère un Universal API Contract :
-
-```
-1. Capturer le trafic (requêtes + réponses)
-2. Analyser les patterns (endpoints, schémas, codes d'erreur)
-3. Générer la spec OpenAPI + annotations UAC STOA
-4. Sortie vers UAC_OUTPUT_DIR (ou auto-création MR si configuré)
-```
+La soumission d’un UAC est une opération distincte qui exige un client GitLab configuré. L’[ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) définit la cible Envoy, où la mise en miroir des requêtes et les journaux d’accès alimentent la génération d’UAC.
 
 ### Routes Exposées
 
 | Chemin | Méthode | Objectif |
-|------|--------|---------|
-| `/shadow/status` | GET | Statistiques de capture |
-| `/shadow/generate` | POST | Déclencher la génération UAC |
-| `/health` | GET | Contrôle de santé |
+|--------|---------|----------|
+| `/shadow/status` | GET | Renvoyer les statistiques de capture et d’analyse |
+| `/shadow/generate` | POST | Déclencher la génération d’un UAC. Renvoie `insufficient_data` si le nombre d’échantillons est insuffisant |
+| `/shadow/submit-uac` | POST | Soumettre un UAC à GitLab si le client GitLab est configuré |
+| `/health` | GET | Vérifier l’état de santé |
 | `/metrics` | GET | Métriques Prometheus |
 
-### Quand Utiliser
-
-- Découverte d'APIs non documentées dans les environnements legacy
-- Génération automatique de contrats API depuis le trafic en direct
-- Analyse pré-migration avant passage à STOA
-- Audit de conformité des patterns de trafic API
-
 ## Guide de Sélection du Mode
-
-```mermaid
-graph TD
-    Start[Need an API Gateway?] -->|New deployment| Q1{AI/MCP agents?}
-    Q1 -->|Yes| EM[edge-mcp]
-    Q1 -->|No| PX[proxy]
-
-    Start -->|Existing gateway| Q2{Replace or augment?}
-    Q2 -->|Augment| SC[sidecar]
-    Q2 -->|Replace gradually| Q3{Know your APIs?}
-    Q3 -->|Yes| EM
-    Q3 -->|No| SH[shadow first]
-    SH --> EM
-```
 
 | Scénario | Mode Recommandé |
 |----------|-----------------|
 | Déploiement MCP greenfield | `edge-mcp` |
 | Allow ou deny à côté d'un hôte qui appelle `POST /authz` | Compagnon (runtime `sidecar`). Voir [Usage du compagnon](./companion-usage.md) |
-| Couche de transformation API | `proxy` |
-| Découverte d'API legacy | `shadow` → puis `edge-mcp` |
+| Couche de transformation API | Profil de routage Envoy défini dans l’[ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) |
+| Découverte d'API legacy | Mise en miroir du trafic par Envoy définie dans l’[ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) |
 | Conserver une passerelle tierce et synchroniser l'état souhaité | [`stoa-connect`](./stoa-connect-quickstart.md). Un compagnon de même pod est un appel distinct et n'est pas une intégration webMethods enregistrée |
 
 ## Configuration à l'Exécution
@@ -269,7 +190,10 @@ Le mode est journalisé au démarrage :
 INFO Starting STOA Gateway version=2.0.0 mode=edge-mcp
 ```
 
-Le gateway écoute sur le port par défaut du mode (8080-8083) sauf si surchargé.
+Le binaire Rust utilise le port HTTP `8080` par défaut dans les quatre modes. Utilisez `STOA_PORT` pour modifier le port d’écoute. Si la variable historique `PORT` est également définie, elle est prioritaire.
+
+- **Helm** configure le port `8080` dans le conteneur de la passerelle principale et `8081` dans le conteneur compagnon.
+- **Docker Compose** associe par défaut le port `8081` de l’hôte au port `8080` du conteneur dans la stack principale. `PORT_GATEWAY` modifie le port de l’hôte.
 
 ## Dépannage
 
@@ -278,8 +202,8 @@ Le gateway écoute sur le port par défaut du mode (8080-8083) sauf si surcharg�
 | "Unknown mode" au démarrage | Valeur `STOA_GATEWAY_MODE` invalide | Utilisez : `edge-mcp`, `sidecar`, `proxy`, ou `shadow` |
 | Les endpoints MCP retournent 404 | Mauvais mode sélectionné | Seul `edge-mcp` sert les routes MCP |
 | Le sidecar répond par un statut et un corps vide | Le format de `/authz` est fixé au code de statut | Envoyez le corps JSON décrit dans [Usage du compagnon](./companion-usage.md). `STOA_DECISION_FORMAT` n'est pas lu |
-| Shadow ne capture pas le trafic | La méthode de capture nécessite une infra | Utilisez `Inline` si pas d'Envoy/Kafka disponible |
-| Proxy abandonne le WebSocket | Passthrough désactivé | Définissez `STOA_WEBSOCKET_PASSTHROUGH=true` |
+| Shadow ne capture pas le trafic | Le mode Rust ne raccorde aucune source de capture | Voir [Mode Shadow](#mode-shadow) pour le comportement actuel et la cible Envoy |
+| Proxy abandonne le WebSocket | Le mode Rust ne raccorde pas le transfert WebSocket | Voir [Mode Proxy](#mode-proxy) pour le comportement actuel et la cible Envoy |
 
 ## Voir Aussi
 
