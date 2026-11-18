@@ -70,7 +70,7 @@ STOA_EXT_AUTHZ_AUDIENCE=stoa-api
 STOA_EXT_AUTHZ_REQUIRED_SCOPES=stoa:read
 ```
 
-Pour exposer une route REST protégée par JWT sur `stoa-gateway`, déclarez un contrat UAC avec `"inboundAuth": "jwt"` via `POST /admin/contracts` (conforme à `quickstart/verify.sh`) :
+Pour exposer une route REST protégée par JWT sur `stoa-gateway`, déclarez un contrat UAC avec `"inboundAuth": "jwt"` via `POST /admin/contracts` (conforme à `quickstart/verify.sh` ; `RestBinder` monte chaque endpoint sous `/apis/{tenant_id}/{contract.name}{endpoint.path}` et contrôle `inboundAuthAudience` lorsqu'il est renseigné sur le contrat, ou le validateur OIDC par défaut de la passerelle sinon — distinct de `STOA_MCP_AUDIENCE`) :
 
 ```bash
 curl -sS -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
@@ -95,7 +95,7 @@ curl -sS -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
 
 ### Étape 3 : Tester l'authentification
 
-Obtenez un jeton auprès du realm `stoa` et appelez la route protégée :
+Obtenez un jeton auprès du realm `stoa` (le client de service devant émettre `tenant_id: "acme"` ainsi que l'audience REST attendue — `inboundAuthAudience` si configurée sur le contrat, sinon le validateur OIDC par défaut de la passerelle, distincte du réglage `STOA_MCP_AUDIENCE`) et appelez le chemin monté `/apis/acme/orders-api/orders` :
 
 ```bash
 # Demander un jeton d'accès auprès du realm partagé 'stoa'
@@ -106,8 +106,8 @@ TOKEN=$(curl -sS -X POST \
   -d "grant_type=client_credentials" \
   | jq -r '.access_token')
 
-# Appeler la route passerelle protégée par JWT
-curl -i "${STOA_GATEWAY_URL}/orders" \
+# Appeler la route passerelle protégée par JWT montée sous /apis/{tenant_id}/{contract.name}{endpoint.path}
+curl -i "${STOA_GATEWAY_URL}/apis/acme/orders-api/orders" \
   -H "Authorization: Bearer ${TOKEN}"
 ```
 
@@ -156,22 +156,22 @@ Les agents IA qui se connectent à `stoa-gateway` découvrent les métadonnées 
 
 ## Validation des jetons {#token-validation}
 
-`stoa-gateway` et l'API Control Plane appliquent quatre contrôles sur chaque JWT Bearer :
+`stoa-gateway` et l'API Control Plane vérifient la signature RS256, l'émetteur et l'expiration sur chaque JWT Bearer, avec des règles d'audience et d'isolation tenant propres à chaque parcours :
 
 1. **Signature RS256 & Émetteur (`iss`)** — Vérifiés auprès du JWKS du realm `stoa` (`/realms/stoa/protocol/openid-connect/certs`)
 2. **Expiration (`exp`)** — Rejette les jetons expirés (`401 Unauthorized`)
-3. **Audience (`aud`)** — Vérifiée par rapport à `STOA_MCP_AUDIENCE` (endpoints MCP) ou `STOA_EXT_AUTHZ_AUDIENCE` (`ext_authz` gRPC Envoy) ; fail-closed si non définie
-4. **Isolation tenant (`tenant_id`)** — `require_tenant_access` (Control Plane) et `enforce_tenant_isolation` (Gateway) rejettent tout accès inter-tenant avec `403 Forbidden` sauf rôle plateforme `cpi-admin`
+3. **Audience (`aud`) — Selon le parcours** — `control-plane-api` désactive `verify_aud` lors du décodage JWT (`auth/dependencies.py`). Sur `stoa-gateway`, les endpoints MCP exigent `STOA_MCP_AUDIENCE` (fail-closed si absent), `ext_authz` gRPC Envoy exige `STOA_EXT_AUTHZ_AUDIENCE` (fail-closed si absent), et les routes REST UAC publiées valident `inboundAuthAudience` lorsqu'elle est définie sur le contrat (sinon le validateur OIDC par défaut de la passerelle)
+4. **Isolation tenant (`tenant_id`)** — Le RBAC du Control Plane (`require_tenant_access`, ainsi que `RbacEnforcer` côté Rust lorsque son champ de configuration `enforce_tenant_isolation` est activé) rejette tout accès inter-tenant avec `403 Forbidden` sauf rôle plateforme `cpi-admin` ; MCP `tools/list`, `ext_authz` gRPC Envoy et les routes REST UAC exigent un `tenant_id` vérifié correspondant au tenant/route cible, sans bypass inter-tenant `cpi-admin`
 
 ## Contrôle d'accès basé sur les rôles (RBAC) {#role-based-access-control-rbac}
 
 STOA associe les rôles Keycloak du realm `stoa` à quatre rôles canoniques ([ADR-054](/docs/architecture/adr/adr-054-rbac-taxonomy-v2)) :
 
-| Rôle | Portée | Scopes typiques | Permissions |
-|------|--------|-----------------|-------------|
-| `cpi-admin` | Plateforme | `stoa:admin`, `stoa:write`, `stoa:read` | Administration inter-tenant |
-| `tenant-admin` | Tenant (`tenant_id`) | `stoa:write`, `stoa:read` | Gestion des API, outils, utilisateurs et abonnements de son tenant |
-| `devops` | Tenant (`tenant_id`) | `stoa:write`, `stoa:read` | Déploiement des contrats et liaisons de son tenant |
+| Rôle | Portée | Scopes dérivés (`stoa-gateway`) | Permissions |
+|------|--------|---------------------------------|-------------|
+| `cpi-admin` | Plateforme (RBAC Control Plane) | `stoa:read`, `stoa:write`, `stoa:execute`, `stoa:deploy`, `stoa:audit` (`stoa:admin` doit être émis explicitement) | Administration inter-tenant sur le Control Plane |
+| `tenant-admin` | Tenant (`tenant_id`) | `stoa:read`, `stoa:write`, `stoa:execute` | Gestion des API, outils, utilisateurs et abonnements de son tenant |
+| `devops` | Tenant (`tenant_id`) | `stoa:read`, `stoa:write`, `stoa:deploy` | Déploiement des contrats et liaisons de son tenant |
 | `viewer` | Tenant (`tenant_id`) | `stoa:read` | Lecture seule sur le catalogue et les métriques de son tenant |
 
 ## Configuration avancée {#advanced-configuration}

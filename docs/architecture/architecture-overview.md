@@ -77,7 +77,7 @@ flowchart TB
 | **Admin Console** | `console.<domain>` | ✅ Production | React 19, TypeScript (`control-plane-ui/`) |
 | **Control Plane API** | `api.<domain>` | ✅ Production | Python 3.11, FastAPI, SQLAlchemy (`control-plane-api/`) |
 | **STOA Gateway** | `mcp.<domain>` / `:8080` | ✅ Production / Maintenance ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) | Rust, Tokio, axum, tonic (`stoa-gateway/`) |
-| **STOA Link (`stoa-connect`)** | On-premise / cluster agent (`:8090`) | ✅ Production (Kong/Gravitee/webMethods) / Opt-in Envoy ADS | Go 1.25 (`stoa-go/cmd/stoa-connect`) |
+| **STOA Link (`stoa-connect`)** | On-premise / cluster agent (`:8090`) | Route adapters implemented (Kong/Gravitee/webMethods) / Opt-in Envoy ADS | Go 1.25 (`stoa-go/cmd/stoa-connect`) |
 | **`stoactl` CLI** | Operator workstation / CI | ✅ Production (built from `stoa-go/`) | Go 1.25 (`stoa-go/cmd/stoactl`) |
 | **`stoa-operator`** | In-cluster (`GatewayInstance`, `GatewayBinding`) | 🧪 Beta | Python, Kopf (`stoa-operator/`) |
 | **Keycloak** | `auth.<domain>` (`stoa` realm) | ✅ Production | Keycloak 26 ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
@@ -88,10 +88,10 @@ flowchart TB
 
 ### Key Architectural Guarantees Implemented on `main`
 
-- **Single-realm tenant identity ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))**: One shared Keycloak realm (`stoa`), one top-level Keycloak group per tenant (`/<tenant_id>`, `setup_tenant_group`), verified `tenant_id` JWT claims (`require_tenant_access` in Python, `enforce_tenant_isolation` in Rust), and a shared PostgreSQL schema filtered by `tenant_id` (retiring the older realm-per-tenant draft in ADR-026).
+- **Single-realm tenant identity ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))**: One shared Keycloak realm (`stoa`), one top-level Keycloak group per tenant (`/<tenant_id>`, `setup_tenant_group`), verified `tenant_id` JWT claims (`Claims::tenant_id()` / `require_tenant` on the gateway and `require_tenant_access` in Python, with `enforce_tenant_isolation` as the Rust `RbacPolicy` boolean setting), and a shared PostgreSQL schema filtered by `tenant_id` (retiring the older realm-per-tenant draft in ADR-026).
 - **Fail-closed gateway posture ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture))**: `stoa-gateway` verifies Ed25519-signed per-tenant policy bundles (`STOA_POLICY_BOOT_TENANTS`), enforces `STOA_MCP_AUDIENCE`, and maintains a durable audit WAL spool (`STOA_AUDIT_SPOOL_DIR`).
 - **MCP `2025-11-25` & Contract Routes**: Streamable HTTP (`POST /mcp`), SSE (`/mcp/sse`), opt-in WebSocket (`/mcp/ws` via `STOA_WEBSOCKET_ENABLED=true`), and transactional REST + MCP route registration (`POST /admin/contracts`).
-- **Multi-Gateway Orchestration ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern))**: The Control Plane provides 6 Python gateway adapters (Kong, Gravitee, webMethods, Apigee, AWS API Gateway, Azure APIM), while the on-site `stoa-connect` Go agent selects Kong, Gravitee, webMethods, or explicit opt-in Envoy loopback ADS without routing deployment commands over Kafka.
+- **Multi-Gateway Orchestration ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern))**: The Control Plane provides 6 Python gateway adapters (Kong, Gravitee, webMethods, Apigee, AWS API Gateway, Azure APIM), while the on-site `stoa-connect` Go agent implements route adapters for Kong, Gravitee (no Gravitee client in production yet; HTTP `409` route conflicts are masked), and webMethods, plus explicit opt-in Envoy loopback ADS — Link policy application is rejected (`unsupported` in `policy_contract.go`) for Kong and Gravitee, and active for webMethods and Envoy ADS v1 filters (`cors`, `rate_limit`, `ip_filter`), without routing deployment commands over Kafka.
 - **No Redis Dependency**: Rate-limiting, JWKS, and token caches operate in-process; STOA does not deploy or require Redis.
 
 ### Public Git Repositories

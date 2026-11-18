@@ -118,8 +118,8 @@ Dans les déploiements multi-passerelles, les 6 adaptateurs du Control Plane ([A
 Conformément à [ADR-074](/docs/architecture/adr/adr-074-tenant-model) (qui remplace l'ancienne ébauche d'un realm par tenant d'ADR-026), STOA utilise un **unique realm Keycloak partagé `stoa`** (`KEYCLOAK_REALM=stoa`) avec appartenance par groupe :
 
 - **Un groupe Keycloak racine par tenant** — Provisionné sous `/<tenant_id>` par `setup_tenant_group` (`TenantProvisioningService`) lors de la création du tenant (`POST /v1/tenants`), tandis que `add_user_to_tenant` renseigne l'attribut utilisateur `tenant_id` projeté dans le JWT
-- **Claim JWT `tenant_id` vérifié** — Extrait après vérification de la signature RS256 JWKS et de l'émetteur (`extract_tenant_from_jwt`), jamais accepté depuis un en-tête non vérifié
-- **Contrôle strict de frontière tenant** — `require_tenant_access` dans l'API Control Plane et `enforce_tenant_isolation` sur les routes scopées de la passerelle rejettent les accès inter-tenant (`403`) hors rôle plateforme `cpi-admin` (tandis que MCP `tools/list` filtre toujours strictement par `tenant_id` vérifié, même pour `cpi-admin`)
+- **Claim JWT `tenant_id` vérifié** — Lu depuis les claims du JWT après vérification de la signature RS256 JWKS et de l'émetteur (`Claims::tenant_id()` / `require_tenant` dans `stoa-gateway`, `get_current_user` dans `control-plane-api`), jamais accepté depuis un en-tête ou paramètre non vérifié
+- **Contrôle strict de frontière tenant** — Le RBAC du Control Plane (`require_tenant_access`, ainsi que `RbacEnforcer` côté Rust lorsque le champ de configuration RBAC `enforce_tenant_isolation` est activé) rejette les accès inter-tenant (`403`) hors rôle plateforme `cpi-admin` ; en revanche, MCP `tools/list`, `ext_authz` gRPC Envoy et les routes REST UAC publiées exigent un `tenant_id` vérifié correspondant au tenant/route cible, sans présumer ce bypass `cpi-admin`
 - **Courtage multi-IdP** — La fédération d'identités externes est démontrée uniquement dans les realms de démonstration dédiés (profil `federation` de `deploy/docker-compose/`, non attestée dans l'import du realm produit `stoa`) plutôt que via un realm par tenant
 
 ### 5. Isolation des données
@@ -134,7 +134,7 @@ Le modèle RBAC de STOA combine des rôles à l'échelle de la plateforme et des
 
 | Rôle | Scope | Permissions |
 |------|-------|-------------|
-| `cpi-admin` | **Plateforme** | Accès complet à tous les tenants, toutes les opérations |
+| `cpi-admin` | **Plateforme (RBAC Control Plane)** | Administration inter-tenant dans l'API Control Plane (et contrôles `RbacEnforcer` Rust) |
 | `tenant-admin` | **Tenant** | Accès complet à son propre tenant uniquement |
 | `devops` | **Tenant** | Déployer et promouvoir au sein de son propre tenant |
 | `viewer` | **Tenant** | Accès en lecture seule à son propre tenant |
@@ -142,7 +142,7 @@ Le modèle RBAC de STOA combine des rôles à l'échelle de la plateforme et des
 Comportements clés :
 - Un `tenant-admin` pour le tenant `acme` **ne peut pas** voir les ressources du tenant `globex`
 - Un `viewer` peut parcourir les API et outils mais ne peut pas invoquer, créer ou modifier
-- Un `cpi-admin` voit tous les tenants et peut effectuer des opérations inter-tenant dans l'API Control Plane (l'appel MCP `tools/list` côté passerelle reste filtré sur le `tenant_id` du jeton)
+- Un `cpi-admin` voit tous les tenants et peut effectuer des opérations inter-tenant dans le RBAC du Control Plane (`require_tenant_access`) ; côté plan de données, MCP `tools/list`, `ext_authz` gRPC Envoy et les routes REST UAC exigent toujours un `tenant_id` vérifié correspondant au tenant/route cible
 - Le mode d'environnement (dev/staging/prod) restreint davantage les opérations — la production est en lecture seule par défaut
 
 ## Paramètres du tenant {#tenant-settings}

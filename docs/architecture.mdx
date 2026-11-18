@@ -31,7 +31,7 @@ STOA Platform follows a **cloud-native** architecture deployed on Kubernetes (or
 
 - **STOA Control Plane** — Python 3.11 / FastAPI management API, UAC contracts, catalog, 6 gateway adapters (Kong, Gravitee, webMethods, Apigee, AWS API Gateway, Azure APIM — [ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern)), and signed Ed25519 policy bundle issuance
 - **STOA Gateway (`stoa-gateway`)** — Rust/axum runtime (Production / Maintenance under [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)): MCP `2025-11-25`, contract REST routes, fail-closed tenant policies, and optional gRPC `ExtAuthzService`
-- **Upstream Envoy + STOA Link (`stoa-connect`)** — Target L4/L7 data plane via explicit opt-in loopback mTLS ADS ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)), alongside `stoa-connect` runtime adapters for Kong, Gravitee, and webMethods
+- **Upstream Envoy + STOA Link (`stoa-connect`)** — Target L4/L7 data plane via explicit opt-in loopback mTLS ADS ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)), alongside `stoa-connect` route adapters for Kong, Gravitee, and webMethods (Link policy sync is active for webMethods and Envoy ADS v1 filters, and rejected for Kong/Gravitee)
 - **Keycloak** — Single `stoa` realm, top-level `/<tenant_id>` groups, OIDC/OAuth2, and verified `tenant_id` JWT claims ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))
 
 ### Data Layer

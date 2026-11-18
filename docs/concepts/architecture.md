@@ -101,7 +101,7 @@ STOA operates a production Rust gateway while converging the L4/L7 proxy layer o
 
 **Delivered building blocks on `main`:**
 - **Rust `stoa-gateway`** handles MCP protocol sessions, REST contract routes, fail-closed tenant policy enforcement, and supervises an optional gRPC `envoy.service.auth.v3.Authorization` server (`ExtAuthzService`, enabled via `STOA_EXT_AUTHZ_GRPC_ADDR`, `STOA_EXT_AUTHZ_AUDIENCE`, and non-empty `STOA_EXT_AUTHZ_REQUIRED_SCOPES` in `prod`).
-- **STOA Link (`stoa-connect`)** opens an outbound SSE stream ([ADR-059](/docs/architecture/adr/adr-059-simplified-deployment-sse)) to the Control Plane to receive deployment notifications, and embeds an explicit opt-in loopback mTLS ADS server (`STOA_GATEWAY_TYPE=envoy`) alongside its Go runtime adapters for **Kong, Gravitee, and webMethods** (while the broader 6-adapter set runs in the Control Plane). Full policy parity and default topology migration remain distinct milestones ([Data Plane Architecture](/docs/architecture/data-plane)).
+- **STOA Link (`stoa-connect`)** opens an outbound SSE stream ([ADR-059](/docs/architecture/adr/adr-059-simplified-deployment-sse)) to the Control Plane to receive deployment notifications, and embeds an explicit opt-in loopback mTLS ADS server (`STOA_GATEWAY_TYPE=envoy`) alongside its Go route adapters for **Kong, Gravitee, and webMethods** (Link policy application is rejected as `unsupported` for Kong and Gravitee in `policy_contract.go`, while the broader 6-adapter set runs in the Control Plane). Full policy parity and default topology migration remain distinct milestones ([Data Plane Architecture](/docs/architecture/data-plane)).
 
 ### Portal UI
 

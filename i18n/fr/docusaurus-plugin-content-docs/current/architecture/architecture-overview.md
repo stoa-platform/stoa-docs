@@ -77,7 +77,7 @@ flowchart TB
 | **Console Admin** | `console.<domaine>` | ✅ Production | React 19, TypeScript (`control-plane-ui/`) |
 | **Control Plane API** | `api.<domaine>` | ✅ Production | Python 3.11, FastAPI, SQLAlchemy (`control-plane-api/`) |
 | **STOA Gateway** | `mcp.<domaine>` / `:8080` | ✅ Production / Maintenance ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) | Rust, Tokio, axum, tonic (`stoa-gateway/`) |
-| **STOA Link (`stoa-connect`)** | Agent sur site / cluster (`:8090`) | ✅ Production (Kong/Gravitee/webMethods) / ADS Envoy sur option | Go 1.25 (`stoa-go/cmd/stoa-connect`) |
+| **STOA Link (`stoa-connect`)** | Agent sur site / cluster (`:8090`) | Adaptateurs de routes implémentés (Kong/Gravitee/webMethods) / ADS Envoy sur option | Go 1.25 (`stoa-go/cmd/stoa-connect`) |
 | **CLI `stoactl`** | Poste opérateur / CI | ✅ Production (compilé depuis `stoa-go/`) | Go 1.25 (`stoa-go/cmd/stoactl`) |
 | **`stoa-operator`** | Intra-cluster (`GatewayInstance`, `GatewayBinding`) | 🧪 Bêta | Python, Kopf (`stoa-operator/`) |
 | **Keycloak** | `auth.<domaine>` (realm `stoa`) | ✅ Production | Keycloak 26 ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
@@ -88,10 +88,10 @@ flowchart TB
 
 ### Garanties Architecturales Implémentées sur `main`
 
-- **Identité tenant sur realm unique ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))** : Un unique realm Keycloak partagé (`stoa`), un groupe Keycloak racine par tenant (`/<tenant_id>`, `setup_tenant_group`), des claims JWT `tenant_id` vérifiés (`require_tenant_access` en Python, `enforce_tenant_isolation` en Rust) et un schéma PostgreSQL partagé filtré par `tenant_id` (remplaçant l'ancienne ébauche d'un realm par tenant d'ADR-026).
+- **Identité tenant sur realm unique ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))** : Un unique realm Keycloak partagé (`stoa`), un groupe Keycloak racine par tenant (`/<tenant_id>`, `setup_tenant_group`), des claims JWT `tenant_id` vérifiés (`Claims::tenant_id()` / `require_tenant` sur la passerelle et `require_tenant_access` en Python, `enforce_tenant_isolation` désignant le champ booléen de configuration `RbacPolicy` Rust) et un schéma PostgreSQL partagé filtré par `tenant_id` (remplaçant l'ancienne ébauche d'un realm par tenant d'ADR-026).
 - **Posture passerelle fail-closed ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture))** : `stoa-gateway` vérifie les artefacts de politiques signés Ed25519 par tenant (`STOA_POLICY_BOOT_TENANTS`), impose `STOA_MCP_AUDIENCE` et maintient un spool WAL d'audit durable (`STOA_AUDIT_SPOOL_DIR`).
 - **MCP `2025-11-25` & Routes de contrats** : Streamable HTTP (`POST /mcp`), SSE (`/mcp/sse`), WebSocket sur option (`/mcp/ws` via `STOA_WEBSOCKET_ENABLED=true`) et déclaration transactionnelle REST + MCP (`POST /admin/contracts`).
-- **Orchestration multi-passerelles ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern))** : Le Control Plane embarque 6 adaptateurs Python (Kong, Gravitee, webMethods, Apigee, AWS API Gateway, Azure APIM), tandis que l'agent Go sur site `stoa-connect` sélectionne Kong, Gravitee, webMethods ou l'ADS Envoy opt-in explicite sans faire transiter l'orchestration par Kafka.
+- **Orchestration multi-passerelles ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern))** : Le Control Plane embarque 6 adaptateurs Python (Kong, Gravitee, webMethods, Apigee, AWS API Gateway, Azure APIM), tandis que l'agent Go sur site `stoa-connect` implémente les adaptateurs de routes pour Kong, Gravitee (aucun client Gravitee en production à ce jour ; les conflits HTTP `409` sur les routes sont masqués) et webMethods, ainsi que l'ADS Envoy opt-in explicite — l'application des politiques par Link est refusée (`unsupported` dans `policy_contract.go`) pour Kong et Gravitee, et active pour webMethods ainsi que les filtres Envoy ADS v1 (`cors`, `rate_limit`, `ip_filter`), sans faire transiter l'orchestration par Kafka.
 - **Aucune dépendance Redis** : Les caches de limitation de débit, JWKS et jetons résident en mémoire dans chaque processus ; STOA n'utilise pas Redis.
 
 ### Dépôts Git Publics
