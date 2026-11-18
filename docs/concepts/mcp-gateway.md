@@ -97,13 +97,12 @@ sequenceDiagram
 
 ## Multi-Tenant Tool Visibility
 
-Each authenticated caller only sees tools scoped to its verified `tenant_id` (or global tools), unless granted platform-wide admin access:
+On `stoa-gateway`, MCP `tools/list` always filters tools by the caller's verified `tenant_id` claim (plus global tools), even when the caller holds `cpi-admin` (`mcp/handlers.rs`, `auth/tenant.rs`; cross-tenant `cpi-admin` visibility applies only to Control Plane API endpoints):
 
 | Tenant | Visible Tools |
 |--------|---------------|
 | **Parzival** (`high-five`) | `stoa_*`, `high-five:*` |
 | **Sorrento** (`ioi`) | `stoa_*`, `ioi:*` |
-| **Halliday** (`cpi-admin`) | Cross-tenant administrative visibility |
 
 ## Configuration
 

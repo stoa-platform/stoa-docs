@@ -30,29 +30,29 @@ STOA utilise **Keycloak 26** pour l'authentification centralisée et l'autorisat
 │  ├── stoactl           (Public, PKCE / Device)           │
 │  └── stoa-mcp / clients API (Confidentiels ou DCR)       │
 ├──────────────────────────────────────────────────────────┤
-│  Groupes Tenants (1 groupe par tenant → claim tenant_id):│
-│  ├── /tenants/acme                                       │
-│  ├── /tenants/globex                                     │
-│  └── /tenants/initech                                    │
+│  Groupes Tenants racine (+ attribut utilisateur tenant_id):│
+│  ├── /acme                                               │
+│  ├── /globex                                             │
+│  └── /initech                                            │
 └──────────────────────────────────────────────────────────┘
 ```
 
 :::info Fédération d'IdP externes
-Le courtage multi-IdP (OIDC, SAML, LDAP) se rattache au realm partagé `stoa` et est démontré séparément dans le profil `federation` de `deploy/docker-compose/` plutôt que via un realm par tenant ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)).
+Le courtage multi-IdP (OIDC, SAML, LDAP) est démontré uniquement dans des realms de démonstration dédiés (profil `federation` de `deploy/docker-compose/`) et n'est pas attesté dans l'import du realm produit `stoa` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)).
 :::
 
 ## Configurer OIDC pour une API {#setup-oidc-for-an-api}
 
 ### Étape 1 : Provisionner un tenant et son groupe
 
-La création d'un tenant via `stoactl` ou l'API Control Plane déclenche `TenantProvisioningService`, qui crée le groupe Keycloak correspondant dans le realm `stoa` :
+La création d'un tenant via `stoactl` ou l'API Control Plane déclenche `TenantProvisioningService`, qui crée le groupe Keycloak racine correspondant (`/<tenant_id>`) dans le realm `stoa` (`keycloak_service.py:setup_tenant_group`), tandis que `add_user_to_tenant` renseigne l'attribut utilisateur `tenant_id` projeté dans le claim JWT :
 
 ```bash
 # Authentifier stoactl auprès du realm stoa
 stoactl auth login
 
-# Créer un tenant (provisionne le groupe Keycloak du tenant)
-stoactl tenant create --name acme --display-name "Acme Corp"
+# Créer un tenant (--name et --owner-email sont obligatoires ; crée le groupe Keycloak /acme)
+stoactl tenant create --name acme --display-name "Acme Corp" --owner-email admin@example.com
 stoactl tenant status acme
 ```
 
@@ -64,12 +64,13 @@ Configurez `stoa-gateway` pour valider les jetons émis par le realm `stoa` et e
 STOA_KEYCLOAK_URL=https://auth.example.com
 STOA_KEYCLOAK_REALM=stoa
 STOA_MCP_AUDIENCE=stoa-mcp
-# Optionnel : pour activer le serveur gRPC ext_authz destiné à Envoy (ADR-073)
+# Optionnel : pour activer le serveur gRPC ext_authz destiné à Envoy (ADR-073 ; audience + scopes non vides requis en prod)
 STOA_EXT_AUTHZ_GRPC_ADDR=127.0.0.1:9001
 STOA_EXT_AUTHZ_AUDIENCE=stoa-api
+STOA_EXT_AUTHZ_REQUIRED_SCOPES=stoa:read
 ```
 
-Pour exposer une route REST protégée par JWT sur `stoa-gateway`, déclarez un contrat avec `"inboundAuth": "jwt"` via `POST /admin/contracts` (tel que vérifié par `quickstart/verify.sh`) :
+Pour exposer une route REST protégée par JWT sur `stoa-gateway`, déclarez un contrat UAC avec `"inboundAuth": "jwt"` via `POST /admin/contracts` (conforme à `quickstart/verify.sh`) :
 
 ```bash
 curl -sS -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
@@ -78,15 +79,17 @@ curl -sS -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
   -d '{
     "name": "orders-api",
     "version": "1.0.0",
-    "tenantId": "acme",
+    "tenant_id": "acme",
+    "status": "published",
+    "classification": "H",
     "inboundAuth": "jwt",
-    "bindings": {
-      "rest": {
-        "enabled": true,
-        "pathPrefix": "/apis/acme/orders",
-        "backendUrl": "http://orders-backend:8080"
+    "endpoints": [
+      {
+        "path": "/orders",
+        "methods": ["GET"],
+        "backend_url": "http://orders-backend:8080"
       }
-    }
+    ]
   }'
 ```
 
@@ -104,7 +107,7 @@ TOKEN=$(curl -sS -X POST \
   | jq -r '.access_token')
 
 # Appeler la route passerelle protégée par JWT
-curl -i "${STOA_GATEWAY_URL}/apis/acme/orders" \
+curl -i "${STOA_GATEWAY_URL}/orders" \
   -H "Authorization: Bearer ${TOKEN}"
 ```
 

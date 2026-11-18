@@ -22,7 +22,7 @@ STOA est une passerelle API et une plateforme de gestion cloud-native construite
 - **MCP Gateway** — Les agents IA découvrent et invoquent vos API via le Model Context Protocol, avec génération automatique de schémas et enregistrement d'outils
 - **Isolation multi-tenant** — Realm Keycloak unique `stoa` avec un groupe par tenant, claim JWT `tenant_id` vérifié, schéma PostgreSQL partagé filtré par `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) et artefacts de politiques signés par tenant ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture))
 - **Configuration GitOps-first** — Toutes les définitions d'API, politiques et configurations de tenants sont gérées de manière déclarative via Git et ArgoCD
-- **Authentification OIDC/OAuth2** — Keycloak intégré (realm `stoa`) pour l'authentification OIDC/OAuth2 standard ; le courtage multi-IdP est démontré séparément dans la topologie de fédération
+- **Authentification OIDC/OAuth2** — Keycloak intégré (realm `stoa`) pour l'authentification OIDC/OAuth2 standard ; le courtage multi-IdP est démontré uniquement dans des realms de fédération dédiés
 - **Portail développeur** — Découverte d'API en libre-service, consultation de la documentation et gestion des abonnements pour les développeurs et consommateurs d'API
 - **Observabilité entreprise** — Métriques Prometheus, tableaux de bord Grafana et OpenSearch pour les logs et snapshots d'erreurs — le tout intégré
 
@@ -44,7 +44,7 @@ STOA est une passerelle API et une plateforme de gestion cloud-native construite
 │   STOA Gateway (Rust, maint.)   STOA Link (stoa-connect)     │
 │   • MCP & REST + ext_authz gRPC • Envoy xDS ADS (ADR-073)    │
 │   • Rate Limiting & OPA         • webMethods / Kong          │
-│   • Politiques fail-closed      • Gravitee / Apigee          │
+│   • Politiques fail-closed      • Gravitee                   │
 │                                                              │
 └──────────────────────────────────────────────────────────────┘
 ```

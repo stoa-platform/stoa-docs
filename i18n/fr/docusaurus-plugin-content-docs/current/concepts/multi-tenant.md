@@ -111,16 +111,16 @@ La passerelle STOA applique les frontières des tenants aux couches API et MCP :
 - **Limites de débit séparées** — Application des quotas par tenant
 - **Politiques indépendantes** — Les politiques OPA évaluent le contexte du tenant
 
-Dans les déploiements multi-passerelles, `stoa-connect` (STOA Link) et les adaptateurs de passerelle (Kong, Gravitee, webMethods, Apigee, Envoy xDS) propagent le périmètre tenant vers chaque passerelle cible.
+Dans les déploiements multi-passerelles, les 6 adaptateurs du Control Plane ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern)) et l'agent sur site `stoa-connect` (STOA Link : Kong, Gravitee, webMethods et Envoy xDS sur option explicite) propagent le périmètre tenant vers chaque passerelle cible.
 
 ### 4. Isolation de l'authentification
 
 Conformément à [ADR-074](/docs/architecture/adr/adr-074-tenant-model) (qui remplace l'ancienne ébauche d'un realm par tenant d'ADR-026), STOA utilise un **unique realm Keycloak partagé `stoa`** (`KEYCLOAK_REALM=stoa`) avec appartenance par groupe :
 
-- **Un groupe Keycloak par tenant** — Provisionné par `setup_tenant_group` (`TenantProvisioningService`) lors de la création du tenant (`POST /v1/tenants`)
+- **Un groupe Keycloak racine par tenant** — Provisionné sous `/<tenant_id>` par `setup_tenant_group` (`TenantProvisioningService`) lors de la création du tenant (`POST /v1/tenants`), tandis que `add_user_to_tenant` renseigne l'attribut utilisateur `tenant_id` projeté dans le JWT
 - **Claim JWT `tenant_id` vérifié** — Extrait après vérification de la signature RS256 JWKS et de l'émetteur (`extract_tenant_from_jwt`), jamais accepté depuis un en-tête non vérifié
-- **Contrôle strict de frontière tenant** — `require_tenant_access` dans l'API Control Plane et `enforce_tenant_isolation` dans `stoa-gateway` rejettent les accès inter-tenant (`403`) hors rôle plateforme `cpi-admin`
-- **Courtage multi-IdP** — La fédération d'identités externes est démontrée séparément dans la topologie de fédération (profil `federation` de `deploy/docker-compose/`) plutôt que via un realm par tenant
+- **Contrôle strict de frontière tenant** — `require_tenant_access` dans l'API Control Plane et `enforce_tenant_isolation` sur les routes scopées de la passerelle rejettent les accès inter-tenant (`403`) hors rôle plateforme `cpi-admin` (tandis que MCP `tools/list` filtre toujours strictement par `tenant_id` vérifié, même pour `cpi-admin`)
+- **Courtage multi-IdP** — La fédération d'identités externes est démontrée uniquement dans les realms de démonstration dédiés (profil `federation` de `deploy/docker-compose/`, non attestée dans l'import du realm produit `stoa`) plutôt que via un realm par tenant
 
 ### 5. Isolation des données
 
@@ -142,7 +142,7 @@ Le modèle RBAC de STOA combine des rôles à l'échelle de la plateforme et des
 Comportements clés :
 - Un `tenant-admin` pour le tenant `acme` **ne peut pas** voir les ressources du tenant `globex`
 - Un `viewer` peut parcourir les API et outils mais ne peut pas invoquer, créer ou modifier
-- Un `cpi-admin` voit tous les tenants et peut effectuer des opérations inter-tenant
+- Un `cpi-admin` voit tous les tenants et peut effectuer des opérations inter-tenant dans l'API Control Plane (l'appel MCP `tools/list` côté passerelle reste filtré sur le `tenant_id` du jeton)
 - Le mode d'environnement (dev/staging/prod) restreint davantage les opérations — la production est en lecture seule par défaut
 
 ## Paramètres du tenant {#tenant-settings}

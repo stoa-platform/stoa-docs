@@ -90,14 +90,14 @@ stoaGateway:
 | `/mcp` | GET, POST | Découverte (`GET`) & Streamable HTTP JSON-RPC 2.0 (`POST`) |
 | `/mcp/sse` | GET, POST, DELETE | Transport SSE & session JSON-RPC |
 | `/mcp/ws` | GET | WebSocket JSON-RPC sur option (`STOA_WEBSOCKET_ENABLED=true`) |
-| `/oauth/authorize` | GET | Proxy OIDC (vers le realm Keycloak `stoa`) |
 | `/oauth/token` | POST | Proxy de jetons (vers le realm Keycloak `stoa`) |
+| `/oauth/par` | POST | Proxy Pushed Authorization Request (vers le realm Keycloak `stoa`) |
 | `/oauth/register` | POST | Enregistrement dynamique de clients |
 | `/admin/*` | Divers | [API Admin Gateway](/docs/api/gateway-admin-api) (Bearer `STOA_ADMIN_API_TOKEN`) |
 | `/health`, `/ready` | GET | Sondes de vivacité et de disponibilité fail-closed |
 | `/metrics` | GET | Métriques Prometheus |
 
-*(Lorsque `STOA_EXT_AUTHZ_GRPC_ADDR` et `STOA_EXT_AUTHZ_AUDIENCE` sont définis, `stoa-gateway` supervise également un écouteur gRPC `envoy.service.auth.v3.Authorization` pour Envoy upstream selon [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane).)*
+*(Note : `GET /oauth/authorize` renvoie `404` sur `stoa-gateway` ; `/.well-known/oauth-authorization-server` renvoie directement l'endpoint d'autorisation Keycloak `/realms/stoa/protocol/openid-connect/auth`. Lorsque `STOA_EXT_AUTHZ_GRPC_ADDR`, `STOA_EXT_AUTHZ_AUDIENCE` et `STOA_EXT_AUTHZ_REQUIRED_SCOPES` non vide en `prod` sont définis, `stoa-gateway` supervise également un écouteur gRPC `envoy.service.auth.v3.Authorization` pour Envoy upstream selon [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane).)*
 
 ### Quand Utiliser
 

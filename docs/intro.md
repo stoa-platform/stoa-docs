@@ -22,7 +22,7 @@ STOA is a cloud-native API gateway and management platform built on Kubernetes. 
 - **MCP Gateway** — AI agents discover and invoke your APIs via the Model Context Protocol, with automatic schema generation and tool registration
 - **Multi-Tenant Isolation** — Shared `stoa` Keycloak realm with per-tenant groups, verified `tenant_id` JWT claims, shared PostgreSQL schema scoped by `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)), and signed per-tenant gateway policy artifacts ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture))
 - **GitOps-First Configuration** — All API definitions, policies, and tenant configurations managed declaratively through Git and ArgoCD
-- **OIDC/OAuth2 Authentication** — Integrated Keycloak (`stoa` realm) for standards-based OIDC/OAuth2 authentication; multi-IdP brokering is demonstrated in the separate federation topology
+- **OIDC/OAuth2 Authentication** — Integrated Keycloak (`stoa` realm) for standards-based OIDC/OAuth2 authentication; multi-IdP brokering is demonstrated only in separate federation demo realms
 - **Developer Portal** — Self-service API discovery, documentation browsing, and subscription management for developers and API consumers
 - **Enterprise Observability** — Prometheus metrics, Grafana dashboards, and OpenSearch for logs and error snapshots — all built-in
 
@@ -44,7 +44,7 @@ STOA is a cloud-native API gateway and management platform built on Kubernetes. 
 │   STOA Gateway (Rust, maint.)   STOA Link (stoa-connect)     │
 │   • MCP & REST + ext_authz gRPC • Envoy xDS ADS (ADR-073)    │
 │   • Rate Limiting & OPA         • webMethods / Kong          │
-│   • Fail-Closed Policies        • Gravitee / Apigee          │
+│   • Fail-Closed Policies        • Gravitee                   │
 │                                                              │
 └──────────────────────────────────────────────────────────────┘
 ```

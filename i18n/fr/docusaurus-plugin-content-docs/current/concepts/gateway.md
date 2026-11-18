@@ -12,7 +12,7 @@ keywords: [STOA, passerelle, modes de déploiement, edge-mcp, sidecar, proxy, En
 STOA Gateway (`stoa-gateway/`, Rust/Tokio/axum) est le runtime de passerelle AI-native unifié en production depuis février 2026. Il expose quatre profils `STOA_GATEWAY_MODE` ([ADR-024](../architecture/adr/adr-024-gateway-unified-modes)) ainsi qu'un écouteur gRPC `ExtAuthzService` optionnel pour Envoy.
 
 :::info Évolution du plan de données (ADR-073)
-Dans le cadre d'[ADR-073 : Adoption d'Envoy comme plan de données principal](../architecture/adr/adr-073-adopt-envoy-data-plane), `stoa-gateway` est en **Production / Maintenance** tandis que les fonctions de proxy L4/L7 convergent vers **Envoy** upstream configuré via **STOA Link** (`stoa-connect` en ADS mTLS loopback) et autorisé par le serveur gRPC `ExtAuthzService` intégré à `stoa-gateway` (`STOA_EXT_AUTHZ_GRPC_ADDR` + `STOA_EXT_AUTHZ_AUDIENCE`). La parité complète des politiques et la bascule de topologie par défaut sont en cours ([Architecture du plan de données](../architecture/data-plane)).
+Dans le cadre d'[ADR-073 : Adoption d'Envoy comme plan de données principal](../architecture/adr/adr-073-adopt-envoy-data-plane), `stoa-gateway` est en **Production / Maintenance** tandis que les fonctions de proxy L4/L7 convergent vers **Envoy** upstream configuré via **STOA Link** (`stoa-connect` en ADS mTLS loopback) et autorisé par le serveur gRPC `ExtAuthzService` intégré à `stoa-gateway` (`STOA_EXT_AUTHZ_GRPC_ADDR`, `STOA_EXT_AUTHZ_AUDIENCE` et `STOA_EXT_AUTHZ_REQUIRED_SCOPES` non vide en `prod`). La parité complète des politiques et la bascule de topologie par défaut sont en cours ([Architecture du plan de données](../architecture/data-plane)).
 :::
 
 ## Vision architecturale
@@ -55,7 +55,7 @@ Le mode principal pour l'intégration des agents IA via le Model Context Protoco
 - Registre dynamique d'outils depuis les CRD Kubernetes (`Tool`, `ToolSet`, `Skill`) et synchronisation Control Plane
 - Authentification OAuth2/OIDC via Keycloak (realm `stoa`, claim `tenant_id` vérifié, [ADR-074](../architecture/adr/adr-074-tenant-model))
 - Application fail-closed des politiques signées Ed25519 par tenant ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) et évaluation OPA
-- Serveur gRPC `envoy.service.auth.v3.Authorization` optionnel (`STOA_EXT_AUTHZ_GRPC_ADDR` + `STOA_EXT_AUTHZ_AUDIENCE`)
+- Serveur gRPC `envoy.service.auth.v3.Authorization` optionnel (`STOA_EXT_AUTHZ_GRPC_ADDR` + `STOA_EXT_AUTHZ_AUDIENCE` + `STOA_EXT_AUTHZ_REQUIRED_SCOPES` non vide en `prod`)
 
 **Exemple** :
 ```bash
@@ -81,7 +81,7 @@ stoa-gateway
 Le même binaire démarre avec `STOA_GATEWAY_MODE=sidecar` et répond à `POST /authz` en HTTP. La passerelle hôte conserve l'authentification, le routage et l'application du verdict. Le moteur de décision HTTP compagnon n'évalue pas OPA et n'émet pas d'événements de métrologie Kafka.
 
 :::note Envoy `ext_authz` gRPC vs Compagnon HTTP
-`stoa-gateway` se configure exclusivement via les variables d'environnement `STOA_*` ou `config.yaml` (pas d'options CLI `--mode`). Pour le filtre natif gRPC `envoy.filters.http.ext_authz` d'Envoy ([ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane)), renseignez `STOA_EXT_AUTHZ_GRPC_ADDR` et `STOA_EXT_AUTHZ_AUDIENCE` plutôt que `POST /authz`. Voir [Usage du compagnon](../guides/companion-usage.md) pour les limites de `/authz` HTTP et [stoa-connect](../guides/stoa-connect-quickstart.md) pour la synchronisation Control Plane et l'ADS mTLS loopback.
+`stoa-gateway` se configure exclusivement via les variables d'environnement `STOA_*` ou `config.yaml` (pas d'options CLI `--mode`). Pour le filtre natif gRPC `envoy.filters.http.ext_authz` d'Envoy ([ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane)), renseignez `STOA_EXT_AUTHZ_GRPC_ADDR`, `STOA_EXT_AUTHZ_AUDIENCE` et `STOA_EXT_AUTHZ_REQUIRED_SCOPES` (requis non vide lorsque `STOA_ENVIRONMENT=prod`) plutôt que `POST /authz`. Voir [Usage du compagnon](../guides/companion-usage.md) pour les limites de `/authz` HTTP et [stoa-connect](../guides/stoa-connect-quickstart.md) pour la synchronisation Control Plane et l'ADS mTLS loopback.
 :::
 
 ```text
@@ -143,12 +143,14 @@ Observation passive du trafic pour la découverte d'API legacy et la génératio
 | `STOA_POLICY_ENABLED` | Appliquer les politiques d'outils signées Ed25519 par tenant ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) | `true` |
 | `STOA_POLICY_BOOT_TENANTS` | Liste CSV de tenants dont la politique signée est exigée au démarrage | Vide |
 | `STOA_EXT_AUTHZ_GRPC_ADDR` | Adresse socket gRPC `ExtAuthzService` optionnelle pour Envoy (`host:port`) | Non défini |
-| `STOA_EXT_AUTHZ_AUDIENCE` | Audience JWT `aud` requise pour les vérifications gRPC `ext_authz` | Non défini (fail-closed) |
+| `STOA_EXT_AUTHZ_AUDIENCE` | Audience JWT `aud` requise pour les vérifications gRPC `ext_authz` (obligatoire en `prod`) | Non défini (fail-closed) |
+| `STOA_EXT_AUTHZ_REQUIRED_SCOPES` | Liste CSV des scopes JWT requis sur `ext_authz` gRPC (obligatoire non vide en `prod`) | Vide |
+| `STOA_K8S_ENABLED` | Activer le watcher des CRD `Tool`/`ToolSet`/`Skill` (requiert la feature Cargo `k8s`) | `false` |
 | `STOA_KAFKA_ENABLED` | Activer le producteur interne de métrologie Kafka/Redpanda | `false` |
 
 ### CRD Kubernetes
 
-Lorsque `STOA_K8S_WATCHER_ENABLED=true`, `stoa-gateway` surveille les ressources `Tool`, `ToolSet` et `Skill` (`gostoa.dev/v1alpha1`) :
+Lorsqu'il est compilé avec la feature Cargo `k8s` et démarré avec `STOA_K8S_ENABLED=true`, `stoa-gateway` surveille les ressources `Tool`, `ToolSet` et `Skill` (`gostoa.dev/v1alpha1`) :
 
 ```yaml
 apiVersion: gostoa.dev/v1alpha1
@@ -161,6 +163,11 @@ spec:
   description: A sample tool
   endpoint: https://api.example.com/v1/action
   method: POST
+  inputSchema:
+    type: object
+    properties:
+      query:
+        type: string
 ```
 
 Voir la [Référence des CRD Kubernetes](../reference/crds) pour les cinq CRD (`Tool`, `ToolSet`, `Skill`, `GatewayInstance`, `GatewayBinding`).

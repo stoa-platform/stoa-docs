@@ -51,7 +51,7 @@ Ces composants ne sont requis que pour le modèle Entièrement Sur Site. En mode
 
 | Composant | Version | Objectif | Alternative |
 |-----------|---------|---------|-------------|
-| **PostgreSQL** | 16+ | Base de données Control Plane (schéma partagé filtré par `tenant_id`, [ADR-074](/docs/architecture/adr/adr-074-tenant-model)) | Tout PG géré (RDS, Cloud SQL, Azure DB) |
+| **PostgreSQL** | 15 / 16 | Base de données Control Plane (15 dans Compose complet / catalogue prod, 16 dans R1 minimal ; schéma partagé filtré par `tenant_id`, [ADR-074](/docs/architecture/adr/adr-074-tenant-model)) | Tout PG 15+ géré (RDS, Cloud SQL, Azure DB) |
 | **Redpanda / Kafka** | 24+ / 3.x | Bus interne d'événements pour la métrologie et l'audit ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka), optionnel) | Apache Kafka 3.x |
 | **OpenBao** | 2.7+ | Socle de secrets via l'API HTTP Vault ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao), optionnel) | HashiCorp Vault |
 | **OpenSearch** | 2.11+ | Logs et recherche (optionnel) | Elasticsearch 8.x |
@@ -351,7 +351,7 @@ Votre Responsabilité (tout)
 
 ### Base de Données (Entièrement Sur Site uniquement)
 
-- [ ] PostgreSQL 16+ provisionné
+- [ ] PostgreSQL 15+ provisionné (15 dans Compose complet / catalogue prod, 16 dans R1 minimal)
 - [ ] Deux bases de données créées : `stoa_production`, `keycloak`
 - [ ] Chaîne de connexion disponible (host, port, utilisateur, mot de passe)
 - [ ] SSL/TLS activé pour les connexions DB

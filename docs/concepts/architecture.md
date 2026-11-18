@@ -46,7 +46,8 @@ flowchart TB
     Dev & Admin --> Portal & Console
     AI --> MCPGateway & EnvoyLink
     Portal & Console --> CoreAPI
-    CoreAPI -->|"config & signed policies"| MCPGateway & EnvoyLink
+    MCPGateway -->|"fetch signed policies & routes"| CoreAPI
+    EnvoyLink -->|"outbound SSE & sync (ADR-059)"| CoreAPI
     EnvoyLink -.->|"ext_authz gRPC"| MCPGateway
     MCPGateway & EnvoyLink --> Tools
     CoreAPI --> PG & Kafka & KC & Vault
@@ -74,9 +75,9 @@ The central management API built with **Python** and **FastAPI** (`control-plane
 
 | Aspect | Details |
 |--------|---------|
-| Language | Python 3.12+ |
+| Language | Python 3.11 (`requires-python >= 3.11`) |
 | Framework | FastAPI (async) |
-| Database | PostgreSQL + SQLAlchemy (shared schema scoped by `tenant_id`) |
+| Database | PostgreSQL 15 / 16 + SQLAlchemy (shared schema scoped by `tenant_id`) |
 | Event Streaming | Redpanda / Kafka ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)) |
 | Auth | Keycloak OIDC (`stoa` realm, [ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
 
@@ -84,7 +85,7 @@ The central management API built with **Python** and **FastAPI** (`control-plane
 - Subscription and API catalog management
 - Tenant provisioning (`setup_tenant_group` in Keycloak)
 - Signed Ed25519 gateway policy bundle issuance ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture))
-- Multi-gateway orchestration ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern))
+- Multi-gateway orchestration across 6 Control Plane adapters: Kong, Gravitee, webMethods, Apigee, AWS API Gateway, and Azure APIM ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern))
 - Usage tracking and audit trails
 
 ### STOA Gateway & Envoy Data Plane
@@ -95,12 +96,12 @@ STOA operates a production Rust gateway while converging the L4/L7 proxy layer o
 |--------|-------------------------------------|-------------------------------------------|
 | Implementation | Rust (`Tokio` + `axum`) | Upstream Envoy + `stoa-connect` (Go xDS ADS) + Rust `ext_authz` gRPC |
 | Lifecycle | Production / Maintenance | Opt-in runtime blocks implemented; topology cut-over in progress |
-| Policy Engine | Signed Ed25519 policy bundles ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) + OPA | Envoy native filters (`cors`, `rate_limit`, `ip_filter`) + gRPC `ExtAuthzService` |
+| Policy Engine | Signed Ed25519 policy bundles ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) + OPA | Envoy native filters (`cors`, `rate_limit`, `ip_filter`) + gRPC `ExtAuthzService` (JWT, `tenant_id`, audience/scopes & `DecisionEngine`; MCP tool permissions remain separate per [ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) |
 | Protocols | MCP (`POST /mcp`, `/mcp/sse`, opt-in `/mcp/ws`), REST, A2A | HTTP/1.1, HTTP/2, gRPC, MCP module behind Envoy |
 
 **Delivered building blocks on `main`:**
-- **Rust `stoa-gateway`** handles MCP protocol sessions, REST contract routes, fail-closed tenant policy enforcement, and supervises an optional gRPC `envoy.service.auth.v3.Authorization` server (`ExtAuthzService`, enabled via `STOA_EXT_AUTHZ_GRPC_ADDR` and `STOA_EXT_AUTHZ_AUDIENCE`).
-- **STOA Link (`stoa-connect`)** embeds a loopback mTLS ADS server (`STOA_GATEWAY_TYPE=envoy`) alongside third-party gateway adapters (Kong, Gravitee, webMethods, Apigee, AWS API Gateway, Azure APIM). Full policy parity and default topology migration remain distinct milestones ([Data Plane Architecture](/docs/architecture/data-plane)).
+- **Rust `stoa-gateway`** handles MCP protocol sessions, REST contract routes, fail-closed tenant policy enforcement, and supervises an optional gRPC `envoy.service.auth.v3.Authorization` server (`ExtAuthzService`, enabled via `STOA_EXT_AUTHZ_GRPC_ADDR`, `STOA_EXT_AUTHZ_AUDIENCE`, and non-empty `STOA_EXT_AUTHZ_REQUIRED_SCOPES` in `prod`).
+- **STOA Link (`stoa-connect`)** opens an outbound SSE stream ([ADR-059](/docs/architecture/adr/adr-059-simplified-deployment-sse)) to the Control Plane to receive deployment notifications, and embeds an explicit opt-in loopback mTLS ADS server (`STOA_GATEWAY_TYPE=envoy`) alongside its Go runtime adapters for **Kong, Gravitee, and webMethods** (while the broader 6-adapter set runs in the Control Plane). Full policy parity and default topology migration remain distinct milestones ([Data Plane Architecture](/docs/architecture/data-plane)).
 
 ### Portal UI
 
@@ -222,13 +223,13 @@ kubectl get pods -n stoa-system
 
 | Layer | Technology | Notes |
 |-------|------------|-------|
-| Control Plane | Python 3.12+, FastAPI | Management API (`control-plane-api/`) |
+| Control Plane | Python 3.11, FastAPI | Management API (`control-plane-api/`) |
 | Data Plane (current) | Rust, Tokio, axum | `stoa-gateway` (maintenance, MCP + REST + `ext_authz` gRPC) |
 | Data Plane (target) | Upstream Envoy + Go (`stoa-connect`) | Loopback mTLS xDS ADS + external services ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
 | Kubernetes Operator | Python, Kopf | `stoa-operator` (Beta, reconciles `GatewayInstance` / `GatewayBinding`) |
 | CLI & Link Agent | Go 1.25 | `stoactl` & `stoa-connect` (`stoa-go/`) |
 | Frontend | React 19, TypeScript, Tailwind | Developer Portal & Admin Console |
-| Database | PostgreSQL 16+ | Shared schema scoped by `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
+| Database | PostgreSQL 15 / 16 | 15 in full Compose / prod catalog, 16 in minimal R1; shared schema scoped by `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
 | Event Streaming | Redpanda (Kafka API) | Internal event backbone ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)) |
 | Auth | Keycloak 26 | Single `stoa` realm + per-tenant groups ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
 | Secrets | OpenBao 2.7.2 / HashiCorp Vault | Vault HTTP API ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao), partial rollout) |

@@ -29,17 +29,17 @@ STOA Platform follows a **cloud-native** architecture deployed on Kubernetes (or
 
 ### Main Components
 
-- **STOA Control Plane** — Python/FastAPI management API, UAC contracts, catalog, and signed Ed25519 policy bundle issuance
+- **STOA Control Plane** — Python 3.11 / FastAPI management API, UAC contracts, catalog, 6 gateway adapters (Kong, Gravitee, webMethods, Apigee, AWS API Gateway, Azure APIM — [ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern)), and signed Ed25519 policy bundle issuance
 - **STOA Gateway (`stoa-gateway`)** — Rust/axum runtime (Production / Maintenance under [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)): MCP `2025-11-25`, contract REST routes, fail-closed tenant policies, and optional gRPC `ExtAuthzService`
-- **Upstream Envoy + STOA Link (`stoa-connect`)** — Target L4/L7 data plane via loopback mTLS ADS ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)), plus multi-gateway adapters (Kong, Gravitee, webMethods, Apigee, AWS, Azure)
-- **Keycloak** — Single `stoa` realm, per-tenant groups, OIDC/OAuth2, and verified `tenant_id` JWT claims ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))
+- **Upstream Envoy + STOA Link (`stoa-connect`)** — Target L4/L7 data plane via explicit opt-in loopback mTLS ADS ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)), alongside `stoa-connect` runtime adapters for Kong, Gravitee, and webMethods
+- **Keycloak** — Single `stoa` realm, top-level `/<tenant_id>` groups, OIDC/OAuth2, and verified `tenant_id` JWT claims ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))
 
 ### Data Layer
 
-- **PostgreSQL** — Shared schema scoped by `tenant_id` (contracts, tenants, subscriptions, audit)
+- **PostgreSQL** — Shared schema scoped by `tenant_id` (PostgreSQL 15 in full Compose / production catalog, 16 in minimal R1 `quickstart/`)
 - **OpenSearch** — Structured API logs, analytics, and audit search
 - **Redpanda (Kafka API)** — Asynchronous events and metering (🔒 Internal Only, [ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka))
-- **OpenBao (Vault API)** — Secrets and credentials ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao), partial rollout; compatible with HashiCorp Vault)
+- **OpenBao (Vault API)** — Secrets and credentials ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao), MPL 2.0, partial rollout; compatible with HashiCorp Vault)
 
 *(Note: STOA does not deploy Redis.)*
 
@@ -49,7 +49,7 @@ Key architectural decisions are documented in the [ADR Index](/docs/architecture
 
 - **[ADR-073: Adopt Envoy as Primary Data Plane](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)** — Upstream Envoy + STOA Link xDS + external services
 - **[ADR-074: Single Keycloak Realm & Tenant Group Model](/docs/architecture/adr/adr-074-tenant-model)** — Shared `stoa` realm, per-tenant groups, `tenant_id` scoping
-- **[ADR-075: Secrets Backend — OpenBao via Vault API](/docs/architecture/adr/adr-075-secrets-backend-openbao)** — Self-hosted Apache 2.0 secrets store
+- **[ADR-075: Secrets Backend — OpenBao via Vault API](/docs/architecture/adr/adr-075-secrets-backend-openbao)** — Self-hosted MPL 2.0 secrets store via Vault HTTP API
 - **[ADR-070: Gateway Fail-Closed Posture](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)** — Signed Ed25519 per-tenant policy enforcement
 - **[ADR-005: Event-Driven Kafka Architecture](/docs/architecture/adr/adr-005-event-driven-kafka)** — Internal-only Redpanda/Kafka event streaming
 - **[ADR-035: Gateway Adapter Pattern](/docs/architecture/adr/adr-035-gateway-adapter-pattern)** — Unified multi-gateway orchestration
@@ -61,7 +61,7 @@ Key architectural decisions are documented in the [ADR Index](/docs/architecture
 The delivery pipeline follows a **GitOps** approach:
 
 1. **Source** — `stoa-platform/stoa` on GitHub (monorepo including `charts/stoa-platform` and `charts/stoa-observability`)
-2. **Build & Test** — GitHub Actions (lint, unit/integration tests, security scans, Envoy xDS real-proof workflow)
+2. **Build & Test** — GitHub Actions (lint, unit/integration tests, security scans, plus a manual `workflow_dispatch` offline Envoy + Link xDS acceptance harness)
 3. **Package** — Signed, digest-pinned container images on GHCR (`ghcr.io/stoa-platform/*@sha256:...`)
 4. **Deploy** — Argo CD declarative sync ([ADR-007](/docs/architecture/adr/adr-007-gitops-argocd))
 
@@ -85,11 +85,10 @@ The MCP Gateway enables governed AI agent integration:
 
 ### Multi-Tenant Isolation
 
-Each tenant only sees tools scoped to its verified `tenant_id`:
+On `stoa-gateway`, MCP `tools/list` always filters tools by the caller's verified `tenant_id` claim (even when the caller holds `cpi-admin`; cross-tenant `cpi-admin` visibility applies only to Control Plane administrative APIs):
 
 - **Parzival (`ioi`)** — `stoa_*`, `ioi:billing:*`, `ioi:inventory:*`
 - **Sorrento (`gregarious`)** — `stoa_*`, `greg:oasis:*`, `greg:sixers:*`
-- **Halliday (`cpi-admin`)** — Cross-tenant administrative visibility
 
 ## Additional Resources
 

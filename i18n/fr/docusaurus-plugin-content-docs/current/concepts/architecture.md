@@ -46,7 +46,8 @@ flowchart TB
     Dev & Admin --> Portal & Console
     AI --> MCPGateway & EnvoyLink
     Portal & Console --> CoreAPI
-    CoreAPI -->|"sync config & politiques signées"| MCPGateway & EnvoyLink
+    MCPGateway -->|"lecture politiques signées & routes"| CoreAPI
+    EnvoyLink -->|"SSE sortant & sync (ADR-059)"| CoreAPI
     EnvoyLink -.->|"ext_authz gRPC"| MCPGateway
     MCPGateway & EnvoyLink --> Tools
     CoreAPI --> PG & Kafka & KC & Vault
@@ -74,9 +75,9 @@ L'API centrale de gestion construite avec **Python** et **FastAPI** (`control-pl
 
 | Aspect | Détails |
 |--------|---------|
-| Langage | Python 3.12+ |
+| Langage | Python 3.11 (`requires-python >= 3.11`) |
 | Framework | FastAPI (asynchrone) |
-| Base de données | PostgreSQL + SQLAlchemy (schéma partagé filtré par `tenant_id`) |
+| Base de données | PostgreSQL 15 / 16 + SQLAlchemy (schéma partagé filtré par `tenant_id`) |
 | Streaming d'événements | Redpanda / Kafka ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)) |
 | Auth | Keycloak OIDC (realm `stoa`, [ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
 
@@ -84,7 +85,7 @@ L'API centrale de gestion construite avec **Python** et **FastAPI** (`control-pl
 - Gestion des abonnements et du catalogue d'API
 - Provisionnement des tenants (`setup_tenant_group` dans Keycloak)
 - Émission des artefacts de politiques passerelle signés Ed25519 ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture))
-- Orchestration multi-passerelles ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern))
+- Orchestration multi-passerelles via les 6 adaptateurs du Control Plane : Kong, Gravitee, webMethods, Apigee, AWS API Gateway et Azure APIM ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern))
 - Suivi de l'utilisation et pistes d'audit
 
 ### STOA Gateway & Plan de données Envoy
@@ -95,12 +96,12 @@ STOA exploite une passerelle Rust en production tout en faisant converger la cou
 |--------|--------------------------------------|-----------------------------------------------|
 | Implémentation | Rust (`Tokio` + `axum`) | Envoy upstream + `stoa-connect` (Go xDS ADS) + `ext_authz` gRPC Rust |
 | Cycle de vie | Production / Maintenance | Briques activables implémentées ; bascule de topologie en cours |
-| Moteur de politiques | Politiques signées Ed25519 ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) + OPA | Filtres natifs Envoy (`cors`, `rate_limit`, `ip_filter`) + `ExtAuthzService` gRPC |
+| Moteur de politiques | Politiques signées Ed25519 ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) + OPA | Filtres natifs Envoy (`cors`, `rate_limit`, `ip_filter`) + `ExtAuthzService` gRPC (JWT, `tenant_id`, audience/scopes & `DecisionEngine` ; permissions d'outils MCP distinctes selon [ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) |
 | Protocoles | MCP (`POST /mcp`, `/mcp/sse`, `/mcp/ws` sur option), REST, A2A | HTTP/1.1, HTTP/2, gRPC, module MCP derrière Envoy |
 
 **Briques livrées sur `main` :**
-- **`stoa-gateway` (Rust)** assure les sessions MCP, les routes de contrats REST, l'application fail-closed des politiques par tenant, et supervise sur option un serveur gRPC `envoy.service.auth.v3.Authorization` (`ExtAuthzService`, activé via `STOA_EXT_AUTHZ_GRPC_ADDR` et `STOA_EXT_AUTHZ_AUDIENCE`).
-- **STOA Link (`stoa-connect`)** embarque un serveur ADS mTLS sur loopback (`STOA_GATEWAY_TYPE=envoy`) aux côtés des adaptateurs vers les passerelles tierces (Kong, Gravitee, webMethods, Apigee, AWS API Gateway, Azure APIM). La parité complète des politiques et la migration de topologie par défaut restent des jalons distincts ([Architecture du plan de données](/docs/architecture/data-plane)).
+- **`stoa-gateway` (Rust)** assure les sessions MCP, les routes de contrats REST, l'application fail-closed des politiques par tenant, et supervise sur option un serveur gRPC `envoy.service.auth.v3.Authorization` (`ExtAuthzService`, activé via `STOA_EXT_AUTHZ_GRPC_ADDR`, `STOA_EXT_AUTHZ_AUDIENCE` et `STOA_EXT_AUTHZ_REQUIRED_SCOPES` non vide en `prod`).
+- **STOA Link (`stoa-connect`)** ouvre une connexion SSE sortante ([ADR-059](/docs/architecture/adr/adr-059-simplified-deployment-sse)) vers le Control Plane pour recevoir les notifications de déploiement, et embarque un serveur ADS mTLS sur loopback opt-in explicite (`STOA_GATEWAY_TYPE=envoy`) aux côtés de ses adaptateurs Go pour **Kong, Gravitee et webMethods** (les 6 adaptateurs complets résidant dans le Control Plane). La parité complète des politiques et la migration de topologie par défaut restent des jalons distincts ([Architecture du plan de données](/docs/architecture/data-plane)).
 
 ### Portail UI
 
@@ -222,13 +223,13 @@ kubectl get pods -n stoa-system
 
 | Couche | Technologie | Notes |
 |--------|-------------|-------|
-| Plan de contrôle | Python 3.12+, FastAPI | API de gestion (`control-plane-api/`) |
+| Plan de contrôle | Python 3.11, FastAPI | API de gestion (`control-plane-api/`) |
 | Plan de données (actuel) | Rust, Tokio, axum | `stoa-gateway` (maintenance, MCP + REST + `ext_authz` gRPC) |
 | Plan de données (cible) | Envoy upstream + Go (`stoa-connect`) | xDS ADS mTLS loopback + services externes ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
 | Opérateur Kubernetes | Python, Kopf | `stoa-operator` (Bêta, réconcilie `GatewayInstance` / `GatewayBinding`) |
 | CLI & Agent Link | Go 1.25 | `stoactl` & `stoa-connect` (`stoa-go/`) |
 | Frontend | React 19, TypeScript, Tailwind | Portail développeur & Console admin |
-| Base de données | PostgreSQL 16+ | Schéma partagé filtré par `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
+| Base de données | PostgreSQL 15 / 16 | 15 dans le Compose complet / catalogue prod, 16 dans R1 minimal ; schéma partagé filtré par `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
 | Streaming d'événements | Redpanda (API Kafka) | Bus interne d'événements ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)) |
 | Auth | Keycloak 26 | Realm unique `stoa` + groupes par tenant ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
 | Secrets | OpenBao 2.7.2 / HashiCorp Vault | API HTTP Vault ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao), déploiement partiel) |

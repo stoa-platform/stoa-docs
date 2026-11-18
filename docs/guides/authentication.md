@@ -30,29 +30,29 @@ STOA uses **Keycloak 26** for centralized authentication and tenant-scoped autho
 │  ├── stoactl           (Public, PKCE / Device)           │
 │  └── stoa-mcp / API clients (Confidential or DCR)        │
 ├──────────────────────────────────────────────────────────┤
-│  Tenant Groups (1 group per tenant → tenant_id claim):   │
-│  ├── /tenants/acme                                       │
-│  ├── /tenants/globex                                     │
-│  └── /tenants/initech                                    │
+│  Top-Level Tenant Groups (+ user tenant_id attribute):   │
+│  ├── /acme                                               │
+│  ├── /globex                                             │
+│  └── /initech                                            │
 └──────────────────────────────────────────────────────────┘
 ```
 
 :::info External IdP Federation
-Multi-IdP brokering (OIDC, SAML, LDAP) attaches to the shared `stoa` realm and is demonstrated separately in the `federation` profile of `deploy/docker-compose/` rather than through per-tenant realms ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)).
+Multi-IdP brokering (OIDC, SAML, LDAP) is demonstrated only in separate federation demo realms (`deploy/docker-compose/` profile `federation`) and is not attested in the production `stoa` realm import ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)).
 :::
 
 ## Setup OIDC for an API
 
 ### Step 1: Provision a Tenant and Group
 
-Creating a tenant via `stoactl` or the Control Plane API triggers `TenantProvisioningService`, which creates the corresponding Keycloak group in the `stoa` realm:
+Creating a tenant via `stoactl` or the Control Plane API triggers `TenantProvisioningService`, which creates the corresponding top-level Keycloak group (`/<tenant_id>`) in the `stoa` realm (`keycloak_service.py:setup_tenant_group`), while `add_user_to_tenant` sets the user's `tenant_id` attribute mapped into the JWT claim:
 
 ```bash
 # Authenticate stoactl against the stoa realm
 stoactl auth login
 
-# Create a tenant (provisions the Keycloak tenant group)
-stoactl tenant create --name acme --display-name "Acme Corp"
+# Create a tenant (--name and --owner-email are required; provisions the /acme Keycloak group)
+stoactl tenant create --name acme --display-name "Acme Corp" --owner-email admin@example.com
 stoactl tenant status acme
 ```
 
@@ -64,12 +64,13 @@ Configure `stoa-gateway` to validate tokens issued by the `stoa` realm and requi
 STOA_KEYCLOAK_URL=https://auth.example.com
 STOA_KEYCLOAK_REALM=stoa
 STOA_MCP_AUDIENCE=stoa-mcp
-# Optional: when running the Envoy gRPC ext_authz server (ADR-073)
+# Optional: when running the Envoy gRPC ext_authz server (ADR-073; audience + non-empty scopes required in prod)
 STOA_EXT_AUTHZ_GRPC_ADDR=127.0.0.1:9001
 STOA_EXT_AUTHZ_AUDIENCE=stoa-api
+STOA_EXT_AUTHZ_REQUIRED_SCOPES=stoa:read
 ```
 
-To expose a JWT-protected REST route on `stoa-gateway`, declare a contract with `"inboundAuth": "jwt"` via `POST /admin/contracts` (as exercised by `quickstart/verify.sh`):
+To expose a JWT-protected REST route on `stoa-gateway`, declare a UAC contract with `"inboundAuth": "jwt"` via `POST /admin/contracts` (matching `quickstart/verify.sh`):
 
 ```bash
 curl -sS -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
@@ -78,15 +79,17 @@ curl -sS -X POST "${STOA_GATEWAY_URL}/admin/contracts" \
   -d '{
     "name": "orders-api",
     "version": "1.0.0",
-    "tenantId": "acme",
+    "tenant_id": "acme",
+    "status": "published",
+    "classification": "H",
     "inboundAuth": "jwt",
-    "bindings": {
-      "rest": {
-        "enabled": true,
-        "pathPrefix": "/apis/acme/orders",
-        "backendUrl": "http://orders-backend:8080"
+    "endpoints": [
+      {
+        "path": "/orders",
+        "methods": ["GET"],
+        "backend_url": "http://orders-backend:8080"
       }
-    }
+    ]
   }'
 ```
 
@@ -104,7 +107,7 @@ TOKEN=$(curl -sS -X POST \
   | jq -r '.access_token')
 
 # Call the JWT-protected gateway route
-curl -i "${STOA_GATEWAY_URL}/apis/acme/orders" \
+curl -i "${STOA_GATEWAY_URL}/orders" \
   -H "Authorization: Bearer ${TOKEN}"
 ```
 

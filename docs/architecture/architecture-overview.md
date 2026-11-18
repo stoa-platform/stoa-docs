@@ -31,13 +31,13 @@ flowchart TB
     end
 
     subgraph Core["⚙️ Control Plane & Operator"]
-        API["Control Plane API<br/>api.example.com<br/>(FastAPI / Python 3.12+)"]
+        API["Control Plane API<br/>api.example.com<br/>(FastAPI / Python 3.11)"]
         Op["stoa-operator<br/>(Python / Kopf — Beta)"]
     end
 
     subgraph DP["🚀 Data Plane & Link"]
         GW["STOA Gateway<br/>mcp.example.com<br/>(Rust / Tokio / axum — Maintenance)"]
-        Link["STOA Link (stoa-connect, Go)<br/>Gateway Adapters + opt-in Envoy ADS"]
+        Link["STOA Link (stoa-connect, Go)<br/>Kong/Gravitee/webMethods + opt-in Envoy ADS"]
     end
 
     subgraph Auth["🔐 Identity & Secrets"]
@@ -46,8 +46,8 @@ flowchart TB
     end
 
     subgraph Data["💾 Data & Event Layer"]
-        PG["PostgreSQL 16+<br/>Shared schema + tenant_id"]
-        Kafka["Redpanda (Kafka API)<br/>Metering & Audit<br/>🔒 Internal Only (ADR-059)"]
+        PG["PostgreSQL 15 / 16<br/>Shared schema + tenant_id"]
+        Kafka["Redpanda (Kafka API)<br/>Metering & Audit<br/>🔒 Internal Only (ADR-005)"]
         OS["OpenSearch + Data Prepper<br/>Logs & Audit Search"]
     end
 
@@ -63,8 +63,8 @@ flowchart TB
     API --> KC & Vault & PG & Kafka & OS
     Op --> API
     GW --> KC & Kafka
-    API -->|"Signed policies & sync"| GW
-    Link <-->|"Heartbeat, pull & sync"| API
+    GW -->|"Fetch signed policies & routes"| API
+    Link -->|"Outbound SSE (ADR-059), pull & heartbeat"| API
     Core & DP --> Prom --> Graf
     Core & DP --> Tempo
 ```
@@ -75,23 +75,23 @@ flowchart TB
 |-----------|------------------|-----------|-------|
 | **Developer Portal** | `portal.<domain>` | ✅ Production | React 19, TypeScript (`portal/`) |
 | **Admin Console** | `console.<domain>` | ✅ Production | React 19, TypeScript (`control-plane-ui/`) |
-| **Control Plane API** | `api.<domain>` | ✅ Production | Python 3.12+, FastAPI, SQLAlchemy (`control-plane-api/`) |
+| **Control Plane API** | `api.<domain>` | ✅ Production | Python 3.11, FastAPI, SQLAlchemy (`control-plane-api/`) |
 | **STOA Gateway** | `mcp.<domain>` / `:8080` | ✅ Production / Maintenance ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) | Rust, Tokio, axum, tonic (`stoa-gateway/`) |
-| **STOA Link (`stoa-connect`)** | On-premise / cluster agent (`:8090`) | ✅ Production (adapters) / Opt-in Envoy ADS | Go 1.25 (`stoa-go/cmd/stoa-connect`) |
+| **STOA Link (`stoa-connect`)** | On-premise / cluster agent (`:8090`) | ✅ Production (Kong/Gravitee/webMethods) / Opt-in Envoy ADS | Go 1.25 (`stoa-go/cmd/stoa-connect`) |
 | **`stoactl` CLI** | Operator workstation / CI | ✅ Production (built from `stoa-go/`) | Go 1.25 (`stoa-go/cmd/stoactl`) |
 | **`stoa-operator`** | In-cluster (`GatewayInstance`, `GatewayBinding`) | 🧪 Beta | Python, Kopf (`stoa-operator/`) |
 | **Keycloak** | `auth.<domain>` (`stoa` realm) | ✅ Production | Keycloak 26 ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
-| **OpenBao** | Internal Vault HTTP API | 🔄 Partial rollout | OpenBao 2.7.2 ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) |
+| **OpenBao** | Internal Vault HTTP API | 🔄 Partial rollout | OpenBao 2.7.2, MPL 2.0 ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) |
 | **Redpanda** | Internal cluster network only | ✅ Production | Redpanda / Kafka API ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)) |
-| **PostgreSQL** | Internal cluster network only | ✅ Production | PostgreSQL 16+ (shared schema, `tenant_id` column) |
+| **PostgreSQL** | Internal cluster network only | ✅ Production | PostgreSQL 15 (full Compose / prod catalog) or 16 (R1 `quickstart/`), shared schema (`tenant_id`) |
 | **Observability** | Internal / operator ingress | ✅ Production | Prometheus, Grafana, OpenSearch, Data Prepper, Tempo |
 
 ### Key Architectural Guarantees Implemented on `main`
 
-- **Single-realm tenant identity ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))**: One shared Keycloak realm (`stoa`), one Keycloak group per tenant (`setup_tenant_group`), verified `tenant_id` JWT claims (`require_tenant_access` in Python, `enforce_tenant_isolation` in Rust), and a shared PostgreSQL schema filtered by `tenant_id` (retiring the older realm-per-tenant draft in ADR-026).
+- **Single-realm tenant identity ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))**: One shared Keycloak realm (`stoa`), one top-level Keycloak group per tenant (`/<tenant_id>`, `setup_tenant_group`), verified `tenant_id` JWT claims (`require_tenant_access` in Python, `enforce_tenant_isolation` in Rust), and a shared PostgreSQL schema filtered by `tenant_id` (retiring the older realm-per-tenant draft in ADR-026).
 - **Fail-closed gateway posture ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture))**: `stoa-gateway` verifies Ed25519-signed per-tenant policy bundles (`STOA_POLICY_BOOT_TENANTS`), enforces `STOA_MCP_AUDIENCE`, and maintains a durable audit WAL spool (`STOA_AUDIT_SPOOL_DIR`).
 - **MCP `2025-11-25` & Contract Routes**: Streamable HTTP (`POST /mcp`), SSE (`/mcp/sse`), opt-in WebSocket (`/mcp/ws` via `STOA_WEBSOCKET_ENABLED=true`), and transactional REST + MCP route registration (`POST /admin/contracts`).
-- **Multi-Gateway Orchestration ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern))**: Control Plane adapters and `stoa-connect` synchronize APIs and policies across Kong, Gravitee, webMethods, Apigee, AWS API Gateway, and Azure APIM without routing deployment commands over Kafka.
+- **Multi-Gateway Orchestration ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern))**: The Control Plane provides 6 Python gateway adapters (Kong, Gravitee, webMethods, Apigee, AWS API Gateway, Azure APIM), while the on-site `stoa-connect` Go agent selects Kong, Gravitee, webMethods, or explicit opt-in Envoy loopback ADS without routing deployment commands over Kafka.
 - **No Redis Dependency**: Rate-limiting, JWKS, and token caches operate in-process; STOA does not deploy or require Redis.
 
 ### Public Git Repositories
@@ -110,18 +110,20 @@ flowchart TB
 sequenceDiagram
     participant Dev as Operator / GitOps
     participant CP as Control Plane API
-    participant Link as STOA Link / Adapter
-    participant GW as Target Gateway (STOA / Envoy / 3rd-party)
+    participant Link as STOA Link (stoa-connect)
+    participant GW as Target Gateway (Envoy / Kong / Gravitee / webMethods)
 
+    Link->>CP: Open outbound SSE stream (ADR-059) & register
     Dev->>CP: Declare API / Contract / Binding
-    CP->>Link: Policy & route sync (HTTPS / pull or adapter push)
+    CP-->>Link: Stream deployment notification over Link-opened SSE
+    Link->>CP: Pull desired route/policy snapshot (HTTPS)
     Link->>GW: Apply routes & policies (Admin API or loopback mTLS ADS)
     GW-->>Link: Sync acknowledgement
-    Link-->>CP: Heartbeat & reconciliation status
+    Link->>CP: Heartbeat & reconciliation ACK
 ```
 
 :::caution Event Backbone vs Config Sync
-Control Plane synchronization is **not** Kafka-driven. Redpanda/Kafka is strictly internal for asynchronous metering, audit, and error snapshots ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)).
+Control Plane synchronization is **not** Kafka-driven ([ADR-059](/docs/architecture/adr/adr-059-simplified-deployment-sse)). Redpanda/Kafka is strictly internal for asynchronous metering, audit, and error snapshots ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)).
 :::
 
 ---
@@ -133,10 +135,10 @@ Rather than building a custom kernel/eBPF proxy or rewriting the Control Plane i
 ```mermaid
 flowchart TB
     Client["API Client / AI Agent"] --> Envoy["Upstream Envoy Proxy<br/>TLS, HTTP/2, Native Filters"]
-    CP["Control Plane API<br/>(FastAPI)"] -->|"Desired state"| Link["STOA Link (stoa-connect, Go)<br/>Loopback mTLS xDS ADS (127.0.0.1:18000)"]
+    Link["STOA Link (stoa-connect, Go)<br/>Loopback mTLS xDS ADS (127.0.0.1:18000)"] -->|"Outbound SSE & pull"| CP["Control Plane API<br/>(FastAPI)"]
     Link -->|"CDS / LDS / RDS"| Envoy
-    Envoy -->|"gRPC ext_authz Check"| Authz["STOA ExtAuthzService (Rust)<br/>JWT, tenant_id & signed policy check"]
-    Envoy -->|"MCP routes"| MCPMod["STOA MCP Module (Rust)<br/>JSON-RPC tools/call & SSE"]
+    Envoy -->|"gRPC ext_authz Check"| Authz["STOA ExtAuthzService (Rust)<br/>JWT, tenant_id, aud/scopes & DecisionEngine"]
+    Envoy -->|"MCP routes"| MCPMod["STOA MCP Module (Rust)<br/>JSON-RPC tools/call, SSE & signed tool policy (ADR-070)"]
     Envoy -->|"REST / gRPC routes"| Upstream["Enterprise Backends"]
 ```
 
@@ -145,8 +147,8 @@ flowchart TB
 | Capability | Status on `main` | Implementation Proof |
 |------------|------------------|----------------------|
 | **Loopback mTLS xDS ADS server in `stoa-connect`** | ✅ Implemented (opt-in via `STOA_GATEWAY_TYPE=envoy`) | `stoa-go/cmd/stoa-connect/envoy.go`, `stoa-go/cmd/stoa-connect/ENVOY.md`; translates v1 `cors`, per-process `rate_limit`, and direct-peer `ip_filter` |
-| **gRPC `ExtAuthzService` in `stoa-gateway`** | ✅ Implemented (opt-in via `STOA_EXT_AUTHZ_GRPC_ADDR` + `STOA_EXT_AUTHZ_AUDIENCE`) | `stoa-gateway/src/authz/ext_authz_grpc.rs`, supervised in `stoa-gateway/src/main.rs` |
-| **Offline Envoy + Link + gRPC integration proof** | ✅ Verified in CI | `.github/workflows/o1-envoy-real-proof.yml`, `docs/testing/o1-offline-envoy.md` |
+| **gRPC `ExtAuthzService` in `stoa-gateway`** | ✅ Implemented (opt-in via `STOA_EXT_AUTHZ_GRPC_ADDR`, `STOA_EXT_AUTHZ_AUDIENCE`, and non-empty `STOA_EXT_AUTHZ_REQUIRED_SCOPES` in `prod`) | `stoa-gateway/src/authz/ext_authz_grpc.rs`, `stoa-gateway/src/config/loader.rs:212-223` (validates JWT, `tenant_id`, audience/scopes & `DecisionEngine`; distinct from MCP tool-permission JWS checks) |
+| **Offline Envoy + Link + gRPC acceptance harness** | 🧪 Manual offline harness (`workflow_dispatch`) | `docs/testing/o1-offline-envoy.md`, `.github/workflows/o1-envoy-real-proof.yml` (real Envoy + Link + independent gRPC `Check` witness + synthetic auth/SQLite; not an automated per-PR CI check or live Rust `ExtAuthzService`/JWT test) |
 | **Full policy translator parity** | 🚧 In progress | `jwt_validation`, OIDC, `logging`, `caching`, and `transform` are not yet translated into Envoy filters by `stoa-connect` |
 | **Streaming `ext_proc` & standalone MCP split** | 📋 Planned ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) | Token metering / guardrail `ext_proc` and decoupling MCP from standalone proxy listener |
 | **Default Helm & Compose topology cut-over** | 📋 Planned | `charts/stoa-platform` and `deploy/docker-compose/` still deploy `stoa-gateway` directly as the default ingress gateway |
@@ -159,7 +161,7 @@ See [Data Plane Architecture](/docs/architecture/data-plane) for line-level code
 
 Five Custom Resource Definitions are shipped today in `charts/stoa-platform/crds/` under the `gostoa.dev/v1alpha1` API group:
 
-- **Watched by `stoa-gateway`** (`STOA_K8S_WATCHER_ENABLED=true`): `Tool`, `ToolSet`, `Skill`
+- **Watched by `stoa-gateway`** (`STOA_K8S_ENABLED=true`, compiled with the `k8s` Cargo feature): `Tool`, `ToolSet`, `Skill`
 - **Reconciled by `stoa-operator`**: `GatewayInstance`, `GatewayBinding`
 
 ```yaml
@@ -173,6 +175,11 @@ spec:
   description: Query customer invoices
   endpoint: https://billing.internal.example.com/v1/invoices
   method: GET
+  inputSchema:
+    type: object
+    properties:
+      customer_id:
+        type: string
 ---
 apiVersion: gostoa.dev/v1alpha1
 kind: GatewayInstance
@@ -197,11 +204,11 @@ See the [Kubernetes CRDs Reference](/docs/reference/crds) for complete schemas a
 | **L4/L7 Data Plane** | `stoa-gateway` (Rust, Tokio, axum — Maintenance) | Upstream Envoy + `stoa-connect` loopback mTLS ADS ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
 | **Authorization Engine** | In-process Rust middleware + OPA + signed policies ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) | Rust `ExtAuthzService` gRPC server called by Envoy (`STOA_EXT_AUTHZ_GRPC_ADDR`) |
 | **MCP Protocol Layer** | Integrated in `stoa-gateway` (Rust) | Dedicated Rust MCP service behind Envoy |
-| **Control Plane API** | Python 3.12+, FastAPI | Python 3.12+, FastAPI |
+| **Control Plane API** | Python 3.11, FastAPI | Python 3.11, FastAPI |
 | **CLI & Link Agent** | Go 1.25 (`stoactl`, `stoa-connect`) | Go 1.25 (`stoactl`, `stoa-connect` / STOA Link) |
 | **Kubernetes Operator** | Python, Kopf (`stoa-operator`, Beta) | Python, Kopf (`stoa-operator`) |
 | **Frontend** | React 19, TypeScript, Tailwind | React 19, TypeScript, Tailwind |
-| **Database** | PostgreSQL 16+ (shared schema, `tenant_id`) | PostgreSQL 16+ ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
+| **Database** | PostgreSQL 15 / 16 (shared schema, `tenant_id`) | PostgreSQL 15 / 16 ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
 | **Event Backbone** | Redpanda (Kafka API, internal only) | Redpanda ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)) |
 | **Identity** | Keycloak 26 (single `stoa` realm, tenant groups) | Keycloak 26 ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
 | **Secrets** | OpenBao 2.7.2 / Vault HTTP API (partial rollout) | Full OpenBao / Vault HTTP API coverage ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) |

@@ -97,13 +97,12 @@ sequenceDiagram
 
 ## Visibilité des outils multi-tenant
 
-Chaque appelant authentifié ne voit que les outils rattachés à son `tenant_id` vérifié (ou globaux), sauf rôle d'administration plateforme :
+Sur `stoa-gateway`, l'appel MCP `tools/list` filtre systématiquement les outils selon le claim `tenant_id` vérifié de l'appelant (plus les outils globaux), y compris lorsque l'appelant détient le rôle `cpi-admin` (`mcp/handlers.rs`, `auth/tenant.rs` ; la visibilité inter-tenant `cpi-admin` s'applique uniquement aux routes d'administration du Control Plane) :
 
 | Tenant | Outils visibles |
 |--------|-----------------|
 | **Parzival** (`high-five`) | `stoa_*`, `high-five:*` |
 | **Sorrento** (`ioi`) | `stoa_*`, `ioi:*` |
-| **Halliday** (`cpi-admin`) | Visibilité administrative inter-tenant |
 
 ## Configuration
 
