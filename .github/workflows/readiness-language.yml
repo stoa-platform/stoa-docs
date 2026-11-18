@@ -17,6 +17,7 @@ on:
       - 'src/**'
       - 'tests/e2e/**'
   workflow_dispatch:
+  deployment_status:
 
 permissions:
   contents: read
@@ -24,6 +25,11 @@ permissions:
 jobs:
   browser-test:
     name: Readiness links on desktop and mobile
+    if: >-
+      github.event_name != 'deployment_status' ||
+      (github.event.deployment.environment == 'Production' &&
+       github.event.deployment_status.state == 'success' &&
+       github.event.deployment_status.creator.login == 'vercel[bot]')
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -36,7 +42,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps --only-shell chromium
-      - run: npm run build
+      - if: github.event_name != 'deployment_status'
+        run: npm run build
         env:
           DOCUSAURUS_SSR_CONCURRENCY: 1
       - run: npm run test:e2e
+        env:
+          STOA_DOCS_PLAYWRIGHT_TARGET: ${{ github.event_name == 'deployment_status' && 'production' || 'local' }}
