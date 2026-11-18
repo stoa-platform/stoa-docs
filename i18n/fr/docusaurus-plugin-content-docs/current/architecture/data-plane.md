@@ -73,7 +73,7 @@ L'[instantané de référence][snapshot] installe cette chaîne de filtres HTTP 
 ### Validation des jetons
 
 - **Décidé.** Le filtre `jwt_authn` d'Envoy valide les signatures et les revendications standard contre le JWKS de Keycloak, diffusé localement par xDS (ADR-073 §5, §10). Reste à vérifier si ce filtre contrôle les jetons liés à un certificat (RFC 8705) et les preuves DPoP (RFC 9449) ; sinon, le service d'autorisation effectue ce contrôle en conservant le contrat d'erreurs de l'[ADR-039](./adr/adr-039-mtls-cert-bound-tokens.md).
-- **Dans le dépôt.** L'instantané de référence ne contient pas de filtre `jwt_authn` ; le [service d'autorisation][ext-authz] valide lui-même le jeton. Il exige une audience configurée (sinon toute requête est refusée et la passerelle se déclare non prête), valide le jeton Bearer contre le JWKS du fournisseur OIDC avec un délai borné, exige une revendication de tenant égale au `tenant_id` de la route et exige chaque scope configuré (revendications `scope` et `scp`). Un jeton absent donne 401 avec `WWW-Authenticate: Bearer` ; un jeton invalide 401 ; un tenant ou un scope non conforme 403. En production, lorsque l’écouteur d’autorisation externe est activé, la passerelle [refuse de démarrer][loader] si l’audience manque ou si la liste de scopes est vide ou contient une entrée blanche.
+- **Dans le dépôt.** L'instantané de référence ne contient pas de filtre `jwt_authn` ; le [service d'autorisation][ext-authz] (activé via `STOA_EXT_AUTHZ_GRPC_ADDR`, `STOA_EXT_AUTHZ_AUDIENCE` et `STOA_EXT_AUTHZ_REQUIRED_SCOPES`) valide lui-même le jeton. Il exige une audience configurée (sinon toute requête est refusée et la passerelle se déclare non prête), valide le jeton Bearer contre le JWKS du fournisseur OIDC avec un délai borné, exige une revendication de tenant égale au `tenant_id` de la route et exige chaque scope configuré (revendications `scope` et `scp`). Un jeton absent donne 401 avec `WWW-Authenticate: Bearer` ; un jeton invalide 401 ; un tenant ou un scope non conforme 403. En production, lorsque l’écouteur d’autorisation externe est activé, la passerelle [refuse de démarrer][loader] si l’audience manque ou si la liste de scopes est vide ou contient une entrée blanche.
 
 ### Autorisation et propagation de l'identité
 
@@ -121,22 +121,22 @@ Le [harnais d'acceptation hors ligne][o1-doc] exécute le routeur de déploiemen
 
 ## Notes de périmètre
 
-- La passerelle Rust maison n'est plus le plan de données stratégique et entre en maintenance (ADR-073 §9) ; sa logique de politiques est réutilisée derrière l'adaptateur `ext_authz` décrit ci-dessus.
+- La passerelle Rust maison n'est plus le plan de données stratégique et entre en maintenance (ADR-073 §9) ; sa logique de politiques est réutilisée derrière l'adaptateur `ext_authz` décrit ci-dessus. Les topologies Helm (`charts/stoa-platform`) et Docker Compose par défaut déploient encore `stoa-gateway` directement tant que la migration de topologie et la parité complète des politiques se poursuivent.
 - Les passerelles tierces raccordées par des adaptateurs ([ADR-035](./adr/adr-035-gateway-adapter-pattern.md)) n'appellent pas directement le service d'autorisation STOA pour l'instant (ADR-073 §8).
 
-[envoy-md]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-go/cmd/stoa-connect/ENVOY.md
-[ads-main]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-go/cmd/stoa-connect/envoy.go
-[ads]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-go/internal/xds/server.go
-[snapshot]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-go/internal/xds/snapshot.go
-[policy]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-go/internal/xds/policy.go
-[adapter]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-go/internal/connect/adapters/envoy.go
-[inventory]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/control-plane-api/src/services/envoy_policy_inventory.py
-[ext-authz]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-gateway/src/authz/ext_authz_grpc.rs
-[decision]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-gateway/src/mode/decision.rs
-[loader]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-gateway/src/config/loader.rs
-[main]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-gateway/src/main.rs
-[ready]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-gateway/src/lib.rs
-[artifact]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-gateway/src/control_plane/policy_artifact.rs
-[tool-perms]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-gateway/src/control_plane/tool_permissions.rs
-[o1-doc]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/docs/testing/o1-offline-envoy.md
-[o1-ci]: https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/.github/workflows/o1-envoy-real-proof.yml
+[envoy-md]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-go/cmd/stoa-connect/ENVOY.md
+[ads-main]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-go/cmd/stoa-connect/envoy.go
+[ads]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-go/internal/xds/server.go
+[snapshot]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-go/internal/xds/snapshot.go
+[policy]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-go/internal/xds/policy.go
+[adapter]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-go/internal/connect/adapters/envoy.go
+[inventory]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/control-plane-api/src/services/envoy_policy_inventory.py
+[ext-authz]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-gateway/src/authz/ext_authz_grpc.rs
+[decision]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-gateway/src/mode/decision.rs
+[loader]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-gateway/src/config/loader.rs
+[main]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-gateway/src/main.rs
+[ready]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-gateway/src/lib.rs
+[artifact]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-gateway/src/control_plane/policy_artifact.rs
+[tool-perms]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-gateway/src/control_plane/tool_permissions.rs
+[o1-doc]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/docs/testing/o1-offline-envoy.md
+[o1-ci]: https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/.github/workflows/o1-envoy-real-proof.yml

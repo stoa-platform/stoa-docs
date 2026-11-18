@@ -51,9 +51,12 @@ These are only required for the Full On-Premises model. In Hybrid mode, STOA Clo
 
 | Component | Version | Purpose | Alternative |
 |-----------|---------|---------|-------------|
-| **PostgreSQL** | 16+ | Control Plane database | Any managed PG (RDS, Cloud SQL, Azure DB) |
-| **Redis** | 7+ | Gateway caching (optional) | — |
+| **PostgreSQL** | 15 / 16 | Control Plane database (15 in full Compose / prod catalog, 16 in minimal R1; shared schema scoped by `tenant_id`, [ADR-074](/docs/architecture/adr/adr-074-tenant-model)) | Any managed PG 15+ (RDS, Cloud SQL, Azure DB) |
+| **Redpanda / Kafka** | 24+ / 3.x | Internal event backbone for metering and audit ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka), optional) | Apache Kafka 3.x |
+| **OpenBao** | 2.7+ | Secrets backend via Vault HTTP API ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao), optional) | HashiCorp Vault |
 | **OpenSearch** | 2.11+ | Logs and search (optional) | Elasticsearch 8.x |
+
+*(STOA does not require or deploy Redis; gateway rate-limiting and token caches operate in-process.)*
 
 ---
 
@@ -351,7 +354,7 @@ Hand this to your IT team. All items must be confirmed before deployment day.
 
 ### Database (Full On-Premises only)
 
-- [ ] PostgreSQL 16+ provisioned
+- [ ] PostgreSQL 15+ provisioned (15 in full Compose / prod catalog, 16 in minimal R1)
 - [ ] Two databases created: `stoa_production`, `keycloak`
 - [ ] Connection string available (host, port, user, password)
 - [ ] SSL/TLS enabled for DB connections

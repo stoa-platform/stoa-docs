@@ -21,10 +21,10 @@ STOA Gateway supports 4 deployment modes (defined in [ADR-024](/docs/architectur
 
 | Mode | Port | MCP Support | Use Case | Status |
 |------|------|-------------|----------|--------|
-| **edge-mcp** | 8080 | Yes | Standalone MCP gateway with full protocol support | Production |
-| **sidecar** | 8081 in the chart (binary default 8080) | No | Allow or deny on `POST /authz` for a host that calls it | Runtime present |
-| **proxy** | 8082 | No | Inline request/response transformation | Q3 2026 |
-| **shadow** | 8083 | No | Passive traffic capture and UAC generation | Q4 2026 |
+| **edge-mcp** | 8080 | Yes | Standalone MCP gateway with full protocol support (+ optional Envoy `ext_authz` gRPC listener) | Production (Maintenance, [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
+| **sidecar** | 8081 in the chart (binary default 8080) | No | Allow or deny on HTTP `POST /authz` for a host that calls it | Runtime present |
+| **proxy** | 8082 | No | Inline request/response transformation | Rust scaffolding; Envoy xDS target ([ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
+| **shadow** | 8083 | No | Passive traffic capture and UAC generation | Rust scaffolding; Envoy mirroring target ([ADR-073 §8](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
 
 ```mermaid
 graph TB
@@ -87,14 +87,17 @@ stoaGateway:
 |------|--------|---------|
 | `/.well-known/oauth-authorization-server` | GET | OAuth 2.1 discovery |
 | `/.well-known/oauth-protected-resource` | GET | Protected resource metadata |
-| `/mcp/sse` | GET | SSE transport endpoint |
-| `/mcp/messages` | POST | JSON-RPC message endpoint |
-| `/oauth/authorize` | GET | OIDC proxy (to Keycloak) |
-| `/oauth/token` | POST | Token proxy (to Keycloak) |
+| `/mcp` | GET, POST | Discovery (`GET`) & Streamable HTTP JSON-RPC 2.0 (`POST`) |
+| `/mcp/sse` | GET, POST, DELETE | SSE transport & JSON-RPC session endpoint |
+| `/mcp/ws` | GET | Opt-in WebSocket JSON-RPC (`STOA_WEBSOCKET_ENABLED=true`) |
+| `/oauth/token` | POST | Token proxy (to Keycloak `stoa` realm) |
+| `/oauth/par` | POST | Pushed Authorization Request proxy (to Keycloak `stoa` realm) |
 | `/oauth/register` | POST | Dynamic client registration |
-| `/admin/*` | Various | Admin API (22 endpoints) |
-| `/health` | GET | Health check |
+| `/admin/*` | Various | [Gateway Admin API](/docs/api/gateway-admin-api) (Bearer `STOA_ADMIN_API_TOKEN`) |
+| `/health`, `/ready` | GET | Liveness and fail-closed readiness checks |
 | `/metrics` | GET | Prometheus metrics |
+
+*(Note: `GET /oauth/authorize` returns `404` on `stoa-gateway`; `/.well-known/oauth-authorization-server` directs clients directly to Keycloak's `/realms/stoa/protocol/openid-connect/auth`. When `STOA_EXT_AUTHZ_GRPC_ADDR`, `STOA_EXT_AUTHZ_AUDIENCE`, and non-empty `STOA_EXT_AUTHZ_REQUIRED_SCOPES` in `prod` are set, `stoa-gateway` also supervises a gRPC `envoy.service.auth.v3.Authorization` listener for upstream Envoy per [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane).)*
 
 ### When to Use
 

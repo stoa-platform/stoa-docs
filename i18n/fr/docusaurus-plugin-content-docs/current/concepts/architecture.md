@@ -18,180 +18,156 @@ flowchart TB
     subgraph Users["👥 Utilisateurs"]
         Dev["🧑‍💻 Développeurs"]
         Admin["👨‍💼 Admins plateforme"]
-        AI["🤖 Agents IA"]
+        AI["🤖 Agents IA & Clients API"]
     end
 
     subgraph ControlPlane["⚙️ Plan de contrôle"]
         Portal["📱 Portail développeur"]
         Console["🖥️ Console admin"]
-        CoreAPI["🔧 API principale"]
+        CoreAPI["🔧 API Control Plane"]
     end
 
     subgraph DataPlane["🚀 Plan de données"]
-        MCPGateway["MCP Gateway"]
-        WMGateway["Passerelle webMethods"]
+        MCPGateway["STOA Gateway (Rust)<br/>MCP, REST & ext_authz gRPC"]
+        EnvoyLink["Envoy + STOA Link xDS<br/>(Plan de données cible, ADR-073)"]
     end
 
     subgraph Backend["💾 Services backend"]
-        KC["Keycloak"]
+        KC["Keycloak (realm stoa)"]
         PG["PostgreSQL"]
-        Kafka["Kafka/Redpanda"]
+        Kafka["Redpanda (API Kafka)"]
         Vault["OpenBao (API Vault)"]
     end
 
-    subgraph MCP["🔧 Serveurs MCP"]
-        Tools["Outils entreprise"]
+    subgraph MCP["🔧 Upstreams"]
+        Tools["API entreprise & Outils MCP"]
     end
 
     Dev & Admin --> Portal & Console
-    AI --> MCPGateway
+    AI --> MCPGateway & EnvoyLink
     Portal & Console --> CoreAPI
-    CoreAPI -->|"sync config"| MCPGateway & WMGateway
-    MCPGateway --> Tools
+    MCPGateway -->|"lecture politiques signées & routes"| CoreAPI
+    EnvoyLink -->|"SSE sortant & sync (ADR-059)"| CoreAPI
+    EnvoyLink -.->|"ext_authz gRPC"| MCPGateway
+    MCPGateway & EnvoyLink --> Tools
     CoreAPI --> PG & Kafka & KC & Vault
-    MCPGateway & WMGateway --> KC
+    MCPGateway --> KC
 ```
 
 ### Plan de contrôle vs Plan de données
 
 | Aspect | Plan de contrôle | Plan de données |
 |--------|------------------|-----------------|
-| **Rôle** | Configuration & gestion | Exécution du trafic |
-| **Composants** | API principale, Portail, Console | MCP Gateway, webMethods |
-| **Latence** | Échelle humaine (ms OK) | Échelle machine (sub-ms) |
-| **Mise à l'échelle** | Modérée | Élevée (par requête) |
+| **Rôle** | Configuration, catalogue & gouvernance | Exécution du trafic & application des politiques |
+| **Composants** | API Control Plane, Portail, Console, `stoa-operator` | `stoa-gateway` (Rust, maintenance) & Envoy upstream + `stoa-connect` (STOA Link, [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
+| **Latence** | Échelle humaine (ms OK) | Échelle machine (quelques ms) |
+| **Mise à l'échelle** | Modérée | Élevée (par requête, horizontale) |
 
-:::tip Décision d'architecture
-Cette séparation est documentée dans [ADR-001 : Stratégie d'exposition des API](/docs/architecture/adr/adr-001-api-exposure-strategy).
+:::tip Décisions d'architecture
+Cette séparation et l'évolution du plan de données sont documentées dans [ADR-001 : Stratégie d'exposition des API](/docs/architecture/adr/adr-001-api-exposure-strategy) et [ADR-073 : Adoption d'Envoy comme plan de données principal](/docs/architecture/adr/adr-073-adopt-envoy-data-plane).
 :::
 
 ## Composants principaux
 
 ### API du Plan de contrôle
 
-L'API de gestion centrale construite avec **Python** et **FastAPI**.
+L'API centrale de gestion construite avec **Python** et **FastAPI** (`control-plane-api/`).
 
 | Aspect | Détails |
 |--------|---------|
-| Langage | Python 3.12+ |
+| Langage | Python 3.11 (`requires-python >= 3.11`) |
 | Framework | FastAPI (asynchrone) |
-| Base de données | PostgreSQL + SQLAlchemy |
-| Streaming d'événements | Kafka/Redpanda |
-| Auth | Keycloak (OIDC) |
+| Base de données | PostgreSQL 15 / 16 + SQLAlchemy (schéma partagé filtré par `tenant_id`) |
+| Streaming d'événements | Redpanda / Kafka ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)) |
+| Auth | Keycloak OIDC (realm `stoa`, [ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
 
 **Responsabilités :**
-- Gestion des abonnements
-- Provisionnement des tenants
-- Catalogue d'outils
-- Suivi de l'utilisation
-- Application des politiques
+- Gestion des abonnements et du catalogue d'API
+- Provisionnement des tenants (`setup_tenant_group` dans Keycloak)
+- Émission des artefacts de politiques passerelle signés Ed25519 ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture))
+- Orchestration multi-passerelles via les 6 adaptateurs du Control Plane : Kong, Gravitee, webMethods, Apigee, AWS API Gateway et Azure APIM ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern))
+- Suivi de l'utilisation et pistes d'audit
 
-### MCP Gateway
+### STOA Gateway & Plan de données Envoy
 
-La MCP Gateway gère les interactions du Model Context Protocol, permettant aux agents IA de consommer de manière sécurisée les outils d'entreprise.
+STOA exploite une passerelle Rust en production tout en faisant converger la couche proxy L4/L7 vers Envoy upstream ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) :
 
-| Aspect | Implémentation actuelle |
-|--------|------------------------|
-| Langage | Python 3.12+ |
-| Framework | FastAPI (asynchrone) |
-| Moteur de politiques | OPA (Open Policy Agent) |
-| Protocole | MCP (Model Context Protocol) |
+| Aspect | Production actuelle (`stoa-gateway`) | Plan de données cible (`Envoy` + `STOA Link`) |
+|--------|--------------------------------------|-----------------------------------------------|
+| Implémentation | Rust (`Tokio` + `axum`) | Envoy upstream + `stoa-connect` (Go xDS ADS) + `ext_authz` gRPC Rust |
+| Cycle de vie | Production / Maintenance | Briques activables implémentées ; bascule de topologie en cours |
+| Moteur de politiques | Politiques signées Ed25519 ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) + OPA | Filtres natifs Envoy (`cors`, `rate_limit`, `ip_filter`) + `ExtAuthzService` gRPC (JWT, `tenant_id`, audience/scopes & `DecisionEngine` ; permissions d'outils MCP distinctes selon [ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) |
+| Protocoles | MCP (`POST /mcp`, `/mcp/sse`, `/mcp/ws` sur option), REST, A2A | HTTP/1.1, HTTP/2, gRPC, module MCP derrière Envoy |
 
-**Responsabilités :**
-- Gestion du protocole MCP
-- Routage des requêtes
-- Validation de l'authentification
-- Limitation de débit
-- Collecte des métriques
-
-:::info Feuille de route
-Une implémentation haute performance en **Rust + Tokio** est prévue pour le Q4 2026, avec accélération eBPF au niveau du noyau. Consultez notre [Feuille de route](/docs/roadmap) pour plus de détails.
-:::
-
-### Passerelle API
-
-Le trafic API traditionnel est géré par la **passerelle webMethods** (implémentation actuelle).
-
-| Aspect | Détails |
-|--------|---------|
-| Produit | Software AG webMethods |
-| Fonctionnalités | Limitation de débit, transformations, politiques |
-| Protocole | REST, SOAP |
-
-:::info Feuille de route
-La migration vers une passerelle native Rust/eBPF est prévue pour la Phase 16+, offrant des performances améliorées et une charge opérationnelle réduite.
-:::
+**Briques livrées sur `main` :**
+- **`stoa-gateway` (Rust)** assure les sessions MCP, les routes de contrats REST, l'application fail-closed des politiques par tenant, et supervise sur option un serveur gRPC `envoy.service.auth.v3.Authorization` (`ExtAuthzService`, activé via `STOA_EXT_AUTHZ_GRPC_ADDR`, `STOA_EXT_AUTHZ_AUDIENCE` et `STOA_EXT_AUTHZ_REQUIRED_SCOPES` non vide en `prod`).
+- **STOA Link (`stoa-connect`)** ouvre une connexion SSE sortante ([ADR-059](/docs/architecture/adr/adr-059-simplified-deployment-sse)) vers le Control Plane pour recevoir les notifications de déploiement, et embarque un serveur ADS mTLS sur loopback opt-in explicite (`STOA_GATEWAY_TYPE=envoy`) aux côtés de ses adaptateurs Go de routes pour **Kong, Gravitee et webMethods** (l'application des politiques par Link étant refusée pour Kong et Gravitee dans `policy_contract.go`, tandis que les 6 adaptateurs complets résident dans le Control Plane). La parité complète des politiques et la migration de topologie par défaut restent des jalons distincts ([Architecture du plan de données](/docs/architecture/data-plane)).
 
 ### Portail UI
 
-Portail développeur en libre-service construit avec **React** et **TypeScript**.
+Portail développeur en libre-service construit avec **React 19** et **TypeScript** (`portal/`).
 
 **Fonctionnalités :**
-- Navigation dans le catalogue d'API/outils
-- Gestion des abonnements
-- Génération de clés API
-- Tableaux de bord d'utilisation
-- Accès à la documentation
+- Navigation dans le catalogue d'API et d'outils MCP
+- Gestion des abonnements et des clés API
+- Tableaux de bord d'utilisation et documentation interactive
 
 ### Console UI
 
-Console d'administration construite avec **React** et **TypeScript**.
+Console d'administration construite avec **React 19** et **TypeScript** (`control-plane-ui/`).
 
 **Fonctionnalités :**
-- Gestion des tenants
-- Administration des utilisateurs
-- Configuration des politiques
-- Supervision du système
-- Journaux d'audit
+- Administration des tenants et des utilisateurs
+- Gestion des instances de passerelle et des liaisons (`GatewayBinding`)
+- Configuration des politiques, supervision système et journaux d'audit
 
 ## Couche de sécurité
 
 ### Keycloak
 
-Gestion des identités et des accès fournissant :
-- Authentification OIDC/OAuth2
-- SSO (Single Sign-On)
-- RBAC (Contrôle d'accès basé sur les rôles)
-- Authentification multi-facteurs
-- Fédération d'utilisateurs
+Gestion des identités et des accès ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) fournissant :
+- Realm unique partagé `stoa` (`KEYCLOAK_REALM=stoa`) avec un groupe Keycloak par tenant
+- Authentification OIDC/OAuth2, PKCE et claim JWT `tenant_id` vérifié
+- RBAC plateforme et scopé par tenant (`cpi-admin`, `tenant-admin`, `devops`, `viewer`)
+- Courtage multi-IdP démontré séparément dans la topologie de fédération (profil `federation` de `deploy/docker-compose/`)
 
 ### Socle de secrets (OpenBao)
 
-Accessible par l'API HTTP de Vault : OpenBao par défaut, ou un HashiCorp Vault que vous exploitez déjà ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)). Gestion des secrets pour :
-- Chiffrement des clés API
-- Identifiants de base de données
-- Certificats TLS
-- Jetons de service
+Accessible par l'API HTTP de Vault : **OpenBao 2.7.2** par défaut, ou un HashiCorp Vault existant ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao), déploiement partiel selon les composants). Utilisé pour :
+- Chiffrement des clés API et identifiants
+- Secrets des adaptateurs de passerelles
+- Matériel TLS et jetons de service
 
 ## Couche de données
 
 ### PostgreSQL
 
-Base de données principale stockant :
-- Abonnements
-- Tenants
-- Utilisateurs
-- Définitions d'outils
-- Journaux d'audit
+Base relationnelle principale utilisant un **schéma partagé filtré par `tenant_id`** ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) :
+- Tenants, utilisateurs et abonnements
+- API, contrats et définitions de serveurs/outils MCP
+- Journaux d'audit du Plan de contrôle
 
-### Kafka/Redpanda
+*(Note : STOA n'utilise pas Redis ; les caches de limitation de débit et de jetons s'exécutent en mémoire dans chaque processus.)*
 
-Streaming d'événements pour :
-- Événements d'audit
-- Métriques d'utilisation
-- Communication inter-services
+### Redpanda (API Kafka)
+
+Bus d'événements asynchrone ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)) pour :
+- Événements de métrologie et d'utilisation
+- Pipelines d'audit et de snapshots d'erreurs
+- Notifications asynchrones inter-services
 
 :::warning Usage interne uniquement
-Kafka est strictement interne sans aucune exposition externe (ADR-017). Toutes les intégrations externes passent par les API REST.
+Redpanda/Kafka est strictement interne sans aucune exposition externe ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)). Toutes les intégrations clientes et agents passent par des API HTTPS/gRPC.
 :::
 
 ## Stack d'observabilité
 
 | Composant | Usage |
 |-----------|-------|
-| **Prometheus** | Collecte des métriques |
-| **Grafana** | Tableaux de bord & visualisation |
-| **Loki** | Agrégation des logs |
+| **Prometheus** | Collecte des métriques et règles d'alerte |
+| **Grafana** | Tableaux de bord & visualisation par tenant |
+| **OpenSearch** (+ Data Prepper / Fluent Bit) | Journaux structurés, analytique et recherche d'audit |
+| **Tempo** | Stockage des traces distribuées OpenTelemetry |
 | **Alertmanager** | Routage des alertes |
 
 ## Flux d'une requête
@@ -199,38 +175,35 @@ Kafka est strictement interne sans aucune exposition externe (ADR-017). Toutes l
 ```mermaid
 sequenceDiagram
     participant AI as Agent IA
-    participant GW as MCP Gateway
-    participant API as Plan de contrôle
-    participant MCP as Serveur MCP
+    participant GW as STOA Gateway
+    participant KC as Keycloak (realm stoa)
+    participant MCP as API Upstream / Serveur MCP
 
-    AI->>GW: Invocation d'outil (Clé API)
-    GW->>GW: Validation de la clé API
-    GW->>API: Vérification de l'abonnement
-    API-->>GW: ✅ Autorisé
-    GW->>MCP: Transfert de la requête
-    MCP-->>GW: Réponse
-    GW-->>AI: Réponse de l'outil
+    AI->>GW: POST /mcp (tools/call + Bearer JWT)
+    GW->>KC: Vérifie JWKS RS256 + audience + claim tenant_id
+    GW->>GW: Applique la politique tenant signée (ADR-070)
+    GW->>MCP: Transfère la requête autorisée
+    MCP-->>GW: Réponse upstream
+    GW-->>AI: Réponse JSON-RPC MCP
 ```
 
-1. L'**Agent IA** envoie une requête d'invocation d'outil avec une clé API
-2. La **MCP Gateway** valide la clé API auprès de Keycloak
-3. La **Gateway** vérifie le statut de l'abonnement auprès de l'API du Plan de contrôle
-4. Le **Plan de contrôle** confirme que l'abonnement est actif
-5. La **Gateway** transfère la requête au serveur MCP approprié
-6. Le **Serveur MCP** exécute l'outil et retourne la réponse
-7. La **Gateway** retourne la réponse à l'agent IA
+1. L'**Agent IA** envoie une requête `POST /mcp` (`tools/call`) accompagnée d'un JWT Bearer Keycloak
+2. **STOA Gateway** valide la signature RS256 via le cache JWKS, l'audience (`STOA_MCP_AUDIENCE`) et le claim `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model))
+3. La **Gateway** évalue en mode fail-closed l'artefact de politique signé du tenant ([ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) ainsi que les règles OPA
+4. La **Gateway** achemine l'appel autorisé vers l'API backend ou le serveur MCP cible
+5. La **Gateway** renvoie la réponse JSON-RPC et enregistre la télémétrie
 
 ## Déploiement
 
-STOA Platform s'exécute sur **Kubernetes** et peut être déployée via :
+STOA Platform s'exécute sur **Kubernetes** (ou Docker Compose pour l'évaluation locale) :
 
-- **Charts Helm** : Disponibles dans `stoa-infra/charts/`
+- **Charts Helm** : Situés dans `charts/stoa-platform` (charge de travail centrée sur la passerelle + 5 CRD ; Control Plane, UI, Keycloak, PostgreSQL, Redpanda et OpenBao se déploient séparément) et `charts/stoa-observability` dans `stoa-platform/stoa`
 - **GitOps** : Compatible ArgoCD
-- **IaC** : Modules Terraform disponibles
+- **IaC** : Modules Terraform prévus (`infra/terraform`)
 
 ### Namespace Kubernetes
 
-Tous les composants s'exécutent dans le namespace `stoa-system` :
+Les charges de travail passerelle s'exécutent par défaut dans le namespace `stoa-system` :
 
 ```bash
 kubectl get pods -n stoa-system
@@ -242,27 +215,30 @@ kubectl get pods -n stoa-system
 |---------|--------------|
 | Portail | `portal.<domaine>` |
 | Console | `console.<domaine>` |
-| API | `api.<domaine>` |
-| Passerelle | `gateway.<domaine>` |
+| API Control Plane | `api.<domaine>` |
+| Passerelle | `mcp.<domaine>` / `gateway.<domaine>` |
 | Auth | `auth.<domaine>` |
 
 ## Résumé de la stack technologique
 
 | Couche | Technologie | Notes |
 |--------|-------------|-------|
-| Plan de contrôle | Python, FastAPI | API de gestion |
-| MCP Gateway | Python, FastAPI, OPA | Gestion du protocole MCP |
-| Passerelle API | webMethods | Trafic API traditionnel |
-| Frontend | React, TypeScript, Tailwind | Portail & Console |
-| Base de données | PostgreSQL | Stockage principal |
-| Streaming d'événements | Kafka/Redpanda | Événements internes |
-| Auth | Keycloak | OIDC/OAuth2 |
-| Secrets | OpenBao ou HashiCorp Vault (API Vault) | Chiffrement, identifiants |
-| Observabilité | Prometheus, Grafana, Loki | Métriques, logs |
-| Infrastructure | Kubernetes, Helm, ArgoCD | Déploiement |
+| Plan de contrôle | Python 3.11, FastAPI | API de gestion (`control-plane-api/`) |
+| Plan de données (actuel) | Rust, Tokio, axum | `stoa-gateway` (maintenance, MCP + REST + `ext_authz` gRPC) |
+| Plan de données (cible) | Envoy upstream + Go (`stoa-connect`) | xDS ADS mTLS loopback + services externes ([ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane)) |
+| Opérateur Kubernetes | Python, Kopf | `stoa-operator` (Bêta, réconcilie `GatewayInstance` / `GatewayBinding`) |
+| CLI & Agent Link | Go 1.25 | `stoactl` & `stoa-connect` (`stoa-go/`) |
+| Frontend | React 19, TypeScript, Tailwind | Portail développeur & Console admin |
+| Base de données | PostgreSQL 15 / 16 | 15 dans le Compose complet / catalogue prod, 16 dans R1 minimal ; schéma partagé filtré par `tenant_id` ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
+| Streaming d'événements | Redpanda (API Kafka) | Bus interne d'événements ([ADR-005](/docs/architecture/adr/adr-005-event-driven-kafka)) |
+| Auth | Keycloak 26 | Realm unique `stoa` + groupes par tenant ([ADR-074](/docs/architecture/adr/adr-074-tenant-model)) |
+| Secrets | OpenBao 2.7.2 / HashiCorp Vault | API HTTP Vault ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao), déploiement partiel) |
+| Observabilité | Prometheus, Grafana, OpenSearch, Tempo | Métriques, journaux, traces |
+| Infrastructure | Kubernetes, Helm, ArgoCD | Déploiement déclaratif |
 
 ## Étapes suivantes
 
 - [Guide de démarrage rapide](/docs/guides/quickstart) — Lancer STOA en local
+- [Architecture du plan de données](/docs/architecture/data-plane) — Détails sur le plan de données actuel et la cible Envoy
 - [Référence API](/docs/api/control-plane) — Explorer l'API du Plan de contrôle
-- [MCP Gateway](/docs/concepts/mcp-gateway) — Plongée dans l'intégration MCP
+- [Passerelle MCP](/docs/concepts/mcp-gateway) — Plongée dans l'intégration MCP

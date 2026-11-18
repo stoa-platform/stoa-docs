@@ -10,7 +10,7 @@ keywords: [deployment, sovereign, on-premises, air-gapped, network, access contr
 In sovereign mode the control plane and the data plane both run inside the operator's own perimeter ([ADR-037](../architecture/adr/adr-037-deployment-modes-sovereign-first.md)). The hosted service was shut down on 2026-05-23; STOA is deployed on site. This page is a generic reference pattern: names are placeholders, no real infrastructure is described, and every statement points to a published ADR or a file of the `stoa` repository. Sizing, ports and DNS live in [Deployment Prerequisites](./prerequisites.md).
 
 :::info Data plane status
-[ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane.md) (2026-10-22) decides that the data plane uses upstream Envoy, configured only over xDS served on site by STOA Link, with STOA logic in external services called by Envoy. The Link xDS server is decided but not yet implemented (ADR-073 §7); the diagrams below show the decided target. The current data plane, STOA Gateway (Rust), is in maintenance (ADR-073 §9).
+[ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane.md) (2026-10-22) decides that the data plane uses upstream Envoy, configured only over xDS served on site by STOA Link, with STOA logic in external services called by Envoy. On `main` (`639e8b9a`), the Link loopback mTLS ADS server (`STOA_GATEWAY_TYPE=envoy`) and the Rust gRPC `ExtAuthzService` (`STOA_EXT_AUTHZ_GRPC_ADDR` + `STOA_EXT_AUTHZ_AUDIENCE` + non-empty `STOA_EXT_AUTHZ_REQUIRED_SCOPES` in `prod`) are implemented behind options, and Link + Envoy xDS are exercised by a manual offline acceptance harness with an independent gRPC `Check` witness; full policy parity (`jwt_authn` over xDS, `ext_proc`) and default topology cut-over remain in progress ([Data Plane Architecture](../architecture/data-plane.md)). The default deployed gateway, STOA Gateway (Rust), is in maintenance (ADR-073 §9).
 :::
 
 ## 1. Network topology
@@ -36,9 +36,9 @@ flowchart TB
         subgraph CPZ["Control plane zone"]
             UI["Console / Portal"]
             API["Control Plane API"]
-            KC["Keycloak<br/>(per-tenant realms: target model)"]
+            KC["Keycloak<br/>(single 'stoa' realm, tenant groups — ADR-074)"]
             PG["PostgreSQL"]
-            SEC["Secret store"]
+            SEC["Secret store (OpenBao — ADR-075)"]
             GIT["Git repository<br/>(desired-state archive)"]
         end
         subgraph OPS["Operator systems zone"]
@@ -98,15 +98,15 @@ sequenceDiagram
 
 | Step | Control | Source |
 |------|---------|--------|
-| Identity | ADR-026 defines a target federation model with a dedicated realm per tenant, brokering to the operator's IdP (OIDC, SAML or LDAP), no local user records, and audience/realm checks. Current tenant provisioning instead creates groups and an admin user in the configured realm (see Identity below); it does not establish this realm-per-tenant model. | [ADR-026](../architecture/adr/adr-026-multi-iam-federation.md) |
+| Identity | [ADR-074](../architecture/adr/adr-074-tenant-model.md) retires the earlier realm-per-tenant draft ([ADR-026](../architecture/adr/adr-026-multi-iam-federation.md)) and standardizes on a single shared `stoa` Keycloak realm with one top-level group per tenant (`/<tenant_id>`), verified `tenant_id` JWT claims, and shared PostgreSQL schema scoped by `tenant_id`. External IdP brokering (OIDC, SAML, LDAP) is demonstrated only in separate federation demo realms and is not attested in the production `stoa` realm import. | [ADR-074](../architecture/adr/adr-074-tenant-model.md) |
 | AI agents | MCP clients use OAuth 2.1 with PKCE; the gateway serves the discovery metadata and proxies dynamic client registration to Keycloak. | [ADR-044](../architecture/adr/adr-044-mcp-oauth-gateway-proxy.md) |
 | Transport | TLS at the edge; optional mTLS with certificate-bound tokens (`cnf.x5t#S256`), checked by Envoy's JWT filter or by the authorization service. Sender-constrained tokens (DPoP, mTLS) are designed to support the FAPI 2.0 profile for clients that require it; no conformance certification is claimed. | ADR-039, ADR-073 §5, [ADR-056](../architecture/adr/adr-056-fapi-2-architecture.md) |
-| Token validation | Envoy `jwt_authn` validates signature and claims against a JWKS delivered over xDS, so validation needs no call outside the site; coarse `rbac` and `local_ratelimit` follow. | ADR-073 §10 |
-| Authorization | The authorization service checks tenant, active subscription, API key, OPA policy and consumer quotas. On failure Envoy denies with 503, a neutral body identical to the 403, and no automatic retry of non-idempotent requests. | ADR-073 §4, §10 |
+| Token validation | Target: Envoy `jwt_authn` validates signature and claims against a JWKS delivered over xDS (ADR-073 §10). Current on `main`: `ExtAuthzService` validates RS256 JWKS, audience, `tenant_id` and scopes directly before routing. | ADR-073 §10, [Data plane](../architecture/data-plane.md) |
+| Authorization | The authorization service checks tenant, active subscription, API key, OPA policy and consumer quotas. On failure Envoy denies with 503 (403 in the current reference snapshot), a neutral body, and no automatic retry of non-idempotent requests. | ADR-073 §4, §10 |
 | Tool permissions | Deny by default. A tool is allowed only if a Control-Plane-signed artifact (Ed25519 JWS, scoped to one tenant, time-bounded) lists it; revocation overrides the cache; tools flagged `requires_human_approval` need an approval token. | ADR-070 §1, Annex |
 | Operators | Console, Portal and CLI go through Keycloak OIDC. Roles `cpi-admin`, `tenant-admin`, `devops` and `viewer` map to scopes `stoa:admin`, `stoa:write`, `stoa:read`. Production configuration changes go through a Git pull request, not a UI write. | [ADR-054](../architecture/adr/adr-054-rbac-taxonomy-v2.md), [ADR-040](../architecture/adr/adr-040-born-gitops-multi-environment.md) |
 
-In the `prod` and `staging` profiles the Rust gateway refuses to start if its policy engine cannot load ([`state.rs`: `resolve_policy_engine`](https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-gateway/src/state.rs#L794-L841)), and readiness fails when no verified policy artifact is available (ADR-070 §4).
+In the `prod` and `staging` profiles the Rust gateway refuses to start if its policy engine cannot load ([`state.rs`: `resolve_policy_engine`](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-gateway/src/state.rs#L795-L843)), and readiness fails when no verified policy artifact is available (ADR-070 §4).
 
 ## 3. Tenant and component isolation
 
@@ -114,11 +114,11 @@ In the `prod` and `staging` profiles the Rust gateway refuses to start if its po
 flowchart LR
     subgraph TNA["Tenant A"]
         direction TB
-        RA["Keycloak realm A (target)"] --- UA["UAC file A"] --- PA["Signed policy artifact A"] --- NA["Namespace A + NetworkPolicy"]
+        RA["Keycloak group A (stoa realm)"] --- UA["UAC file A"] --- PA["Signed policy artifact A"] --- NA["Namespace A + NetworkPolicy"]
     end
     subgraph TNB["Tenant B"]
         direction TB
-        RB["Keycloak realm B (target)"] --- UB["UAC file B"] --- PB["Signed policy artifact B"] --- NB["Namespace B + NetworkPolicy"]
+        RB["Keycloak group B (stoa realm)"] --- UB["UAC file B"] --- PB["Signed policy artifact B"] --- NB["Namespace B + NetworkPolicy"]
     end
     subgraph SH["Shared, tenant-aware components"]
         direction TB
@@ -131,13 +131,13 @@ flowchart LR
 
 | Layer | Mechanism | Source |
 |-------|-----------|--------|
-| Identity | ADR-026 defines a realm-per-tenant target. Delivered provisioning creates tenant groups in the configured Keycloak realm, not separate realms; it therefore does not establish separate realm signing keys, clients or sessions per tenant. | ADR-026; [tenant creation](https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/control-plane-api/src/routers/tenants.py#L294-L303); [provisioning](https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/control-plane-api/src/services/tenant_provisioning_service.py#L100-L124); [configured realm](https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/control-plane-api/src/services/keycloak_service.py#L57-L66); [setup_tenant_group](https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/control-plane-api/src/services/keycloak_service.py#L945-L972) |
-| Authorization | The Control Plane API rejects access to another tenant unless the caller is `cpi-admin` (`require_tenant_access`); the gateway applies the same rule with `enforce_tenant_isolation`, on by default. | [Control Plane RBAC](https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/control-plane-api/src/auth/rbac.py#L25-L41); [require_tenant_access](https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/control-plane-api/src/auth/rbac.py#L258-L263); [gateway default](https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-gateway/src/auth/rbac.rs#L125-L138); [gateway tenant check](https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/stoa-gateway/src/auth/rbac.rs#L228-L257) |
+| Identity | Single shared `stoa` Keycloak realm with one Keycloak group per tenant (`setup_tenant_group`) and verified `tenant_id` JWT claims; signing keys and OIDC clients belong to the shared realm rather than separate realms per tenant. | [ADR-074](../architecture/adr/adr-074-tenant-model.md); [tenant creation](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/control-plane-api/src/routers/tenants.py#L373-L379); [provisioning](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/control-plane-api/src/services/tenant_provisioning_service.py#L100-L126); [configured realm](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/control-plane-api/src/services/keycloak_service.py#L57-L66); [setup_tenant_group](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/control-plane-api/src/services/keycloak_service.py#L945-L972) |
+| Authorization | The Control Plane API rejects access to another tenant unless the caller is `cpi-admin` (`require_tenant_access`); the gateway applies the same rule with `enforce_tenant_isolation`, on by default. | [Control Plane RBAC](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/control-plane-api/src/auth/rbac.py#L25-L41); [require_tenant_access](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/control-plane-api/src/auth/rbac.py#L258-L263); [gateway default](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-gateway/src/auth/rbac.rs#L134-L142); [gateway tenant check](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-gateway/src/auth/rbac.rs#L210-L257) |
 | Contract | One complete, self-contained UAC file per tenant, no inheritance; environment overlays live in Git. | [ADR-022](../architecture/adr/adr-022-uac-tenant-architecture.md), ADR-040 |
 | Policy | Each signed policy artifact carries a single `tenant_id`; a missing artifact for one tenant denies that tenant only, never the others. | ADR-070 §4, Annex A2 |
-| Network | For the reference pattern, the operator must isolate tenant workloads with namespaces and NetworkPolicy objects. The chart includes conditional bootstrap and first-admin egress policies, but these do not provide general tenant workload isolation. Examples: [Security Hardening](../admin/security-hardening.md#network-policies). | [Helm templates](https://github.com/stoa-platform/stoa/tree/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/charts/stoa-platform/templates); [bootstrap policy](https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/charts/stoa-platform/templates/bootstrap-networkpolicy.yaml#L1-L17); [first-admin policy](https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/charts/stoa-platform/templates/first-admin-networkpolicy.yaml#L1-L15); ADR-026 Security Considerations |
-| Components | Control plane and data plane are separate processes with a single deployment path; Envoy loads no extension and STOA logic runs in separate services; the policy signing key is mounted read-only and readable only by the Control Plane API; gateway containers run as non-root with a read-only filesystem and all capabilities dropped. | ADR-073 §1, §4; ADR-070 A5; [gateway security context](https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/charts/stoa-platform/templates/stoa-gateway-deployment.yaml#L146-L154) |
-| Supply chain | Images are signed with Cosign, with SLSA provenance and an SPDX SBOM attached at publication; verify them before mirroring to the on-site registry. | [image publication workflow](https://github.com/stoa-platform/stoa/blob/4290bb39fe57de7516c46ea675a5c90ce4ed13f8/.github/workflows/docker-publish.yml#L157-L186) |
+| Network | For the reference pattern, the operator must isolate tenant workloads with namespaces and NetworkPolicy objects. The chart includes conditional bootstrap and first-admin egress policies, but these do not provide general tenant workload isolation. Examples: [Security Hardening](../admin/security-hardening.md#network-policies). | [Helm templates](https://github.com/stoa-platform/stoa/tree/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/charts/stoa-platform/templates); [bootstrap policy](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/charts/stoa-platform/templates/bootstrap-networkpolicy.yaml#L1-L57); [first-admin policy](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/charts/stoa-platform/templates/first-admin-networkpolicy.yaml#L1-L48) |
+| Components | Control plane and data plane are separate processes with a single deployment path; Envoy loads no extension and STOA logic runs in separate services; the policy signing key is mounted read-only and readable only by the Control Plane API; gateway containers run as non-root with a read-only filesystem and all capabilities dropped. | ADR-073 §1, §4; ADR-070 A5; [gateway security context](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/charts/stoa-platform/templates/stoa-gateway-deployment.yaml#L183-L195) |
+| Supply chain | Images are signed with Cosign, with SLSA provenance and an SPDX SBOM attached at publication; verify them before mirroring to the on-site registry. | [image publication workflow](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/.github/workflows/docker-publish.yml#L157-L188) |
 
 ## Related
 
@@ -145,4 +145,4 @@ flowchart LR
 - [Hybrid Deployment](./hybrid.md) — hybrid and multi-cloud models
 - [Multi-Tenant Isolation](../concepts/multi-tenant.md) — tenant lifecycle and RBAC scoping
 - [Security Hardening](../admin/security-hardening.md) — NetworkPolicy and container hardening examples
-- [ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane.md), [ADR-070](../architecture/adr/adr-070-gateway-fail-closed-posture.md), [ADR-037](../architecture/adr/adr-037-deployment-modes-sovereign-first.md) — decisions behind this page
+- [ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane.md), [ADR-074](../architecture/adr/adr-074-tenant-model.md), [ADR-075](../architecture/adr/adr-075-secrets-backend-openbao.md), [ADR-070](../architecture/adr/adr-070-gateway-fail-closed-posture.md), [ADR-037](../architecture/adr/adr-037-deployment-modes-sovereign-first.md) — decisions behind this page

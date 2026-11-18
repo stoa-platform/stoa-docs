@@ -7,7 +7,7 @@ keywords: [multi-tenant, isolation, Kubernetes, Keycloak, sécurité, RBAC, tena
 
 # Isolation multi-tenant
 
-STOA implémente un modèle de **multi-tenancy strict** où chaque tenant est entièrement isolé au niveau de l'infrastructure, de l'identité, des données et du réseau. Cela permet à un seul déploiement STOA de servir plusieurs organisations sans fuite de données inter-tenant.
+STOA implémente un modèle d'**isolation multi-tenant multicouche** combinant le cloisonnement logique des identités et des données dans le Control Plane et la Gateway ([ADR-074](/docs/architecture/adr/adr-074-tenant-model), [ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) avec des frontières optionnelles de namespace Kubernetes et de réseau CNI pour les charges de travail des tenants. Cela permet à un seul déploiement STOA de servir plusieurs organisations sans fuite de données inter-tenant.
 
 ## Modèle de données du tenant
 
@@ -42,7 +42,7 @@ stateDiagram-v2
 
 ### 1. Isolation par namespace Kubernetes
 
-Chaque tenant opère dans un namespace dédié avec des labels pour l'application des politiques :
+Dans les déploiements Kubernetes multi-tenant, les opérateurs peuvent placer les charges de travail des tenants et les CRD `Tool` / `ToolSet` dans des namespaces dédiés avec des labels pour l'application des politiques (modèle de référence opérateur ; le chart `charts/stoa-platform`, centré sur la passerelle, ne provisionne pas automatiquement les namespaces tenants) :
 
 ```yaml
 apiVersion: v1
@@ -104,30 +104,29 @@ Les tenants peuvent communiquer avec leur propre namespace et le namespace parta
 
 ### 3. Isolation au niveau de la passerelle
 
-La passerelle STOA applique les limites des tenants au niveau de la couche API :
+La passerelle STOA applique les frontières des tenants aux couches API et MCP :
 
-- **Routage par tenant** — Chaque API est scopée à un identifiant de tenant
+- **Politiques tenant fail-closed** — Les artefacts de politiques d'outils signés Ed25519 par tenant (`STOA_POLICY_BOOT_TENANTS`, [ADR-070](/docs/architecture/adr/adr-070-gateway-fail-closed-posture)) refusent toute invocation si l'état de politique est absent ou invalide
+- **Routage et visibilité filtrés par tenant** — Chaque API et outil MCP (`stoa://tools/{name}`) est rattaché à un `tenant_id` vérifié
 - **Limites de débit séparées** — Application des quotas par tenant
 - **Politiques indépendantes** — Les politiques OPA évaluent le contexte du tenant
-- **Certificats spécifiques au tenant** — Certificats mTLS scopés par tenant
 
-Dans les déploiements multi-passerelle, chaque adapter de passerelle (Kong, Gravitee, webMethods, STOA) maintient l'isolation des tenants via ses mécanismes natifs.
+Dans les déploiements multi-passerelles, les 6 adaptateurs du Control Plane ([ADR-035](/docs/architecture/adr/adr-035-gateway-adapter-pattern)) et l'agent sur site `stoa-connect` (STOA Link : Kong, Gravitee, webMethods et Envoy xDS sur option explicite) propagent le périmètre tenant vers chaque passerelle cible.
 
 ### 4. Isolation de l'authentification
 
-L'architecture multi-realm de Keycloak fournit l'isolation des identités :
+Conformément à [ADR-074](/docs/architecture/adr/adr-074-tenant-model) (qui remplace l'ancienne ébauche d'un realm par tenant d'ADR-026), STOA utilise un **unique realm Keycloak partagé `stoa`** (`KEYCLOAK_REALM=stoa`) avec appartenance par groupe :
 
-- **Un realm par tenant** — Magasins d'utilisateurs isolés, identifiants séparés
-- **Configurations clients isolées** — Chaque tenant a ses propres clients OIDC
-- **Validation de jetons indépendante** — Les jetons d'un realm sont invalides dans un autre
-- **Rôles scopés au tenant** — `tenant-admin` ne peut gérer que son propre tenant
+- **Un groupe Keycloak racine par tenant** — Provisionné sous `/<tenant_id>` par `setup_tenant_group` (`TenantProvisioningService`) lors de la création du tenant (`POST /v1/tenants`), tandis que `add_user_to_tenant` renseigne l'attribut utilisateur `tenant_id` projeté dans le JWT
+- **Claim JWT `tenant_id` vérifié** — Lu depuis les claims du JWT après vérification de la signature RS256 JWKS et de l'émetteur (`Claims::tenant_id()` / `require_tenant` dans `stoa-gateway`, `get_current_user` dans `control-plane-api`), jamais accepté depuis un en-tête ou paramètre non vérifié
+- **Contrôle strict de frontière tenant** — Le RBAC du Control Plane (`require_tenant_access`, ainsi que `RbacEnforcer` côté Rust lorsque le champ de configuration RBAC `enforce_tenant_isolation` est activé) rejette les accès inter-tenant (`403`) hors rôle plateforme `cpi-admin` ; MCP `tools/list` et `ext_authz` gRPC Envoy exigent un `tenant_id` vérifié correspondant au tenant/route cible sans présumer ce bypass `cpi-admin` (tandis que les routes REST UAC publiées avec `jwt_validation` dans `proxy/dynamic.rs` valident le JWT et l'éventuelle `inboundAuthAudience` en mode fail-closed sans comparer le claim `tenant_id` du jeton à `route.tenant_id`)
+- **Courtage multi-IdP** — La fédération d'identités externes est démontrée uniquement dans les realms de démonstration dédiés (profil `federation` de `deploy/docker-compose/`, non attestée dans l'import du realm produit `stoa`) plutôt que via un realm par tenant
 
 ### 5. Isolation des données
 
-- **Schéma par tenant** — Schémas de base de données isolés par tenant
-- **Chiffrement au repos** — Toutes les données tenant chiffrées (AES-256)
-- **Politiques de sauvegarde séparées** — Planifications de sauvegarde par tenant
-- **Journalisation d'audit** — Chaque accès aux données journalisé avec le contexte du tenant
+- **Schéma PostgreSQL partagé filtré par `tenant_id`** — Tous les enregistrements appartenant à un tenant (`apis`, `subscriptions`, `consumers`, `mcp_servers`, journaux d'audit) portent une colonne `tenant_id` indexée filtrée par les requêtes SQLAlchemy (pas de schéma par tenant)
+- **Chiffrement des secrets** — Les identifiants sensibles sont stockés via l'API HTTP Vault (OpenBao par défaut, [ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) ou chiffrés au repos
+- **Journalisation d'audit** — Chaque accès Control Plane et Gateway est journalisé avec le contexte `tenant_id` vérifié
 
 ## RBAC et scope par tenant {#rbac-and-tenant-scoping}
 
@@ -135,7 +134,7 @@ Le modèle RBAC de STOA combine des rôles à l'échelle de la plateforme et des
 
 | Rôle | Scope | Permissions |
 |------|-------|-------------|
-| `cpi-admin` | **Plateforme** | Accès complet à tous les tenants, toutes les opérations |
+| `cpi-admin` | **Plateforme (RBAC Control Plane)** | Administration inter-tenant dans l'API Control Plane (et contrôles `RbacEnforcer` Rust) |
 | `tenant-admin` | **Tenant** | Accès complet à son propre tenant uniquement |
 | `devops` | **Tenant** | Déployer et promouvoir au sein de son propre tenant |
 | `viewer` | **Tenant** | Accès en lecture seule à son propre tenant |
@@ -143,7 +142,7 @@ Le modèle RBAC de STOA combine des rôles à l'échelle de la plateforme et des
 Comportements clés :
 - Un `tenant-admin` pour le tenant `acme` **ne peut pas** voir les ressources du tenant `globex`
 - Un `viewer` peut parcourir les API et outils mais ne peut pas invoquer, créer ou modifier
-- Un `cpi-admin` voit tous les tenants et peut effectuer des opérations inter-tenant
+- Un `cpi-admin` voit tous les tenants et peut effectuer des opérations inter-tenant dans le RBAC du Control Plane (`require_tenant_access`) ; côté plan de données, MCP `tools/list` et `ext_authz` gRPC Envoy exigent toujours un `tenant_id` vérifié correspondant au tenant/route cible (tandis que `jwt_validation` sur les routes REST UAC vérifie le JWT et l'audience sans comparer le `tenant_id` du jeton à la route)
 - Le mode d'environnement (dev/staging/prod) restreint davantage les opérations — la production est en lecture seule par défaut
 
 ## Paramètres du tenant {#tenant-settings}
@@ -195,4 +194,6 @@ Les tableaux de bord Grafana peuvent être filtrés par tenant pour les tenant-a
 - [Vue d'ensemble de l'architecture](/docs/concepts/architecture) — Architecture du système
 - [Passerelle MCP](/docs/concepts/mcp-gateway) — Concepts de la passerelle
 - [Guide des abonnements](/docs/guides/subscriptions) — Gestion des abonnements API
+- [ADR-074 : Realm Keycloak unique et groupes par tenant](/docs/architecture/adr/adr-074-tenant-model) — Identité tenant et filtrage PostgreSQL
+- [ADR-070 : Posture fail-closed de la passerelle](/docs/architecture/adr/adr-070-gateway-fail-closed-posture) — Application de politiques d'outils signées par tenant
 - [ADR-022 : Architecture tenant UAC](/docs/architecture/adr/adr-022-uac-tenant-architecture) — Décision d'architecture
