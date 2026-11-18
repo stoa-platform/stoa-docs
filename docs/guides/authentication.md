@@ -161,7 +161,7 @@ AI agents connecting to `stoa-gateway` discover OAuth metadata at `GET /.well-kn
 1. **RS256 Signature & Issuer** — Verified against the `stoa` realm JWKS (`/realms/stoa/protocol/openid-connect/certs`)
 2. **Expiration (`exp`)** — Rejects expired tokens (`401 Unauthorized`)
 3. **Audience (`aud`) — Path-specific** — `control-plane-api` disables `verify_aud` during JWT decoding (`auth/dependencies.py`). On `stoa-gateway`, MCP endpoints require `STOA_MCP_AUDIENCE` (fail-closed when unset), Envoy `ext_authz` gRPC requires `STOA_EXT_AUTHZ_AUDIENCE` (fail-closed when unset), and published UAC REST routes validate `inboundAuthAudience` when set on the contract (otherwise using the gateway's default OIDC validator)
-4. **Tenant Isolation (`tenant_id`)** — Control Plane RBAC (`require_tenant_access`, plus Rust `RbacEnforcer` when its `enforce_tenant_isolation` policy field is enabled) rejects cross-tenant calls with `403 Forbidden` unless the caller holds `cpi-admin`; MCP `tools/list`, Envoy `ext_authz` gRPC, and UAC REST routes require a verified `tenant_id` matching the target tenant/route without a `cpi-admin` cross-tenant bypass
+4. **Tenant Isolation (`tenant_id`)** — Control Plane RBAC (`require_tenant_access`, plus Rust `RbacEnforcer` when its `enforce_tenant_isolation` policy field is enabled) rejects cross-tenant calls with `403 Forbidden` unless the caller holds `cpi-admin`; MCP `tools/list` and Envoy `ext_authz` gRPC require a verified `tenant_id` matching the target tenant/route without a `cpi-admin` cross-tenant bypass, whereas published UAC REST routes (`jwt_validation` in `proxy/dynamic.rs`) verify the JWT and audience fail-closed without comparing the token's `tenant_id` claim to `route.tenant_id`
 
 ## Role-Based Access Control (RBAC)
 
