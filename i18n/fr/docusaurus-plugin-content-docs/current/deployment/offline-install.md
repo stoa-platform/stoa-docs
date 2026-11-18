@@ -186,12 +186,14 @@ vault:
 `values-offline-example.yaml` seul ne suffit **pas** à amener les pods à `1/1 Ready` (`/health` teste uniquement la vivacité du processus, tandis que `/ready` vérifie `policyBootTenants` et la fraîcheur des permissions d'outils signées). Au commit `639e8b9a`, `charts/stoa-platform` ne monte que les volumes `tmp` (`emptyDir`) et `stoa-gateway-policies` (`ConfigMap`) — aucun volume de Secret n'est monté via `secretName` ou `extraEnv`. Montez le Secret contenant la clé de signature `private_key_jwt` (`STOA_KEYCLOAK_CLIENT_KEY_PATH`, plus `STOA_KEYCLOAK_CLIENT_KEY_ID` via `extraEnv`) au moyen d'un overlay Deployment, d'un patch Kustomize ou d'un `--post-renderer` Helm comme documenté dans [Politiques au Démarrage et Readiness](/docs/admin/installation#politiques-au-démarrage-et-readiness).
 :::
 
-Installez depuis l'archive `.tgz` locale (Helm installe les CRDs absents depuis le dossier `crds/` de l'archive lors de l'installation initiale ; lors d'une mise à jour, appliquez d'abord `crds/*.yaml` manuellement) :
+Installez depuis l'archive `.tgz` locale en passant l'exécutable post-renderer préparé sur site (`./site-post-render.sh`, ou votre étape d'overlay Deployment Kustomize/GitOps) afin de monter le volume du Secret `private_key_jwt` avant de contrôler `Ready` (Helm installe les CRDs absents depuis le dossier `crds/` de l'archive lors de l'installation initiale ; lors d'une mise à jour, appliquez d'abord `crds/*.yaml` manuellement) :
 
 ```bash
+# ./site-post-render.sh est l'exécutable post-renderer préparé sur site qui monte le volume du Secret private_key_jwt
 helm upgrade --install stoa-platform ./charts/stoa-platform-0.1.0.tgz \
   --namespace stoa-system \
-  --values values-offline-example.yaml
+  --values values-offline-example.yaml \
+  --post-renderer ./site-post-render.sh
 ```
 
 Ne laissez **jamais** `stoaGateway.image.repository` pointer vers `ghcr.io` sur un site isolé. Si vous activez `gatewaySync`, `stoa.bootstrap.firstAdmin`, `vault.credentialsCheck` ou `stoaSidecar`, miroitez également leurs images et surchargez chaque clé `image` (`<repo>@sha256:<digest>` ou `{repository, digest}`) dans `values-offline-example.yaml`.

@@ -186,12 +186,14 @@ vault:
 `values-offline-example.yaml` alone is **not** sufficient for `1/1 Ready` (`/health` tests process liveness only, whereas `/ready` enforces `policyBootTenants` and fresh signed tool permissions). At commit `639e8b9a`, `charts/stoa-platform` mounts only `tmp` (`emptyDir`) and `stoa-gateway-policies` (`ConfigMap`) — it does **not** mount a Secret volume via `secretName` or `extraEnv`. Mount the `private_key_jwt` signing-key Secret (`STOA_KEYCLOAK_CLIENT_KEY_PATH`, plus `STOA_KEYCLOAK_CLIENT_KEY_ID` via `extraEnv`) using a Deployment manifest overlay, Kustomize patch, or Helm `--post-renderer` as documented in [Startup Policy and Readiness](/docs/admin/installation#startup-policy-and-readiness).
 :::
 
-Install from the local `.tgz` archive (Helm installs missing CRDs from the archive's `crds/` folder on initial install; on upgrades, apply `crds/*.yaml` manually first):
+Install from the local `.tgz` archive while applying your site's prepared post-renderer executable (`./site-post-render.sh`, or your Kustomize/GitOps Deployment overlay step) to mount the `private_key_jwt` Secret volume before checking `Ready` (Helm installs missing CRDs from the archive's `crds/` folder on initial install; on upgrades, apply `crds/*.yaml` manually first):
 
 ```bash
+# ./site-post-render.sh is your prepared executable post-renderer mounting the private_key_jwt Secret volume
 helm upgrade --install stoa-platform ./charts/stoa-platform-0.1.0.tgz \
   --namespace stoa-system \
-  --values values-offline-example.yaml
+  --values values-offline-example.yaml \
+  --post-renderer ./site-post-render.sh
 ```
 
 Do **not** leave `stoaGateway.image.repository` pointing to `ghcr.io` on an offline cluster. If you enable `gatewaySync`, `stoa.bootstrap.firstAdmin`, `vault.credentialsCheck`, or `stoaSidecar`, mirror their images too and override each component's `image` (`<repo>@sha256:<digest>` or `{repository, digest}`) in `values-offline-example.yaml`.

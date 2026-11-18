@@ -264,9 +264,12 @@ cd stoa
 git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
 
 # 2. Install the on-premises STOA Gateway against your Control Plane and Keycloak URLs
+#    (./site-post-render.sh is your prepared executable post-renderer mounting the private_key_jwt Secret volume;
+#     if your Kustomize/GitOps pipeline applies that Deployment overlay instead, run it before checking Ready)
 helm upgrade --install stoa-platform ./charts/stoa-platform \
   -n stoa-system --create-namespace \
-  -f my-values.yaml
+  -f my-values.yaml \
+  --post-renderer ./site-post-render.sh
 ```
 
 Minimal `my-values.yaml` for a hybrid gateway (`stoaGateway.image` requires both `repository` and `digest` when overridden; see the [Installation Guide](/docs/admin/installation) for startup policy readiness requirements):
@@ -317,10 +320,11 @@ helm install openbao openbao/openbao -n openbao --create-namespace
 # 2. Deploy Control Plane API, Console, Portal, PostgreSQL, and Keycloak per your site manifests
 #    (or evaluate locally via deploy/docker-compose — see /docs/guides/quickstart)
 
-# 3. Install the STOA Gateway from the checked-out repository (with your values + private_key_jwt volume overlay)
+# 3. Install the STOA Gateway from the checked-out repository, applying your prepared private_key_jwt volume overlay
 helm upgrade --install stoa-platform ./charts/stoa-platform \
   -n stoa-system --create-namespace \
-  -f your-values.yaml
+  -f your-values.yaml \
+  --post-renderer ./site-post-render.sh
 ```
 
 For air-gapped sites with no outbound Internet access, follow [Offline Installation](/docs/deployment/offline-install).

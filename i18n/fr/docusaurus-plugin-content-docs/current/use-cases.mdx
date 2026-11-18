@@ -269,16 +269,18 @@ Pour la stack locale à 19 services avec Console, Portail et Observabilité (`de
   </TabItem>
   <TabItem value="k8s" label="☸️ Gateway Auto-hébergé (Helm)">
 
-Préparez au préalable `my-values.yaml` (`stoaGateway.image.{repository,digest}`, `stoaGateway.policyBootTenants`), les services Control Plane / Keycloak déployés séparément ainsi que l'overlay de volume du Secret `private_key_jwt` conformément au [Guide d'Installation](/docs/admin/installation) :
+Préparez au préalable `my-values.yaml` (`stoaGateway.image.{repository,digest}`, `stoaGateway.policyBootTenants`), les services Control Plane / Keycloak déployés séparément ainsi que votre exécutable post-renderer (`./site-post-render.sh`, ou une étape d'overlay Deployment Kustomize/GitOps appliquée avant de vérifier `Ready`) montant le volume du Secret `private_key_jwt` conformément au [Guide d'Installation](/docs/admin/installation#politiques-au-démarrage-et-readiness) :
 
 ```bash
 # Installer le chart Helm gateway depuis un checkout du dépôt (pas d'index charts.gostoa.dev)
 git clone https://github.com/stoa-platform/stoa.git
 cd stoa
 git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
+# ./site-post-render.sh monte le volume du Secret de clé private_key_jwt requis avant 1/1 Ready
 helm upgrade --install stoa-platform ./charts/stoa-platform \
   -n stoa-system --create-namespace \
-  -f my-values.yaml
+  -f my-values.yaml \
+  --post-renderer ./site-post-render.sh
 ```
 
   </TabItem>
