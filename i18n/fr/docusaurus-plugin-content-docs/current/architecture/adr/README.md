@@ -38,7 +38,7 @@ Ce répertoire contient les décisions architecturales structurantes de la Plate
 | [040](./adr-040-born-gitops-multi-environment.md) | Born GitOps — Promotion Multi-Environnement | ✅ |
 | [043](./adr-043-kafka-mcp-event-bridge.md) | Pont d'Événements Kafka → MCP | 📋 |
 | [059](./adr-059-simplified-deployment-sse.md) | Architecture de Déploiement Simplifiée — Chemin Unique via SSE | ✅ |
-| [064](/docs/architecture/adr/adr-064-controller-framework) | Framework de Contrôleurs — Maintien des Workers Python, Report de Kopf et Go (Amendé par ADR-073) *(EN)* | ✅ |
+| [064](./adr-064-controller-framework.md) | Cadre des contrôleurs — Maintien des workers Python ad hoc, report de kopf et de Go (amendé par l’ADR-073) | ✅ |
 
 ### Sécurité & Conformité
 
