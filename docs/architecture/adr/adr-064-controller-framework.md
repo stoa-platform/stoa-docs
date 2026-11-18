@@ -16,9 +16,9 @@ sidebar_position: 64
 > **Amendment — 2026-11-05 (ADR-073 §7, decision of 2026-10-23):** [ADR-073](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) moves the STOA data plane to upstream Envoy. For this record:
 >
 > - **Naming.** "STOA Link" is the agent installed on the customer site, binary `stoa-connect` (Go). Where this record says `stoa-connect`, read STOA Link. The Rust sidecar runtime of the original ADR-057 is no longer a product: a sidecar is only one way to deploy Envoy.
-> - **Go re-evaluation trigger, recorded.** The local xDS server that serves Envoy its configuration lives in STOA Link, outside the CP API process — the slot this record already assigns to `stoa-connect` (Decision §4; "Adjustments applied", item 3). It is a new responsibility of the existing Go agent, not a move of any CP API worker to Go. The UAC → xDS translation runs in a dedicated control-plane component, separate from the CP API process (ADR-073 §2).
+> - **Go re-evaluation trigger, recorded.** The local xDS server that serves Envoy its configuration lives in STOA Link, outside the CP API process — the slot this record already assigns to `stoa-connect` (Decision §4; "Adjustments applied", item 3). It is a new responsibility of the existing Go agent, not a move of any CP API worker to Go. ADR-073 §2 assigns UAC → xDS translation to a dedicated control-plane component in the target architecture.
 > - **Scope protection unchanged.** The nine CP API workers stay as they are. The deployment paths retired by ADR-059 are not re-enabled: Console → CP API → SSE → STOA Link → (third-party gateway, or xDS → Envoy) → callback stays the single deployment path for every target, and the `/api/v1/links/…` endpoints do not change.
-> - *Implementation status:* the Link xDS server is decided but not yet implemented.
+> - *Implementation status.* The Go agent implements a loopback mTLS ADS server in opt-in Envoy mode. Link currently builds the snapshots from the inventory it receives. See [ADR-073 §7](/docs/architecture/adr/adr-073-adopt-envoy-data-plane) for the implementation and rollout status.
 
 ## Context
 

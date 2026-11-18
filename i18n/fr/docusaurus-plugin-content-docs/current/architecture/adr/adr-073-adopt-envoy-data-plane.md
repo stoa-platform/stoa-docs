@@ -123,7 +123,7 @@ Envoy assure nativement l'écoute, la terminaison TLS et mTLS, le routage, la r�
 ### 7. Sens de « STOA Link »
 
 - **STOA Link est l'agent installé sur le site client** (binaire `stoa-connect`). Il maintient la connexion SSE sortante vers le plan de contrôle, sert le xDS local à Envoy, applique l'état voulu aux passerelles tierces, remonte `SYNCED` / `FAILED` et l'état observé, et enregistre les instances du plan de données qu'il gère ([ADR-036](./adr-036-gateway-auto-registration.md)) **[À confirmer : détails de l'enregistrement des instances Envoy]**.
-  - *État d'implémentation :* le serveur xDS de Link est décidé mais **pas encore implémenté**. L'agent `stoa-connect` actuel synchronise les passerelles tierces en REST / SSE ; servir le xDS à Envoy est la cible.
+  - *État d’implémentation.* `stoa-connect` implémente un serveur ADS en boucle locale avec mTLS. Le [mode Envoy](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-go/cmd/stoa-connect/ENVOY.md) s’active explicitement avec `STOA_GATEWAY_TYPE=envoy`. Link construit des instantanés versionnés à partir de l’inventaire des routes et des politiques et attend les acquittements CDS, LDS et RDS d’Envoy. Le dépôt fournit un [harnais O1 manuel hors ligne](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/docs/testing/o1-offline-envoy.md) avec un processus Envoy réel et un témoin gRPC `Authorization.Check` indépendant. Les déploiements Helm et Compose par défaut utilisent la passerelle Rust. La parité des politiques et la bascule vers Envoy par défaut restent ouvertes.
 - **Un sidecar n'est qu'une façon de déployer Envoy**, pas un produit. « STOA Gateway » désigne le plan de données basé sur Envoy avec ses services STOA, quelle que soit sa topologie (autonome ou sidecar).
 - Les points d'accès `/api/v1/links/…` et la métrique `stoa_link_connections_active` de l'ADR-059 **ne changent pas**.
 - L'ADR-057 est modifiée en conséquence : ses entrées « STOA Link » (sidecar Rust) et « STOA Connect » (agent Go) fusionnent en STOA Link, l'agent. Les ADR-003 et ADR-064 sont modifiées à la suite.
@@ -148,7 +148,7 @@ Correctifs de sécurité uniquement, jusqu'à une date de fin de support à anno
 
 ### 10. Placement des politiques
 
-*État du périmètre :* le placement et les niveaux de politiques ci-dessous sont un **périmètre décidé, et non des fonctions livrées**. Comme pour le serveur xDS de Link (§7), aucune de ces politiques n'est encore disponible. La documentation ne présentera comme disponibles que les politiques du niveau v1, et seulement une fois livrées.
+*État du périmètre.* Les tableaux ci-dessous décrivent le placement et les niveaux de politiques cibles. Dans le [mode Envoy activé sur option](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-go/cmd/stoa-connect/ENVOY.md), Link traduit déjà `cors`, `rate_limit` et `ip_filter` à partir de l’inventaire applicable, dans les limites décrites dans la référence du mode. La parité complète des politiques reste ouverte.
 
 #### Où s'exécute chaque contrôle
 

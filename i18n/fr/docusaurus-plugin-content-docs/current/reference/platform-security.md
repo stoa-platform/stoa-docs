@@ -13,7 +13,7 @@ Cette référence aide les architectes et les responsables de la sécurité à �
 
 Les liens vers le code ci-dessous ciblent une révision précise du dépôt. Les ADR publiés décrivent des décisions ; ils n'attestent pas d'un déploiement.
 
-L'[ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane.md) décide que le data plane utilise Envoy upstream, configuré par xDS via STOA Link, avec l'autorisation dans des services externes et le module MCP derrière Envoy. Il indique explicitement que le serveur xDS de Link n'est pas encore implémenté. Le code de la passerelle Rust cité ici documente donc la passerelle maintenue, sans prouver le déploiement de la cible Envoy.
+L'[ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane.md) décide que le data plane utilise Envoy upstream, configuré par xDS via STOA Link, avec l'autorisation dans des services externes et le module MCP derrière Envoy. Link implémente ADS en boucle locale avec mTLS lorsque le mode Envoy est activé. Le [plan de données](../architecture/data-plane.md) décrit cette implémentation et les travaux restants. Le code Rust cité sur cette page concerne la passerelle maintenue.
 
 ## Gestion des vulnérabilités
 

@@ -13,7 +13,7 @@ This reference helps architects and security reviewers assess **STOA — Soverei
 
 The source links below pin implementation evidence to a repository revision. Published ADRs describe decisions; they are not deployment attestations.
 
-[ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane.md) decides that the data plane uses upstream Envoy, configured through xDS served by STOA Link, with authorization in external services and the MCP module behind Envoy. It explicitly marks the Link xDS server as not yet implemented. The Rust gateway code cited here is therefore implementation evidence for the maintained gateway, not proof that the Envoy target is deployed.
+[ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane.md) decides that the data plane uses upstream Envoy, configured through xDS served by STOA Link, with authorization in external services and the MCP module behind Envoy. Link implements loopback mTLS ADS in opt-in Envoy mode. The [data plane status](../architecture/data-plane.md) describes that implementation and the remaining work. The Rust code cited on this page applies to the maintained gateway.
 
 ## Vulnerability management
 

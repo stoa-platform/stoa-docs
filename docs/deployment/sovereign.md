@@ -15,6 +15,8 @@ In sovereign mode the control plane and the data plane both run inside the opera
 
 ## 1. Network topology
 
+The topology and the access-control and isolation flows below describe the Envoy target in ADR-073.
+
 ```mermaid
 flowchart TB
     subgraph EXT["External network (untrusted)"]

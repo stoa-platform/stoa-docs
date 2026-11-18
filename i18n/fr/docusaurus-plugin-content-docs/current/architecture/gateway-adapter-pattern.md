@@ -66,7 +66,7 @@ Si une nouvelle fonction fournisseur dépasse la sémantique actuelle, modifier 
 
 Selon la décision du 22 octobre 2026, le plan de données STOA doit utiliser Envoy amont. La logique STOA s'exécutera dans des services externes et le module MCP sera placé derrière Envoy. Le chemin de configuration décidé est plan de contrôle → STOA Link → xDS → Envoy ; pour les passerelles tierces, Link continue d'appliquer l'état souhaité via l'interface de chaque passerelle ([ADR-073](./adr/adr-073-adopt-envoy-data-plane.md)).
 
-La traduction des API tierces reste ainsi distincte du chemin de configuration Envoy. ADR-073 place la traduction du [Universal API Contract (UAC)](../concepts/uac.md) vers xDS dans un composant dédié du plan de contrôle, tandis que Link sert des instantanés versionnés. Il précise que le serveur xDS de Link est **non encore implémenté**. La décision décrit donc l'architecture cible ; elle ne prouve ni un déploiement Envoy livré ni une implémentation Envoy existante de l'interface Go des adaptateurs.
+L’[adaptateur Go Envoy](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-go/internal/connect/adapters/envoy.go) publie via le serveur ADS local avec mTLS lorsque `STOA_GATEWAY_TYPE=envoy` est sélectionné. Link construit actuellement ses instantanés à partir de l’inventaire des routes et des politiques qu’il reçoit. Dans l’architecture cible de l’ADR-073, un composant dédié du plan de contrôle assurera la traduction du [Universal API Contract (UAC)](../concepts/uac.md) vers xDS. Voir le [plan de données](./data-plane.md) pour le périmètre disponible et les travaux restants.
 
 ## Voir aussi
 
