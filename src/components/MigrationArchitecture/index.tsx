@@ -2,6 +2,7 @@
 // Copyright 2024-2026 CAB Ingenierie / Christophe ABOULICAM
 import React, { useState } from 'react';
 import { useColorMode } from '@docusaurus/theme-common';
+import useVisualMotion from '../useVisualMotion';
 
 type TabId = 'timeline' | 'shadow' | 'parity';
 
@@ -125,6 +126,7 @@ export default function MigrationArchitecture(): React.ReactElement {
   const { colorMode } = useColorMode();
   const C = colorMode === 'dark' ? darkColors : lightColors;
   const [activeTab, setActiveTab] = useState<TabId>('timeline');
+  const visualMotion = useVisualMotion(activeTab);
   const [activePhase, setActivePhase] = useState(0);
 
   const containerStyle: React.CSSProperties = {
@@ -173,7 +175,7 @@ export default function MigrationArchitecture(): React.ReactElement {
         </div>
 
         {/* Progress bar */}
-        <div style={{
+        <div data-visual-scene style={{
           display: 'flex',
           height: '8px',
           borderRadius: '4px',
@@ -182,7 +184,7 @@ export default function MigrationArchitecture(): React.ReactElement {
           background: C.surfaceLight,
         }}>
           {phases.map((p, i) => (
-            <div key={p.id} style={{
+            <div key={p.id} data-visual-step="value" style={{
               flex: 1,
               background: langColor(p.language),
               opacity: i <= activePhase ? 1 : 0.2,
@@ -193,9 +195,9 @@ export default function MigrationArchitecture(): React.ReactElement {
         </div>
 
         {/* Phase cards */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div data-visual-scene style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {phases.map((phase, i) => (
-            <div key={phase.id} style={{
+            <div key={phase.id} data-visual-step="" style={{
               background: activePhase === i ? `${langColor(phase.language)}10` : C.surface,
               border: `1px solid ${activePhase === i ? langColor(phase.language) : C.border}`,
               borderRadius: '8px',
@@ -276,7 +278,7 @@ export default function MigrationArchitecture(): React.ReactElement {
         </div>
 
         {/* Request flow diagram */}
-        <div style={{
+        <div data-visual-scene style={{
           background: C.surface,
           border: `1px solid ${C.border}`,
           borderRadius: '10px',
@@ -298,7 +300,7 @@ export default function MigrationArchitecture(): React.ReactElement {
               {'\u{1F4E8}'} Incoming Request
             </div>
           </div>
-          <div style={{ textAlign: 'center', color: C.textDim, fontSize: '16px', marginBottom: '8px' }}>{'\u25BC'}</div>
+          <div style={{ textAlign: 'center', color: C.textDim, fontSize: '16px', marginBottom: '8px' }}><span data-visual-arrow="down">{'\u25BC'}</span></div>
 
           {/* Load Balancer */}
           <div style={{
@@ -346,7 +348,7 @@ export default function MigrationArchitecture(): React.ReactElement {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '10px', color: C.textDim, marginBottom: '2px' }}>mirror</div>
-                <div style={{ color: C.textDim }}>{'\u2194'}</div>
+                <div data-visual-step="" style={{ color: C.textDim }}>{'\u2194'}</div>
               </div>
             </div>
 
@@ -404,7 +406,7 @@ export default function MigrationArchitecture(): React.ReactElement {
           padding: '14px',
         }}>
           <div style={{ fontWeight: 700, fontSize: '13px', color: C.text, marginBottom: '8px' }}>Rollback Plan</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+          <div data-visual-scene style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
             {['Route 100% to Python', 'Investigate shadow logs', 'Patch Rust & redeploy', '48h re-validation', 'Resume migration'].map((step, i, arr) => (
               <React.Fragment key={step}>
                 <div style={{
@@ -418,7 +420,7 @@ export default function MigrationArchitecture(): React.ReactElement {
                   {i + 1}. {step}
                 </div>
                 {i < arr.length - 1 && (
-                  <span style={{ color: C.textDim, alignSelf: 'center', fontSize: '10px' }}>{'\u2192'}</span>
+                  <span data-visual-arrow="right" style={{ color: C.textDim, alignSelf: 'center', fontSize: '10px' }}>{'\u2192'}</span>
                 )}
               </React.Fragment>
             ))}
@@ -533,7 +535,7 @@ export default function MigrationArchitecture(): React.ReactElement {
   }
 
   return (
-    <div style={containerStyle}>
+    <div ref={visualMotion} style={containerStyle}>
       <div style={tabBarStyle}>
         {tabs.map(tab => (
           <button
@@ -559,10 +561,10 @@ export default function MigrationArchitecture(): React.ReactElement {
       </div>
 
       <div style={gridStyle}>
-        <div style={panelStyle(activeTab === 'timeline')}>
+        <div data-visual-panel={activeTab === 'timeline' ? '' : undefined} style={panelStyle(activeTab === 'timeline')}>
           <TimelinePanel />
         </div>
-        <div style={panelStyle(activeTab === 'shadow')}>
+        <div data-visual-panel={activeTab === 'shadow' ? '' : undefined} style={panelStyle(activeTab === 'shadow')}>
           <ShadowPanel />
         </div>
         <div style={panelStyle(activeTab === 'parity')}>

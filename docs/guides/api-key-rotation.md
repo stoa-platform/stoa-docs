@@ -23,14 +23,16 @@ When you rotate a key, STOA doesn't immediately invalidate the old one. Instead,
 ```mermaid
 gantt
     title Key Rotation Timeline
-    dateFormat HH:mm
-    axisFormat %H:%M
+    dateFormat YYYY-MM-DD HH:mm
+    axisFormat Day %d %Hh
+    tickInterval 12hour
+    todayMarker off
     section Old Key
-    Valid           :done, 00:00, 12:00
-    Grace Period    :active, 12:00, 36:00
-    Expired         :crit, 36:00, 48:00
+    Valid :done, 2000-01-01 00:00, 12h
+    Grace Period :active, 2000-01-01 12:00, 24h
+    Expired :crit, 2000-01-02 12:00, 12h
     section New Key
-    Valid           :done, 12:00, 48:00
+    Valid :done, 2000-01-01 12:00, 36h
 ```
 
 | Phase | Old Key | New Key | Duration |
