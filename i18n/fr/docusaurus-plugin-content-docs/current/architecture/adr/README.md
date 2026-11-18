@@ -107,7 +107,7 @@ Ce répertoire contient les décisions architecturales structurantes de la Plate
 | [032](./adr-032-response-transformation.md) | Transformation des Réponses — Adaptateurs Pluggables | ✅ |
 | [033](./adr-033-shared-ui-components.md) | Composants UI Partagés — Abstraction de Thème | ✅ |
 | [055](./adr-055-portal-console-governance.md) | Gouvernance Portail/Console — Séparation Claire des Responsabilités | ✅ |
-| [060](/docs/architecture/adr/adr-060-ai-verified-ui-testing) | Framework de Tests UI Vérifiés par IA — Validation en 4 Couches *(EN)* | ✅ |
+| [060](./adr-060-ai-verified-ui-testing.md) | Tests UI vérifiés par IA — Validation en quatre couches | ✅ |
 
 ### Modèle d'Affaires & Stratégie
 
@@ -122,7 +122,7 @@ Ce répertoire contient les décisions architecturales structurantes de la Plate
 |:---:|-------|:------:|
 | [030](./adr-030-ai-context-management.md) | Architecture de Gestion de Contexte AI-Native (Partiellement remplacé par ADR-062) | ✅ |
 | [061](/docs/architecture/adr/adr-061-council-multi-stage-review) | Système de Revue Multi-Étapes Council *(EN)* | ✅ |
-| [062](/docs/architecture/adr/adr-062-claude-md-hierarchy-no-rules-dir) | Hiérarchie `CLAUDE.md` en Remplacement de `.claude/rules/` *(EN)* | ✅ |
+| [062](./adr-062-claude-md-hierarchy-no-rules-dir.md) | Hiérarchie `CLAUDE.md` en remplacement de `.claude/rules/` | ✅ |
 | [063](/docs/architecture/adr/adr-063-sdd-l1-impact-mcp) | SDD Niveau 1 + Agent de Connaissance MCP `stoa-impact` *(EN)* | ✅ |
 | [065](/docs/architecture/adr/adr-065-pr-guardian) | STOA PR Guardian — Revue IA Consultative sur GitHub Actions *(EN)* | ✅ |
 
