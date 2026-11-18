@@ -123,7 +123,7 @@ Envoy natively handles listening, TLS and mTLS termination, routing, load balanc
 ### 7. Meaning of "STOA Link"
 
 - **STOA Link is the agent installed on the customer site** (binary `stoa-connect`). It keeps the outbound SSE connection to the control plane, serves the local xDS to Envoy, applies the desired state to third-party gateways, reports `SYNCED` / `FAILED` and the observed state, and registers the data-plane instances it manages ([ADR-036](./adr-036-gateway-auto-registration.md)) **[To be confirmed: registration details for Envoy instances]**.
-  - *Implementation status:* the Link xDS server is decided but **not yet implemented**. Today's `stoa-connect` agent synchronises third-party gateways over REST / SSE; serving xDS to Envoy is the target.
+  - *Implementation status.* `stoa-connect` implements a loopback mTLS ADS server in [opt-in Envoy mode](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-go/cmd/stoa-connect/ENVOY.md), selected explicitly with `STOA_GATEWAY_TYPE=envoy`. Link builds versioned snapshots from the route and policy inventory and waits for Envoy to acknowledge CDS, LDS and RDS. The repository provides a [manual offline O1 harness](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/docs/testing/o1-offline-envoy.md) with a real Envoy process and an independent gRPC `Authorization.Check` witness. The default Helm and Compose deployments use the Rust gateway. Policy parity and the switch to Envoy by default remain open.
 - **A sidecar is only one way to deploy Envoy**, not a product. "STOA Gateway" designates the Envoy-based data plane with its STOA services, whatever its topology (standalone or sidecar).
 - The `/api/v1/links/…` endpoints and the `stoa_link_connections_active` metric of ADR-059 **do not change**.
 - ADR-057 is amended accordingly: its "STOA Link" (Rust sidecar) and "STOA Connect" (Go agent) entries merge into STOA Link, the agent. ADR-003 and ADR-064 are amended to follow.
@@ -148,7 +148,7 @@ Security fixes only, until an end-of-support date to be announced **[To be confi
 
 ### 10. Policy placement
 
-*Scope status:* the placement and the policy tiers below are **decided scope, not delivered features**. As for the Link xDS server (§7), none of these policies is available yet. The documentation will present only v1-tier policies as available, and only once they are delivered.
+*Scope status.* The tables below describe the target policy placement and tiers. In [opt-in Envoy mode](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-go/cmd/stoa-connect/ENVOY.md), Link already projects `cors`, `rate_limit` and `ip_filter` from the applicable inventory with the limits documented in the mode reference. Full policy parity remains open.
 
 #### Where each check runs
 

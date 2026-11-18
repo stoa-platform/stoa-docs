@@ -21,7 +21,7 @@ keywords: [gateway, link, connect, sidecar, go, rust, produit, déploiement, on-
 > - **Un sidecar est uniquement une topologie de déploiement d’Envoy, pas un produit.** « STOA Gateway » désigne le plan de données fondé sur Envoy avec ses services externes STOA, déployé de manière autonome ou en sidecar auprès d’une gateway tierce ou d’une charge applicative. Le runtime sidecar Rust décrit ci-dessous n’est plus une cible ; le gateway Rust passe en maintenance (ADR-073 §9).
 > - **Les endpoints `/api/v1/links/…` d’ADR-059 et le protocole d’enregistrement ci-dessous restent inchangés.** La valeur `gateway_mode` utilisée par les instances Envoy relève de la révision d’ADR-024 ; toute nouvelle valeur nécessite toujours un ADR.
 > - Le tableau des produits, le diagramme, la matrice de décision et le tableau des critères (y compris les chiffres de latence, de taille et de temps d’installation) décrivent la gamme de trois runtimes décidée en mars 2026 et doivent être lus comme un contexte historique, pas comme l’état actuel. La section « Code Partagé (monorepo Go) » reste exacte : `cmd/stoa-connect/` est l’agent Link.
-> - *État d’implémentation :* le serveur xDS de Link est décidé mais pas encore implémenté ; l’agent actuel synchronise les gateways tierces via REST / SSE.
+> - *État d’implémentation.* Link sert ADS en boucle locale avec mTLS lorsque le mode Envoy est activé. La synchronisation des passerelles tierces continue via leurs adaptateurs. Voir l’[ADR-073 §7](./adr-073-adopt-envoy-data-plane.md) pour l’état de l’implémentation et du déploiement.
 
 ## Contexte
 

@@ -15,6 +15,8 @@ L'[ADR-073](../architecture/adr/adr-073-adopt-envoy-data-plane.md) (22/10/2026) 
 
 ## 1. Topologie réseau
 
+La topologie et les flux de contrôle d’accès et d’isolation ci-dessous décrivent la cible Envoy définie par l’ADR-073.
+
 ```mermaid
 flowchart TB
     subgraph EXT["Réseau externe (non fiable)"]

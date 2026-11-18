@@ -66,7 +66,7 @@ If a new vendor feature cannot fit the current semantics, changing only the adap
 
 Under the decision dated 2026-10-22, the STOA data plane is to use upstream Envoy. STOA logic is to run in external services, and the MCP module is to sit behind Envoy. The decided configuration path is control plane → STOA Link → xDS → Envoy; for third-party gateways, Link continues to apply desired state through each gateway's interface ([ADR-073](./adr/adr-073-adopt-envoy-data-plane.md)).
 
-This keeps third-party API translation distinct from the Envoy configuration path. ADR-073 places the translation from the [Universal API Contract (UAC)](../concepts/uac.md) to xDS in a dedicated control-plane component, while Link serves versioned snapshots. It explicitly marks the Link xDS server as **not yet implemented**. The decision is therefore the target architecture, not evidence of a delivered Envoy deployment or of an existing Envoy implementation of the Go adapter interface.
+The [Go Envoy adapter](https://github.com/stoa-platform/stoa/blob/639e8b9a2217695cfc2f590e246ed9d4ce4d4913/stoa-go/internal/connect/adapters/envoy.go) publishes through the local mTLS ADS server when `STOA_GATEWAY_TYPE=envoy` is selected. Link currently builds its snapshots from the route and policy inventory it receives. In the ADR-073 target architecture, a dedicated control-plane component will translate the [Universal API Contract (UAC)](../concepts/uac.md) into xDS. See [Data Plane Architecture](./data-plane.md) for the supported scope and the remaining work.
 
 ## See also
 

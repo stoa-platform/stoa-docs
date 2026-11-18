@@ -11,7 +11,7 @@
 > - **A sidecar is only one way to deploy Envoy, not a product.** "STOA Gateway" designates the Envoy-based data plane with its STOA external services, whether deployed standalone or as a sidecar next to a third-party gateway or workload. The Rust sidecar runtime described below is no longer a target; the Rust gateway enters maintenance (ADR-073 §9).
 > - **The `/api/v1/links/…` endpoints of ADR-059 and the registration protocol below do not change.** The `gateway_mode` value used by Envoy instances is set by the ADR-024 revision; any new value still requires an ADR.
 > - The product table, the diagram, the decision matrix and the criteria table (including its latency, size and install-time figures) describe the three-runtime lineup as decided in March 2026 and must be read as historical context, not current state. The "Shared Code (Go monorepo)" section remains accurate: `cmd/stoa-connect/` is the Link agent.
-> - *Implementation status:* the Link xDS server is decided but not yet implemented; today's agent synchronises third-party gateways over REST / SSE.
+> - *Implementation status.* Link serves local mTLS ADS in opt-in Envoy mode. Third-party gateway synchronisation continues through the dedicated adapters. See [ADR-073 §7](./adr-073-adopt-envoy-data-plane.md) for the implementation and rollout status.
 
 ## Context
 
