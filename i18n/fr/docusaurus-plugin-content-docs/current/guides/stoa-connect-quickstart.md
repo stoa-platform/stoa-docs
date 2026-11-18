@@ -42,50 +42,70 @@ VPS / On-Premise
 
 ## Prérequis
 
-- Une passerelle Kong, Gravitee ou webMethods en cours d'exécution avec son API d'administration accessible localement
-- Un compte STOA sur [console.gostoa.dev](https://console.gostoa.dev)
-- Une **clé API de passerelle** obtenue depuis la Console STOA (Paramètres → Gateways → Nouvelle clé)
+- **Go 1.25+** (ou **Docker** pour une image conteneur) afin de compiler `stoa-connect` depuis [`stoa-platform/stoa/stoa-go`](https://github.com/stoa-platform/stoa/tree/main/stoa-go)
+- Une passerelle Kong, Gravitee ou webMethods en cours d'exécution avec son API d'administration accessible localement (ou Envoy upstream pour le mode ADS en boucle locale)
+- Des endpoints STOA Control Plane API et Console accessibles (`${STOA_API_URL}`, `${STOA_CONSOLE_URL}`)
+- Une **clé API de passerelle** créée dans la Console STOA (Paramètres → Gateways → Nouvelle clé)
 
 ## Étape 1 — Installer stoa-connect
+
+:::warning Compiler depuis un checkout du monorepo
+N'utilisez **pas** `get.gostoa.dev/connect`, `brew install stoa-platform/tap/stoa-connect`, `go install github.com/stoa-platform/stoa-connect@latest`, ni les tags flottants `:latest`. Les GitHub Releases `stoa-go-v0.3.9` et `stoa-go-v0.3.10` du monorepo publient **zéro binaire** ; compilez le binaire ou l'image Docker depuis un checkout vérifié de `stoa-platform/stoa`.
+:::
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 <Tabs>
-<TabItem value="linux" label="Linux (amd64)">
+<TabItem value="go-tag" label="Build Go (stoa-go-v0.3.10)">
 
 ```bash
-curl -sSL https://get.gostoa.dev/connect | sh
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout stoa-go-v0.3.10
+cd stoa-go
+go build -ldflags "-s -w -X main.Version=0.3.10 -X main.Commit=$(git rev-parse --short HEAD)" \
+  -o ./bin/stoa-connect ./cmd/stoa-connect
+sudo install -m 0755 ./bin/stoa-connect /usr/local/bin/stoa-connect
 ```
 
 </TabItem>
-<TabItem value="macos" label="macOS (Homebrew)">
+<TabItem value="go-main" label="Build Go (main 639e8b9a)">
 
 ```bash
-brew install stoa-platform/tap/stoa-connect
+# Requis pour les fonctionnalités post-mai 2026 telles que le mode ADS Envoy en boucle locale
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
+cd stoa-go
+go build -ldflags "-s -w -X main.Version=0.3.10-main -X main.Commit=639e8b9a" \
+  -o ./bin/stoa-connect ./cmd/stoa-connect
+sudo install -m 0755 ./bin/stoa-connect /usr/local/bin/stoa-connect
 ```
 
 </TabItem>
-<TabItem value="docker" label="Docker">
+<TabItem value="docker" label="Docker (Dockerfile.connect)">
 
 ```bash
-docker pull ghcr.io/stoa-platform/stoa-connect:latest
-```
-
-</TabItem>
-<TabItem value="go" label="Depuis les sources (Go 1.22+)">
-
-```bash
-go install github.com/stoa-platform/stoa-connect@latest
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
+cd stoa-go
+docker build -f Dockerfile.connect -t stoa-connect:639e8b9a .
 ```
 
 </TabItem>
 </Tabs>
 
-Vérifiez l'installation :
+Vérifiez l'artefact produit selon le parcours choisi (n'exécutez **pas** `stoa-connect --version` — `cmd/stoa-connect/main.go` n'analyse aucun flag CLI et démarre immédiatement le serveur HTTP sur `:8090`) :
 
 ```bash
-stoa-connect --version
+# Onglets Build Go (binaire hôte) : vérifier que le binaire installé figure dans PATH
+command -v stoa-connect
+
+# Onglet Docker (image locale) : vérifier que l'image existe localement
+docker image inspect stoa-connect:639e8b9a --format '{{.Id}}'
+# Puis contrôler l'état et la version via GET http://localhost:8090/health après configuration (étape 2) et démarrage (étape 3).
 ```
 
 ---
@@ -173,7 +193,7 @@ docker run -d \
   --name stoa-connect \
   --network host \
   --env-file .env \
-  ghcr.io/stoa-platform/stoa-connect:latest
+  stoa-connect:639e8b9a
 ```
 
 </TabItem>

@@ -54,7 +54,10 @@ The **Control Plane** handles API catalog management, authentication, and observ
 
 ## Quick Start
 
-There is one startup path: run STOA locally with the Docker Compose stack of the main repository. The [Quickstart Guide](/docs/guides/quickstart) lists every required variable by name (set your own values in `.env`; none is provided), validates the configuration statically with `docker compose config --quiet`, then starts an explicit service set. Hosted access is available on request.
+`stoa-platform/stoa` provides two distinct local Docker Compose paths depending on your goal (the standalone `stoa-platform/stoa-quickstart` repository is legacy and not used):
+
+- **Minimal R1 Access Verifier (`quickstart/`, 5 containers)** — Starts `postgres`, `keycloak`, `control-plane`, `gateway` (built locally from `stoa-gateway`), and `backend` with digest-pinned base images (no Redpanda, no Redis). Running `./verify.sh` declares an API via `POST /admin/contracts` (`inboundAuth: jwt`) and verifies `401` (anonymous), `401` (invalid token), and `200` (valid Keycloak JWT) at runtime.
+- **Full Local Platform Stack (`deploy/docker-compose/`, 19 services)** — Described in the [Quickstart Guide](/docs/guides/quickstart). Out of 35 services declared in `docker-compose.yml` (28 outside profiles), the explicit target shortcut (`nginx`, `redpanda-init`, `opensearch-init`, `data-prepper`, `tempo`) starts 19 services including Console, Developer Portal, Control Plane API, Gateway, Keycloak, and Observability after static validation with `docker compose config --quiet`. Hosted access is available on request.
 
 ## Key Differentiators
 

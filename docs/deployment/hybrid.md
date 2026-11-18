@@ -208,7 +208,7 @@ flowchart TB
 - Cross-region failover
 - Unified global dashboard
 
-**Status:** Roadmap Q4 2026
+**Status:** Planned
 
 ---
 
@@ -253,45 +253,81 @@ flowchart TB
 
 ## Getting Started
 
-### Hybrid Deployment Quick Start
+### Hybrid Gateway Deployment (Kubernetes)
 
-:::info Private Beta
-Repository access is granted to beta participants. [Request access](mailto:christophe@hlfh.io) to get the Helm chart and deployment instructions.
+`charts/stoa-platform` is installed from a checkout of [`stoa-platform/stoa`](https://github.com/stoa-platform/stoa) (no public `charts.gostoa.dev` index is published) and deploys the **STOA Gateway** and its 5 CRDs. To connect an existing Kong, Gravitee, or webMethods gateway without Kubernetes, use [`stoa-connect` (STOA Link)](/docs/guides/stoa-connect-quickstart) instead. Hosted Control Plane access is available on request at [sales@gostoa.dev](mailto:sales@gostoa.dev).
+
+```bash
+# 1. Clone the repository at a verified revision
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
+
+# 2. Install the on-premises STOA Gateway against your Control Plane and Keycloak URLs
+#    (./site-post-render.sh is your prepared executable post-renderer mounting the private_key_jwt Secret volume;
+#     if your Kustomize/GitOps pipeline applies that Deployment overlay instead, run it before checking Ready)
+helm upgrade --install stoa-platform ./charts/stoa-platform \
+  -n stoa-system --create-namespace \
+  -f my-values.yaml \
+  --post-renderer ./site-post-render.sh
+```
+
+Minimal `my-values.yaml` for a hybrid gateway (`stoaGateway.image` requires both `repository` and `digest` when overridden; see the [Installation Guide](/docs/admin/installation) for startup policy readiness requirements):
+
+```yaml
+stoa:
+  domain: "<YOUR_DOMAIN>"
+
+stoaGateway:
+  controlPlaneUrl: "https://api.<YOUR_DOMAIN>"
+  keycloakUrl: "https://auth.<YOUR_DOMAIN>"
+  secretName: stoa-gateway-secrets
+  policyBootTenants:
+    - "<YOUR_TENANT_ID>"
+  serviceMonitor:
+    enabled: false
+  otelEndpoint: ""
+
+controlPlaneApi:
+  serviceMonitor:
+    enabled: false
+gateway:
+  edgeMcp:
+    enabled: false
+gatewaySync:
+  enabled: false
+```
+
+:::warning Prerequisite before expecting `1/1 Ready`
+This minimal values file alone will **not** bring pods to `1/1 Ready` (`/health` tests process liveness only, whereas `/ready` enforces `policyBootTenants` and fresh signed tool permissions). At commit `639e8b9a`, `charts/stoa-platform` mounts only `tmp` (`emptyDir`) and `stoa-gateway-policies` (`ConfigMap`) — before expecting `1/1 Ready`, mount the `private_key_jwt` signing-key Secret (`STOA_KEYCLOAK_CLIENT_KEY_PATH`, plus `STOA_KEYCLOAK_CLIENT_KEY_ID` via `extraEnv`) using a Deployment manifest overlay, Kustomize patch, or Helm `--post-renderer` as documented in [Startup Policy and Readiness](/docs/admin/installation#startup-policy-and-readiness).
 :::
 
 ```bash
-# 1. Create namespace
-kubectl create namespace stoa-system
-
-# 2. Add the STOA Helm repository (provided with beta access)
-helm repo add stoa https://charts.gostoa.dev
-helm repo update
-
-# 3. Install with hybrid configuration
-helm install stoa stoa/stoa-platform \
-  --namespace stoa-system \
-  --set mode=hybrid \
-  --set controlPlane.endpoint=https://api.<YOUR_DOMAIN> \
-  --set controlPlane.tenantId=YOUR_TENANT_ID
-
-# 4. Verify installation
+# 3. Check pod status (pods reach 1/1 Ready only after the private_key_jwt Secret is mounted and signed policies load)
 kubectl get pods -n stoa-system
 ```
 
-### Full On-Premises Quick Start
+### Full On-Premises Stack
+
+`charts/stoa-platform` deploys **only the STOA Gateway, 5 CRDs, and optional integration hooks** (`charts/stoa-observability` packages optional Grafana Alloy/Tempo/Blackbox telemetry). Provision PostgreSQL, Keycloak (single `stoa` realm), OpenSearch, the Control Plane API / Console / Developer Portal workloads, and — **if** your site uses an external secrets backend ([ADR-075](/docs/architecture/adr/adr-075-secrets-backend-openbao)) — optional OpenBao separately before installing the gateway chart:
 
 ```bash
-# 1. Install prerequisites
-helm install postgresql bitnami/postgresql -n stoa-system
-helm install opensearch opensearch/opensearch -n stoa-system
-helm install openbao openbao/openbao -n stoa-system  # repo: https://openbao.github.io/openbao-helm
+# 1. Optional: install OpenBao only if your site uses an external secrets backend (ADR-075)
+helm repo add openbao https://openbao.github.io/openbao-helm
+helm repo update
+helm install openbao openbao/openbao -n openbao --create-namespace
 
-# 2. Install STOA full stack
-helm install stoa stoa/stoa-full \
-  --namespace stoa-system \
-  --set mode=on-premises \
-  --values your-values.yaml
+# 2. Deploy Control Plane API, Console, Portal, PostgreSQL, and Keycloak per your site manifests
+#    (or evaluate locally via deploy/docker-compose — see /docs/guides/quickstart)
+
+# 3. Install the STOA Gateway from the checked-out repository, applying your prepared private_key_jwt volume overlay
+helm upgrade --install stoa-platform ./charts/stoa-platform \
+  -n stoa-system --create-namespace \
+  -f your-values.yaml \
+  --post-renderer ./site-post-render.sh
 ```
+
+For air-gapped sites with no outbound Internet access, follow [Offline Installation](/docs/deployment/offline-install).
 
 ---
 

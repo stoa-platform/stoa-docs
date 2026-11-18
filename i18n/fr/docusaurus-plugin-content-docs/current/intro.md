@@ -54,7 +54,10 @@ Le **Plan de contrôle** gère le catalogue d'API, l'authentification et l'obser
 
 ## Démarrage rapide
 
-Il n'y a qu'un seul parcours de démarrage : lancer STOA localement avec la stack Docker Compose du dépôt principal. Le [Guide de démarrage rapide](/docs/guides/quickstart) liste chaque variable obligatoire par son nom (donnez vos propres valeurs dans `.env` ; aucune n'est fournie), valide la configuration statiquement avec `docker compose config --quiet`, puis démarre un ensemble explicite de services. L'offre hébergée est disponible sur demande.
+Le dépôt `stoa-platform/stoa` propose deux parcours Docker Compose locaux distincts selon votre objectif (le dépôt séparé `stoa-platform/stoa-quickstart` est obsolète et n'est pas utilisé) :
+
+- **Vérificateur minimal d'accès R1 (`quickstart/`, 5 conteneurs)** — Démarre `postgres`, `keycloak`, `control-plane`, `gateway` (compilé localement depuis `stoa-gateway`) et `backend` avec images épinglées par digest (sans Redpanda ni Redis). Le script `./verify.sh` déclare une API via `POST /admin/contracts` (`inboundAuth: jwt`) et vérifie en exécution les réponses `401` (anonyme), `401` (jeton invalide) et `200` (JWT Keycloak valide).
+- **Stack plateforme locale complète (`deploy/docker-compose/`, 19 services)** — Décrite dans le [Guide de démarrage rapide](/docs/guides/quickstart). Sur les 35 services déclarés dans `docker-compose.yml` (dont 28 hors profils), le raccourci explicite (`nginx`, `redpanda-init`, `opensearch-init`, `data-prepper`, `tempo`) démarre 19 services dépendances comprises (Console, Portail développeur, Control Plane API, Gateway, Keycloak et Observabilité) après validation statique via `docker compose config --quiet`. L'offre hébergée est disponible sur demande.
 
 ## Différenciateurs clés
 

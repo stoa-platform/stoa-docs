@@ -11,32 +11,51 @@ keywords: [CLI, command line, stoactl, reference, deploy, rollback, logs, MCP, b
 
 ## Installation
 
+`stoactl` est développé dans le répertoire [`stoa-go/`](https://github.com/stoa-platform/stoa/tree/main/stoa-go) du monorepo `stoa-platform/stoa` et requiert **Go 1.25+** (`stoa-go/go.mod`).
+
+:::warning Canaux d'installation historiques
+N'utilisez **pas** `go install github.com/stoa-platform/stoactl@latest` (ancien dépôt figé en `v0.3.0`), `brew install stoa-platform/tap/stoactl` (formule Homebrew obsolète en `0.1.1` et cask en `0.3.0`), ni `https://get.gostoa.dev` (URLs d'installation historiques). Les GitHub Releases `stoa-go-v0.3.9` et `stoa-go-v0.3.10` du monorepo ne contiennent actuellement **aucun binaire attaché** (zéro asset) ; compilez `stoactl` depuis un checkout vérifié du monorepo.
+:::
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 <Tabs>
-<TabItem value="macos" label="macOS (Homebrew)">
+<TabItem value="tag" label="Tag publié (stoa-go-v0.3.10)">
 
 ```bash
-brew install stoa-platform/tap/stoactl
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout stoa-go-v0.3.10
+cd stoa-go
+make install   # installe stoactl (et stoa-connect) dans GOBIN s'il est défini, sinon $(go env GOPATH)/bin
 ```
 
 </TabItem>
-<TabItem value="linux" label="Linux">
+<TabItem value="main" label="Commit main vérifié (639e8b9a)">
 
 ```bash
-curl -sSL https://get.gostoa.dev | sh
-```
-
-</TabItem>
-<TabItem value="go" label="Depuis les sources (Go 1.22+)">
-
-```bash
-go install github.com/stoa-platform/stoactl@latest
+# Inclut les ajouts sur main postérieurs à v0.3.10 (stoactl reconcile et support Envoy xDS de stoa-connect)
+git clone https://github.com/stoa-platform/stoa.git
+cd stoa
+git checkout 639e8b9a2217695cfc2f590e246ed9d4ce4d4913
+cd stoa-go
+go build -ldflags "-s -w -X github.com/stoa-platform/stoa-go/internal/cli/cmd.Version=0.3.10-main -X github.com/stoa-platform/stoa-go/internal/cli/cmd.Commit=639e8b9a" \
+  -o ./bin/stoactl ./cmd/stoactl
 ```
 
 </TabItem>
 </Tabs>
+
+Vérifiez le binaire compilé en utilisant le chemin correspondant au mode de compilation choisi :
+
+```bash
+# Après `make install` (avec GOBIN ou $(go env GOPATH)/bin dans PATH) :
+stoactl version
+
+# Après `go build -o ./bin/stoactl` :
+./bin/stoactl version
+```
 
 ---
 
