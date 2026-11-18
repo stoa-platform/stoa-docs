@@ -24,7 +24,10 @@ permissions:
 
 jobs:
   browser-test:
-    name: Readiness links on desktop and mobile
+    name: >-
+      ${{ github.event_name == 'deployment_status' &&
+          'Readiness on docs.gostoa.dev' ||
+          'Readiness links on desktop and mobile' }}
     if: >-
       github.event_name != 'deployment_status' ||
       (github.event.deployment.environment == 'Production' &&
