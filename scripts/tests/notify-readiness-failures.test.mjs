@@ -37,7 +37,8 @@ const report = {
   errors: [{message: 'Runner-level error'}],
 };
 
-test('sends only failed scenarios, with profile, commit and run link, using stable IDs', async () => {
+test('sends only failed scenarios and logs posted and duplicate receipts with stable IDs', async (t) => {
+  const log = t.mock.method(console, 'log', () => {});
   const requests = [];
   const send = async (url, request) => {
     assert.equal(url, 'https://n8n.gostoa.dev/webhook/stoa-events');
@@ -54,6 +55,12 @@ test('sends only failed scenarios, with profile, commit and run link, using stab
   const [english, french, sameEnglish, sameFrench] = requests;
   assert.deepEqual(english, sameEnglish);
   assert.deepEqual(french, sameFrench);
+  assert.deepEqual(log.mock.calls.map(({arguments: args}) => args), [
+    [`n8n status=posted event_id=${english.event_id}`],
+    [`n8n status=posted event_id=${french.event_id}`],
+    [`n8n status=duplicate event_id=${english.event_id}`],
+    [`n8n status=duplicate event_id=${french.event_id}`],
+  ]);
   assert.notEqual(english.event_id, french.event_id);
   assert.match(english.event_id, /^[0-9a-f]{8}-[0-9a-f]{4}-8[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
   assert.equal(english.source, 'ci');
@@ -69,11 +76,13 @@ test('skips runner errors and calls out a missing credential before any request'
   await assert.rejects(notifyReadinessFailures(report, {}, send), /STOA_N8N_CI_EVENT_TOKEN is missing/);
 });
 
-test('reports unconfirmed delivery and attempts the remaining alert', async () => {
+test('reports unconfirmed delivery and logs only the accepted receipt', async (t) => {
+  const log = t.mock.method(console, 'log', () => {});
   let count = 0;
   const send = async () => ++count === 1
     ? Response.json({status: 'rejected'})
     : Response.json({status: 'posted'});
   await assert.rejects(notifyReadinessFailures(report, env, send), /did not confirm 1 alert.*rejected/);
   assert.equal(count, 2);
+  assert.equal(log.mock.callCount(), 1);
 });

@@ -67,7 +67,9 @@ export async function notifyReadinessFailures(report, env, send = fetch) {
         continue;
       }
       const {status} = await response.json();
-      if (status !== 'posted' && status !== 'duplicate') {
+      if (status === 'posted' || status === 'duplicate') {
+        console.log(`n8n status=${status} event_id=${alert.event_id}`);
+      } else {
         const reason = status === 'rejected' || status === 'failed' ? status : 'invalid response';
         deliveryErrors.push(`${alert.event_id} ${reason}`);
       }
