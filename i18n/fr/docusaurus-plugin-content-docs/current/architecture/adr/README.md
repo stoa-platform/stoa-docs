@@ -121,9 +121,9 @@ Ce répertoire contient les décisions architecturales structurantes de la Plate
 | # | Titre | Statut |
 |:---:|-------|:------:|
 | [030](./adr-030-ai-context-management.md) | Architecture de Gestion de Contexte AI-Native (Partiellement remplacé par ADR-062) | ✅ |
-| [061](/docs/architecture/adr/adr-061-council-multi-stage-review) | Système de Revue Multi-Étapes Council *(EN)* | ✅ |
+| [061](./adr-061-council-multi-stage-review.md) | Système de revue du Council en plusieurs étapes | ✅ |
 | [062](./adr-062-claude-md-hierarchy-no-rules-dir.md) | Hiérarchie `CLAUDE.md` en remplacement de `.claude/rules/` | ✅ |
-| [063](/docs/architecture/adr/adr-063-sdd-l1-impact-mcp) | SDD Niveau 1 + Agent de Connaissance MCP `stoa-impact` *(EN)* | ✅ |
+| [063](./adr-063-sdd-l1-impact-mcp.md) | SDD niveau 1 et agent de connaissance MCP `stoa-impact` | ✅ |
 | [065](/docs/architecture/adr/adr-065-pr-guardian) | STOA PR Guardian — Revue IA Consultative sur GitHub Actions *(EN)* | ✅ |
 
 ---
