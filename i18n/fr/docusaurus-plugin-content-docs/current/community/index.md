@@ -1,120 +1,55 @@
 ---
 sidebar_position: 1
-title: "Communauté STOA : Contribuer & Être Récompensé"
-description: Rejoignez la communauté STOA — redistribution de 45% des revenus, philosophie HLFH, programme de récompenses pour contributeurs, gouvernance transparente et open source durable
-keywords: [community, open source, contributions, governance, HLFH]
+title: "Communauté STOA · Contribuer au projet open source"
+sidebar_label: "Contribuer"
+description: "Faites votre première contribution à STOA. Améliorez le code ou la documentation, signalez un bug reproductible ou échangez avec la communauté."
+keywords: [STOA, open source, contribution, communauté, passerelle MCP]
 ---
 
-# Communauté
+# Contribuer à STOA
 
-Bienvenue dans la communauté STOA. Nous construisons plus qu'un logiciel — nous construisons un nouveau modèle de viabilité pour l'open source.
+STOA aide les équipes à exposer leurs API sous forme d’outils MCP et à contrôler qui peut les utiliser. Le cœur est open source sous licence Apache 2.0. Une contribution peut commencer par un exemple plus clair, une étape d’installation mieux expliquée ou un test de non-régression.
 
-:::tip Notre Philosophie
-**"Pas pour accumuler. Pour faire circuler."**
+[Essayer STOA en local](/docs/guides/quickstart) · [Voir le code sur GitHub](https://github.com/stoa-platform/stoa) · [Lire le guide de contribution](/docs/community/contributing) · [Rejoindre Discord](https://discord.gostoa.dev)
 
-STOA redistribue 45% de ses revenus enterprise à la communauté. Nous croyons que les contributeurs open source méritent reconnaissance et compensation pour leur travail.
-:::
+## Choisir une contribution {#simpliquer}
 
----
+| Vous souhaitez… | Par où commencer |
+| --- | --- |
+| Corriger le code ou ajouter un test | Parcourez les [issues ouvertes](https://github.com/stoa-platform/stoa/issues). Le [filtre « good first issue »](https://github.com/stoa-platform/stoa/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) aide à repérer un premier sujet. |
+| Améliorer une page ou ajouter un exemple | Ouvrez le [dépôt de la documentation](https://github.com/stoa-platform/stoa-docs) ou utilisez **Modifier cette page** en bas de la page concernée. Vérifiez les versions française et anglaise si les deux sont concernées. |
+| Signaler un résultat inattendu | [Consultez les issues existantes](https://github.com/stoa-platform/stoa/issues). Si le problème est déjà signalé, ajoutez vos étapes de reproduction au même endroit. |
 
-## Ce Qui Distingue STOA
+### Ouvrir sa première pull request {#commencer-à-contribuer}
 
-| Open Source Traditionnel | Modèle STOA |
-|--------------------------|-------------|
-| Les contributeurs travaillent gratuitement | **Redistribution de 45% des revenus** |
-| Épuisement des mainteneurs | **Compensation durable** |
-| Extraction corporative | **Propriété communautaire** |
-| Gouvernance opaque | **Décisions transparentes** |
+1. **Précisez le périmètre.** Décrivez brièvement votre proposition dans l’issue. Si le changement est important, échangez sur l’approche avant de l’implémenter.
+2. **Travaillez dans le bon dépôt.** Consultez les [consignes du projet](https://github.com/stoa-platform/stoa/blob/main/CONTRIBUTING.md) pour le code et le [guide de contribution à la documentation](https://github.com/stoa-platform/stoa-docs/blob/main/CONTRIBUTING.md) pour les pages Docs.
+3. **Facilitez la revue.** Ouvrez une PR ciblée. Reliez l’issue si elle existe et indiquez ce qui change, comment vous l’avez vérifié et les points encore ouverts.
 
----
+### Signaler un bug reproductible {#autres-façons-de-contribuer}
 
-## La Philosophie HLFH
+Indiquez la version ou le commit de STOA, le composant concerné, votre environnement, les étapes minimales de reproduction et les résultats attendus et observés. Partagez les extraits de journaux utiles en retirant les identifiants, les URL privées et les données clients. [Ouvrir un signalement de bug](https://github.com/stoa-platform/stoa/issues/new/choose)
 
-STOA est soutenu par **HLFH** (Helion Liber Focus Honor), une holding construite sur quatre piliers :
+Pour une vulnérabilité présumée, utilisez le canal privé indiqué dans la [politique de sécurité](https://github.com/stoa-platform/stoa/security/policy).
 
-| Pilier | Signification |
-|--------|---------------|
-| **HELION** (Ἥλιος) | Le Soleil — Donner avant de recevoir |
-| **LIBER** | Liberté — Choisir ses contraintes |
-| **FOCUS** | Concentration — La profondeur plutôt que la largeur |
-| **HONOR** | Intégrité — La parole est sacrée |
+### Partager un retour d’usage {#devenir-design-partner}
 
-→ [Lire la Philosophie complète](/docs/community/philosophy)
+Si vous avez essayé STOA sur une API ou un banc de test, dites-nous ce que vous cherchiez à faire, où vous avez rencontré une difficulté et ce qui vous aurait aidé. Ce retour peut guider les évolutions du produit et de la documentation. [Échanger sur Discord](https://discord.gostoa.dev)
 
----
+## Suivre le projet {#ce-qui-distingue-stoa}
 
-## Programme de Récompenses pour Contributeurs
+- Les [versions publiées](https://github.com/stoa-platform/stoa/releases) recensent les changements livrés.
+- La [feuille de route](/docs/roadmap) présente les évolutions visées.
+- Les [décisions d’architecture](/docs/architecture/adr) expliquent les choix techniques.
 
-Chaque contribution compte. Nous mesurons l'impact sur quatre dimensions :
+## Trouver une réponse ou poser une question {#liens-rapides}
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│              Répartition des Revenus Enterprise STOA         │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│   │  Fondation   │  │  Mainteneurs │  │ Contributeurs│     │
-│   │     10%      │  │     20%      │  │     15%      │     │
-│   └──────────────┘  └──────────────┘  └──────────────┘     │
-│                                                             │
-│   ┌─────────────────────────────────────────────────┐      │
-│   │              Opérations (HLFH)                   │      │
-│   │                    55%                           │      │
-│   └─────────────────────────────────────────────────┘      │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
+La [FAQ](/docs/community/faq) répond aux questions courantes. Utilisez [Discord](https://discord.gostoa.dev) pour échanger et les [issues GitHub](https://github.com/stoa-platform/stoa/issues) pour les sujets à suivre dans la durée.
 
-→ [En savoir plus sur le Programme de Récompenses](/docs/community/rewards)
+## Contexte du projet {#la-philosophie-hlfh}
 
----
+Les [principes du projet](/docs/community/philosophy) présentent les idées à l’origine de STOA.
 
-## Liens Rapides
+### Reconnaissance des contributions {#programme-de-récompenses-pour-contributeurs}
 
-| Ressource | Description |
-|-----------|-------------|
-| [Philosophie & Principes](/docs/community/philosophy) | Pourquoi nous faisons ce que nous faisons |
-| [Récompenses Contributeurs](/docs/community/rewards) | Comment les contributions sont valorisées |
-| [Guide de Contribution](/docs/community/contributing) | Configuration du développement et workflow PR |
-| [FAQ](/docs/community/faq) | Questions fréquentes des sceptiques OSS |
-| [Discord](https://discord.gostoa.dev) | Rejoindre la conversation |
-| [GitHub](https://github.com/stoa-platform) | Contribuer au code |
-
----
-
-## S'Impliquer
-
-### Commencer à Contribuer
-
-1. **Choisir une issue** — Parcourez nos [good-first-issues](https://github.com/stoa-platform/stoa/issues?q=is%3Aopen+label%3A%22good+first+issue%22) — curées, bien décrites, adaptées aux débutants
-2. **Lire le guide** — Suivez notre [Guide de Contribution](/docs/community/contributing) pour la configuration et le workflow PR
-3. **Soumettre une PR** — Forker, coder, tester, soumettre
-4. **Gagner des points** — Chaque contribution compte pour les [Récompenses](/docs/community/rewards)
-
-:::info Bonnes Premières Issues
-Nous maintenons [10+ issues adaptées aux débutants](https://github.com/stoa-platform/stoa/issues?q=is%3Aopen+label%3A%22good+first+issue%22) dans tous les composants — docs, UI, API, tests et améliorations DX. Chacune a une description claire, un résultat attendu et un niveau de difficulté.
-:::
-
-### Autres Façons de Contribuer
-
-Pas encore prêt pour le code ? Vous pouvez quand même aider :
-
-- **Signaler des bugs** — [Ouvrir une issue](https://github.com/stoa-platform/stoa/issues/new) avec les étapes de reproduction
-- **Améliorer la doc** — Corriger des fautes, ajouter des exemples, traduire du contenu
-- **Répondre aux questions** — Aider les nouveaux venus dans Discord `#help`
-- **Parler de STOA** — Écrivez à son sujet, parlez-en, ajoutez une étoile au dépôt
-
-### Devenir Design Partner
-
-Vous testez STOA dans votre organisation ? Nous proposons :
-
-- Accès anticipé aux fonctionnalités
-- Ligne directe avec les mainteneurs
-- Opportunités de co-marketing
-- Influence sur la feuille de route
-
-Contact : [hello@gostoa.dev](mailto:hello@gostoa.dev)
-
----
-
-*"Les organisations meurent. Les idées survivent. Construisez des idées, pas des empires."*
+Pour les modalités, consultez la [page consacrée à la reconnaissance des contributions](/docs/community/rewards).

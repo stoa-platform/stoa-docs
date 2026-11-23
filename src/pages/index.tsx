@@ -362,7 +362,7 @@ export default function Home(): JSX.Element {
     <Layout
       title={translate({
         id: 'homepage.layout.title',
-        message: 'STOA Docs — Sovereign iPaaS — API & integration platform',
+        message: 'Open-source API and MCP gateway documentation',
       })}
       description={translate({
         id: 'homepage.layout.description',
