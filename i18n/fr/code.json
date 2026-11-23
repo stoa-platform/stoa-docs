@@ -726,7 +726,7 @@
     "message": "📧 Contacter les ventes"
   },
   "homepage.layout.title": {
-    "message": "STOA Docs — iPaaS souverain, plateforme d'API et d'intégration"
+    "message": "Documentation de la passerelle API et MCP open source"
   },
   "homepage.layout.description": {
     "message": "Documentation STOA Platform — la passerelle API open source AI-native avec support MCP, isolation multi-tenant et guides de migration depuis webMethods, Apigee, Kong."
