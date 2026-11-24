@@ -186,7 +186,7 @@ non-Bash subagents, remove the `.mcp.json` entry and delete the module.
 ## Review
 
 - **Review date**: 2026-04-30.
-- **Owner**: @PotoMitan.
+- **Owner**: @caboulicam.
 - **Artifacts to inspect**: `.sdlc/specs/` (count of real MEGAs
   formalized), `.mcp.json` (still present?), grep for
   `stoa_impact_mcp` calls in session logs (usage signal), Linear
