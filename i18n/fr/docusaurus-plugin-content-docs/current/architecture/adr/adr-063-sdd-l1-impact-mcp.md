@@ -115,7 +115,7 @@ Pour le serveur MCP, un signal d’abandon distinct s’applique : si le serveur
 ## Revue
 
 - **Date de revue** : 2026-04-30.
-- **Responsable** : @PotoMitan.
+- **Responsable** : @caboulicam.
 - **Artefacts à inspecter** : `.sdlc/specs/` (nombre de vrais MEGAs formalisés), `.mcp.json` (toujours présent ?), recherche par grep des appels à `stoa_impact_mcp` dans les journaux de session (signal d’utilisation), tableau de bord du temps de cycle Linear.
 
 ## Références
